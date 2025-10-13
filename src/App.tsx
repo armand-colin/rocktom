@@ -3,11 +3,13 @@ import './App.css'
 import { Engine } from './engine/Engine'
 import { useResource } from './engine/hooks'
 import { MediaStreamList } from './resources/MediaStreamList'
+import { Tuner } from './resources/Tuner'
 import { Workspace } from './resources/Workspace'
 
 function App() {
   const mediaStramList = useResource(MediaStreamList)
   const workspace = useResource(Workspace)
+  const { detectedFrequency } = useResource(Tuner)
 
   function setStream(id: string) {
     mediaStramList.request(id).then(stream => {
@@ -17,7 +19,6 @@ function App() {
 
   function onGainChange(e: ChangeEvent<HTMLInputElement>) {
     const value = parseFloat(e.target.value)
-    console.log("Setting gain", value)
     workspace.feedbackGain = value
   }
 
@@ -34,6 +35,7 @@ function App() {
       <input type="range" min="0" max="10" value={workspace.feedbackGain} onChange={onGainChange} />
       <button onClick={() => mediaStramList.refresh()}>refresh</button>
       <button onClick={() => Engine.instance.sound.resume()}>resume</button>
+      <p>Frequency: {detectedFrequency}Hz </p>
     </div>
   )
 }

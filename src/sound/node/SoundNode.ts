@@ -13,8 +13,6 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
     protected abstract build(): T
 
     connect(node: SoundNode) {
-        console.log("Connecting", this, node)
-
         this._connections.push(node)
 
         if (this.node && node.node)
@@ -22,7 +20,6 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
     }
 
     refreshConnections() {
-        console.log("Refreshing connections", this)
         if (!this.node)
             return
 
