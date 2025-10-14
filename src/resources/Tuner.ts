@@ -1,29 +1,30 @@
 import { Engine } from "../engine/Engine";
 import { Resource } from "../engine/Resource";
-import { PitchDetector } from "../sound/PitchDetector";
-import { Time } from "../sound/Time";
+import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import { Workspace } from "./Workspace";
 
 export class Tuner extends Resource {
 
-    private _pitchDetector: PitchDetector
+    private _analyser: SoundAnalyserNode
+
     private _detectedFrequency: number = 0
 
     constructor() {
         super()
-        this._pitchDetector = new PitchDetector(Engine.instance.resource(Workspace).analyser)
-
-        setInterval(this._update, Time.audioInterval.milliseconds, undefined)
+        this._analyser = Engine.instance.resource(Workspace).analyser
+        Engine.instance.coroutine(this._update())
     }
 
     get detectedFrequency() {
         return this._detectedFrequency
     }
 
-    private _update = () => {
-        this._pitchDetector.update()
-        this._detectedFrequency = this._pitchDetector.frequency
-        this.changed()
+    private *_update() {
+        while (true) {
+            this._detectedFrequency = this._analyser.getLowestPeakFrequency()
+            this.changed()
+            yield null
+        }
     }
 
 }
