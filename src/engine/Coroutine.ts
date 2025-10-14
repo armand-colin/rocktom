@@ -1,18 +1,17 @@
 import { nanoid } from "nanoid"
-
-export type CoroutineReturn = null | Promise<void>
+import type { Schedule } from "./Schedule"
 
 export class Coroutine {
 
     readonly id = nanoid()
 
-    private _iterator: Iterator<CoroutineReturn>
+    private _iterator: Iterator<Schedule>
 
-    constructor(iterator: Iterator<CoroutineReturn>) {
+    constructor(iterator: Iterator<Schedule>) {
         this._iterator = iterator
     }
 
-    next(): IteratorResult<CoroutineReturn> {
+    next(): IteratorResult<Schedule> {
         return this._iterator.next()
     }
 

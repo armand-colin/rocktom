@@ -1,5 +1,6 @@
 import { Engine } from "../engine/Engine";
 import { Resource } from "../engine/Resource";
+import { Schedule } from "../engine/Schedule";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import { Workspace } from "./Workspace";
 
@@ -21,9 +22,9 @@ export class Tuner extends Resource {
 
     private *_update() {
         while (true) {
-            this._detectedFrequency = this._analyser.getLowestPeakFrequency()
+            this._detectedFrequency = this._analyser.getLowestFrequency()
             this.changed()
-            yield null
+            yield Schedule.Frame
         }
     }
 
