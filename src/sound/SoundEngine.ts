@@ -18,6 +18,10 @@ export class SoundEngine {
         this._nodes.push(this.output)
     }
 
+    get currentTime() {
+        return this._audioContext.currentTime
+    }
+
     refresh() {
         this._audioContext = new AudioContext()
 
