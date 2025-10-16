@@ -10,7 +10,7 @@ export class CanvasAnalyser {
     private _context: CanvasRenderingContext2D
 
     constructor(canvas: HTMLCanvasElement) {
-        this._analyser = Engine.instance.resource(Workspace).analyser
+        this._analyser = Engine.instance.getResource(Workspace).analyser
         this._canvas = canvas
         this._context = canvas.getContext('2d')!
 

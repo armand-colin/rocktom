@@ -49,5 +49,6 @@ function closestFrequency(frequency: number): Note {
 }
 
 export const Note = {
-    closestFrequency
+    closestFrequency,
+    names
 }

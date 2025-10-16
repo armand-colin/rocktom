@@ -1,4 +1,4 @@
-import { Engine } from "../engine/Engine";
+import type { Engine } from "../engine/Engine";
 import { Resource } from "../engine/Resource";
 import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
@@ -10,15 +10,15 @@ export class Workspace extends Resource {
     private _feedbackGain: GainSoundNode
     private _analyser: SoundAnalyserNode
 
-    constructor() {
-        super()
-        this._microphone = Engine.instance.sound.createMediaStreamNode()
-        this._feedbackGain = Engine.instance.sound.createGainNode()
-        this._analyser = Engine.instance.sound.createAnalyserNode()
+    constructor(engine: Engine) {
+        super(engine)
+        this._microphone = this.engine.sound.createMediaStreamNode()
+        this._feedbackGain = this.engine.sound.createGainNode()
+        this._analyser = this.engine.sound.createAnalyserNode()
 
         this._microphone.connect(this._feedbackGain)
         this._microphone.connect(this._analyser)
-        this._feedbackGain.connect(Engine.instance.sound.output)
+        this._feedbackGain.connect(this.engine.sound.output)
     }
 
     get analyser() {

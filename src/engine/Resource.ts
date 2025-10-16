@@ -1,4 +1,5 @@
 import { Emitter } from "@niloc/utils"
+import type { Engine } from "./Engine"
 
 type Events = {
     change: void
@@ -6,21 +7,12 @@ type Events = {
 
 export class Resource extends Emitter<Events> {
 
-    changed() {
-        this.emit('change')
+    constructor(protected readonly engine: Engine) {
+        super()
     }
 
-    async coroutine(coroutine: Iterator<unknown>) {
-        while (true) {
-            const result = coroutine.next()
-
-            if (result.done)
-                return
-
-            await new Promise((resolve) => {
-                setTimeout(resolve, 100)
-            })
-        }
+    changed() {
+        this.emit('change')
     }
 
 }

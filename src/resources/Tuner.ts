@@ -1,4 +1,4 @@
-import { Engine } from "../engine/Engine";
+import type { Engine } from "../engine/Engine";
 import { Resource } from "../engine/Resource";
 import { Schedule } from "../engine/Schedule";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
@@ -10,10 +10,10 @@ export class Tuner extends Resource {
 
     private _detectedFrequency: number = 0
 
-    constructor() {
-        super()
-        this._analyser = Engine.instance.resource(Workspace).analyser
-        Engine.instance.coroutine(this._update())
+    constructor(engine: Engine) {
+        super(engine)
+        this._analyser = this.engine.getResource(Workspace).analyser
+        this.engine.coroutine(this._update())
     }
 
     get detectedFrequency() {

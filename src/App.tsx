@@ -6,12 +6,19 @@ import { MediaStreamList } from './resources/MediaStreamList'
 import { NoteDetector } from './resources/NoteDetector'
 import { Tuner } from './resources/Tuner'
 import { Workspace } from './resources/Workspace'
-
+import { MidiParser } from './sound/MidiParser'
+import test from "./assets/test.mid?url"
+import { MusicSheet } from './sound/MusicSheet'
+import { Playback } from './components/Playback'
+import { MidiEvent } from './sound/MidiEvent'
+import { Player } from './resources/Player'
+import { PlaybackView } from './ui/PlaybackView'
 function App() {
   const mediaStramList = useResource(MediaStreamList)
   const workspace = useResource(Workspace)
   const { detectedFrequency } = useResource(Tuner)
   const { detectedNotes } = useResource(NoteDetector)
+  const player = useResource(Player)
 
   function setStream(id: string) {
     mediaStramList.request(id).then(stream => {
@@ -22,6 +29,26 @@ function App() {
   function onGainChange(e: ChangeEvent<HTMLInputElement>) {
     const value = parseFloat(e.target.value)
     workspace.feedbackGain = value
+  }
+
+  async function loadMidi() {
+    const midi = await fetch(test)
+      .then(response => response.blob())
+      .then(blob => blob.arrayBuffer())
+      .then(buffer => new MidiParser(new Uint8Array(buffer)))
+    
+    const sheet = MusicSheet.fromMidi(midi)
+
+    const playback = Engine.instance.createComponent(
+      Playback,
+      sheet,
+      {
+        type: MidiEvent.InstrumentType.SynthBass,
+        stringsChannel: [0, 4, 8, 12]
+      }
+    )
+
+    player.bind(playback)
   }
 
   return (
@@ -48,6 +75,12 @@ function App() {
           </li>)
         }
       </ul>
+      <button onClick={loadMidi}>load midi</button>
+      {
+        player.playback ?
+          <PlaybackView playback={player.playback} /> :
+          undefined
+      }
     </div>
   )
 }

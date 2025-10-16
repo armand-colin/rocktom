@@ -1,3 +1,4 @@
+import { Midi } from "./Midi";
 import { MidiEvent } from "./MidiEvent";
 import { MidiParser } from "./MidiParser";
 
@@ -36,7 +37,9 @@ function mergeEvents(a: MusicSheet.Event[], b: MusicSheet.Event[]): MusicSheet.E
 export class MusicSheet {
 
     static fromMidi(midi: MidiParser): MusicSheet {
+
         let events: MusicSheet.Event[] = []
+        let tempo: Midi.Tempo = Midi.Tempo.bpm(120)
 
         for (const track of midi.tracks) {
             let currentInstrument: MidiEvent.InstrumentType | null = null
@@ -73,23 +76,39 @@ export class MusicSheet {
                         pendingNotes.splice(index, 1)
                     }
                 }
+
+                if (
+                    midiEvent.type === MidiEvent.Type.Meta &&
+                    midiEvent.metaType === MidiEvent.MetaType.SetTempo && 
+                    time === 0
+                ) {
+                    tempo = midiEvent.tempo
+                }
             }
 
             // Shall merge events
             events = mergeEvents(events, trackEvents)
         }
 
-        return new MusicSheet(events)
+        return new MusicSheet(
+            events, 
+            midi.header.timeDivision,
+            tempo
+        )
     }
 
-    private _events: MusicSheet.Event[]
+    readonly events: MusicSheet.Event[]
+    readonly timeDivision: Midi.TimeDivision
+    readonly tempo: Midi.Tempo
 
-    get events() {
-        return this._events
-    }
-
-    constructor(events: MusicSheet.Event[]) {
-        this._events = events
+    constructor(
+        events: MusicSheet.Event[], 
+        timeDivision: Midi.TimeDivision,
+        tempo: Midi.Tempo
+    ) {
+        this.events = events
+        this.timeDivision = timeDivision
+        this.tempo = tempo
     }
 
 }

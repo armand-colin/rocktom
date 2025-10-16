@@ -1,12 +1,12 @@
 import { useEffect, useReducer } from "react";
 import type { Action } from "./Action";
 import type { Component } from "./Component";
-import type { Constructor } from "./Constructor";
+import type { ResourceConstructor } from "./Constructor";
 import { Engine } from "./Engine";
 import type { Resource } from "./Resource";
 
-export function useResource<T extends Resource>(constructor: Constructor<T>): T {
-    const resource = Engine.instance.resource(constructor)
+export function useResource<T extends Resource>(constructor: ResourceConstructor<T>): T {
+    const resource = Engine.instance.getResource(constructor)
     const [, forceUpdate] = useReducer(x => x + 1, 0)
 
     useEffect(() => {

@@ -1,22 +1,14 @@
+import type { Midi } from "./Midi"
 import { MidiEvent } from "./MidiEvent"
 
 interface Header {
     formatType: number,
     trackCount: number,
-    timeDivision: TimeDivision
+    timeDivision: Midi.TimeDivision
 }
 
 const HEADER_CHUNK_ID = 0x4D546864
 const TRACK_CHUNK_ID = 0x4D54726B
-
-type TimeDivision = {
-    type: 0,
-    tpqn: number
-} | {
-    type: 1,
-    smtpe: number,
-    tpf: number
-}
 
 type Track = {
     events: MidiEvent[]
@@ -102,6 +94,13 @@ export class MidiParser {
         return value
     }
 
+    private _readInt3() {
+        const value = (this.buffer[this._i] << 16) + (this.buffer[this._i] << 8) + this.buffer[this._i + 1]
+        this._i += 3
+
+        return value
+    }
+
     private _readInt4() {
         const value = (this.buffer[this._i] << 24) +
             (this.buffer[this._i + 1] << 16) +
@@ -113,21 +112,25 @@ export class MidiParser {
         return value
     }
 
-    private _readTimeDivision(): TimeDivision {
+    private _readTimeDivision(): Midi.TimeDivision {
         const bytes = this._readInt2()
+
         if (bytes & 0x8000) {
-            const smtpe = bytes & 0x7f00
+            // F / S
+            const frameRate = bytes & 0x7f00
+            // T / S
             const ticksPerFrame = bytes & 0x00ff
+            // Compute ticks per second
             return {
                 type: 1,
-                smtpe,
-                tpf: ticksPerFrame
+                frameRate: frameRate,
+                ticksPerFrame: ticksPerFrame
             }
         } else {
             const ticksPerQuarterNote = bytes
             return {
                 type: 0,
-                tpqn: ticksPerQuarterNote
+                ticksPerBeat: ticksPerQuarterNote
             }
         }
     }
@@ -239,6 +242,18 @@ export class MidiParser {
         const metaType = this._readInt1()
         const length = this._readVariableInt()
 
+        if (metaType === MidiEvent.MetaType.SetTempo) {
+            // Shall build set tempo event
+            return {
+                deltaTime,
+                type: MidiEvent.Type.Meta,
+                metaType: MidiEvent.MetaType.SetTempo,
+                tempo: {
+                    microsecondsPerBeat: this._readInt3()
+                }
+            }
+        }
+
         // Skipping
         this._skip(length)
 
@@ -246,7 +261,7 @@ export class MidiParser {
             deltaTime,
             type: MidiEvent.Type.Meta,
             metaType,
-        }
+        } as MidiEvent.Meta
     }
 
     private _readSystemEvent(deltaTime: number): MidiEvent.System {

@@ -1,5 +1,6 @@
 import { SoundEngine } from "../sound/SoundEngine";
-import type { Constructor } from "./Constructor";
+import type { Component } from "./Component";
+import type { ComponentConstructor, Constructor } from "./Constructor";
 import { Coroutine } from "./Coroutine";
 import type { Resource } from "./Resource";
 import type { Schedule } from "./Schedule";
@@ -11,14 +12,14 @@ export class Engine {
 
     static readonly instance = new Engine()
 
-    private _resources = new Map<Constructor<Resource>, Resource>()
+    private _resources = new Map<Constructor<Resource, [Engine]>, Resource>()
     private _scheduler = new Scheduler()
 
-    private _initializers = new Map<Constructor<unknown>, Initializer<unknown>>()
+    private _initializers = new Map<Constructor<Resource, [Engine]>, Initializer<unknown>>()
 
     readonly sound = new SoundEngine()
 
-    resource<T extends Resource>(constructor: Constructor<T>): T {
+    getResource<T extends Resource>(constructor: Constructor<T, [Engine]>): T {
         if (this._resources.has(constructor))
             return this._resources.get(constructor) as T
 
@@ -28,18 +29,23 @@ export class Engine {
             return instance
         }
 
-        if (constructor.length > 0) {
+        if (constructor.length > 1) {
             throw new Error("Resource has no initializer, but constructor needs more than one argument")
         }
 
-        const resource = new constructor()
+        const resource = new constructor(this)
         this._resources.set(constructor, resource)
 
         return resource
     }
 
-    initialize<T>(constructor: Constructor<T>, initializer: Initializer<T>) {
+    initializeResource<T extends Resource>(constructor: Constructor<T, [Engine]>, initializer: Initializer<T>) {
         this._initializers.set(constructor, initializer)
+    }
+
+    createComponent<T extends Component, Args extends unknown[]>(constructor: ComponentConstructor<T, Args>, ...args: Args): T {
+        const component = new constructor(this, ...args)
+        return component
     }
 
     coroutine(coroutine: Iterator<Schedule>) {

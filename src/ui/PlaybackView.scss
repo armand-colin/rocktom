@@ -1,0 +1,75 @@
+[data-string="E"] {
+    --string-color: red;
+}
+
+[data-string="A"] {
+    --string-color: yellow;
+}
+
+[data-string="D"] {
+    --string-color: blue;
+}
+
+[data-string="G"] {
+    --string-color: orange;
+}
+
+.PlaybackView {
+    --time-ratio: 200;
+
+    .neck {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .string {
+            width: 100%;
+            height: 5px;
+            background-color: var(--string-color);
+        }
+    }
+
+    .view {
+        position: relative;
+        height: 300px;
+        width: 800px;
+        overflow: visible;
+    }
+
+    .notes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    --angle: -30deg;
+    --dir-x: calc(cos(--angle));
+    --dir-y: calc(sin(--angle));
+
+    .note {
+        --ctime: calc(var(--time) / var(--ticks-per-second));
+        --cduration: calc(var(--duration) / var(--ticks-per-second) * var(--time-ratio));
+
+        --end-x: calc(var(--fret-number) * 100% / 17);
+        --end-y: calc(var(--string-index) * 100% / 3);
+
+        // width: calc(var(--cduration) * 1px);
+        width: 60px;
+        height: 10px;
+        background: var(--string-color);
+        position: absolute;
+        // left: calc(var(--end-x) + (var(--dir-x) * var(--ctime)) * 1px);
+        // top: calc(var(--end-y) + (var(--dir-y) * var(--ctime)) * 1px);
+        left: calc(var(--end-x) + (var(--ctime) - var(--player-time)) * var(--time-ratio) * cos(var(--angle)) * 1px);
+        top: calc(var(--end-y) + (var(--ctime) - var(--player-time)) * var(--time-ratio) * sin(var(--angle)) * 1px);
+        transform-origin: 0 50%;
+        transform: rotate(var(--angle));
+    }
+}

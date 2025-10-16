@@ -1,3 +1,4 @@
+import type { Midi } from "./Midi"
 
 export type MidiEvent = (
     MidiEvent.Channel |
@@ -81,10 +82,17 @@ export namespace MidiEvent {
         SequencerSpecific = 0x7F,
     }
 
-    export type Meta = {
+    export type Meta<Type extends MetaType = MetaType> = {
         type: MidiEvent.Type.Meta
         deltaTime: number,
-        metaType: MetaType
+        metaType: Type,
+    } & (Type extends keyof MetaEvents ? MetaEvents[Type] : undefined)
+
+    interface MetaEvents {
+        [MetaType.SetTempo]: {
+            // Microseconds per quarternote
+            tempo: Midi.Tempo
+        }
     }
 
     export type System = {
