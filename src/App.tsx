@@ -7,12 +7,15 @@ import { NoteDetector } from './resources/NoteDetector'
 import { Tuner } from './resources/Tuner'
 import { Workspace } from './resources/Workspace'
 import { MidiParser } from './sound/MidiParser'
-import test from "./assets/test.mid?url"
 import { MusicSheet } from './sound/MusicSheet'
 import { Playback } from './components/Playback'
 import { MidiEvent } from './sound/MidiEvent'
 import { Player } from './resources/Player'
 import { PlaybackView } from './ui/PlaybackView'
+
+import timeIsRunningOutMidi from "./assets/TimeIsRunningOut.mid?url"
+import timeIsRunningOutMp3 from "./assets/TimeIsRunningOut.mp3"
+
 function App() {
   const mediaStramList = useResource(MediaStreamList)
   const workspace = useResource(Workspace)
@@ -32,16 +35,18 @@ function App() {
   }
 
   async function loadMidi() {
-    const midi = await fetch(test)
+    const midi = await fetch(timeIsRunningOutMidi)
       .then(response => response.blob())
       .then(blob => blob.arrayBuffer())
       .then(buffer => new MidiParser(new Uint8Array(buffer)))
-    
-    const sheet = MusicSheet.fromMidi(midi)
+
+      const sheet = MusicSheet.fromMidi(midi)
+      console.log(sheet, midi)
 
     const playback = Engine.instance.createComponent(
       Playback,
       sheet,
+      timeIsRunningOutMp3,
       {
         type: MidiEvent.InstrumentType.SynthBass,
         stringsChannel: [0, 4, 8, 12]

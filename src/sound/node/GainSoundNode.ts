@@ -6,6 +6,11 @@ export class GainSoundNode extends SoundNode<GainNode> {
 
     private _gain: number = DEFAULT_GAIN
 
+    constructor(audioContext: AudioContext) {
+        super(audioContext)
+        this.node = this.build()
+    }
+
     get gain() {
         return this._gain
     }
@@ -20,6 +25,10 @@ export class GainSoundNode extends SoundNode<GainNode> {
         // in case of first construction, this is undefined
         node.gain.value = this._gain ?? DEFAULT_GAIN
         return node
+    }
+
+    rebuild(): void {
+        this.node = this.build()
     }
 
 }

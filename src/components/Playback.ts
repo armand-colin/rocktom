@@ -3,6 +3,7 @@ import type { Engine } from "../engine/Engine";
 import type { Midi } from "../sound/Midi";
 import type { MidiEvent } from "../sound/MidiEvent";
 import { MusicSheet } from "../sound/MusicSheet";
+import type { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode";
 
 type InstrumentDescription = {
     type: MidiEvent.InstrumentType,
@@ -21,16 +22,25 @@ export class Playback extends Component {
     private _time: number = 0
     private _notes: PlaybackNote[]
 
+    private _audio: HTMLAudioElement
+    private _soundNode: AudioElementSoundNode
     private _tempo: Midi.Tempo
     private _timeDivision: Midi.TimeDivision
     private _ticksPerSecond: number
 
+    private _eventIndex = 0
+
     constructor(
         engine: Engine,
         readonly sheet: MusicSheet,
+        soundUrl: string,
         readonly instrument: InstrumentDescription
     ) {
         super(engine)
+
+        this._audio = new Audio(soundUrl)
+        this._soundNode = this.engine.sound.createAudioElementNode(this._audio)
+        
         this._notes = sheet.events
             .filter(event => event.type === MusicSheet.EventType.Note)
             .map(event => {
@@ -50,7 +60,6 @@ export class Playback extends Component {
         this._tempo = sheet.tempo
         this._timeDivision = sheet.timeDivision
         this._ticksPerSecond = this._computeTicksPerSecond()
-        console.log(this._ticksPerSecond)
     }
 
     get notes() {
@@ -64,12 +73,28 @@ export class Playback extends Component {
     update(deltaTime: number) {
         // TODO: shall treat events that lies between time and time + deltaTime
         this._time += deltaTime
+        if (deltaTime === 0)
+            return
+
+        // Compute number of ticks to treat
+        const maxTick = this._time * this._ticksPerSecond
+
+        while (
+            this._eventIndex < this.sheet.events.length && 
+            this.sheet.events[this._eventIndex].time < maxTick
+        ) {
+            const event = this.sheet.events[this._eventIndex]
+            this._eventIndex += 1
+
+            // Do something with events
+                        
+        }
     }
 
     reset() {
         this._time = 0
     }
-    
+
     private _computeTicksPerSecond(): number {
         console.log("Compute ticks per second", this._timeDivision, this._tempo)
 

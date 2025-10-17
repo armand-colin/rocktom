@@ -7,6 +7,7 @@ export class MediaStreamSoundNode extends SoundNode<MediaStreamAudioSourceNode |
 
     constructor(audioContext: AudioContext) {
         super(audioContext)
+        this.node = this.build()
     }
 
     setStream(mediaStream: MediaStream | null) {
@@ -26,6 +27,10 @@ export class MediaStreamSoundNode extends SoundNode<MediaStreamAudioSourceNode |
             return this.audioContext.createMediaStreamSource(this._mediaStream)
 
         return null
+    }
+
+    rebuild() {
+        this.node = this.build()
     }
 
 }

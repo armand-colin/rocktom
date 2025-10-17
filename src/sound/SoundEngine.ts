@@ -1,3 +1,4 @@
+import { AudioElementSoundNode } from "./node/AudioElementSoundNode"
 import { DestinationSoundNode } from "./node/DestinationSoundNode"
 import { GainSoundNode } from "./node/GainSoundNode"
 import { MediaStreamSoundNode } from "./node/MediaStreamSoundNode"
@@ -43,6 +44,12 @@ export class SoundEngine {
 
     createGainNode(): GainSoundNode {
         const node = new GainSoundNode(this._audioContext)
+        this._nodes.push(node)
+        return node
+    }
+
+    createAudioElementNode(audio: HTMLAudioElement): AudioElementSoundNode {
+        const node = new AudioElementSoundNode(this._audioContext, audio)
         this._nodes.push(node)
         return node
     }

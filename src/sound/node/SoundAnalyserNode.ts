@@ -51,6 +51,7 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
 
     constructor(audioContext: AudioContext) {
         super(audioContext)
+        this.node = this.build()
         Engine.instance.coroutine(this._computeCoroutine())
         Object.assign(window, { analyser: this })
     }
@@ -68,6 +69,10 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
         analyser.fftSize = FFT_SIZE
         analyser.smoothingTimeConstant = Duration.seconds(Time.audioInterval)
         return analyser
+    }
+
+    rebuild(): void {
+        this.node = this.build()
     }
 
     private *_computeCoroutine() {

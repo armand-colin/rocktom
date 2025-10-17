@@ -65,6 +65,7 @@ export namespace MidiEvent {
     ]
 
     export enum MetaType {
+        Unknown = -1,
         SequenceNumber = 0x00,
         TextEvent = 0x01,
         CopyrightNotice = 0x02,
@@ -82,18 +83,31 @@ export namespace MidiEvent {
         SequencerSpecific = 0x7F,
     }
 
-    export type Meta<Type extends MetaType = MetaType> = {
-        type: MidiEvent.Type.Meta
+    type BaseMetaEvent = {
         deltaTime: number,
-        metaType: Type,
-    } & (Type extends keyof MetaEvents ? MetaEvents[Type] : undefined)
-
-    interface MetaEvents {
-        [MetaType.SetTempo]: {
-            // Microseconds per quarternote
-            tempo: Midi.Tempo
-        }
+        type: MidiEvent.Type.Meta
     }
+
+    type UnknownEvent = BaseMetaEvent & {
+        metaType: MetaType.Unknown
+    }
+
+    type SetTempoEvent = BaseMetaEvent & {
+        metaType: MetaType.SetTempo,
+        tempo: Midi.Tempo
+    }
+
+    type MarkerEvent = BaseMetaEvent & {
+        metaType: MetaType.Marker,
+        name: string
+    }
+
+    type SequenceNameEvent = BaseMetaEvent & {
+        metaType: MetaType.SequenceName,
+        name: string
+    }
+
+    export type Meta = UnknownEvent | SetTempoEvent | MarkerEvent | SequenceNameEvent
 
     export type System = {
         deltaTime: number,

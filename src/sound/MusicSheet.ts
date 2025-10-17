@@ -79,10 +79,24 @@ export class MusicSheet {
 
                 if (
                     midiEvent.type === MidiEvent.Type.Meta &&
-                    midiEvent.metaType === MidiEvent.MetaType.SetTempo && 
+                    midiEvent.metaType === MidiEvent.MetaType.SetTempo &&
                     time === 0
                 ) {
                     tempo = midiEvent.tempo
+                }
+
+                if (
+                    midiEvent.type === MidiEvent.Type.Meta &&
+                    midiEvent.metaType === MidiEvent.MetaType.Marker
+                ) {
+                    console.log('Found marker', midiEvent)
+                    
+                    if (midiEvent.name === "song_start") {
+                        trackEvents.push({
+                            type: MusicSheet.EventType.SongStart,
+                            time
+                        })
+                    }
                 }
             }
 
@@ -91,7 +105,7 @@ export class MusicSheet {
         }
 
         return new MusicSheet(
-            events, 
+            events,
             midi.header.timeDivision,
             tempo
         )
@@ -102,7 +116,7 @@ export class MusicSheet {
     readonly tempo: Midi.Tempo
 
     constructor(
-        events: MusicSheet.Event[], 
+        events: MusicSheet.Event[],
         timeDivision: Midi.TimeDivision,
         tempo: Midi.Tempo
     ) {
@@ -117,7 +131,7 @@ export class MusicSheet {
 export namespace MusicSheet {
     export enum EventType {
         Note = 0,
-        Other = 1
+        SongStart = 1
     }
 
     export type NoteEvent = {
@@ -129,5 +143,10 @@ export namespace MusicSheet {
         instrument: MidiEvent.InstrumentType | null
     }
 
-    export type Event = NoteEvent
+    export type SongStartEvent = {
+        type: EventType.SongStart,
+        time: number
+    }
+
+    export type Event = NoteEvent | SongStartEvent
 }

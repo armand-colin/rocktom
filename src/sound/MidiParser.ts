@@ -145,6 +145,14 @@ export class MidiParser {
         return value
     }
 
+    private _readASCII(length: number): string {
+        const decoder = new TextDecoder()
+        const text = decoder.decode(this.buffer.slice(this._i, this._i + length))
+
+        this._i += length
+        return text
+    }
+
     private _readTrack(): Track {
         const chunkSize = this._readInt4()
         const startRead = this._i
@@ -242,8 +250,9 @@ export class MidiParser {
         const metaType = this._readInt1()
         const length = this._readVariableInt()
 
+        console.log("meta event", metaType, MidiEvent.MetaType[metaType])
+
         if (metaType === MidiEvent.MetaType.SetTempo) {
-            // Shall build set tempo event
             return {
                 deltaTime,
                 type: MidiEvent.Type.Meta,
@@ -254,14 +263,35 @@ export class MidiParser {
             }
         }
 
+        if (metaType === MidiEvent.MetaType.Marker) {
+            return {
+                deltaTime,
+                type: MidiEvent.Type.Meta,
+                metaType,
+                name: this._readASCII(length)
+            }
+        }
+
+        if (metaType === MidiEvent.MetaType.SequenceName) {
+            const name = this._readASCII(length)
+            console.log("Found sequence", name)
+
+            return {
+                deltaTime,
+                type: MidiEvent.Type.Meta,
+                metaType,
+                name
+            }
+        }
+
         // Skipping
         this._skip(length)
 
         return {
             deltaTime,
             type: MidiEvent.Type.Meta,
-            metaType,
-        } as MidiEvent.Meta
+            metaType: MidiEvent.MetaType.Unknown,
+        }
     }
 
     private _readSystemEvent(deltaTime: number): MidiEvent.System {

@@ -1,13 +1,12 @@
 export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null> {
 
+    protected node!: T
     protected audioContext: AudioContext
-    protected node: T
 
     private _connections: SoundNode[] = []
 
     constructor(audioContext: AudioContext) {
         this.audioContext = audioContext
-        this.node = this.build()
     }
 
     protected abstract build(): T
@@ -28,5 +27,7 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
                 this.node.connect(node.node)
         }
     }
+
+    abstract rebuild(): void
 
 }
