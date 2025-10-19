@@ -1,9 +1,10 @@
 import { Component } from "../engine/Component";
 import type { Engine } from "../engine/Engine";
-import type { Midi } from "../sound/Midi";
+import { Bass } from "../sound/Bass";
+import { Midi } from "../sound/Midi";
 import type { MidiEvent } from "../sound/MidiEvent";
 import { MusicSheet } from "../sound/MusicSheet";
-import type { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode";
+import type { AudioBufferSoundNode } from "../sound/node/AudioElementSoundNode";
 
 type InstrumentDescription = {
     type: MidiEvent.InstrumentType,
@@ -13,57 +14,78 @@ type InstrumentDescription = {
 type PlaybackNote = {
     stringIndex: number,
     noteNumber: number,
+    duration: number,
+    fretNumber: number
+}
+
+export type PlaybackPlay = {
     time: number,
-    duration: number
+    notes: PlaybackNote[]
 }
 
 export class Playback extends Component {
 
     private _time: number = 0
-    private _notes: PlaybackNote[]
+    private _plays: PlaybackPlay[]
 
-    private _audio: HTMLAudioElement
-    private _soundNode: AudioElementSoundNode
+    private _soundNode: AudioBufferSoundNode
     private _tempo: Midi.Tempo
     private _timeDivision: Midi.TimeDivision
     private _ticksPerSecond: number
+
+    private _playingSong = false
 
     private _eventIndex = 0
 
     constructor(
         engine: Engine,
         readonly sheet: MusicSheet,
-        soundUrl: string,
+        soundBuffer: AudioBuffer,
+        private _songStart: number,
         readonly instrument: InstrumentDescription
     ) {
         super(engine)
 
-        this._audio = new Audio(soundUrl)
-        this._soundNode = this.engine.sound.createAudioElementNode(this._audio)
-        
-        this._notes = sheet.events
+        this._soundNode = this.engine.sound.createAudioBufferNode(soundBuffer)
+        this._soundNode.connect(this.engine.sound.output)
+
+        this._plays = sheet.events.slice(0, 20)
             .filter(event => event.type === MusicSheet.EventType.Note)
             .map(event => {
-                const stringIndex = instrument.stringsChannel.indexOf(event.channel)
-
-                if (stringIndex === -1)
-                    console.warn("Got note that doesn't have matchin string index", event)
 
                 return {
                     time: event.time,
-                    duration: event.duration,
-                    noteNumber: event.noteNumber,
-                    stringIndex
+                    notes: event.notes.map(note => {
+                        const stringIndex = instrument.stringsChannel.indexOf(note.channel)
+                        return {
+                            duration: note.duration,
+                            noteNumber: note.noteNumber,
+                            stringIndex,
+                            fretNumber: Bass.getFretNumber(note.noteNumber, stringIndex)
+                        }
+                    })
                 }
             })
 
         this._tempo = sheet.tempo
         this._timeDivision = sheet.timeDivision
         this._ticksPerSecond = this._computeTicksPerSecond()
+
+        console.log('Tempo', {
+            bpm: Midi.Tempo.toBPM(this._tempo),
+            tps: this._ticksPerSecond, 
+            tempo: this._tempo
+        })
+
+        // Calculate sound timings
+        for (const play of this._plays) {
+            const time = play.time / this.ticksPerSecond
+            console.log('Playing', play.notes.map(note => note.noteNumber).join(', '), 'at', time + 's, ticks:', play.time)
+        }
     }
 
-    get notes() {
-        return this._notes
+    get plays() {
+        return this._plays
     }
 
     get ticksPerSecond() {
@@ -73,22 +95,33 @@ export class Playback extends Component {
     update(deltaTime: number) {
         // TODO: shall treat events that lies between time and time + deltaTime
         this._time += deltaTime
+
         if (deltaTime === 0)
             return
+
+        if (this._time >= this._songStart && !this._playingSong) {
+            this._soundNode.play()
+            this._playingSong = true
+        }
 
         // Compute number of ticks to treat
         const maxTick = this._time * this._ticksPerSecond
 
         while (
-            this._eventIndex < this.sheet.events.length && 
+            this._eventIndex < this.sheet.events.length &&
             this.sheet.events[this._eventIndex].time < maxTick
         ) {
-            const event = this.sheet.events[this._eventIndex]
+            // const event = this.sheet.events[this._eventIndex]
+
             this._eventIndex += 1
 
-            // Do something with events
-                        
+            // Do something with events someday
         }
+    }
+
+    pause() {
+        this._soundNode.pause()
+        this._playingSong = false
     }
 
     reset() {

@@ -45,6 +45,7 @@ export class Player extends Resource {
             this._playingCoroutine.cancel()
             this._playingCoroutine = null
         }
+        this._playback?.pause()
     }
 
     reset() {

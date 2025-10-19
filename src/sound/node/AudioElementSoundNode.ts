@@ -1,23 +1,29 @@
 import { SoundNode } from "./SoundNode";
 
-export class AudioElementSoundNode extends SoundNode<MediaElementAudioSourceNode> {
+export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
 
-    private _audio: HTMLAudioElement
+    private _buffer: AudioBuffer
 
-    constructor(audioContext: AudioContext, audio: HTMLAudioElement) {
+    constructor(audioContext: AudioContext, buffer: AudioBuffer) {
         super(audioContext)
-        this._audio = audio
+        this._buffer = buffer
         this.node = this.build()
     }
 
-    protected build(): MediaElementAudioSourceNode {
-        return this.audioContext.createMediaElementSource(this._audio)
+    protected build(): AudioBufferSourceNode {
+        const source = this.audioContext.createBufferSource()
+        source.buffer = this._buffer
+        return source
     }
-    
-    get audio() {
-        return this.node.mediaElement
+
+    play() {
+        this.node.start()
     }
-    
+
+    pause() {
+        this.node.stop()
+    }
+
     rebuild(): void {
         this.node = this.build()
     }

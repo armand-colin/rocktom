@@ -107,7 +107,11 @@ export namespace MidiEvent {
         name: string
     }
 
-    export type Meta = UnknownEvent | SetTempoEvent | MarkerEvent | SequenceNameEvent
+    type TimeSignatureEvent = BaseMetaEvent & {
+        metaType: MetaType.TimeSignature,
+    }
+
+    export type Meta = UnknownEvent | SetTempoEvent | MarkerEvent | SequenceNameEvent | TimeSignatureEvent
 
     export type System = {
         deltaTime: number,

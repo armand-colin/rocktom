@@ -8,6 +8,13 @@ export namespace Bass {
         return index + octave * 12
     }
 
+    const names = [
+        "E",
+        "A",
+        "D",
+        "G"
+    ]
+    
     const stringsTuning = [
         noteIndex("E", 1),
         noteIndex("A", 1),
@@ -18,6 +25,10 @@ export namespace Bass {
     export function getFretNumber(noteNumber: number, stringIndex: number) {
         const baseIndex = stringsTuning[stringIndex]
         return noteNumber - baseIndex
+    }
+
+    export function getStringName(stringIndex: number) {
+        return names[stringIndex]
     }
 
 }

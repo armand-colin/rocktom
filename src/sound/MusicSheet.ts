@@ -44,7 +44,7 @@ export class MusicSheet {
         for (const track of midi.tracks) {
             let currentInstrument: MidiEvent.InstrumentType | null = null
             let time = 0
-            const pendingNotes: MusicSheet.NoteEvent[] = []
+            const pendingNotes: MusicSheet.PlayEvent[] = []
 
             const trackEvents: MusicSheet.Event[] = []
             // Find instrument type
@@ -55,26 +55,56 @@ export class MusicSheet {
                     currentInstrument = midiEvent.instrument
 
                 if (midiEvent.type == MidiEvent.Type.NoteOn) {
+                    // First, try to find note with same time
+                    const sameNote = pendingNotes.find(note => note.time === time && note.instrument === currentInstrument)
+                    if (sameNote) {
+                        sameNote.notes.push({
+                            channel: midiEvent.channel,
+                            noteNumber: midiEvent.noteNumber,
+                            duration: 0
+                        })
+                        continue
+                    }
+
                     pendingNotes.push({
                         type: MusicSheet.EventType.Note,
                         time,
-                        duration: 0,
                         instrument: currentInstrument,
-                        channel: midiEvent.channel,
-                        noteNumber: midiEvent.noteNumber,
+                        notes: [{
+                            channel: midiEvent.channel,
+                            noteNumber: midiEvent.noteNumber,
+                            duration: 0
+                        }]
                     })
                 }
 
                 if (midiEvent.type === MidiEvent.Type.NoteOff) {
-                    // Shall find note on
-                    const index = pendingNotes.findIndex(note => note.channel === midiEvent.channel && note.noteNumber === midiEvent.noteNumber)
+                    
+                    for (let i = 0; i < pendingNotes.length; i++) {
+                        const event = pendingNotes[i]
+                        
+                        if (event.instrument !== currentInstrument)
+                            continue
+                        
+                        let found = false
+                        for (const note of event.notes) {
+                            if (
+                                note.channel === midiEvent.channel &&
+                                note.noteNumber === midiEvent.noteNumber
+                            ) {
+                                note.duration = time - event.time
+                                trackEvents.push(event)
+                                pendingNotes.splice(i, 1)
+                                found = true
+                                break
+                            }
+                        }
 
-                    if (index > -1) {
-                        const note = pendingNotes[index]
-                        note.duration = time - note.time
-                        trackEvents.push(note)
-                        pendingNotes.splice(index, 1)
+                        if (found)
+                            break
                     }
+
+                    continue
                 }
 
                 if (
@@ -82,6 +112,7 @@ export class MusicSheet {
                     midiEvent.metaType === MidiEvent.MetaType.SetTempo &&
                     time === 0
                 ) {
+                    console.log('Midi message tempo', midiEvent.tempo)
                     tempo = midiEvent.tempo
                 }
 
@@ -89,8 +120,6 @@ export class MusicSheet {
                     midiEvent.type === MidiEvent.Type.Meta &&
                     midiEvent.metaType === MidiEvent.MetaType.Marker
                 ) {
-                    console.log('Found marker', midiEvent)
-                    
                     if (midiEvent.name === "song_start") {
                         trackEvents.push({
                             type: MusicSheet.EventType.SongStart,
@@ -134,13 +163,17 @@ export namespace MusicSheet {
         SongStart = 1
     }
 
-    export type NoteEvent = {
-        type: EventType.Note,
-        time: number,
+    export type Note = {
         noteNumber: number,
         channel: number,
         duration: number,
+    }
+
+    export type PlayEvent = {
+        type: EventType.Note,
+        time: number,
         instrument: MidiEvent.InstrumentType | null
+        notes: Note[]
     }
 
     export type SongStartEvent = {
@@ -148,5 +181,5 @@ export namespace MusicSheet {
         time: number
     }
 
-    export type Event = NoteEvent | SongStartEvent
+    export type Event = PlayEvent | SongStartEvent
 }

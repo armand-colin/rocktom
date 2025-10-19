@@ -29,6 +29,10 @@ function readVariableInt(buffer: Uint8Array, cursor: number): { length: number, 
         sum = (sum + (byte & 0b0111_1111)) << 7
     }
 
+    if (i > 0) {
+        console.log("Read 2 bytes deltaTime", sum, [...buffer.slice(cursor, cursor + i + 1)].map(x => x.toString(2)))
+    }
+
     return {
         length: i + 1,
         value: sum
@@ -95,7 +99,7 @@ export class MidiParser {
     }
 
     private _readInt3() {
-        const value = (this.buffer[this._i] << 16) + (this.buffer[this._i] << 8) + this.buffer[this._i + 1]
+        const value = (this.buffer[this._i] << 16) + (this.buffer[this._i + 1] << 8) + this.buffer[this._i + 2]
         this._i += 3
 
         return value
@@ -162,6 +166,8 @@ export class MidiParser {
         while (this._i < startRead + chunkSize) {
             const deltaTime = this._readVariableInt()
             const type = this._readInt1()
+            
+            console.log("event", MidiEvent.Type[type], deltaTime)
 
             if (type === MidiEvent.Type.Meta) {
                 const event = this._readMetaEvent(deltaTime)
@@ -252,6 +258,21 @@ export class MidiParser {
 
         console.log("meta event", metaType, MidiEvent.MetaType[metaType])
 
+        if (metaType === MidiEvent.MetaType.TimeSignature) {
+            const numerator = this._readInt1()
+            const denominatorPower = this._readInt1()
+            const pulses = this._readInt1()
+            const halfPerQuarterNote = this._readInt1()
+
+            console.log("Time signature", numerator, denominatorPower, pulses, halfPerQuarterNote)
+
+            return {
+                deltaTime,
+                type: MidiEvent.Type.Meta,
+                metaType: MidiEvent.MetaType.TimeSignature,
+            }
+        }
+
         if (metaType === MidiEvent.MetaType.SetTempo) {
             return {
                 deltaTime,
@@ -273,14 +294,11 @@ export class MidiParser {
         }
 
         if (metaType === MidiEvent.MetaType.SequenceName) {
-            const name = this._readASCII(length)
-            console.log("Found sequence", name)
-
             return {
                 deltaTime,
                 type: MidiEvent.Type.Meta,
                 metaType,
-                name
+                name: this._readASCII(length)
             }
         }
 

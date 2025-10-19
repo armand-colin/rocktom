@@ -1,4 +1,4 @@
-import { AudioElementSoundNode } from "./node/AudioElementSoundNode"
+import { AudioBufferSoundNode } from "./node/AudioElementSoundNode"
 import { DestinationSoundNode } from "./node/DestinationSoundNode"
 import { GainSoundNode } from "./node/GainSoundNode"
 import { MediaStreamSoundNode } from "./node/MediaStreamSoundNode"
@@ -17,14 +17,26 @@ export class SoundEngine {
 
         this.output = new DestinationSoundNode(this._audioContext)
         this._nodes.push(this.output)
+
+        this._audioContext.resume()
+        this._audioContext.addEventListener('statechange', this._onStateChange)
     }
 
     get currentTime() {
         return this._audioContext.currentTime
     }
 
+    private _onStateChange = () => { }
+
     refresh() {
+        this._audioContext.removeEventListener('statechange', this._onStateChange)
+        this._audioContext.close()
+
         this._audioContext = new AudioContext()
+        this._audioContext.addEventListener('statechange', this._onStateChange)
+
+        for (const node of this._nodes)
+            node.setAudioContext(this._audioContext)
 
         for (const node of this._nodes)
             node.refreshConnections()
@@ -48,10 +60,14 @@ export class SoundEngine {
         return node
     }
 
-    createAudioElementNode(audio: HTMLAudioElement): AudioElementSoundNode {
-        const node = new AudioElementSoundNode(this._audioContext, audio)
+    createAudioBufferNode(buffer: AudioBuffer): AudioBufferSoundNode {
+        const node = new AudioBufferSoundNode(this._audioContext, buffer)
         this._nodes.push(node)
         return node
+    }
+
+    createAudioBuffer(buffer: ArrayBuffer) {
+        return this._audioContext.decodeAudioData(buffer)
     }
 
     resume() {

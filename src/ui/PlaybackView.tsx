@@ -3,18 +3,11 @@ import type { Playback } from "../components/Playback";
 import { useComponent, useResource } from "../engine/hooks";
 import { Player } from "../resources/Player";
 import "./PlaybackView.scss"
-import { Bass } from "../sound/Bass";
-
-const STRINGS = [
-    "E",
-    "A",
-    "D",
-    "G"
-]
+import { PlaybackPlayView } from "./PlaybackPlayView";
 
 export function PlaybackView(props: { playback: Playback }) {
     const player = useResource(Player)
-    const { notes, ticksPerSecond } = useComponent(props.playback)
+    const { plays, ticksPerSecond } = useComponent(props.playback)
 
     return <div
         className="PlaybackView"
@@ -30,25 +23,14 @@ export function PlaybackView(props: { playback: Playback }) {
         <p>{player.time.toFixed(2)}</p>
 
         <div className="view">
-            <div className="neck">
-                <div className="string" data-string={STRINGS[0]}></div>
-                <div className="string" data-string={STRINGS[1]}></div>
-                <div className="string" data-string={STRINGS[2]}></div>
-                <div className="string" data-string={STRINGS[3]}></div>
-            </div>
-            <div className="notes">
+            <div className="neck"></div>
+
+            <div className="plays">
                 {
-                    notes.map((note, i) => <div
+                    plays.map((note, i) => <PlaybackPlayView 
                         key={i}
-                        data-string={STRINGS[note.stringIndex]}
-                        className="note"
-                        style={{
-                            "--time": note.time,
-                            "--duration": note.duration,
-                            "--string-index": note.stringIndex,
-                            "--fret-number": Bass.getFretNumber(note.noteNumber, note.stringIndex),
-                        } as CSSProperties}
-                    >{Bass.getFretNumber(note.noteNumber, note.stringIndex)}</div>)
+                        play={note}
+                    />)
                 }
             </div>
         </div>

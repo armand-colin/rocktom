@@ -18,6 +18,10 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
             this.node.connect(node.node)
     }
 
+    setAudioContext(audioContext: AudioContext) {
+        this.audioContext = audioContext
+    }
+
     refreshConnections() {
         if (!this.node)
             return

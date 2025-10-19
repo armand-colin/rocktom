@@ -14,6 +14,7 @@ import { Player } from './resources/Player'
 import { PlaybackView } from './ui/PlaybackView'
 
 import timeIsRunningOutMidi from "./assets/TimeIsRunningOut.mid?url"
+// import timeIsRunningOutMidi from "./assets/Test2.mid?url"
 import timeIsRunningOutMp3 from "./assets/TimeIsRunningOut.mp3"
 
 function App() {
@@ -40,13 +41,18 @@ function App() {
       .then(blob => blob.arrayBuffer())
       .then(buffer => new MidiParser(new Uint8Array(buffer)))
 
-      const sheet = MusicSheet.fromMidi(midi)
-      console.log(sheet, midi)
+    const sheet = MusicSheet.fromMidi(midi)
+    console.log(sheet, midi)
+
+    const audioBuffer = await fetch(timeIsRunningOutMp3)
+      .then(response => response.arrayBuffer())
+      .then(buffer => Engine.instance.sound.createAudioBuffer(buffer))
 
     const playback = Engine.instance.createComponent(
       Playback,
       sheet,
-      timeIsRunningOutMp3,
+      audioBuffer,
+      1.51,
       {
         type: MidiEvent.InstrumentType.SynthBass,
         stringsChannel: [0, 4, 8, 12]
