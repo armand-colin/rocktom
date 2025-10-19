@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Midi {
-    
+
     export type TimeDivision = {
         type: 0,
         ticksPerBeat: number
@@ -9,11 +9,23 @@ export namespace Midi {
         frameRate: number,
         ticksPerFrame: number
     }
-    
+
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    export namespace TimeDivision {
+
+        export function ticksPerBeat(ticksPerBeat: number): TimeDivision {
+            return {
+                type: 0,
+                ticksPerBeat
+            }
+        }
+
+    }
+
     export type Tempo = {
         microsecondsPerBeat: number
     }
-    
+
     // eslint-disable-next-line @typescript-eslint/no-namespace
     export namespace Tempo {
 
@@ -28,6 +40,12 @@ export namespace Midi {
         export function toBPM(tempo: Tempo): number {
             return MICROSECONDS_PER_MINUTE / tempo.microsecondsPerBeat
         }
+    }
+
+    export interface Header {
+        formatType: number,
+        trackCount: number,
+        timeDivision: Midi.TimeDivision
     }
 
 }

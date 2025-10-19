@@ -1,37 +1,24 @@
 import { Component } from "../engine/Component";
 import type { Engine } from "../engine/Engine";
-import { Bass } from "../sound/Bass";
-import { Midi } from "../sound/Midi";
-import type { MidiEvent } from "../sound/MidiEvent";
-import { MusicSheet } from "../sound/MusicSheet";
+import type { Bass } from "../sound/Bass";
+import { LevelEventType, type Level } from "../sound/Level";
 import type { AudioBufferSoundNode } from "../sound/node/AudioElementSoundNode";
 
-type InstrumentDescription = {
-    type: MidiEvent.InstrumentType,
-    stringsChannel: number[]
-}
-
-type PlaybackNote = {
-    stringIndex: number,
+type PlaybackPlay = {
+    time: number,
+    string: Bass.String,
     noteNumber: number,
     duration: number,
-    fretNumber: number
-}
-
-export type PlaybackPlay = {
-    time: number,
-    notes: PlaybackNote[]
+    fret: number
 }
 
 export class Playback extends Component {
 
     private _time: number = 0
     private _plays: PlaybackPlay[]
+    private _currentPlays: PlaybackPlay[]
 
     private _soundNode: AudioBufferSoundNode
-    private _tempo: Midi.Tempo
-    private _timeDivision: Midi.TimeDivision
-    private _ticksPerSecond: number
 
     private _playingSong = false
 
@@ -39,49 +26,26 @@ export class Playback extends Component {
 
     constructor(
         engine: Engine,
-        readonly sheet: MusicSheet,
-        soundBuffer: AudioBuffer,
-        private _songStart: number,
-        readonly instrument: InstrumentDescription
+        readonly level: Level,
     ) {
         super(engine)
 
-        this._soundNode = this.engine.sound.createAudioBufferNode(soundBuffer)
+        this._soundNode = this.engine.sound.createAudioBufferNode(level.audioBuffer)
         this._soundNode.connect(this.engine.sound.output)
 
-        this._plays = sheet.events.slice(0, 20)
-            .filter(event => event.type === MusicSheet.EventType.Note)
+        this._plays = level.events
+            .filter(event => event.type === LevelEventType.Note)
             .map(event => {
-
                 return {
                     time: event.time,
-                    notes: event.notes.map(note => {
-                        const stringIndex = instrument.stringsChannel.indexOf(note.channel)
-                        return {
-                            duration: note.duration,
-                            noteNumber: note.noteNumber,
-                            stringIndex,
-                            fretNumber: Bass.getFretNumber(note.noteNumber, stringIndex)
-                        }
-                    })
+                    string: event.note.string,
+                    duration: event.note.duration,
+                    fret: event.note.fret,
+                    noteNumber: event.note.string.fret(event.note.fret),
                 }
             })
 
-        this._tempo = sheet.tempo
-        this._timeDivision = sheet.timeDivision
-        this._ticksPerSecond = this._computeTicksPerSecond()
-
-        console.log('Tempo', {
-            bpm: Midi.Tempo.toBPM(this._tempo),
-            tps: this._ticksPerSecond, 
-            tempo: this._tempo
-        })
-
-        // Calculate sound timings
-        for (const play of this._plays) {
-            const time = play.time / this.ticksPerSecond
-            console.log('Playing', play.notes.map(note => note.noteNumber).join(', '), 'at', time + 's, ticks:', play.time)
-        }
+        this._currentPlays = this._plays.slice(0, 30)
     }
 
     get plays() {
@@ -89,33 +53,61 @@ export class Playback extends Component {
     }
 
     get ticksPerSecond() {
-        return this._ticksPerSecond
+        return this.level.timing.ticksPerSecond
+    }
+
+    private _isInWindow(play: PlaybackPlay) {
+        const ticks = this._time * this.level.timing.ticksPerSecond
+        const minDelta = -this.level.timing.seconds(1)
+        const maxDelta = this.level.timing.seconds(3)
+        const delta = play.time - ticks
+
+        return delta >= minDelta && delta + play.duration <= maxDelta
+    }
+
+    private _getWindow() {
+        return this._plays.filter(play => this._isInWindow(play))
+    }
+
+    private *_window() {
+        // const minTicks = 
+        // for (const play of this._plays) {
+
+        // }
     }
 
     update(deltaTime: number) {
         // TODO: shall treat events that lies between time and time + deltaTime
+        const previousTicks = this._time * this.ticksPerSecond
+
         this._time += deltaTime
 
         if (deltaTime === 0)
             return
 
-        if (this._time >= this._songStart && !this._playingSong) {
-            this._soundNode.play()
-            this._playingSong = true
-        }
-
         // Compute number of ticks to treat
-        const maxTick = this._time * this._ticksPerSecond
+        const ticks = this._time * this.ticksPerSecond
+
+        // for (let i = 0; i < this._currentPlays.length; i++) {
+
+        // }
+
+        // for (const play of this._window(previousTicks)) {
+        //     this._currentPlays.push(play)
+        // }
 
         while (
-            this._eventIndex < this.sheet.events.length &&
-            this.sheet.events[this._eventIndex].time < maxTick
+            this._eventIndex < this.level.events.length &&
+            this.level.events[this._eventIndex].time < ticks
         ) {
-            // const event = this.sheet.events[this._eventIndex]
+            const event = this.level.events[this._eventIndex]
+
+            if (event.type === LevelEventType.AudioStart) {
+                this._soundNode.play()
+                this._playingSong = true
+            }
 
             this._eventIndex += 1
-
-            // Do something with events someday
         }
     }
 
@@ -126,16 +118,6 @@ export class Playback extends Component {
 
     reset() {
         this._time = 0
-    }
-
-    private _computeTicksPerSecond(): number {
-        console.log("Compute ticks per second", this._timeDivision, this._tempo)
-
-        if (this._timeDivision.type === 1) {
-            return this._timeDivision.ticksPerFrame * this._timeDivision.frameRate
-        } else {
-            return this._timeDivision.ticksPerBeat * 1_000_000 / this._tempo.microsecondsPerBeat
-        }
     }
 
 }

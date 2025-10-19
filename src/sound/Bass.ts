@@ -3,32 +3,28 @@ import { Note } from "./note/Note";
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace Bass {
 
+    export class String {
+
+        constructor(
+            readonly name: string,
+            readonly noteNumber: number,
+            readonly index: number
+        ) { }
+
+        fret(fret: number) {
+            return this.noteNumber + fret
+        }
+
+    }
+
     function noteIndex(name: string, octave: number): number {
         const index = Note.names.indexOf(name)
         return index + octave * 12
     }
 
-    const names = [
-        "E",
-        "A",
-        "D",
-        "G"
-    ]
-    
-    const stringsTuning = [
-        noteIndex("E", 1),
-        noteIndex("A", 1),
-        noteIndex("D", 2),
-        noteIndex("G", 2),
-    ]
-
-    export function getFretNumber(noteNumber: number, stringIndex: number) {
-        const baseIndex = stringsTuning[stringIndex]
-        return noteNumber - baseIndex
-    }
-
-    export function getStringName(stringIndex: number) {
-        return names[stringIndex]
-    }
+    export const E = new String("E", noteIndex("E", 1), 0)
+    export const A = new String("A", noteIndex("A", 1), 1)
+    export const D = new String("D", noteIndex("D", 2), 2)
+    export const G = new String("G", noteIndex("G", 2), 3)
 
 }

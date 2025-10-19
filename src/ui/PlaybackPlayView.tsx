@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import type { PlaybackPlay } from "../components/Playback";
-import { Bass } from "../sound/Bass";
-import "./PlaybackPlayView.scss"
+import "./PlaybackPlayView.scss";
 
 export function PlaybackPlayView(props: { play: PlaybackPlay }) {
     return <div
@@ -14,15 +13,15 @@ export function PlaybackPlayView(props: { play: PlaybackPlay }) {
             props.play.notes.map((note, i) => <div
                 key={i}
                 className="note"
-                data-string={Bass.getStringName(note.stringIndex)}
+                data-string={note.string.name}
                 style={{
-                    "--string-index": note.stringIndex,
-                    "--fret-number": note.fretNumber,
+                    "--string-index": note.string.index,
+                    "--fret-number": note.fret,
                     "--duration": note.duration
                 } as CSSProperties}
             >
                 <div className="body"></div>
-                <div className="head">{note.fretNumber}</div>
+                <div className="head">{note.fret}</div>
             </div>)
         }
     </div>
