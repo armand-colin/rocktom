@@ -2,6 +2,11 @@ import { frequencies } from "./frequencies";
 
 export interface Note {
     readonly index: number,
+    readonly frequency: number,
+}
+
+export interface FineNote {
+    readonly index: number,
     readonly baseFrequency: number,
     readonly frequency: number,
     readonly cents: number,
@@ -24,7 +29,16 @@ const names = [
     "B",
 ]
 
-function closestFrequency(frequency: number): Note {
+function fromName(name: string, octave: number): Note {
+    const noteIndex = names.indexOf(name)
+
+    return {
+        index: noteIndex + octave * 12,
+        frequency: frequencies[noteIndex + octave * 12]
+    }
+}
+
+function closestFrequency(frequency: number): FineNote {
     // TODO: Dichotomic search
     let index = 0
     let distance = Math.abs(frequency - frequencies[0])
@@ -48,7 +62,15 @@ function closestFrequency(frequency: number): Note {
     }
 }
 
-export const Note = {
+export const FineNote = {
     closestFrequency,
     names
+}
+
+export const Note = {
+    fromName,
+    fromIndex: (index: number): Note => ({
+        index,
+        frequency: frequencies[index]
+    })
 }

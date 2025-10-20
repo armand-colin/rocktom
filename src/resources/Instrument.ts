@@ -35,7 +35,7 @@ export class Instrument extends Resource {
 
         this._octaver = octaver
         this._deviceId = deviceId
-        
+
         this.emit('change')
     }
 

@@ -166,8 +166,6 @@ export class MidiParser {
         while (this._i < startRead + chunkSize) {
             const deltaTime = this._readVariableInt()
             const type = this._readInt1()
-            
-            console.log("event", MidiEvent.Type[type], deltaTime)
 
             if (type === MidiEvent.Type.Meta) {
                 const event = this._readMetaEvent(deltaTime)
