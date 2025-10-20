@@ -1,6 +1,6 @@
 import type { String } from "../instrument/String"
 
-interface Note {
+export interface NoteEvent {
     time: number,
     duration: number,
     string: String,
@@ -10,10 +10,10 @@ interface Note {
 export class Pattern {
 
     readonly name: string
-    readonly notes: Note[]
+    readonly notes: NoteEvent[]
     readonly duration: number
 
-    constructor(name: string, notes: Note[], duration: number) {
+    constructor(name: string, notes: NoteEvent[], duration: number) {
         this.name = name
         this.notes = notes
         this.duration = duration
@@ -24,7 +24,7 @@ export class Pattern {
 
 export class PatternBuilder {
 
-    private _notes: Note[] = []
+    private _notes: NoteEvent[] = []
     private _time: number = 0
     private _name: string
 
