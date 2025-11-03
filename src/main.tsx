@@ -2,13 +2,18 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { Engine } from './engine/Engine.ts'
-import { Instrument } from './resources/Instrument.ts'
+import { CurrentInstrument } from './resources/CurrentInstrument.ts'
+import { EngineContext } from '@niloc/ecs-react'
+import { Engine } from '@niloc/ecs'
 
-Engine.instance.getResource(Instrument).recover()
+const engine = new Engine()
+
+engine.getResource(CurrentInstrument).recover()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <EngineContext.Provider value={{ engine }}>
+      <App />
+    </EngineContext.Provider>
   </StrictMode>,
 )

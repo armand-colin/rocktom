@@ -1,6 +1,5 @@
 import type { Level } from "./Level";
 import type { NoteEvent } from "./song/Pattern";
-import type { Tempo } from "./Tempo";
 import type { Timing } from "./timing/Timing";
 
 export class LevelReader {
@@ -8,52 +7,35 @@ export class LevelReader {
     level: Level
 
     currentTiming: Timing
-    time: number = 0
 
+    _ticks: number = 0
     _bassIndex = 0
-    _tempoIndex = 0
 
     constructor(level: Level) {
         this.level = level
         this.currentTiming = level.timing
     }
 
-    *updateAudio(deltaTime: number): Iterator<AudioBuffer> {
+    *update(deltaTime: number): IterableIterator<NoteEvent> {
         const deltaTicks = this.currentTiming.seconds(deltaTime)
+        const endTicks = this._ticks + deltaTicks
 
-        if (this.level.audioTrack.startTime > this.time && this.level.audioTrack.startTime <= this.time + deltaTicks) {
-            yield this.level.audioTrack.audioBuffer
+        while (
+            this._bassIndex < this.level.bassTrack.notes.length &&
+            this.level.bassTrack.notes[this._bassIndex].time <= endTicks
+        ) {
+            const note = this.level.bassTrack.notes[this._bassIndex]
+            this._bassIndex++
+            yield note
         }
+
+        this._ticks = endTicks
     }
 
-    *updateBass(deltaTime: number): Iterator<NoteEvent> {
-        const deltaTicks = this.currentTiming.seconds(deltaTime)
-
-        const bassTrack = this.level.bassTrack
-
-        for (; this._bassIndex < bassTrack.notes.length; this._bassIndex++) {
-            const note = bassTrack.notes[this._bassIndex]
-
-            if (note.time > this.time + deltaTicks)
-                break
-
-            yield bassTrack.notes[this._bassIndex]
-        }
+    reset() {
+        this._ticks = 0
+        this._bassIndex = 0
+        this.currentTiming = this.level.timing
     }
-
-    *updateTempo(deltaTime: number): Iterator<Tempo> {
-        const deltaTicks = this.currentTiming.seconds(deltaTime)
-        const tempoTrack = this.level.tempoTrack
-
-        for (; this._tempoIndex < tempoTrack.events.length; this._tempoIndex++) {
-            const tempo = tempoTrack.events[this._tempoIndex]
-
-            if (tempo.time > this.time + deltaTicks)
-                break
-
-            yield tempo.tempo
-        }
-    }
-
 
 }

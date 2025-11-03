@@ -1,8 +1,6 @@
-import type { ChangeEvent } from 'react'
+import { useContext, type ChangeEvent } from 'react'
 import './App.css'
 import { Playback } from './components/Playback'
-import { Engine } from './engine/Engine'
-import { useResource } from './engine/hooks'
 import { MediaStreamList } from './resources/MediaStreamList'
 import { NoteDetector } from './resources/NoteDetector'
 import { Player } from './resources/Player'
@@ -11,6 +9,10 @@ import { Workspace } from './resources/Workspace'
 import { PlaybackView } from './ui/PlaybackView'
 
 import { timeIsRunningOut } from './levels/timeIsRunningOut'
+import { EngineContext, useResource } from '@niloc/ecs-react'
+import { SoundEngine } from './resources/SoundEngine'
+import { Renderer } from './resources/Renderer'
+import { ElementRenderer } from './ui/ElementRenderer'
 
 function App() {
   const mediaStramList = useResource(MediaStreamList)
@@ -18,6 +20,8 @@ function App() {
   const { detectedFrequency } = useResource(Tuner)
   const { detectedNotes } = useResource(NoteDetector)
   const player = useResource(Player)
+  const { engine } = useContext(EngineContext)
+  const renderer = engine.getResource(Renderer)
 
   function setStream(id: string) {
     mediaStramList.request(id).then(stream => {
@@ -34,7 +38,7 @@ function App() {
     const level = await timeIsRunningOut()
 
 
-    const playback = Engine.instance.createComponent(
+    const playback = engine.createComponent(
       Playback,
       level,
     )
@@ -54,7 +58,7 @@ function App() {
       </ul>
       <input type="range" min="0" max="10" value={workspace.feedbackGain} onChange={onGainChange} />
       <button onClick={() => mediaStramList.refresh()}>refresh</button>
-      <button onClick={() => Engine.instance.sound.resume()}>resume</button>
+      <button onClick={() => engine.getResource(SoundEngine).resume()}>resume</button>
       <p>Frequency: {detectedFrequency}Hz </p>
       <p>Detected notes: </p>
       <ul>
@@ -67,6 +71,9 @@ function App() {
         }
       </ul>
       <button onClick={loadMidi}>load midi</button>
+
+      <ElementRenderer element={renderer.element} />
+      
       {
         player.playback ?
           <PlaybackView playback={player.playback} /> :

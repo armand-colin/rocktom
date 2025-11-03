@@ -1,8 +1,7 @@
-import type { Engine } from "../engine/Engine";
-import { Resource } from "../engine/Resource";
-import { Schedule } from "../engine/Schedule";
+import { Engine, Resource } from "@niloc/ecs";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import { Workspace } from "./Workspace";
+import { Schedule } from "@niloc/utils";
 
 export class Tuner extends Resource {
 
@@ -13,7 +12,7 @@ export class Tuner extends Resource {
     constructor(engine: Engine) {
         super(engine)
         this._analyser = this.engine.getResource(Workspace).analyser
-        this.engine.coroutine(this._update())
+        this.engine.scheduler.add(this._update())
     }
 
     get detectedFrequency() {

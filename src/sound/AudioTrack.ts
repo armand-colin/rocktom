@@ -1,10 +1,10 @@
 export class AudioTrack {
 
-    audioBuffer: AudioBuffer
-    startTime: number
+    readonly youtubeVideoId: string
+    readonly startTime: number
 
-    constructor(audioBuffer: AudioBuffer, startTime: number) {
-        this.audioBuffer = audioBuffer
+    constructor(youtubeVideoId: string, startTime: number) {
+        this.youtubeVideoId = youtubeVideoId
         this.startTime = startTime
     }
 

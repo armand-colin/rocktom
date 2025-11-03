@@ -1,3 +1,4 @@
+import { Color } from "three"
 import { Note } from "../note/Note"
 import { String } from "./String"
 
@@ -17,10 +18,10 @@ export class Instrument {
 
 export class Bass extends Instrument {
 
-    static E = new String(0, "E", Note.fromName("E", 1))
-    static A = new String(1, "A", Note.fromName("A", 1))
-    static D = new String(2, "D", Note.fromName("G", 2))
-    static G = new String(3, "G", Note.fromName("G", 2))
+    static E = new String(0, "E", Note.fromName("E", 1), new Color("#FF0000"))
+    static A = new String(1, "A", Note.fromName("A", 1), new Color("#FFFF00"))
+    static D = new String(2, "D", Note.fromName("D", 2), new Color("#0000FF"))
+    static G = new String(3, "G", Note.fromName("G", 2), new Color("#FF6030"))
 
     constructor() {
         super("Bass", [

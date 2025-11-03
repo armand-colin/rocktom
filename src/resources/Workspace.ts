@@ -1,8 +1,8 @@
-import type { Engine } from "../engine/Engine";
-import { Resource } from "../engine/Resource";
+import { Engine, Resource } from "@niloc/ecs";
 import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
+import { SoundEngine } from "./SoundEngine";
 
 export class Workspace extends Resource {
 
@@ -12,13 +12,15 @@ export class Workspace extends Resource {
 
     constructor(engine: Engine) {
         super(engine)
-        this._microphone = this.engine.sound.createMediaStreamNode()
-        this._feedbackGain = this.engine.sound.createGainNode()
-        this._analyser = this.engine.sound.createAnalyserNode()
+        const soundEngine = this.engine.getResource(SoundEngine)
+
+        this._microphone = soundEngine.createMediaStreamNode()
+        this._feedbackGain = soundEngine.createGainNode()
+        this._analyser = soundEngine.createAnalyserNode()
 
         this._microphone.connect(this._feedbackGain)
         this._microphone.connect(this._analyser)
-        this._feedbackGain.connect(this.engine.sound.output)
+        this._feedbackGain.connect(soundEngine.output)
     }
 
     get analyser() {

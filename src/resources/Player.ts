@@ -1,9 +1,8 @@
+import { Engine, Resource } from "@niloc/ecs";
 import type { Playback } from "../components/Playback";
-import type { Coroutine } from "../engine/Coroutine";
-import type { Engine } from "../engine/Engine";
-import { Resource } from "../engine/Resource";
-import { Schedule } from "../engine/Schedule";
 import { Workspace } from "./Workspace";
+import { Schedule, type Coroutine } from "@niloc/utils";
+import { SoundEngine } from "./SoundEngine";
 
 export class Player extends Resource {
 
@@ -13,10 +12,12 @@ export class Player extends Resource {
     private _playingCoroutine: Coroutine | null = null
     private _workspace: Workspace
     private _playback: Playback | null = null
+    private _soundEngine: SoundEngine
 
     constructor(engine: Engine) {
         super(engine)
         this._workspace = this.engine.getResource(Workspace)
+        this._soundEngine = this.engine.getResource(SoundEngine)
     }
 
     get playback() {
@@ -37,7 +38,7 @@ export class Player extends Resource {
         if (this._playingCoroutine !== null)
             return
 
-        this._playingCoroutine = this.engine.coroutine(this._play())
+        this._playingCoroutine = this.engine.scheduler.add(this._play())
     }
 
     pause() {
@@ -50,22 +51,22 @@ export class Player extends Resource {
 
     reset() {
         this._time = 0
-        this._lastUpdate = this.engine.sound.currentTime
+        this._lastUpdate = this._soundEngine.currentTime
         this._playback?.reset()
     }
 
     private *_play() {
-        this._lastUpdate = this.engine.sound.currentTime
+        this._lastUpdate = this._soundEngine.currentTime
 
         while (true) {
             this._update()
-            this._lastUpdate = this.engine.sound.currentTime
+            this._lastUpdate = this._soundEngine.currentTime
             yield Schedule.Frame
         }
     }
 
     private _update() {
-        const deltaTime = this.engine.sound.currentTime - this._lastUpdate
+        const deltaTime = this._soundEngine.currentTime - this._lastUpdate
 
         if (deltaTime === 0) {
             return

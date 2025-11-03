@@ -1,28 +1,18 @@
-import { Component } from "../engine/Component";
-import type { Engine } from "../engine/Engine";
-import type { Bass } from "../sound/Bass";
-import { LevelEventType, type Level } from "../sound/Level";
-import type { AudioBufferSoundNode } from "../sound/node/AudioElementSoundNode";
-
-type PlaybackPlay = {
-    time: number,
-    string: Bass.String,
-    noteNumber: number,
-    duration: number,
-    fret: number
-}
+import { Component, type Engine } from "@niloc/ecs";
+import { type Level } from "../sound/Level";
+import { YoutubePlayer } from "../resources/YoutubePlayer";
+import { LevelReader } from "../sound/LevelReader";
+import { PlaybackNote } from "./PlaybackNote";
+import { NeckMesh } from "../3d/NeckMesh";
+import { Bass } from "../sound/instrument/Instrument";
+import { Renderer } from "../resources/Renderer";
 
 export class Playback extends Component {
 
     private _time: number = 0
-    private _plays: PlaybackPlay[]
-    private _currentPlays: PlaybackPlay[]
-
-    private _soundNode: AudioBufferSoundNode
-
-    private _playingSong = false
-
-    private _eventIndex = 0
+    private _notes: PlaybackNote[] = []
+    private _youtubePlayer: YoutubePlayer
+    private _reader: LevelReader
 
     constructor(
         engine: Engine,
@@ -30,94 +20,57 @@ export class Playback extends Component {
     ) {
         super(engine)
 
-        this._soundNode = this.engine.sound.createAudioBufferNode(level.audioBuffer)
-        this._soundNode.connect(this.engine.sound.output)
+        this._reader = new LevelReader(level)
 
-        this._plays = level.events
-            .filter(event => event.type === LevelEventType.Note)
-            .map(event => {
-                return {
-                    time: event.time,
-                    string: event.note.string,
-                    duration: event.note.duration,
-                    fret: event.note.fret,
-                    noteNumber: event.note.string.fret(event.note.fret),
-                }
-            })
+        this._youtubePlayer = this.engine.getResource(YoutubePlayer)
+        const audioTrack = level.audioTrack
+        this._youtubePlayer.load(audioTrack.youtubeVideoId)
 
-        this._currentPlays = this._plays.slice(0, 30)
-    }
+        const instrument = new Bass()
+        const neck = NeckMesh.create(instrument)
+        const renderer = engine.getResource(Renderer)
+        renderer.add(neck)
 
-    get plays() {
-        return this._plays
+        this._notes = level.bassTrack.notes.slice(0, 1).map(note => {
+            return this.engine.createComponent(PlaybackNote, instrument, note)
+        })
     }
 
     get ticksPerSecond() {
         return this.level.timing.ticksPerSecond
     }
 
-    private _isInWindow(play: PlaybackPlay) {
-        const ticks = this._time * this.level.timing.ticksPerSecond
-        const minDelta = -this.level.timing.seconds(1)
-        const maxDelta = this.level.timing.seconds(3)
-        const delta = play.time - ticks
-
-        return delta >= minDelta && delta + play.duration <= maxDelta
-    }
-
-    private _getWindow() {
-        return this._plays.filter(play => this._isInWindow(play))
-    }
-
-    private *_window() {
-        // const minTicks = 
-        // for (const play of this._plays) {
-
-        // }
-    }
-
     update(deltaTime: number) {
-        // TODO: shall treat events that lies between time and time + deltaTime
-        const previousTicks = this._time * this.ticksPerSecond
-
-        this._time += deltaTime
-
         if (deltaTime === 0)
             return
 
-        // Compute number of ticks to treat
-        const ticks = this._time * this.ticksPerSecond
-
-        // for (let i = 0; i < this._currentPlays.length; i++) {
-
-        // }
-
-        // for (const play of this._window(previousTicks)) {
-        //     this._currentPlays.push(play)
-        // }
-
-        while (
-            this._eventIndex < this.level.events.length &&
-            this.level.events[this._eventIndex].time < ticks
-        ) {
-            const event = this.level.events[this._eventIndex]
-
-            if (event.type === LevelEventType.AudioStart) {
-                this._soundNode.play()
-                this._playingSong = true
-            }
-
-            this._eventIndex += 1
+        for (const noteEvent of this._reader.update(deltaTime)) {
+            // Shall handle notes
+            // console.log("Should handle", noteEvent)
         }
+
+        if (
+            this.level.audioTrack.startTime > this._time &&
+            this.level.audioTrack.startTime <= this._time + deltaTime
+        ) {
+            this._youtubePlayer.play()
+        }
+
+        this._time += deltaTime
+
+        const ticks = this.level.timing.seconds(this._time)
+        for (const note of this._notes) 
+            note.update(ticks)
     }
 
     pause() {
-        this._soundNode.pause()
-        this._playingSong = false
+        this._youtubePlayer.pause()
     }
 
     reset() {
         this._time = 0
+        this._youtubePlayer.seek(0)
+        this._reader.reset()
     }
 
 }

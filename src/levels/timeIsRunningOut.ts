@@ -1,5 +1,3 @@
-import timeIsRunningOutMp3 from "../assets/TimeIsRunningOut.mp3";
-import { AudioBufferUtils } from "../sound/AudioBufferUtils";
 import { AudioTrack } from "../sound/AudioTrack";
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
@@ -11,7 +9,6 @@ import { Timing } from "../sound/timing/Timing";
 export async function timeIsRunningOut(): Promise<Level> {
 
     const timing = new Timing(118.2, 96)
-    const audioBuffer = await AudioBufferUtils.load(timeIsRunningOutMp3)
 
     const long = timing.beats(1)
     const short = timing.beats(0.5)
@@ -85,8 +82,8 @@ export async function timeIsRunningOut(): Promise<Level> {
     const level = new Level(
         timing,
         {
-            audio: new AudioTrack(audioBuffer, timing.seconds(1.51)),
-            bass: track.build(),
+            audio: new AudioTrack("O2IuJPh6h_A", 1),
+            bass: track.linearize(),
             tempo: new TempoTrack()
         }
     )

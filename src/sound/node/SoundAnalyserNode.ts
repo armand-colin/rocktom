@@ -1,8 +1,8 @@
 import { Duration } from "@niloc/utils";
-import { Engine } from "../../engine/Engine";
-import { Schedule } from "../../engine/Schedule";
 import { Time } from "../Time";
 import { SoundNode } from "./SoundNode";
+import type { Engine } from "@niloc/ecs";
+import { AudioPreProcessingSchedule } from "../AudioProcessingSchedule";
 
 const FFT_SIZE = 16_384
 
@@ -49,10 +49,10 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
 
     private _frequencies = new Float32Array(0)
 
-    constructor(audioContext: AudioContext) {
+    constructor(engine: Engine, audioContext: AudioContext) {
         super(audioContext)
         this.node = this.build()
-        Engine.instance.coroutine(this._computeCoroutine())
+        engine.scheduler.add(this._computeCoroutine())
         Object.assign(window, { analyser: this })
     }
 
@@ -78,7 +78,7 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
     private *_computeCoroutine() {
         while (true) {
             this._compute()
-            yield Schedule.AudioPreProcessing
+            yield AudioPreProcessingSchedule
         }
     }
 

@@ -1,7 +1,5 @@
-import type { Engine } from "../engine/Engine";
-import { Resource } from "../engine/Resource";
-
-export class Instrument extends Resource {
+import { Engine, Resource } from "@niloc/ecs"
+export class CurrentInstrument extends Resource {
 
     private _octaver: number = 0
     private _deviceId: string | null = null

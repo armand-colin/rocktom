@@ -1,18 +1,21 @@
-import { AudioBufferSoundNode } from "./node/AudioElementSoundNode"
-import { DestinationSoundNode } from "./node/DestinationSoundNode"
-import { GainSoundNode } from "./node/GainSoundNode"
-import { MediaStreamSoundNode } from "./node/MediaStreamSoundNode"
-import { SoundAnalyserNode } from "./node/SoundAnalyserNode"
-import type { SoundNode } from "./node/SoundNode"
+import { Engine, Resource } from "@niloc/ecs"
+import { AudioBufferSoundNode } from "../sound/node/AudioElementSoundNode"
+import { DestinationSoundNode } from "../sound/node/DestinationSoundNode"
+import { GainSoundNode } from "../sound/node/GainSoundNode"
+import { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode"
+import { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode"
+import type { SoundNode } from "../sound/node/SoundNode"
 
-export class SoundEngine {
+export class SoundEngine extends Resource {
 
     private _audioContext: AudioContext
     private _nodes: SoundNode[] = []
 
     readonly output: DestinationSoundNode
 
-    constructor() {
+    constructor(engine: Engine) {
+        super(engine)
+
         this._audioContext = new AudioContext()
 
         this.output = new DestinationSoundNode(this._audioContext)
@@ -43,7 +46,7 @@ export class SoundEngine {
     }
 
     createAnalyserNode(): SoundAnalyserNode {
-        const node = new SoundAnalyserNode(this._audioContext)
+        const node = new SoundAnalyserNode(this.engine, this._audioContext)
         this._nodes.push(node)
         return node
     }

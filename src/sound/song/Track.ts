@@ -1,5 +1,5 @@
 import type { Instrument } from "../instrument/Instrument";
-import type { LinearizedTrack } from "../LinearizedTrack";
+import { LinearizedTrack } from "../LinearizedTrack";
 import type { Pattern } from "./Pattern";
 
 type TimedPattern = {

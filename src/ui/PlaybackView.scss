@@ -15,29 +15,5 @@
 }
 
 .PlaybackView {
-    --time-ratio: 400;
 
-    .view {
-        position: relative;
-        height: 300px;
-        width: 800px;
-        overflow: visible;
-    }
-
-    .neck {
-        position: absolute;
-        bottom: 0;
-        height: 3px;
-        width: 100%;
-        background: gray;
-    }
-
-
-    .plays {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-    }
 }

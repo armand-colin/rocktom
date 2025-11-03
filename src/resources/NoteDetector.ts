@@ -1,9 +1,8 @@
-import type { Engine } from "../engine/Engine";
-import { Resource } from "../engine/Resource";
-import { Schedule } from "../engine/Schedule";
+import { Engine, Resource } from "@niloc/ecs";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import { FineNote } from "../sound/note/Note";
 import { Workspace } from "./Workspace";
+import { Schedule } from "@niloc/utils";
 
 export class NoteDetector extends Resource {
 
@@ -13,7 +12,7 @@ export class NoteDetector extends Resource {
     constructor(engine: Engine) {
         super(engine)
         this._analyser = this.engine.getResource(Workspace).analyser
-        this.engine.coroutine(this._updateCoroutine())
+        this.engine.scheduler.add(this._updateCoroutine())
         Object.assign(window, { detector: this })
     }
 

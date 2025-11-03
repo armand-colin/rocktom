@@ -1,4 +1,4 @@
-import { Resource } from "../engine/Resource";
+import { Resource } from "@niloc/ecs"
 
 export interface MediaStreamDescription {
     id: string,
