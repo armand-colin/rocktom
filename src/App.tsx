@@ -8,10 +8,10 @@ import { Tuner } from './resources/Tuner'
 import { Workspace } from './resources/Workspace'
 import { PlaybackView } from './ui/PlaybackView'
 
-import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { EngineContext, useResource } from '@niloc/ecs-react'
-import { SoundEngine } from './resources/SoundEngine'
+import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { Renderer } from './resources/Renderer'
+import { SoundEngine } from './resources/SoundEngine'
 import { ElementRenderer } from './ui/ElementRenderer'
 
 function App() {
@@ -72,8 +72,10 @@ function App() {
       </ul>
       <button onClick={loadMidi}>load midi</button>
 
-      <ElementRenderer element={renderer.element} />
-      
+      <div className="canvas">
+        <ElementRenderer element={renderer.element} />
+      </div>
+
       {
         player.playback ?
           <PlaybackView playback={player.playback} /> :

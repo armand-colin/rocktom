@@ -1,18 +1,18 @@
 import { Component, Engine } from "@niloc/ecs";
-import type { NoteEvent } from "../sound/song/Pattern";
-import { Renderer } from "../resources/Renderer";
-import { NoteMeshes } from "../resources/NoteMeshes";
 import { Object3D } from "three";
-import type { Instrument } from "../sound/instrument/Instrument";
 import { Rules } from "../3d/Rules";
+import { NoteMeshes } from "../resources/NoteMeshes";
+import { Renderer } from "../resources/Renderer";
+import type { Instrument } from "../sound/instrument/Instrument";
+import type { NoteEvent } from "../sound/song/Pattern";
 
-const TIME_RATIO = 0.01
+const TIME_RATIO = 0.05
 
 export class PlaybackNote extends Component {
 
     readonly note: NoteEvent
     private _renderer: Renderer
-    private _object: Object3D 
+    private _object: Object3D
 
     constructor(engine: Engine, instrument: Instrument, note: NoteEvent) {
         super(engine)

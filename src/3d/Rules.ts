@@ -8,13 +8,14 @@ function getY(instrument: Instrument, string: String) {
 }
 
 function getX(fret: number) {
-    return fret * Rules.fretWidth
+    return (-(Rules.maxFret / 2) + fret) * Rules.fretWidth
 }
 
 export const Rules = {
     fretWidth: 1,
     stringDistance: 0.6,
     maxFret: 15,
+    stringLength: 15 * 1, // maxFret * fretWidth
     getX,
     getY,
 }

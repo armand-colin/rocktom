@@ -1,11 +1,11 @@
 import { Component, type Engine } from "@niloc/ecs";
-import { type Level } from "../sound/Level";
+import { NeckMesh } from "../3d/NeckMesh";
+import { Renderer } from "../resources/Renderer";
 import { YoutubePlayer } from "../resources/YoutubePlayer";
+import { Bass } from "../sound/instrument/Instrument";
+import { type Level } from "../sound/Level";
 import { LevelReader } from "../sound/LevelReader";
 import { PlaybackNote } from "./PlaybackNote";
-import { NeckMesh } from "../3d/NeckMesh";
-import { Bass } from "../sound/instrument/Instrument";
-import { Renderer } from "../resources/Renderer";
 
 export class Playback extends Component {
 
@@ -31,7 +31,7 @@ export class Playback extends Component {
         const renderer = engine.getResource(Renderer)
         renderer.add(neck)
 
-        this._notes = level.bassTrack.notes.slice(0, 1).map(note => {
+        this._notes = level.bassTrack.notes.map(note => {
             return this.engine.createComponent(PlaybackNote, instrument, note)
         })
     }
@@ -59,7 +59,7 @@ export class Playback extends Component {
         this._time += deltaTime
 
         const ticks = this.level.timing.seconds(this._time)
-        for (const note of this._notes) 
+        for (const note of this._notes)
             note.update(ticks)
     }
 
