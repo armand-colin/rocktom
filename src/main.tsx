@@ -1,14 +1,16 @@
+import { Engine } from '@niloc/ecs'
+import { EngineContext } from '@niloc/ecs-react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { CurrentInstrument } from './resources/CurrentInstrument.ts'
-import { EngineContext } from '@niloc/ecs-react'
-import { Engine } from '@niloc/ecs'
+import { NoteMeshes } from './resources/NoteMeshes.ts'
 
 const engine = new Engine()
 
 engine.getResource(CurrentInstrument).recover()
+engine.getResource(NoteMeshes).load()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

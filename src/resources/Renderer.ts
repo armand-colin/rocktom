@@ -1,6 +1,7 @@
-import { Engine, Resource } from "@niloc/ecs";
-import { Coroutine, Schedule, Vec2 } from "@niloc/utils";
-import { DirectionalLight, Object3D, PerspectiveCamera, Scene as ThreeScene, WebGLRenderer } from "three";
+import { Engine, Resource } from "@niloc/ecs"
+import { Coroutine, Schedule, Vec2 } from "@niloc/utils"
+import { DirectionalLight, Object3D, PerspectiveCamera, Scene as ThreeScene, WebGLRenderer } from "three"
+
 export class Renderer extends Resource {
 
     private _scene: ThreeScene
@@ -22,9 +23,8 @@ export class Renderer extends Resource {
         this._camera.position.x = 0
         this._camera.position.z = 7
         this._camera.position.y = 4
-        // this._camera.lookAt(new Vector3(0, 2, -15))
 
-        const light = new DirectionalLight(0xFFFFFF)
+        const light = new DirectionalLight(0xFFFFFF, 3)
         this._scene.add(light)
         light.position.set(1, 2, 3)
 
@@ -35,6 +35,10 @@ export class Renderer extends Resource {
 
     get element() {
         return this._renderer.domElement
+    }
+
+    get camera() {
+        return this._camera
     }
 
     private *_render() {

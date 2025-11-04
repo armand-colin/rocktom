@@ -1,8 +1,8 @@
 import { Engine, Resource } from "@niloc/ecs";
-import type { Playback } from "../components/Playback";
-import { Workspace } from "./Workspace";
 import { Schedule, type Coroutine } from "@niloc/utils";
+import type { Playback } from "../components/Playback";
 import { SoundEngine } from "./SoundEngine";
+import { Workspace } from "./Workspace";
 
 export class Player extends Resource {
 
@@ -39,6 +39,7 @@ export class Player extends Resource {
             return
 
         this._playingCoroutine = this.engine.scheduler.add(this._play())
+        this._playback?.play()
     }
 
     pause() {

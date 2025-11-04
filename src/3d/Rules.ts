@@ -15,6 +15,7 @@ export const Rules = {
     fretWidth: 1,
     stringDistance: 0.6,
     maxFret: 15,
+    timeRatio: 0.05,
     stringLength: 15 * 1, // maxFret * fretWidth
     getX,
     getY,

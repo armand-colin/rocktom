@@ -9,7 +9,7 @@ import { Workspace } from './resources/Workspace'
 import { PlaybackView } from './ui/PlaybackView'
 
 import { EngineContext, useResource } from '@niloc/ecs-react'
-import { timeIsRunningOut } from './levels/timeIsRunningOut'
+import { liz } from './levels/liz'
 import { Renderer } from './resources/Renderer'
 import { SoundEngine } from './resources/SoundEngine'
 import { ElementRenderer } from './ui/ElementRenderer'
@@ -35,8 +35,7 @@ function App() {
   }
 
   async function loadMidi() {
-    const level = await timeIsRunningOut()
-
+    const level = liz()
 
     const playback = engine.createComponent(
       Playback,

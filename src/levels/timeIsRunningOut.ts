@@ -82,7 +82,7 @@ export async function timeIsRunningOut(): Promise<Level> {
     const level = new Level(
         timing,
         {
-            audio: new AudioTrack("O2IuJPh6h_A", 1.5),
+            audio: new AudioTrack("O2IuJPh6h_A", 1.4),
             bass: track.linearize(),
             tempo: new TempoTrack()
         }

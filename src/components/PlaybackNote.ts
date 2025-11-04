@@ -17,16 +17,26 @@ export class PlaybackNote extends Component {
     constructor(engine: Engine, instrument: Instrument, note: NoteEvent) {
         super(engine)
         this.note = note
-        this._renderer = engine.getResource(Renderer)
-        const mesh = engine.getResource(NoteMeshes).createMesh(note.string)
-        const object = new Object3D()
-        object.add(mesh)
 
+        this._renderer = engine.getResource(Renderer)
+
+        const noteMesh = engine.getResource(NoteMeshes).createMesh(note.string)
+        const fretMesh = engine.getResource(NoteMeshes).createFretMesh(note.fret)
+        fretMesh.position.z = 0.1
+
+        const object = new Object3D()
+
+        object.add(noteMesh)
+        object.add(fretMesh)
         object.position.x = Rules.getX(note.fret)
         object.position.y = Rules.getY(instrument, note.string)
 
-        this._object = object
+        if (note.duration > 0) {
+            const tailGeometry = engine.getResource(NoteMeshes).createTailGeometry(note.string, note.duration)
+            object.add(tailGeometry)
+        }
 
+        this._object = object
         this._renderer.add(object)
     }
 
