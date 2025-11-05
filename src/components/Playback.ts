@@ -34,6 +34,7 @@ export class Playback extends Component {
         const neck = NeckMesh.create(instrument, engine.getResource(NoteMeshes))
         const renderer = engine.getResource(Renderer)
         renderer.add(neck)
+        console.log('added neck mesh')
 
         this._notes = level.bassTrack.notes.map(note => {
             return this.engine.createComponent(PlaybackNote, instrument, note)
@@ -44,6 +45,14 @@ export class Playback extends Component {
 
     get ticksPerSecond() {
         return this.level.timing.ticksPerSecond
+    }
+
+    destroy() {
+        for (const note of this._notes)
+            note.destroy()
+
+        this._youtubePlayer.pause()
+        this._rig.destroy()
     }
 
     update(deltaTime: number) {

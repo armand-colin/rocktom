@@ -1,8 +1,8 @@
 import { Engine, Resource } from "@niloc/ecs";
-import { Schedule, type Coroutine } from "@niloc/utils";
+import { type Coroutine, type CoroutineIterator } from "@niloc/utils";
 import type { Playback } from "../components/Playback";
+import { Schedules } from "../Schedules";
 import { SoundEngine } from "./SoundEngine";
-import { Workspace } from "./Workspace";
 
 export class Player extends Resource {
 
@@ -10,13 +10,11 @@ export class Player extends Resource {
     private _lastUpdate: number = 0
 
     private _playingCoroutine: Coroutine | null = null
-    private _workspace: Workspace
     private _playback: Playback | null = null
     private _soundEngine: SoundEngine
 
     constructor(engine: Engine) {
         super(engine)
-        this._workspace = this.engine.getResource(Workspace)
         this._soundEngine = this.engine.getResource(SoundEngine)
     }
 
@@ -56,13 +54,24 @@ export class Player extends Resource {
         this._playback?.reset()
     }
 
-    private *_play() {
+    clear() {
+        this.reset()
+        this.pause()
+
+        if (this._playback) {
+            this._playback.destroy()
+            this._playback = null
+            this.changed()
+        }
+    }
+
+    private *_play(): CoroutineIterator {
         this._lastUpdate = this._soundEngine.currentTime
 
         while (true) {
             this._update()
             this._lastUpdate = this._soundEngine.currentTime
-            yield Schedule.Frame
+            yield Schedules.Frame
         }
     }
 
@@ -76,7 +85,6 @@ export class Player extends Resource {
         this._playback?.update(deltaTime)
 
         this._time += deltaTime
-        this.changed()
     }
 
 }

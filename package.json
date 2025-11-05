@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@niloc/ecs": "^0.0.4",
-    "@niloc/ecs-react": "^0.0.6",
-    "@niloc/utils": "^0.1.13",
+    "@niloc/ecs": "^0.0.6",
+    "@niloc/ecs-react": "^0.0.7",
+    "@niloc/utils": "^0.1.14",
     "@types/three": "^0.181.0",
     "@types/youtube-player": "^5.5.11",
     "react": "^19.1.1",

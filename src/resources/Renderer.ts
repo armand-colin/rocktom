@@ -1,6 +1,7 @@
 import { Engine, Resource } from "@niloc/ecs"
-import { Coroutine, Schedule, Vec2 } from "@niloc/utils"
+import { Coroutine, Vec2 } from "@niloc/utils"
 import { Object3D, PerspectiveCamera, Scene as ThreeScene, WebGLRenderer } from "three"
+import { Schedules } from "../Schedules"
 
 export class Renderer extends Resource {
 
@@ -8,7 +9,6 @@ export class Renderer extends Resource {
     private _camera: PerspectiveCamera
     private _renderer: WebGLRenderer
 
-    private _renderSchedule: Schedule
     private _renderCoroutine: Coroutine
     private _windowSize: Vec2
 
@@ -17,16 +17,11 @@ export class Renderer extends Resource {
 
         this._windowSize = Vec2.create(window.innerWidth, window.innerHeight)
 
-        this._renderSchedule = Schedule.after(Schedule.Frame)
         this._scene = new ThreeScene()
         this._camera = new PerspectiveCamera(75, this._windowSize.x / this._windowSize.y, 0.1, 1000)
         this._camera.position.x = 0
         this._camera.position.z = 7
         this._camera.position.y = 4
-
-        // const light = new DirectionalLight(0xFFFFFF, 3)
-        // this._scene.add(light)
-        // light.position.set(1, 2, 3)
 
         this._renderer = new WebGLRenderer({
             alpha: true,
@@ -47,15 +42,17 @@ export class Renderer extends Resource {
 
     private *_render() {
         while (true) {
-            // Do the actual rendering
+            yield Schedules.AfterFrame
             this._renderer.render(this._scene, this._camera)
-            // Wait until the next frame
-            yield this._renderSchedule
         }
     }
 
     add(object: Object3D) {
         this._scene.add(object)
+    }
+
+    remove(object: Object3D) {
+        this._scene.remove(object)
     }
 
 }

@@ -12,6 +12,7 @@ export class Level {
     tempoTrack: TempoTrack
 
     constructor(
+        readonly name: string,
         timing: Timing,
         tracks: {
             bass: LinearizedTrack,

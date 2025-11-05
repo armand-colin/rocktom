@@ -46,4 +46,8 @@ export class PlaybackNote extends Component {
         this._object.position.z = z
     }
 
+    destroy() {
+        this._renderer.remove(this._object)
+    }
+
 }

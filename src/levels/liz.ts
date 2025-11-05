@@ -83,6 +83,7 @@ export function liz(): Level {
         .pattern(preChorus)
 
     const level = new Level(
+        "Liz",
         timing,
         {
             audio: new AudioTrack("JIniBJm2F7A", 2),

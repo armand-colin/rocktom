@@ -7,13 +7,13 @@ import { Rules } from "./Rules"
 
 const materials = new Map<String, MeshBasicMaterial>()
 const stringTexture = new TextureLoader().load(stringTextureImage)
-stringTexture.repeat.set(50, 1)
+stringTexture.repeat.set(300, 1)
 stringTexture.wrapS = stringTexture.wrapT = 1000 // RepeatWrapping
 
 function getMaterial(string: String): Material {
     let material = materials.get(string)
     if (!material) {
-        material = new MeshBasicMaterial({ map: stringTexture })
+        material = new MeshBasicMaterial({ map: stringTexture, color: string.color })
         materials.set(string, material)
     }
     return material

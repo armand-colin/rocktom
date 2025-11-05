@@ -6,7 +6,7 @@ import { TrackBuilder } from "../sound/song/Track";
 import { TempoTrack } from "../sound/TempoTrack";
 import { Timing } from "../sound/timing/Timing";
 
-export async function timeIsRunningOut(): Promise<Level> {
+export function timeIsRunningOut(): Level {
 
     const timing = new Timing(118.2, 96)
 
@@ -80,6 +80,7 @@ export async function timeIsRunningOut(): Promise<Level> {
 
 
     const level = new Level(
+        "Time is Running Out",
         timing,
         {
             audio: new AudioTrack("O2IuJPh6h_A", 1.4),

@@ -20,6 +20,12 @@ export class CameraRig extends Component {
         this._camera.quaternion.copy(rotation)
     }
 
+    destroy() {
+        if (this._focusCoroutine) {
+            this._focusCoroutine.cancel()
+            this._focusCoroutine = null
+        }
+    }
 
     private _getFocusTransform(minFret: number, maxFret: number): { rotation: Quaternion, position: Vector3 } {
         const centerX = (Rules.getX(minFret) + Rules.getX(maxFret)) / 2
