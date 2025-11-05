@@ -1,8 +1,8 @@
 import { Engine, Resource } from "@niloc/ecs";
+import { Schedules } from "../Schedules";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import { FineNote } from "../sound/note/Note";
 import { Workspace } from "./Workspace";
-import { Schedule } from "@niloc/utils";
 
 export class NoteDetector extends Resource {
 
@@ -23,7 +23,7 @@ export class NoteDetector extends Resource {
     private *_updateCoroutine() {
         while (true) {
             this._update()
-            yield Schedule.Frame
+            yield Schedules.Frame
         }
     }
 

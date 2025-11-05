@@ -47,6 +47,10 @@ export class Renderer extends Resource {
         }
     }
 
+    destroy() {
+        this._renderCoroutine.cancel()
+    }
+
     add(object: Object3D) {
         this._scene.add(object)
     }

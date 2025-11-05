@@ -1,7 +1,7 @@
 import { Engine, Resource } from "@niloc/ecs";
+import { Schedules } from "../Schedules";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import { Workspace } from "./Workspace";
-import { Schedule } from "@niloc/utils";
 
 export class Tuner extends Resource {
 
@@ -23,7 +23,7 @@ export class Tuner extends Resource {
         while (true) {
             this._detectedFrequency = this._analyser.getLowestFrequency()
             this.changed()
-            yield Schedule.Frame
+            yield Schedules.Frame
         }
     }
 

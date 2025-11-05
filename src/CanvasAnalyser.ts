@@ -1,6 +1,6 @@
-import { Engine } from "./engine/Engine";
-import { Schedule } from "./engine/Schedule";
+import type { Engine } from "@niloc/ecs";
 import { Workspace } from "./resources/Workspace";
+import { Schedules } from "./Schedules";
 import { SoundAnalyserNode } from "./sound/node/SoundAnalyserNode";
 
 export class CanvasAnalyser {
@@ -9,12 +9,12 @@ export class CanvasAnalyser {
     private _canvas: HTMLCanvasElement
     private _context: CanvasRenderingContext2D
 
-    constructor(canvas: HTMLCanvasElement) {
-        this._analyser = Engine.instance.getResource(Workspace).analyser
+    constructor(canvas: HTMLCanvasElement, engine: Engine) {
+        this._analyser = engine.getResource(Workspace).analyser
         this._canvas = canvas
         this._context = canvas.getContext('2d')!
 
-        Engine.instance.coroutine(this._draw())
+        engine.scheduler.add(this._draw())
     }
 
     private *_draw() {
@@ -65,7 +65,7 @@ export class CanvasAnalyser {
             this._context.stroke()
             this._context.closePath()
 
-            yield Schedule.Frame
+            yield Schedules.Frame
         }
     }
 
