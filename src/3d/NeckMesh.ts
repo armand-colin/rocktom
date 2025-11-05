@@ -1,15 +1,19 @@
-import { BoxGeometry, Mesh, MeshStandardMaterial, Object3D } from "three"
+import { BoxGeometry, Material, Mesh, MeshBasicMaterial, Object3D, TextureLoader } from "three"
+import stringTextureImage from "../assets/string.png"
 import type { NoteMeshes } from "../resources/NoteMeshes"
 import type { Instrument } from "../sound/instrument/Instrument"
 import type { String } from "../sound/instrument/String"
 import { Rules } from "./Rules"
 
-const materials = new Map<String, MeshStandardMaterial>()
+const materials = new Map<String, MeshBasicMaterial>()
+const stringTexture = new TextureLoader().load(stringTextureImage)
+stringTexture.repeat.set(50, 1)
+stringTexture.wrapS = stringTexture.wrapT = 1000 // RepeatWrapping
 
-function getMaterial(string: String): MeshStandardMaterial {
+function getMaterial(string: String): Material {
     let material = materials.get(string)
     if (!material) {
-        material = new MeshStandardMaterial({ color: string.color })
+        material = new MeshBasicMaterial({ map: stringTexture })
         materials.set(string, material)
     }
     return material
@@ -39,7 +43,7 @@ function create(instrument: Instrument, noteMeshes: NoteMeshes) {
     }
 
     const fretGeometry = new BoxGeometry(0.1, (instrument.strings.length - 1) * Rules.stringDistance, 0.1)
-    const fretMaterial = new MeshStandardMaterial({ color: 0x888888 })
+    const fretMaterial = new MeshBasicMaterial({ color: 0x888888 })
 
     for (let i = 0; i <= Rules.maxFret; i++) {
         const fretMesh = new Mesh(fretGeometry, fretMaterial)
@@ -48,7 +52,7 @@ function create(instrument: Instrument, noteMeshes: NoteMeshes) {
         fretMesh.position.y = 0
     }
 
-    const verticalStringMaterial = new MeshStandardMaterial({ color: 0x444444 })
+    const verticalStringMaterial = new MeshBasicMaterial({ color: 0x444444 })
     // Shall create vertical frets
     for (let i = 0; i <= Rules.maxFret; i++) {
         const verticalStringMesh = new Mesh(verticalStringGeometry, verticalStringMaterial)

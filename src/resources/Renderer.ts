@@ -1,6 +1,6 @@
 import { Engine, Resource } from "@niloc/ecs"
 import { Coroutine, Schedule, Vec2 } from "@niloc/utils"
-import { DirectionalLight, Object3D, PerspectiveCamera, Scene as ThreeScene, WebGLRenderer } from "three"
+import { Object3D, PerspectiveCamera, Scene as ThreeScene, WebGLRenderer } from "three"
 
 export class Renderer extends Resource {
 
@@ -24,11 +24,15 @@ export class Renderer extends Resource {
         this._camera.position.z = 7
         this._camera.position.y = 4
 
-        const light = new DirectionalLight(0xFFFFFF, 3)
-        this._scene.add(light)
-        light.position.set(1, 2, 3)
+        // const light = new DirectionalLight(0xFFFFFF, 3)
+        // this._scene.add(light)
+        // light.position.set(1, 2, 3)
 
-        this._renderer = new WebGLRenderer()
+        this._renderer = new WebGLRenderer({
+            alpha: true,
+            antialias: true
+        })
+
         this._renderer.setSize(this._windowSize.x, this._windowSize.y)
         this._renderCoroutine = engine.scheduler.add(this._render())
     }

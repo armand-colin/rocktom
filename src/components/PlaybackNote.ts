@@ -30,7 +30,7 @@ export class PlaybackNote extends Component {
         object.add(fretMesh)
         object.position.x = Rules.getX(note.fret)
         object.position.y = Rules.getY(instrument, note.string)
-
+        object.position.z = 100 // hide it in the beginning
         if (note.duration > 0) {
             const tailGeometry = engine.getResource(NoteMeshes).createTailGeometry(note.string, note.duration)
             object.add(tailGeometry)

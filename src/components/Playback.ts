@@ -50,10 +50,10 @@ export class Playback extends Component {
         if (deltaTime === 0)
             return
 
-        for (const noteEvent of this._reader.update(deltaTime)) {
-            // Shall handle notes
-            // console.log("Should handle", noteEvent)
-        }
+        // for (const noteEvent of this._reader.update(deltaTime)) {
+        //     // Shall handle notes
+        //     // console.log("Should handle", noteEvent)
+        // }
 
         if (
             this.level.audioTrack.startTime > this._time &&
@@ -80,6 +80,7 @@ export class Playback extends Component {
 
     reset() {
         this._time = 0
+        this._youtubePlayer.pause()
         this._youtubePlayer.seek(0)
         this._reader.reset()
     }
