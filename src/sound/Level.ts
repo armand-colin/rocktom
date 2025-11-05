@@ -27,4 +27,9 @@ export class Level {
         this.tempoTrack = tracks.tempo
     }
 
+    get durationInSeconds(): number {
+        const lastNote = this.bassTrack.notes[this.bassTrack.notes.length - 1]
+        return this.timing.secondsFromTicks(lastNote.time + lastNote.duration)
+    }
+
 }

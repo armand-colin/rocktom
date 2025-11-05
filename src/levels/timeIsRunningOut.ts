@@ -10,8 +10,8 @@ export function timeIsRunningOut(): Level {
 
     const timing = new Timing(118.2, 96)
 
-    const long = timing.beats(1)
-    const short = timing.beats(0.5)
+    const long = timing.beatsToTicks(1)
+    const short = timing.beatsToTicks(0.5)
 
     const baseRiffPattern = new PatternBuilder("Main Riff")
         .note(Bass.E, 5, long)
@@ -69,7 +69,7 @@ export function timeIsRunningOut(): Level {
         .build()
 
     const track = new TrackBuilder(new Bass())
-        .silence(timing.beats(8))
+        .silence(timing.beatsToTicks(8))
         .pattern(baseRiffPattern)
         .pattern(baseRiffPattern)
         .pattern(baseRiffPattern)
@@ -83,7 +83,7 @@ export function timeIsRunningOut(): Level {
         "Time is Running Out",
         timing,
         {
-            audio: new AudioTrack("O2IuJPh6h_A", 1.4),
+            audio: new AudioTrack("O2IuJPh6h_A", 1.45),
             bass: track.linearize(),
             tempo: new TempoTrack()
         }

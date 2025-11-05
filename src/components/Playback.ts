@@ -16,6 +16,7 @@ export class Playback extends Component {
     private _youtubePlayer: YoutubePlayer
     private _reader: LevelReader
     private _rig: CameraRig
+    private _speed = 1.0
 
     constructor(
         engine: Engine,
@@ -34,7 +35,6 @@ export class Playback extends Component {
         const neck = NeckMesh.create(instrument, engine.getResource(NoteMeshes))
         const renderer = engine.getResource(Renderer)
         renderer.add(neck)
-        console.log('added neck mesh')
 
         this._notes = level.bassTrack.notes.map(note => {
             return this.engine.createComponent(PlaybackNote, instrument, note)
@@ -45,6 +45,11 @@ export class Playback extends Component {
 
     get ticksPerSecond() {
         return this.level.timing.ticksPerSecond
+    }
+
+    set speed(value: number) {
+        this._speed = value
+        this._youtubePlayer.setSpeed(value)
     }
 
     destroy() {
@@ -58,6 +63,8 @@ export class Playback extends Component {
     update(deltaTime: number) {
         if (deltaTime === 0)
             return
+
+        deltaTime = deltaTime * this._speed
 
         // for (const noteEvent of this._reader.update(deltaTime)) {
         //     // Shall handle notes
@@ -73,7 +80,7 @@ export class Playback extends Component {
 
         this._time += deltaTime
 
-        const ticks = this.level.timing.seconds(this._time)
+        const ticks = this.level.timing.ticksFromSeconds(this._time)
         for (const note of this._notes)
             note.update(ticks)
     }

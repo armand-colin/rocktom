@@ -1,0 +1,22 @@
+.LevelList {
+    ul {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 8px;
+        list-style: none;
+
+        li {
+            cursor: pointer;
+            border-radius: 8px;
+            padding: 8px;
+            background: #252525;
+
+            > p {
+                color: white;
+            }
+            > small {
+                color: gray;
+            }
+        }
+    }
+}

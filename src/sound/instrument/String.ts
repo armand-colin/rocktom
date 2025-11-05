@@ -1,5 +1,5 @@
-import { Note } from "../note/Note"
 import type { Color } from "three"
+import { Note } from "../note/Note"
 
 export class String {
 
@@ -7,12 +7,14 @@ export class String {
     readonly name: string
     readonly note: Note
     readonly color: Color
-    
-    constructor(index: number, name: string, note: Note, color: Color) {
+    readonly highlightColor: Color
+
+    constructor(index: number, name: string, note: Note, color: Color, highlightColor: Color) {
         this.index = index
         this.name = name
         this.note = note
         this.color = color
+        this.highlightColor = highlightColor
     }
 
     fret(fret: number): Note {

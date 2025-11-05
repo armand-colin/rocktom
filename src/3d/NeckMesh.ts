@@ -25,7 +25,7 @@ const verticalStringLength = 100
 const verticalStringGeometry = new BoxGeometry(0.05, 0.05, verticalStringLength)
 
 function createTextMesh(fret: number, noteMeshes: NoteMeshes) {
-    const mesh = noteMeshes.createFretMesh(fret)
+    const mesh = noteMeshes.createFret(fret)
     mesh.position.x = Rules.getX(fret)
     return mesh
 }

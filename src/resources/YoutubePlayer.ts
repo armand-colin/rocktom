@@ -32,23 +32,26 @@ export class YoutubePlayer extends Resource {
         Object.assign(window, { youtubePlayer: this })
     }
 
-    load(videoId: string) {
-        this._player.cueVideoById({ videoId })
+    async load(videoId: string) {
+        await this._player.loadVideoById({ videoId })
+        await this._player.pauseVideo()
+        await this._player.seekTo(0, true)
     }
 
     play() {
-        console.log("playing video")
         this._player.playVideo()
     }
 
     pause() {
-        console.log("pausing video")
         this._player.pauseVideo()
     }
 
     seek(seconds: number) {
-        console.log("seeking video")
         this._player.seekTo(seconds, true)
+    }
+
+    setSpeed(speed: number) {
+        this._player.setPlaybackRate(speed)
     }
 
 }

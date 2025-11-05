@@ -17,7 +17,7 @@ export class LevelReader {
     }
 
     *update(deltaTime: number): IterableIterator<NoteEvent> {
-        const deltaTicks = this.currentTiming.seconds(deltaTime)
+        const deltaTicks = this.currentTiming.ticksFromSeconds(deltaTime)
         const endTicks = this._ticks + deltaTicks
 
         while (

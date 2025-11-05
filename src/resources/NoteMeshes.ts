@@ -7,7 +7,8 @@ import tileTexture from "../assets/tile.png";
 import type { String } from "../sound/instrument/String";
 export class NoteMeshes extends Resource {
 
-    private _materials: Map<String, Material> = new Map()
+    private _materials: Map<String, MeshBasicMaterial> = new Map()
+    private _highlightMaterials: Map<String, MeshBasicMaterial> = new Map()
     private _tailGeometry: PlaneGeometry
 
     private _geometry: PlaneGeometry
@@ -45,9 +46,12 @@ export class NoteMeshes extends Resource {
         this._fretMaterial = new MeshBasicMaterial({ map: this._fretTexture, transparent: true })
     }
 
-    private _getStringMaterial(string: String): Material {
+    private _getStringMaterial(string: String): MeshBasicMaterial {
         if (!this._materials.has(string)) {
-            const material = new MeshBasicMaterial({ color: string.color, map: this._tileTexture })
+            const material = new MeshBasicMaterial({
+                color: string.color,
+                map: this._tileTexture,
+            })
             this._materials.set(string, material)
             return material
         }
@@ -55,23 +59,33 @@ export class NoteMeshes extends Resource {
         return this._materials.get(string)!
     }
 
-    load() {
-
+    getStringHighlightMaterial(string: String): MeshBasicMaterial {
+        if (!this._highlightMaterials.has(string)) {
+            const material = new MeshBasicMaterial({
+                color: string.highlightColor,
+                map: this._tileTexture,
+            })
+            this._highlightMaterials.set(string, material)
+            return material
+        }
+        return this._highlightMaterials.get(string)!
     }
 
-    createMesh(string: String): Mesh {
+    load() { }
+
+    createTile(string: String) {
         const material = this._getStringMaterial(string)
         return new Mesh(this._geometry, material)
     }
 
-    createTailGeometry(string: String, duration: number) {
+    createTail(string: String, duration: number) {
         const length = duration * Rules.timeRatio
         const mesh = new Mesh(this._tailGeometry, this._getStringMaterial(string))
         mesh.scale.z = length
         return mesh
     }
 
-    createFretMesh(fret: number): Object3D {
+    createFret(fret: number): Object3D {
         return new Mesh(this._fretGeometries[fret], this._fretMaterial)
     }
 

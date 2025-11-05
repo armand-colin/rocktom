@@ -18,10 +18,10 @@ export class Instrument {
 
 export class Bass extends Instrument {
 
-    static E = new String(0, "E", Note.fromName("E", 1), new Color("#FF0000"))
-    static A = new String(1, "A", Note.fromName("A", 1), new Color("#FFFF00"))
-    static D = new String(2, "D", Note.fromName("D", 2), new Color("#0000FF"))
-    static G = new String(3, "G", Note.fromName("G", 2), new Color("#FF6030"))
+    static E = new String(0, "E", Note.fromName("E", 1), new Color("#ff1919"), new Color("#ff4848"))
+    static A = new String(1, "A", Note.fromName("A", 1), new Color("#fcc513"), new Color("#ffd344"))
+    static D = new String(2, "D", Note.fromName("D", 2), new Color("#2d2dff"), new Color("#4f4fff"))
+    static G = new String(3, "G", Note.fromName("G", 2), new Color("#ff7d13"), new Color("#ff9946"))
 
     constructor() {
         super("Bass", [

@@ -1,4 +1,5 @@
-import type { Level } from "./sound/Level";
+import type { Level } from "../../sound/Level";
+import "./LevelList.scss";
 
 export function LevelList(props: { levels: Level[], onSelect: (level: Level) => void }) {
     return <div className="LevelList">
@@ -9,7 +10,8 @@ export function LevelList(props: { levels: Level[], onSelect: (level: Level) => 
                         key={i}
                         onClick={() => props.onSelect(level)}
                     >
-                        {level.name}
+                        <p>{level.name}</p>
+                        <small>{level.durationInSeconds | 0}</small>
                     </li>
                 ))
             }

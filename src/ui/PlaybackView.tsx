@@ -28,7 +28,12 @@ function PlaybackControls(props: { playback: Playback }) {
             <button onClick={() => player.pause()}>Pause</button>
             <button onClick={() => player.reset()}>Reset</button>
 
-            <button onClick={() => player.clear()}>Back to song list</button>
+            <button onClick={() => player.clear()}>Back to song list</button><br />
+
+            <button onClick={() => props.playback.speed = 1.0}>100%</button>
+            <button onClick={() => props.playback.speed = 0.8}>90%</button>
+            <button onClick={() => props.playback.speed = 0.75}>80%</button>
+            <button onClick={() => props.playback.speed = 0.5}>70%</button>
         </div>
     );
 }

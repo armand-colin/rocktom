@@ -5,11 +5,11 @@ import { Player } from './resources/Player'
 import { PlaybackView } from './ui/PlaybackView'
 
 import { EngineContext, useResource } from '@niloc/ecs-react'
-import { LevelList } from './LevelList'
 import { liz } from './levels/liz'
 import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { SoundEngine } from './resources/SoundEngine'
 import type { Level } from './sound/Level'
+import { LevelList } from './ui/levelList/LevelList'
 
 const levels = [
   liz(),
