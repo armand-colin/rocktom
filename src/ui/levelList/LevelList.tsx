@@ -1,4 +1,5 @@
 import type { Level } from "../../sound/Level";
+import { InstrumentList } from "../instrumentList/InstrumentList";
 import "./LevelList.scss";
 
 function formatSeconds(seconds: number) {
@@ -24,5 +25,7 @@ export function LevelList(props: { levels: Level[], onSelect: (level: Level) => 
                 ))
             }
         </ul>
+
+        <InstrumentList />
     </div>
 }

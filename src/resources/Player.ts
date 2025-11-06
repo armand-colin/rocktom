@@ -1,9 +1,11 @@
 import { Engine, Resource } from "@niloc/ecs";
 import { type Coroutine, type CoroutineIterator } from "@niloc/utils";
+import type { LiveInstrument } from "../components/LiveInstrument";
 import type { Playback } from "../components/Playback";
 import { Schedules } from "../Schedules";
 import { Input, InputManager } from "./InputManager";
 import { SoundEngine } from "./SoundEngine";
+import { Workspace } from "./Workspace";
 
 export class Player extends Resource {
 
@@ -13,10 +15,13 @@ export class Player extends Resource {
     private _playingCoroutine: Coroutine | null = null
     private _playback: Playback | null = null
     private _soundEngine: SoundEngine
+    private _instrument: LiveInstrument | null = null
+    private _workspace: Workspace
 
     constructor(engine: Engine) {
         super(engine)
         this._soundEngine = this.engine.getResource(SoundEngine)
+        this._workspace = this.engine.getResource(Workspace)
 
         const inputManager = this.engine.getResource(InputManager)
 
@@ -42,6 +47,20 @@ export class Player extends Resource {
 
     get isPlaying() {
         return this._playingCoroutine !== null
+    }
+
+    get instrument() {
+        return this._instrument
+    }
+
+    setInstrument(instrument: LiveInstrument | null) {
+        if (this._instrument)
+            this._instrument.destroy()
+
+        this._instrument = instrument
+        this._workspace.setMicrophoneStream(instrument?.stream ?? null)
+
+        this.changed()
     }
 
     bind(playback: Playback) {

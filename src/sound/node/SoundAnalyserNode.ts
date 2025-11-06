@@ -1,8 +1,8 @@
+import type { Engine } from "@niloc/ecs";
 import { Duration } from "@niloc/utils";
+import { Schedules } from "../../Schedules";
 import { Time } from "../Time";
 import { SoundNode } from "./SoundNode";
-import type { Engine } from "@niloc/ecs";
-import { AudioPreProcessingSchedule } from "../AudioProcessingSchedule";
 
 const FFT_SIZE = 16_384
 
@@ -78,7 +78,7 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
     private *_computeCoroutine() {
         while (true) {
             this._compute()
-            yield AudioPreProcessingSchedule
+            yield Schedules.AudioPreProcessingSchedule
         }
     }
 
@@ -136,6 +136,14 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
         })
 
         return minimas.map(index => this.frequencyStep * selfCorrelation(this._frequencies, index))
+    }
+
+    getVolume() {
+        let max = 0
+        for (let i = 0; i < this._frequencies.length; i++)
+            max = Math.max(max, this._frequencies[i])
+
+        return max
     }
 
 }

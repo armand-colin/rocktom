@@ -29,7 +29,9 @@ export class SoundEngine extends Resource {
         return this._audioContext.currentTime
     }
 
-    private _onStateChange = () => { }
+    private _onStateChange = () => {
+        console.log('on state change', this._audioContext.state)
+    }
 
     refresh() {
         this._audioContext.removeEventListener('statechange', this._onStateChange)

@@ -4,12 +4,12 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { LiveInstrument } from './resources/LiveInstrument.ts'
+import { LiveInstrumentPreferences } from './resources/LiveInstrumentPreferences.ts'
 import { NoteMeshes } from './resources/NoteMeshes.ts'
 
 const engine = new Engine()
 
-engine.getResource(LiveInstrument).recover()
+engine.getResource(LiveInstrumentPreferences).recover()
 engine.getResource(NoteMeshes).load()
 
 createRoot(document.getElementById('root')!).render(

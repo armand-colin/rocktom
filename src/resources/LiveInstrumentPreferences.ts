@@ -1,6 +1,6 @@
 import { Engine, Resource } from "@niloc/ecs"
 
-export class LiveInstrument extends Resource {
+export class LiveInstrumentPreferences extends Resource {
 
     private _octaver: number = 0
     private _deviceId: string | null = null
@@ -9,10 +9,21 @@ export class LiveInstrument extends Resource {
         super(engine)
     }
 
+    get deviceId() {
+        return this._deviceId
+    }
+
+    set deviceId(id: string | null) {
+        this._deviceId = id
+        this.changed()
+    }
+
     getMediaStream(): Promise<MediaStream> {
         return navigator.mediaDevices.getUserMedia({
             audio: {
-                deviceId: this._deviceId ?? undefined,
+                deviceId: {
+                    exact: this._deviceId ?? undefined
+                },
                 echoCancellation: false,
             }
         })
@@ -35,7 +46,7 @@ export class LiveInstrument extends Resource {
         this._octaver = octaver
         this._deviceId = deviceId
 
-        this.emit('change')
+        this.changed()
     }
 
 }

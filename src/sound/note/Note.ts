@@ -38,6 +38,10 @@ function fromName(name: string, octave: number): Note {
     }
 }
 
+function cents(referenceFrequency: number, frequency: number): number {
+    return Math.floor(1200 * Math.log(frequency / referenceFrequency) / Math.log(2))
+}
+
 function closestFrequency(frequency: number): FineNote {
     // TODO: Dichotomic search
     let index = 0
@@ -57,13 +61,14 @@ function closestFrequency(frequency: number): FineNote {
         frequency,
         index,
         name: names[index % 12],
-        cents: Math.floor(1200 * Math.log(frequency / frequencies[index]) / Math.log(2)),
+        cents: cents(frequencies[index], frequency),
         octave: (index / 12) | 0
     }
 }
 
 export const FineNote = {
     closestFrequency,
+    cents,
     names
 }
 

@@ -1,7 +1,8 @@
 import { Resource } from "@niloc/ecs"
 
 export interface MediaStreamDescription {
-    id: string,
+    deviceId: string,
+    groupId: string,
     label: string
 }
 
@@ -22,7 +23,8 @@ export class MediaStreamList extends Resource {
         for (const device of devices) {
             if (device.kind === "audioinput") {
                 this._streams.push({
-                    id: device.deviceId,
+                    deviceId: device.deviceId,
+                    groupId: device.groupId,
                     label: device.label,
                 })
             }
