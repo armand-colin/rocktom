@@ -81,6 +81,7 @@ export function timeIsRunningOut(): Level {
 
     const level = new Level(
         "Time is Running Out",
+        "Muse",
         timing,
         {
             audio: new AudioTrack("O2IuJPh6h_A", 1.45),

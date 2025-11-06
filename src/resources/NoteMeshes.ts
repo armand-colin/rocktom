@@ -1,9 +1,10 @@
 import { Engine, Resource } from "@niloc/ecs";
 import { Material, Mesh, MeshBasicMaterial, Object3D, PlaneGeometry, Texture, TextureLoader } from "three";
 import { Rules } from "../3d/Rules";
-import fretTexture from "../assets/numbers.png";
+import highlightTileTexture from "../assets/highlightTile.png";
 import tileTexture from "../assets/tile.png";
 
+import { FretTexture } from "../3d/FretTexture";
 import type { String } from "../sound/instrument/String";
 export class NoteMeshes extends Resource {
 
@@ -16,6 +17,7 @@ export class NoteMeshes extends Resource {
     private _fretTexture: Texture
     private _fretMaterial: Material
     private _tileTexture: Texture
+    private _highlightTileTexture: Texture
 
     constructor(engine: Engine) {
         super(engine)
@@ -26,11 +28,13 @@ export class NoteMeshes extends Resource {
         this._tailGeometry.rotateX(-Math.PI / 2)
         this._tailGeometry.translate(0, 0, -0.5)
 
-        this._fretTexture = new TextureLoader().load(fretTexture)
-        this._tileTexture = new TextureLoader().load(tileTexture)
+        const loader = new TextureLoader()
+        this._fretTexture = FretTexture.generate()
+        this._tileTexture = loader.load(tileTexture)
+        this._highlightTileTexture = loader.load(highlightTileTexture)
 
         for (let i = 0; i <= Rules.maxFret; i++) {
-            const geometry = new PlaneGeometry(Rules.stringDistance * 0.4, Rules.stringDistance * 0.4)
+            const geometry = new PlaneGeometry(Rules.stringDistance * 0.6, Rules.stringDistance * 0.6)
             // Shall set uvs to allow for a texture atlas
             const uv = geometry.attributes.uv
             for (let k = 0; k < uv.count; k++) {
@@ -63,7 +67,7 @@ export class NoteMeshes extends Resource {
         if (!this._highlightMaterials.has(string)) {
             const material = new MeshBasicMaterial({
                 color: string.highlightColor,
-                map: this._tileTexture,
+                map: this._highlightTileTexture,
             })
             this._highlightMaterials.set(string, material)
             return material

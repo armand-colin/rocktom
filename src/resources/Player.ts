@@ -2,6 +2,7 @@ import { Engine, Resource } from "@niloc/ecs";
 import { type Coroutine, type CoroutineIterator } from "@niloc/utils";
 import type { Playback } from "../components/Playback";
 import { Schedules } from "../Schedules";
+import { Input, InputManager } from "./InputManager";
 import { SoundEngine } from "./SoundEngine";
 
 export class Player extends Resource {
@@ -16,6 +17,19 @@ export class Player extends Resource {
     constructor(engine: Engine) {
         super(engine)
         this._soundEngine = this.engine.getResource(SoundEngine)
+
+        const inputManager = this.engine.getResource(InputManager)
+
+        inputManager.register(Input.Play, () => {
+            if (this.isPlaying)
+                this.pause()
+            else
+                this.play()
+        })
+
+        inputManager.register(Input.Reset, () => {
+            this.reset()
+        })
     }
 
     get playback() {
@@ -50,7 +64,7 @@ export class Player extends Resource {
             this._playingCoroutine.cancel()
             this._playingCoroutine = null
         }
-        
+
         this._playback?.pause()
         this.changed()
     }

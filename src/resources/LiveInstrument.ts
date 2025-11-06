@@ -1,5 +1,6 @@
 import { Engine, Resource } from "@niloc/ecs"
-export class CurrentInstrument extends Resource {
+
+export class LiveInstrument extends Resource {
 
     private _octaver: number = 0
     private _deviceId: string | null = null

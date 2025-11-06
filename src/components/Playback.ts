@@ -47,9 +47,14 @@ export class Playback extends Component {
         return this.level.timing.ticksPerSecond
     }
 
+    get speed() {
+        return this._speed
+    }
+
     set speed(value: number) {
         this._speed = value
         this._youtubePlayer.setSpeed(value)
+        this.changed()
     }
 
     destroy() {

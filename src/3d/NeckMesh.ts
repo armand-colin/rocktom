@@ -42,7 +42,7 @@ function create(instrument: Instrument, noteMeshes: NoteMeshes) {
         stringMesh.position.x = Rules.getX(Rules.maxFret / 2 + 0.5)
     }
 
-    const fretGeometry = new BoxGeometry(0.1, (instrument.strings.length - 1) * Rules.stringDistance, 0.1)
+    const fretGeometry = new BoxGeometry(0.05, (instrument.strings.length - 1) * Rules.stringDistance, 0.05)
     const fretMaterial = new MeshBasicMaterial({ color: 0x888888 })
 
     for (let i = 0; i <= Rules.maxFret; i++) {

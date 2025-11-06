@@ -1,18 +1,28 @@
 .LevelList {
+    padding: 24px;
+    h1 {
+        font-size: 2rem;
+    }
+    h2 {
+        font-size: 1.3rem;
+        opacity: 0.5;
+        margin-bottom: 24px;
+    }
     ul {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 8px;
         list-style: none;
 
         li {
             cursor: pointer;
             border-radius: 8px;
-            padding: 8px;
+            padding: 12px;
             background: #252525;
 
             > p {
                 color: white;
+                font-size: 1.1rem;
             }
             > small {
                 color: gray;

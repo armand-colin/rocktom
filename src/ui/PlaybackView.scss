@@ -15,5 +15,82 @@
 }
 
 .PlaybackView {
+    .PlaybackControls {
+        padding: 24px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: white;
+        h1 {
+            font-size: 2rem;
+        }
+        h2 {
+            font-size: 1.2rem;
+            opacity: 0.5;
+            margin-bottom: 24px;
+        }
 
+        .buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            // margin-bottom: 24px;
+        }
+
+        .speed {
+            margin-top: 12px;
+            margin-bottom: 12px;
+            > p {
+                margin-bottom: 4px;
+            }
+            .container {
+                display: flex;
+                gap: 8px;
+            }
+        }
+
+        .PlaybackSpeedButton {
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 80px;
+            text-align: center;
+            background: grey;
+
+            &[data-active="true"] {
+                background: #cc0ddd;
+            }
+        }
+
+        .PlayButton {
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #7c7c7c;
+            width: 150px;
+        }
+
+        .ResetButton {
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 120px;
+            text-align: center;
+            background: grey;
+        }
+
+        .BackButton {
+            padding: 0px;
+            opacity: 0.5;
+            background: transparent;
+            cursor: pointer;
+
+            &:hover {
+                text-decoration: underline;
+                opacity: 1;
+            }
+        }
+    }
 }

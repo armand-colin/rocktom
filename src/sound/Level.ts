@@ -13,6 +13,7 @@ export class Level {
 
     constructor(
         readonly name: string,
+        readonly author: string,
         timing: Timing,
         tracks: {
             bass: LinearizedTrack,

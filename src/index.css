@@ -1,11 +1,13 @@
 @font-face {
-    font-family: 'Stack';
+    font-family: "Stack";
     src: url("./assets/fonts/StackSans.ttf");
 }
 
 body {
-    font-family: 'Stack';
+    font-family: "Stack";
     font-size: 14px;
+    background: black;
+    color: white;
 }
 
 * {
@@ -15,4 +17,9 @@ body {
     color: inherit;
     font-size: inherit;
     font-family: inherit;
+}
+
+button {
+    border: none;
+    outline: none;
 }

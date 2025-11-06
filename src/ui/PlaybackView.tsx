@@ -1,4 +1,4 @@
-import { EngineContext, useResource } from "@niloc/ecs-react";
+import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
 import { useContext } from "react";
 import type { Playback } from "../components/Playback";
 import { Player } from "../resources/Player";
@@ -20,35 +20,66 @@ export function PlaybackView(props: { playback: Playback }) {
 }
 
 function PlaybackControls(props: { playback: Playback }) {
+    const { engine } = useContext(EngineContext)
+    const player = engine.getResource(Player)
+
+    return (
+        <div className="PlaybackControls">
+            <h1>{props.playback.level.name}</h1>
+            <h2>by {props.playback.level.author}</h2>
+
+            <div className="buttons">
+                <PlayButton />
+                <ResetButton />
+            </div>
+
+            <div className="speed">
+                <p>Playback speed</p>
+
+                <div className="container">
+                    <PlaybackSpeedButton playback={props.playback} value={1.0} />
+                    <PlaybackSpeedButton playback={props.playback} value={0.9} />
+                    <PlaybackSpeedButton playback={props.playback} value={0.8} />
+                    <PlaybackSpeedButton playback={props.playback} value={0.7} />
+                </div>
+            </div>
+
+            <button className="BackButton" onClick={() => player.clear()}>Back to song list</button><br />
+        </div>
+    );
+}
+
+function floatsEqual(a: number, b: number, epsilon = 0.0001) {
+    return Math.abs(a - b) < epsilon
+}
+
+function PlaybackSpeedButton(props: { playback: Playback, value: number }) {
+    const { speed } = useComponent(props.playback)
+
+    return <button
+        className="PlaybackSpeedButton"
+        data-active={floatsEqual(props.value, speed)}
+        onClick={() => props.playback.speed = props.value}
+    >
+        {props.value * 100}%
+    </button>
+}
+
+function PlayButton() {
     const player = useResource(Player)
 
-    function handlePlay() {
+    function onClick() {
         if (player.isPlaying)
             player.pause()
         else
             player.play()
     }
 
-    return (
-        <div className="PlaybackControls">
-            <button onClick={handlePlay}>{player.isPlaying ? "Pause" : "Play"}</button>
-            <button onClick={() => player.reset()}>Reset</button>
-            <button onClick={() => player.clear()}>Back to song list</button><br />
-
-            <p>Playback speed</p>
-            <button onClick={() => props.playback.speed = 1.0}>100%</button>
-            <button onClick={() => props.playback.speed = 0.8}>90%</button>
-            <button onClick={() => props.playback.speed = 0.75}>80%</button>
-            <button onClick={() => props.playback.speed = 0.5}>70%</button>
-        </div>
-    );
+    return <button className="PlayButton" onClick={onClick}>{player.isPlaying ? "PAUSE" : "PLAY"} [SPACE]</button>
 }
 
-function PlaybackSpeedButton(props: { playback: Playback, value: number, current: number }) {
-    return <button
-        className={props.value === props.current ? "active" : ""}
-        onClick={() => { }}
-    >
-        {props.value * 100}%
-    </button>
+function ResetButton() {
+    const player = useResource(Player)
+
+    return <button className="ResetButton" onClick={() => player.reset()}>RESET [R]</button>
 }
