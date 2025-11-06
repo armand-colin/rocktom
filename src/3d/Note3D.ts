@@ -3,6 +3,7 @@ import type { NoteMeshes } from "../resources/NoteMeshes";
 import type { Instrument } from "../sound/instrument/Instrument";
 import type { NoteEvent } from "../sound/song/Pattern";
 import { Rules } from "./Rules";
+import { Bloom } from "./Bloom";
 
 const TIME_RATIO = 0.05
 
@@ -47,13 +48,9 @@ export class Note3D extends Object3D {
             ticks > this._note.time &&
             ticks <= this._note.time + this._note.duration
         ) {
-            if (this._tail)
-                this._tail.material = this._highlightMaterial
-            this._tile.material = this._highlightMaterial
+            Bloom.enable(this)
         } else {
-            if (this._tail)
-                this._tail.material = this._baseMaterial
-            this._tile.material = this._baseMaterial
+            Bloom.disable(this)
         }
     }
 

@@ -26,6 +26,10 @@ export class Player extends Resource {
         return this._time
     }
 
+    get isPlaying() {
+        return this._playingCoroutine !== null
+    }
+
     bind(playback: Playback) {
         this._playback = playback
         this._time = 0
@@ -38,6 +42,7 @@ export class Player extends Resource {
 
         this._playingCoroutine = this.engine.scheduler.add(this._play())
         this._playback?.play()
+        this.changed()
     }
 
     pause() {
@@ -45,13 +50,16 @@ export class Player extends Resource {
             this._playingCoroutine.cancel()
             this._playingCoroutine = null
         }
+        
         this._playback?.pause()
+        this.changed()
     }
 
     reset() {
         this._time = 0
         this._lastUpdate = this._soundEngine.currentTime
         this._playback?.reset()
+        this._update()
     }
 
     clear() {
@@ -77,13 +85,7 @@ export class Player extends Resource {
 
     private _update() {
         const deltaTime = this._soundEngine.currentTime - this._lastUpdate
-
-        if (deltaTime === 0) {
-            return
-        }
-
         this._playback?.update(deltaTime)
-
         this._time += deltaTime
     }
 

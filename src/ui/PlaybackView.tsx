@@ -22,18 +22,33 @@ export function PlaybackView(props: { playback: Playback }) {
 function PlaybackControls(props: { playback: Playback }) {
     const player = useResource(Player)
 
+    function handlePlay() {
+        if (player.isPlaying)
+            player.pause()
+        else
+            player.play()
+    }
+
     return (
         <div className="PlaybackControls">
-            <button onClick={() => player.play()}>Play</button>
-            <button onClick={() => player.pause()}>Pause</button>
+            <button onClick={handlePlay}>{player.isPlaying ? "Pause" : "Play"}</button>
             <button onClick={() => player.reset()}>Reset</button>
-
             <button onClick={() => player.clear()}>Back to song list</button><br />
 
+            <p>Playback speed</p>
             <button onClick={() => props.playback.speed = 1.0}>100%</button>
             <button onClick={() => props.playback.speed = 0.8}>90%</button>
             <button onClick={() => props.playback.speed = 0.75}>80%</button>
             <button onClick={() => props.playback.speed = 0.5}>70%</button>
         </div>
     );
+}
+
+function PlaybackSpeedButton(props: { playback: Playback, value: number, current: number }) {
+    return <button
+        className={props.value === props.current ? "active" : ""}
+        onClick={() => { }}
+    >
+        {props.value * 100}%
+    </button>
 }

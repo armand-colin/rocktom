@@ -61,9 +61,6 @@ export class Playback extends Component {
     }
 
     update(deltaTime: number) {
-        if (deltaTime === 0)
-            return
-
         deltaTime = deltaTime * this._speed
 
         // for (const noteEvent of this._reader.update(deltaTime)) {

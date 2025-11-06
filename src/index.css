@@ -1,7 +1,18 @@
+@font-face {
+    font-family: 'Stack';
+    src: url("./assets/fonts/StackSans.ttf");
+}
+
+body {
+    font-family: 'Stack';
+    font-size: 14px;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     color: inherit;
     font-size: inherit;
+    font-family: inherit;
 }
