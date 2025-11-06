@@ -1,4 +1,5 @@
 import { Component, Engine } from "@niloc/ecs";
+import { Workspace } from "../resources/Workspace";
 
 export class LiveInstrument extends Component {
 
@@ -12,6 +13,9 @@ export class LiveInstrument extends Component {
         this._mediaStream = stream
         this._name = name
         this._streamId = streamId
+
+        const workspace = engine.getResource(Workspace)
+        workspace.setMicrophoneStream(this._mediaStream)
     }
 
     get name() {
@@ -27,8 +31,10 @@ export class LiveInstrument extends Component {
     }
 
     destroy() {
-        console.log('destroying', this._name, this._streamId)
+        // console.log('destroying', this._name, this._streamId)
         this._mediaStream.getTracks().forEach(track => track.stop())
+        const workspace = this.engine.getResource(Workspace)
+        // workspace.clearMicrophoneStream(this._mediaStream)
     }
 
 }

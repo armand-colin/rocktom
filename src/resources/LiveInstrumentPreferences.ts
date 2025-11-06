@@ -4,6 +4,7 @@ export class LiveInstrumentPreferences extends Resource {
 
     private _octaver: number = 0
     private _deviceId: string | null = null
+    private _volume: number = 1.0
 
     constructor(engine: Engine) {
         super(engine)
@@ -15,6 +16,16 @@ export class LiveInstrumentPreferences extends Resource {
 
     set deviceId(id: string | null) {
         this._deviceId = id
+        this.changed()
+    }
+
+    get volume() {
+        return this._volume
+    }
+
+    set volume(volume: number) {
+        this._volume = volume
+        this.save()
         this.changed()
     }
 
@@ -32,7 +43,8 @@ export class LiveInstrumentPreferences extends Resource {
     save() {
         localStorage.setItem('Instrument', JSON.stringify({
             octaver: this._octaver,
-            deviceId: this._deviceId
+            deviceId: this._deviceId,
+            volume: this._volume
         }))
     }
 
@@ -41,10 +53,11 @@ export class LiveInstrumentPreferences extends Resource {
         if (entry === null)
             return
 
-        const { octaver, deviceId } = JSON.parse(entry)
+        const { octaver, deviceId, volume } = JSON.parse(entry)
 
-        this._octaver = octaver
-        this._deviceId = deviceId
+        this._octaver = octaver ?? 0
+        this._deviceId = deviceId ?? null
+        this._volume = volume ?? 1.0
 
         this.changed()
     }

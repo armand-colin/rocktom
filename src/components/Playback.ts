@@ -1,6 +1,7 @@
 import { Component, type Engine } from "@niloc/ecs";
 import { NeckMesh } from "../3d/NeckMesh";
 import { NoteMeshes } from "../resources/NoteMeshes";
+import { PlaybackPreferences } from "../resources/PlaybackPreferences";
 import { Renderer } from "../resources/Renderer";
 import { YoutubePlayer } from "../resources/YoutubePlayer";
 import { Bass } from "../sound/instrument/Instrument";
@@ -17,6 +18,7 @@ export class Playback extends Component {
     private _reader: LevelReader
     private _rig: CameraRig
     private _speed = 1.0
+    private _youtubeVolume = 1.0
 
     constructor(
         engine: Engine,
@@ -24,12 +26,16 @@ export class Playback extends Component {
     ) {
         super(engine)
 
+        const preferences = engine.getResource(PlaybackPreferences)
+        this._youtubeVolume = preferences.youtubeVolume
+
         this._reader = new LevelReader(level)
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
 
         this._youtubePlayer = this.engine.getResource(YoutubePlayer)
         const audioTrack = level.audioTrack
         this._youtubePlayer.load(audioTrack.youtubeVideoId)
+        this._youtubePlayer.setVolume(this._youtubeVolume)
 
         const instrument = new Bass()
         const neck = NeckMesh.create(instrument, engine.getResource(NoteMeshes))
@@ -54,6 +60,17 @@ export class Playback extends Component {
     set speed(value: number) {
         this._speed = value
         this._youtubePlayer.setSpeed(value)
+        this.changed()
+    }
+
+    get youtubeVolume() {
+        return this._youtubeVolume
+    }
+
+    set youtubeVolume(value: number) {
+        this._youtubeVolume = value
+        this.engine.getResource(PlaybackPreferences).youtubeVolume = value
+        this._youtubePlayer.setVolume(value)
         this.changed()
     }
 

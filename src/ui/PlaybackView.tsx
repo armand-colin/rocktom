@@ -1,5 +1,5 @@
 import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
-import { useContext } from "react";
+import { useContext, type ChangeEvent } from "react";
 import type { Playback } from "../components/Playback";
 import { Player } from "../resources/Player";
 import { Renderer } from "../resources/Renderer";
@@ -32,6 +32,8 @@ function PlaybackControls(props: { playback: Playback }) {
                 <PlayButton />
                 <ResetButton />
             </div>
+
+            <YoutubeVolumeSlider playback={props.playback} />
 
             <div className="speed">
                 <p>Playback speed</p>
@@ -82,4 +84,25 @@ function ResetButton() {
     const player = useResource(Player)
 
     return <button className="ResetButton" onClick={() => player.reset()}>RESET [R]</button>
+}
+
+function YoutubeVolumeSlider(props: { playback: Playback }) {
+    const { youtubeVolume } = useComponent(props.playback)
+
+    function onChange(event: ChangeEvent<HTMLInputElement>) {
+        const value = parseFloat(event.target.value)
+        props.playback.youtubeVolume = value
+    }
+
+    return <div className="YoutubeVolumeSlider">
+        <label>Volume</label>
+        <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={youtubeVolume}
+            onChange={onChange}
+        />
+    </div>
 }

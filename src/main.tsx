@@ -6,11 +6,13 @@ import App from './App.tsx'
 import './index.css'
 import { LiveInstrumentPreferences } from './resources/LiveInstrumentPreferences.ts'
 import { NoteMeshes } from './resources/NoteMeshes.ts'
+import { PlaybackPreferences } from './resources/PlaybackPreferences.ts'
 
 const engine = new Engine()
 
 engine.getResource(LiveInstrumentPreferences).recover()
 engine.getResource(NoteMeshes).load()
+engine.getResource(PlaybackPreferences).recover()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

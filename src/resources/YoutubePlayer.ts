@@ -54,4 +54,8 @@ export class YoutubePlayer extends Resource {
         this._player.setPlaybackRate(speed)
     }
 
+    setVolume(volume: number) {
+        this._player.setVolume(volume * 100)
+    }
+
 }
