@@ -53,12 +53,16 @@ export class Player extends Resource {
         return this._instrument
     }
 
+
     setInstrument(instrument: LiveInstrument | null) {
         if (this._instrument)
             this._instrument.destroy()
 
         this._instrument = instrument
-        this._workspace.setMicrophoneStream(instrument?.stream ?? null)
+        if (instrument) {
+            instrument.output.connect(this._workspace.output)
+            instrument.output.connect(this._workspace.analyser)
+        }
 
         this.changed()
     }

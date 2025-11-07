@@ -18,6 +18,21 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
             this.node.connect(node.node)
     }
 
+    disconnect(node?: SoundNode) {
+        if (node === undefined) {
+            this._connections = []
+            if (this.node)
+                this.node.disconnect()
+        } else {
+            const index = this._connections.indexOf(node)
+            if (index !== -1) {
+                this._connections.splice(index, 1)
+                if (this.node && node.node)
+                    this.node.disconnect(node.node)
+            }
+        }
+    }
+
     setAudioContext(audioContext: AudioContext) {
         this.audioContext = audioContext
     }

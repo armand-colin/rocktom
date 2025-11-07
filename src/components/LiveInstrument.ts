@@ -1,11 +1,16 @@
 import { Component, Engine } from "@niloc/ecs";
-import { Workspace } from "../resources/Workspace";
+import { SoundEngine } from "../resources/SoundEngine";
+import type { GainSoundNode } from "../sound/node/GainSoundNode";
+import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
 
 export class LiveInstrument extends Component {
 
     private _name: string
     private _mediaStream: MediaStream
     private _streamId: string
+
+    private _streamNode: MediaStreamSoundNode
+    private _gain: GainSoundNode
 
     constructor(engine: Engine, stream: MediaStream, streamId: string, name: string) {
         super(engine)
@@ -14,8 +19,13 @@ export class LiveInstrument extends Component {
         this._name = name
         this._streamId = streamId
 
-        const workspace = engine.getResource(Workspace)
-        workspace.setMicrophoneStream(this._mediaStream)
+        const soundEngine = engine.getResource(SoundEngine)
+        this._streamNode = soundEngine.createMediaStreamNode()
+        this._streamNode.setStream(this._mediaStream)
+
+        this._gain = soundEngine.createGainNode()
+        this._gain.gain = 1.0
+        this._streamNode.connect(this._gain)
     }
 
     get name() {
@@ -26,15 +36,13 @@ export class LiveInstrument extends Component {
         return this._streamId
     }
 
-    get stream() {
-        return this._mediaStream
+    get output() {
+        return this._gain
     }
 
     destroy() {
-        // console.log('destroying', this._name, this._streamId)
         this._mediaStream.getTracks().forEach(track => track.stop())
-        const workspace = this.engine.getResource(Workspace)
-        // workspace.clearMicrophoneStream(this._mediaStream)
+        this._gain.disconnect()
     }
 
 }
