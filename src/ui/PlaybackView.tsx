@@ -5,10 +5,13 @@ import { Player } from "../resources/Player";
 import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
 import "./PlaybackView.scss";
+import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const renderer = engine.getResource(Renderer)
+    const { instrument } = useResource(Player)
+
 
     return <div className="PlaybackView">
         <div className="canvas">
@@ -16,6 +19,7 @@ export function PlaybackView(props: { playback: Playback }) {
         </div>
 
         <PlaybackControls playback={props.playback} />
+        {instrument ? <LiveInstrumentView instrument={instrument} /> : null}
     </div>
 }
 

@@ -53,7 +53,6 @@ export class Player extends Resource {
         return this._instrument
     }
 
-
     setInstrument(instrument: LiveInstrument | null) {
         if (this._instrument)
             this._instrument.destroy()

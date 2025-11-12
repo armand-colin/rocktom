@@ -11,6 +11,7 @@ export class LiveInstrument extends Component {
 
     private _streamNode: MediaStreamSoundNode
     private _gain: GainSoundNode
+    private _volume: number = 1.0
 
     constructor(engine: Engine, stream: MediaStream, streamId: string, name: string) {
         super(engine)
@@ -26,6 +27,16 @@ export class LiveInstrument extends Component {
         this._gain = soundEngine.createGainNode()
         this._gain.gain = 1.0
         this._streamNode.connect(this._gain)
+    }
+
+    get volume() {
+        return this._volume
+    }
+
+    set volume(value: number) {
+        this._volume = value
+        this._gain.gain = value
+        this.changed()
     }
 
     get name() {
