@@ -6,7 +6,7 @@ export interface AudioRange {
 export const AudioRange = {
     default(): AudioRange {
         return {
-            silence: -100,
+            silence: -120,
             peak: -40,
         }
     }

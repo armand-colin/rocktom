@@ -1,23 +1,21 @@
 import { Component, Engine } from "@niloc/ecs";
-import type { Coroutine } from "@niloc/utils";
 import { SoundEngine } from "../resources/SoundEngine";
 import { Schedules } from "../Schedules";
 import type { AudioRange } from "../sound/AudioRange";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import type { LiveInstrument } from "./LiveInstrument";
 
-export enum RangeTunerMode {
+export enum AudioRangeTunerMode {
     Silence,
     Peak,
     None
 }
 
-export class RangeTuner extends Component {
+export class AudioRangeTuner extends Component {
 
     private _instrument: LiveInstrument
     private _analyser: SoundAnalyserNode
-    private _mode: RangeTunerMode = RangeTunerMode.None
-    private _updateCoroutine: Coroutine
+    private _mode: AudioRangeTunerMode = AudioRangeTunerMode.None
 
     private _samples: number[] = []
     private _average: number = 0
@@ -32,16 +30,16 @@ export class RangeTuner extends Component {
         this._instrument = instrument
         const soundEngine = engine.getResource(SoundEngine)
 
-        this._analyser = soundEngine.createAnalyserNode()
+        this._analyser = soundEngine.createAnalyserNode(instrument.range)
         this._instrument.rawOutput.connect(this._analyser)
-        this._updateCoroutine = engine.scheduler.add(this._update())
+        this.startCoroutine(this._update())
     }
 
     get mode() {
         return this._mode
     }
 
-    set mode(value: RangeTunerMode) {
+    set mode(value: AudioRangeTunerMode) {
         this._mode = value
         this._samples = []
         this._average = 0
@@ -50,13 +48,17 @@ export class RangeTuner extends Component {
 
     get volume() {
         switch (this._mode) {
-            case RangeTunerMode.Silence:
+            case AudioRangeTunerMode.Silence:
                 return this._range.silence
-            case RangeTunerMode.Peak:
+            case AudioRangeTunerMode.Peak:
                 return this._range.peak
             default:
                 return 0
         }
+    }
+
+    get frequencies() {
+        return this._analyser.frequencies.slice(0, 256)
     }
 
     save() {
@@ -66,11 +68,11 @@ export class RangeTuner extends Component {
     private *_update() {
         while (true) {
             switch (this._mode) {
-                case RangeTunerMode.Silence: {
+                case AudioRangeTunerMode.Silence: {
                     this._udpateSilenceRange()
                     break
                 }
-                case RangeTunerMode.Peak: {
+                case AudioRangeTunerMode.Peak: {
                     this._updatePeakRange()
                     break
                 }
@@ -103,7 +105,7 @@ export class RangeTuner extends Component {
     }
 
     destroy() {
-        this._updateCoroutine.cancel()
+        super.destroy()
         this._analyser.destroy()
     }
 

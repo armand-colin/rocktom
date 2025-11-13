@@ -1,13 +1,14 @@
 import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
+import { useContext, useState, type CSSProperties, type ReactNode } from "react";
+import { AudioInspector } from "../../components/AudioInspector";
 import type { LiveInstrument } from "../../components/LiveInstrument";
-import "./LiveInstrumentView.scss";
+import { useComponentInstance } from "../../hooks/useComponentInstance";
 import { Player } from "../../resources/Player";
-import { InstrumentList } from "../instrumentList/InstrumentList";
-import { useContext, useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { Workspace } from "../../resources/Workspace";
-import { Schedules } from "../../Schedules";
-import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
+import { AudioRangeOverlay } from "../audioRangeOverlay/AudioRangeOverlay";
 import { Button } from "../button/Button";
+import { InstrumentList } from "../instrumentList/InstrumentList";
+import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
+import "./LiveInstrumentView.scss";
 
 export function LiveInstrumentView() {
     const { instrument } = useResource(Player)
@@ -30,15 +31,16 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
         <input
             type="range"
             min="0"
-            max="2"
+            max="10"
             step="0.05"
             value={volume}
             onChange={e => {
                 props.instrument.volume = parseFloat(e.target.value)
             }}
         />
-        <VolumePreview />
-        <TuneButton />
+        <VolumePreview instrument={props.instrument} />
+        <TuneButton instrument={props.instrument} />
+        <AudioRangeTuneButton instrument={props.instrument} />
         <Button onClick={(e) => {
             e.stopPropagation()
             engine.getResource(Player).setInstrument(null)
@@ -46,28 +48,9 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
     </div>
 }
 
-
-function VolumePreview() {
-    const engine = useContext(EngineContext).engine
-    const workspace = engine.getResource(Workspace)
-    const [volume, setVolume] = useState(0)
-
-
-    useEffect(() => {
-        function* update() {
-            while (true) {
-                const volume = workspace.analyser.getVolume()
-                setVolume(volume)
-                yield Schedules.Frame
-            }
-        }
-
-        const coroutine = engine.scheduler.add(update())
-
-        return () => {
-            coroutine.cancel()
-        }
-    }, [engine, workspace])
+function VolumePreview(props: { instrument: LiveInstrument }) {
+    const inspector = useComponentInstance(AudioInspector, props.instrument.rawOutput)
+    const { volume } = useComponent(inspector)
 
     return <div
         className="VolumePreview"
@@ -79,7 +62,7 @@ function VolumePreview() {
     </div>
 }
 
-function TuneButton() {
+function TuneButton(props: { instrument: LiveInstrument }) {
     const [overlay, setOverlay] = useState<ReactNode | null>(null)
 
     function onClick() {
@@ -88,7 +71,10 @@ function TuneButton() {
             return
         }
 
-        setOverlay(<TunerOverlay onClose={() => setOverlay(null)} />)
+        setOverlay(<TunerOverlay
+            onClose={() => setOverlay(null)}
+            instrument={props.instrument}
+        />)
     }
 
     return <>
@@ -99,3 +85,24 @@ function TuneButton() {
     </>
 }
 
+function AudioRangeTuneButton(props: { instrument: LiveInstrument }) {
+    const [overlay, setOverlay] = useState<ReactNode | null>(null)
+
+    function onClick() {
+        if (overlay !== null) {
+            setOverlay(null)
+            return
+        }
+        setOverlay(<AudioRangeOverlay
+            onClose={() => setOverlay(null)}
+            instrument={props.instrument}
+        />)
+    }
+
+    return <>
+        <Button className="AudioRangeTuneButton" onClick={onClick}>
+            Audio Range
+        </Button>
+        {overlay}
+    </>
+}

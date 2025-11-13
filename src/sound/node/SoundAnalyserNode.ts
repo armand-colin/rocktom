@@ -46,8 +46,9 @@ function getPeakIndex(array: Float32Array, index: number): number {
 
 export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
 
-    static THRESHOLD = 0.0
+    static THRESHOLD = 0.3
 
+    private _rawFrequencies = new Float32Array(0)
     private _frequencies = new Float32Array(0)
     private _coroutine: Coroutine
     private _range: AudioRange
@@ -55,8 +56,8 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
     constructor(engine: Engine, audioContext: AudioContext, range: AudioRange) {
         super(audioContext)
         this.node = this.build()
-        this._coroutine = engine.scheduler.add(this._computeCoroutine())
         this._range = range
+        this._coroutine = engine.scheduler.add(this._computeCoroutine())
         Object.assign(window, { analyser: this })
     }
 
@@ -92,15 +93,20 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
     }
 
     private _compute() {
-        if (this._frequencies.length !== this.node.frequencyBinCount)
+        if (this._frequencies.length !== this.node.frequencyBinCount) {
             this._frequencies = new Float32Array(this.node.frequencyBinCount)
+            this._rawFrequencies = new Float32Array(this.node.frequencyBinCount)
+        }
 
-        this.node.getFloatFrequencyData(this._frequencies)
+        this.node.getFloatFrequencyData(this._rawFrequencies)
+        this._frequencies.set(this._rawFrequencies)
 
-        // Shall cleanup frequencies
+        // Map frequecies to 0 - 1 based on audio range
+        const minDb = this._range.silence
+        const maxDb = this._range.peak
         for (let i = 0; i < this._frequencies.length; i++) {
-            const frequency = Math.max(this._range.silence, Math.min(this._range.peak, this._frequencies[i]))
-            this._frequencies[i] = (frequency - this._range.silence) / (this._range.peak - this._range.silence)
+            this._frequencies[i] = (this._frequencies[i] - minDb) / (maxDb - minDb)
+            this._frequencies[i] = Math.min(Math.max(this._frequencies[i], 0), 1)
         }
     }
 
@@ -112,6 +118,8 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
                 return index * frequencyStep
             }
         }
+
+        console.log("returning 0")
 
         return 0
     }

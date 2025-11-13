@@ -1,12 +1,8 @@
 import { Component, Engine } from "@niloc/ecs";
 import { SoundEngine } from "../resources/SoundEngine";
+import { AudioRange } from "../sound/AudioRange";
 import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
-
-interface AudioRange {
-    silence: number,
-    peak: number,
-}
 
 export class LiveInstrument extends Component {
 
@@ -17,7 +13,7 @@ export class LiveInstrument extends Component {
     private _streamNode: MediaStreamSoundNode
     private _gain: GainSoundNode
     private _volume: number = 1.0
-    private _range: AudioRange | null = null
+    private _range: AudioRange
 
     constructor(engine: Engine, stream: MediaStream, streamId: string, name: string) {
         super(engine)
@@ -25,6 +21,7 @@ export class LiveInstrument extends Component {
         this._mediaStream = stream
         this._name = name
         this._streamId = streamId
+        this._range = AudioRange.default()
 
         const soundEngine = engine.getResource(SoundEngine)
         this._streamNode = soundEngine.createMediaStreamNode()
@@ -65,7 +62,7 @@ export class LiveInstrument extends Component {
         return this._range
     }
 
-    set range(value: AudioRange | null) {
+    set range(value: AudioRange) {
         this._range = value
         this.changed()
     }

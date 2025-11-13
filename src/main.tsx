@@ -1,6 +1,5 @@
 import { Engine } from '@niloc/ecs'
 import { EngineContext } from '@niloc/ecs-react'
-import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
@@ -15,9 +14,7 @@ engine.getResource(NoteMeshes).load()
 engine.getResource(PlaybackPreferences).recover()
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <EngineContext.Provider value={{ engine }}>
-      <App />
-    </EngineContext.Provider>
-  </StrictMode>,
+  <EngineContext.Provider value={{ engine }}>
+    <App />
+  </EngineContext.Provider>
 )

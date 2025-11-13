@@ -5,7 +5,6 @@ import type { Playback } from "../components/Playback";
 import { Schedules } from "../Schedules";
 import { Input, InputManager } from "./InputManager";
 import { SoundEngine } from "./SoundEngine";
-import { Workspace } from "./Workspace";
 
 export class Player extends Resource {
 
@@ -16,13 +15,10 @@ export class Player extends Resource {
     private _playback: Playback | null = null
     private _soundEngine: SoundEngine
     private _instrument: LiveInstrument | null = null
-    private _workspace: Workspace
 
     constructor(engine: Engine) {
         super(engine)
         this._soundEngine = this.engine.getResource(SoundEngine)
-        this._workspace = this.engine.getResource(Workspace)
-
         const inputManager = this.engine.getResource(InputManager)
 
         inputManager.register(Input.Play, () => {
@@ -60,8 +56,8 @@ export class Player extends Resource {
         this._instrument = instrument
 
         if (instrument) {
-            instrument.output.connect(this._workspace.output)
-            instrument.output.connect(this._workspace.analyser)
+            const soundEngine = this.engine.getResource(SoundEngine)
+            instrument.output.connect(soundEngine.output)
         }
 
         this.changed()

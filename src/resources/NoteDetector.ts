@@ -1,18 +1,19 @@
-import { Engine, Resource } from "@niloc/ecs";
+import { Component, Engine } from "@niloc/ecs";
+import type { LiveInstrument } from "../components/LiveInstrument";
 import { Schedules } from "../Schedules";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import { FineNote } from "../sound/note/Note";
-import { Workspace } from "./Workspace";
+import { SoundEngine } from "./SoundEngine";
 
-export class NoteDetector extends Resource {
+export class NoteDetector extends Component {
 
     private _analyser: SoundAnalyserNode
     private _detectedNotes: FineNote[] = []
 
-    constructor(engine: Engine) {
+    constructor(engine: Engine, instrument: LiveInstrument) {
         super(engine)
-        this._analyser = this.engine.getResource(Workspace).analyser
-        this.engine.scheduler.add(this._updateCoroutine())
+        this._analyser = engine.getResource(SoundEngine).createAnalyserNode(instrument.range)
+        this.startCoroutine(this._updateCoroutine())
         Object.assign(window, { detector: this })
     }
 
@@ -33,4 +34,8 @@ export class NoteDetector extends Resource {
         this.changed()
     }
 
+    destroy(): void {
+        super.destroy()
+        this._analyser.destroy()
+    }
 }

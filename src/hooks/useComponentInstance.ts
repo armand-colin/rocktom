@@ -1,19 +1,24 @@
 import type { Component, ComponentConstructor } from "@niloc/ecs"
 import { EngineContext } from "@niloc/ecs-react"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef } from "react"
 
 export function useComponentInstance<T extends Component, Args extends unknown[]>(
     constructor: ComponentConstructor<T, Args>,
     ...args: Args
 ): T {
     const { engine } = useContext(EngineContext)
-    const [instance] = useState(() => engine.createComponent(constructor, ...args))
+    const instance = useRef<T | null>(null)
 
     useEffect(() => {
         return () => {
-            instance.destroy()
+            instance.current?.destroy()
+            instance.current = null
         }
-    }, [engine, instance])
+    }, [instance])
 
-    return instance
+    if (instance.current === null)
+        instance.current = engine.createComponent(constructor, ...args)
+
+
+    return instance.current
 }
