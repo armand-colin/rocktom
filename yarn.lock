@@ -420,18 +420,18 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@niloc/ecs-react@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@niloc/ecs-react/-/ecs-react-0.0.7.tgz#cb8b78a66d47625d8604fbdfcb099c58731a2cdf"
-  integrity sha512-IQeDx1DCrJGafgfb/tkIdv3gqkMeErUYucUZm74lQTedgVQKhlmvQFfrPV3xfzIE+6hJ0rwfqRF9QK/Tg60+lQ==
+"@niloc/ecs-react@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@niloc/ecs-react/-/ecs-react-0.0.8.tgz#f23b77856ca57152d95bf5da4d9fa57f0d085d64"
+  integrity sha512-3l4qsxIjrF3Hix75+VuJSrJP9li6Q7lYiYfnnlyNReUsqj2CT/rNtXcFxYnfBFtfX3pJTuFUvVHtd5Rm5LVbIg==
   dependencies:
-    "@niloc/ecs" "^0.0.6"
+    "@niloc/ecs" "^0.0.7"
     react "^19.2.0"
 
-"@niloc/ecs@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@niloc/ecs/-/ecs-0.0.6.tgz#b369be8b967534cfe1e740ca8bbf0d6edb4e15f9"
-  integrity sha512-KjDUo6g38D5kDBFameb1frQlCsUxgrM27rreNRCLGD0YBQFVxIp2M2/rbr/pZxAGX2yF0e3jRjuDbfAqAFqaGg==
+"@niloc/ecs@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@niloc/ecs/-/ecs-0.0.7.tgz#13e8885b9c49df32955e65e2a62a935b8fe4cb2d"
+  integrity sha512-lPp8/ZiE0b8jWXSl0+6faLtNekJoH4aCNPn5bK/9hPvVrnE8XxnjK2KsEPbQ3yyX4jAQWLjjcGW5sEUJCkzc2g==
   dependencies:
     "@niloc/utils" "^0.1.14"
     nanoid "^3.3.6"

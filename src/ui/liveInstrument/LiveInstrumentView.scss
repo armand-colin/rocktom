@@ -6,4 +6,15 @@
     position: absolute;
     top: 24px;
     right: 24px;
+
+    .VolumePreview {
+        height: 8px;
+        outline: 1px solid white;
+
+        .bar {
+            width: calc(var(--volume) * 100%);
+            height: 100%;
+            background: white;
+        }
+    }
 }
