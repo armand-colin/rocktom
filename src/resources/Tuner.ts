@@ -21,6 +21,7 @@ export class Tuner extends Resource {
 
     private *_update() {
         while (true) {
+            // const instrument = this.engine.getResource(Player).instrument
             this._detectedFrequency = this._analyser.getLowestFrequency()
             this.changed()
             yield Schedules.Frame

@@ -84,10 +84,10 @@ export function liz(): Level {
 
     const level = new Level(
         "Liz",
-        "Unknown",
+        "Remi Wolf",
         timing,
         {
-            audio: new AudioTrack("JIniBJm2F7A", 2.1),
+            audio: new AudioTrack("JIniBJm2F7A", 2.3),
             bass: track.linearize(),
             tempo: new TempoTrack()
         }

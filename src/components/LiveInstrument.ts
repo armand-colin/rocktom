@@ -3,6 +3,11 @@ import { SoundEngine } from "../resources/SoundEngine";
 import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
 
+interface AudioRange {
+    silence: number,
+    peak: number,
+}
+
 export class LiveInstrument extends Component {
 
     private _name: string
@@ -12,6 +17,7 @@ export class LiveInstrument extends Component {
     private _streamNode: MediaStreamSoundNode
     private _gain: GainSoundNode
     private _volume: number = 1.0
+    private _range: AudioRange | null = null
 
     constructor(engine: Engine, stream: MediaStream, streamId: string, name: string) {
         super(engine)
@@ -49,6 +55,19 @@ export class LiveInstrument extends Component {
 
     get output() {
         return this._gain
+    }
+
+    get rawOutput() {
+        return this._streamNode
+    }
+
+    get range() {
+        return this._range
+    }
+
+    set range(value: AudioRange | null) {
+        this._range = value
+        this.changed()
     }
 
     destroy() {

@@ -6,6 +6,7 @@ export class YoutubePlayer extends Resource {
 
     private _player: PlayerInstance
     readonly element: HTMLDivElement
+    private _time: number = 0
 
     constructor(engine: Engine) {
         super(engine)
@@ -30,12 +31,24 @@ export class YoutubePlayer extends Resource {
         })
 
         Object.assign(window, { youtubePlayer: this })
+
+        this._player.on('stateChange', (event) => {
+            console.log('stateChange', event)
+        })
     }
 
     async load(videoId: string) {
         await this._player.loadVideoById({ videoId })
         await this._player.pauseVideo()
         await this._player.seekTo(0, true)
+    }
+
+    get time() {
+        this._player.getCurrentTime().then(time => {
+            this._time = time
+        })
+
+        return this._time
     }
 
     play() {
@@ -47,6 +60,7 @@ export class YoutubePlayer extends Resource {
     }
 
     seek(seconds: number) {
+        this._time = seconds
         this._player.seekTo(seconds, true)
     }
 

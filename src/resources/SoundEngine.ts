@@ -1,4 +1,5 @@
 import { Engine, Resource } from "@niloc/ecs"
+import type { AudioRange } from "../sound/AudioRange"
 import { AudioBufferSoundNode } from "../sound/node/AudioElementSoundNode"
 import { DestinationSoundNode } from "../sound/node/DestinationSoundNode"
 import { GainSoundNode } from "../sound/node/GainSoundNode"
@@ -47,8 +48,8 @@ export class SoundEngine extends Resource {
             node.refreshConnections()
     }
 
-    createAnalyserNode(): SoundAnalyserNode {
-        const node = new SoundAnalyserNode(this.engine, this._audioContext)
+    createAnalyserNode(range: AudioRange): SoundAnalyserNode {
+        const node = new SoundAnalyserNode(this.engine, this._audioContext, range)
         this._nodes.push(node)
         return node
     }

@@ -58,6 +58,7 @@ export class Player extends Resource {
             this._instrument.destroy()
 
         this._instrument = instrument
+
         if (instrument) {
             instrument.output.connect(this._workspace.output)
             instrument.output.connect(this._workspace.analyser)

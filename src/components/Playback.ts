@@ -83,13 +83,6 @@ export class Playback extends Component {
     }
 
     update(deltaTime: number) {
-        deltaTime = deltaTime * this._speed
-
-        // for (const noteEvent of this._reader.update(deltaTime)) {
-        //     // Shall handle notes
-        //     // console.log("Should handle", noteEvent)
-        // }
-
         if (
             this.level.audioTrack.startTime > this._time &&
             this.level.audioTrack.startTime <= this._time + deltaTime
@@ -97,6 +90,13 @@ export class Playback extends Component {
             this._youtubePlayer.play()
         }
 
+        if (this.level.audioTrack.startTime <= this._time) {
+            // Try to compensate for Youtube lag
+            const deltaTimeYoutube = this._time - this._youtubePlayer.time - this.level.audioTrack.startTime
+            deltaTime -= deltaTimeYoutube / 24
+        }
+
+        deltaTime = deltaTime * this._speed
         this._time += deltaTime
 
         const ticks = this.level.timing.ticksFromSeconds(this._time)

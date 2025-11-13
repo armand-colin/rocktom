@@ -1,6 +1,7 @@
 import type { Engine } from "@niloc/ecs";
-import { Duration } from "@niloc/utils";
+import { Coroutine, Duration } from "@niloc/utils";
 import { Schedules } from "../../Schedules";
+import type { AudioRange } from "../AudioRange";
 import { Time } from "../Time";
 import { SoundNode } from "./SoundNode";
 
@@ -45,14 +46,17 @@ function getPeakIndex(array: Float32Array, index: number): number {
 
 export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
 
-    static THRESHOLD = 0.05
+    static THRESHOLD = 0.0
 
     private _frequencies = new Float32Array(0)
+    private _coroutine: Coroutine
+    private _range: AudioRange
 
-    constructor(engine: Engine, audioContext: AudioContext) {
+    constructor(engine: Engine, audioContext: AudioContext, range: AudioRange) {
         super(audioContext)
         this.node = this.build()
-        engine.scheduler.add(this._computeCoroutine())
+        this._coroutine = engine.scheduler.add(this._computeCoroutine())
+        this._range = range
         Object.assign(window, { analyser: this })
     }
 
@@ -69,6 +73,11 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
         analyser.fftSize = FFT_SIZE
         analyser.smoothingTimeConstant = Duration.seconds(Time.audioInterval)
         return analyser
+    }
+
+    destroy() {
+        this.disconnect()
+        this._coroutine.cancel()
     }
 
     rebuild(): void {
@@ -88,11 +97,10 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
 
         this.node.getFloatFrequencyData(this._frequencies)
 
-        // Cleanup data
+        // Shall cleanup frequencies
         for (let i = 0; i < this._frequencies.length; i++) {
-            const raw = this._frequencies[i]
-            const value = Math.max(Math.min(raw + 120, 100), 0) / 120
-            this._frequencies[i] = value ** 2
+            const frequency = Math.max(this._range.silence, Math.min(this._range.peak, this._frequencies[i]))
+            this._frequencies[i] = (frequency - this._range.silence) / (this._range.peak - this._range.silence)
         }
     }
 
@@ -139,7 +147,7 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
     }
 
     getVolume() {
-        let max = 0
+        let max = -Infinity
         for (let i = 0; i < this._frequencies.length; i++)
             max = Math.max(max, this._frequencies[i])
 

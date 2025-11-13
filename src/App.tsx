@@ -10,6 +10,7 @@ import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { SoundEngine } from './resources/SoundEngine'
 import type { Level } from './sound/Level'
 import { LevelList } from './ui/levelList/LevelList'
+import { RangeTunerView } from './ui/rangeTuner/RangeTunerView'
 
 const levels = [
   liz(),
@@ -18,7 +19,7 @@ const levels = [
 
 function App() {
   const { engine } = useContext(EngineContext)
-  const { playback } = useResource(Player)
+  const { playback, instrument } = useResource(Player)
 
   async function onSelectLevel(level: Level) {
     engine.getResource(SoundEngine).resume()
@@ -38,6 +39,11 @@ function App() {
         playback ?
           <PlaybackView playback={playback} /> :
           <LevelList onSelect={onSelectLevel} levels={levels} />
+      }
+      {
+        instrument ?
+          <RangeTunerView instrument={instrument} /> :
+          null
       }
     </div>
   )
