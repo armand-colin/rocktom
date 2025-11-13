@@ -101,7 +101,7 @@ function AudioRangeTuneButton(props: { instrument: LiveInstrument }) {
 
     return <>
         <Button className="AudioRangeTuneButton" onClick={onClick}>
-            Audio Range
+            Audio Range ({props.instrument.range.silence.toFixed(0) + " - " + props.instrument.range.peak.toFixed(0)})
         </Button>
         {overlay}
     </>

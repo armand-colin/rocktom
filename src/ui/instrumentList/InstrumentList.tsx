@@ -40,7 +40,12 @@ function StreamItem(props: { stream: MediaStreamDescription }) {
     async function onClick() {
         liveInstrumentPreferences.deviceId = props.stream.deviceId
         const stream = await liveInstrumentPreferences.getMediaStream()
-        const liveInstrument = engine.createComponent(LiveInstrument, stream, props.stream.deviceId, props.stream.label)
+        const liveInstrument = engine.createComponent(LiveInstrument, {
+            stream,
+            streamId: props.stream.deviceId,
+            name: props.stream.label
+        })
+
         engine.getResource(SoundEngine).resume()
         player.setInstrument(liveInstrument)
     }

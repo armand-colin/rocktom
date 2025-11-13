@@ -1,7 +1,7 @@
 import { Component, Engine } from "@niloc/ecs";
 import { SoundEngine } from "../resources/SoundEngine";
 import { Schedules } from "../Schedules";
-import type { AudioRange } from "../sound/AudioRange";
+import { AudioRange } from "../sound/AudioRange";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import type { LiveInstrument } from "./LiveInstrument";
 
@@ -19,6 +19,7 @@ export class AudioRangeTuner extends Component {
 
     private _samples: number[] = []
     private _average: number = 0
+    private _analyserRange = AudioRange.default()
 
     private _range: AudioRange = {
         silence: 0,
@@ -30,7 +31,7 @@ export class AudioRangeTuner extends Component {
         this._instrument = instrument
         const soundEngine = engine.getResource(SoundEngine)
 
-        this._analyser = soundEngine.createAnalyserNode(instrument.range)
+        this._analyser = soundEngine.createAnalyserNode(this._analyserRange)
         this._instrument.rawOutput.connect(this._analyser)
         this.startCoroutine(this._update())
     }
@@ -49,9 +50,9 @@ export class AudioRangeTuner extends Component {
     get volume() {
         switch (this._mode) {
             case AudioRangeTunerMode.Silence:
-                return this._range.silence
+                return this._average
             case AudioRangeTunerMode.Peak:
-                return this._range.peak
+                return this._average
             default:
                 return 0
         }
@@ -83,6 +84,7 @@ export class AudioRangeTuner extends Component {
 
     private _updateVolume() {
         const volume = this._analyser.getVolume()
+
         this._samples.push(volume)
 
         if (this._samples.length > 100) {
@@ -94,13 +96,15 @@ export class AudioRangeTuner extends Component {
 
     private _udpateSilenceRange() {
         this._updateVolume()
-        this._range.silence = this._average
+        const decibels = (this._analyserRange.peak - this._analyserRange.silence) * this._average + this._analyserRange.silence
+        this._range.silence = decibels
         this.changed()
     }
 
     private _updatePeakRange() {
         this._updateVolume()
-        this._range.peak = this._average
+        const decibels = (this._analyserRange.peak - this._analyserRange.silence) * this._average + this._analyserRange.silence
+        this._range.peak = decibels
         this.changed()
     }
 

@@ -1,8 +1,15 @@
 import { Component, Engine } from "@niloc/ecs";
+import { LiveInstrumentPreferences } from "../resources/LiveInstrumentPreferences";
 import { SoundEngine } from "../resources/SoundEngine";
 import { AudioRange } from "../sound/AudioRange";
 import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
+
+type Opts = {
+    stream: MediaStream,
+    streamId: string,
+    name: string,
+}
 
 export class LiveInstrument extends Component {
 
@@ -12,23 +19,27 @@ export class LiveInstrument extends Component {
 
     private _streamNode: MediaStreamSoundNode
     private _gain: GainSoundNode
-    private _volume: number = 1.0
+
+    private _volume: number
     private _range: AudioRange
 
-    constructor(engine: Engine, stream: MediaStream, streamId: string, name: string) {
+    constructor(engine: Engine, opts: Opts) {
         super(engine)
 
-        this._mediaStream = stream
-        this._name = name
-        this._streamId = streamId
-        this._range = AudioRange.default()
+        this._mediaStream = opts.stream
+        this._name = opts.name
+        this._streamId = opts.streamId
 
         const soundEngine = engine.getResource(SoundEngine)
         this._streamNode = soundEngine.createMediaStreamNode()
         this._streamNode.setStream(this._mediaStream)
 
+        const preferences = engine.getResource(LiveInstrumentPreferences)
+        this._range = preferences.range ?? AudioRange.default()
+        this._volume = preferences.volume
+
         this._gain = soundEngine.createGainNode()
-        this._gain.gain = 1.0
+        this._gain.gain = this._volume
         this._streamNode.connect(this._gain)
     }
 
@@ -39,6 +50,7 @@ export class LiveInstrument extends Component {
     set volume(value: number) {
         this._volume = value
         this._gain.gain = value
+        this.engine.getResource(LiveInstrumentPreferences).volume = value
         this.changed()
     }
 
@@ -64,6 +76,7 @@ export class LiveInstrument extends Component {
 
     set range(value: AudioRange) {
         this._range = value
+        this.engine.getResource(LiveInstrumentPreferences).range = value
         this.changed()
     }
 
