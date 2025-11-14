@@ -49,6 +49,27 @@
             }
         }
 
+        .metronome {
+            margin-top: 12px;
+            margin-bottom: 12px;
+
+            > label {
+                margin-bottom: 8px;
+                display: inline-block;
+
+                .Toggle {
+                    display: inline-block;
+                    vertical-align: middle;
+                    margin-left: 4px;
+                }
+            }
+
+            .container {
+                display: flex;
+                gap: 8px;
+            }
+        }
+
         .PlaybackSpeedButton {
             padding: 8px;
             border-radius: 4px;

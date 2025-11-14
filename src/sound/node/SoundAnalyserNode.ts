@@ -119,8 +119,6 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
             }
         }
 
-        console.log("returning 0")
-
         return 0
     }
 

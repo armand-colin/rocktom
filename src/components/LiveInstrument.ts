@@ -23,6 +23,7 @@ export class LiveInstrument extends Component {
     private _volume: number
     private _range: AudioRange
     private _enablePlayback: boolean
+    private _octaverEnabled: boolean
 
     constructor(engine: Engine, opts: Opts) {
         super(engine)
@@ -39,6 +40,7 @@ export class LiveInstrument extends Component {
         this._range = preferences.range ?? AudioRange.default()
         this._volume = preferences.volume
         this._enablePlayback = preferences.enablePlayback
+        this._octaverEnabled = preferences.octaverEnabled
 
         this._gain = soundEngine.createGainNode()
         this._gain.gain = this._volume
@@ -81,6 +83,16 @@ export class LiveInstrument extends Component {
     set range(value: AudioRange) {
         this._range = value
         this.engine.getResource(LiveInstrumentPreferences).range = value
+        this.changed()
+    }
+
+    get octaverEnabled() {
+        return this._octaverEnabled
+    }
+
+    set octaverEnabled(value: boolean) {
+        this._octaverEnabled = value
+        this.engine.getResource(LiveInstrumentPreferences).octaverEnabled = value
         this.changed()
     }
 

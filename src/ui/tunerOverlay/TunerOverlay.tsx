@@ -27,7 +27,6 @@ export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () =>
     const t = Math.max(Math.min(cents, 20), -20) / 40 + 0.5
 
     function draw() {
-        console.log("drawing audio range overlay")
         const canvas = canvasRef.current
         if (!canvas) {
             return

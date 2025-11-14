@@ -27,11 +27,14 @@
     }
 
     &[aria-disabled="true"] {
-        background: #2a2a2a;
         pointer-events: none;
 
         .knob {
-            background: #6a6a6a;
+            background: var(--surface-active);
+        }
+
+        .before {
+            background: var(--surface-hover);
         }
     }
 

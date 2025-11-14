@@ -10,6 +10,7 @@ import { Slider } from "./slider/Slider";
 import { Icon } from "./icon/Icon";
 import { InputIcon } from "./inputIcon/InputIcon";
 import { Input } from "../resources/InputManager";
+import { Toggle } from "./toggle/Toggle";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -28,6 +29,7 @@ export function PlaybackView(props: { playback: Playback }) {
 function PlaybackControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const player = engine.getResource(Player)
+    const { metronomeEnabled, metronomeVolume } = useComponent(props.playback)
 
     return (
         <div className="PlaybackControls">
@@ -50,6 +52,22 @@ function PlaybackControls(props: { playback: Playback }) {
                     <PlaybackSpeedButton playback={props.playback} value={0.8} />
                     <PlaybackSpeedButton playback={props.playback} value={0.7} />
                 </div>
+            </div>
+
+            <div className="metronome">
+                <label>
+                    Metronome <Toggle 
+                        value={metronomeEnabled}
+                        onChange={v => { props.playback.metronomeEnabled = v }}
+                    />
+                </label>
+                <Slider
+                    min={0}
+                    max={1}
+                    value={metronomeVolume}
+                    onChange={v => { props.playback.metronomeVolume = v }}
+                    disabled={!metronomeEnabled}
+                />
             </div>
 
             <button 

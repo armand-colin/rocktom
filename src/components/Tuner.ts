@@ -8,16 +8,21 @@ export class Tuner extends Component {
 
     private _analyser: SoundAnalyserNode
     private _detectedFrequency: number = 0
+    private _instrument: LiveInstrument
 
     constructor(engine: Engine, instrument: LiveInstrument) {
         super(engine)
         this._analyser = engine.getResource(SoundEngine).createAnalyserNode(instrument.range)
+        this._instrument = instrument
         instrument.rawOutput.connect(this._analyser)
         this.startCoroutine(this._update())
         Object.assign(window, { tuner: this })
     }
 
     get detectedFrequency() {
+        if (this._instrument.octaverEnabled)
+            return this._detectedFrequency / 2
+
         return this._detectedFrequency
     }
 

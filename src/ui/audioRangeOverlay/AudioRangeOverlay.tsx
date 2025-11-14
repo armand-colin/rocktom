@@ -12,7 +12,6 @@ export function AudioRangeOverlay(props: { instrument: LiveInstrument, onClose: 
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
     function draw() {
-        console.log("drawing audio range overlay")
         const canvas = canvasRef.current
         if (!canvas) {
             return

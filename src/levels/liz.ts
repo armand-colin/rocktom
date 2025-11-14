@@ -90,7 +90,7 @@ export function liz(): Level {
         "Liz",
         "Remi Wolf",
         {
-            audio: new AudioTrack("JIniBJm2F7A", 2.3),
+            audio: new AudioTrack("JIniBJm2F7A", 2.35),
             bass: track.linearize(),
             tempo: new TempoTrack(tempo),
             focus: focusTrack,

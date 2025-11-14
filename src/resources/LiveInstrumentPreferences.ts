@@ -3,11 +3,11 @@ import type { AudioRange } from "../sound/AudioRange"
 
 export class LiveInstrumentPreferences extends Resource {
 
-    private _octaver: number = 0
     private _deviceId: string | null = null
     private _volume: number = 1.0
     private _range: AudioRange | null = null
     private _enablePlayback: boolean = true
+    private _octaverEnabled: boolean = false
 
     constructor(engine: Engine) {
         super(engine)
@@ -53,6 +53,16 @@ export class LiveInstrumentPreferences extends Resource {
         this.changed()
     }
 
+    get octaverEnabled() {
+        return this._octaverEnabled
+    }
+
+    set octaverEnabled(enabled: boolean) {
+        this._octaverEnabled = enabled
+        this.save()
+        this.changed()
+    }
+
     getMediaStream(): Promise<MediaStream> {
         return navigator.mediaDevices.getUserMedia({
             audio: {
@@ -66,7 +76,7 @@ export class LiveInstrumentPreferences extends Resource {
 
     save() {
         localStorage.setItem('Instrument', JSON.stringify({
-            octaver: this._octaver,
+            octaverEnabled: this._octaverEnabled,
             deviceId: this._deviceId,
             volume: this._volume,
             range: this._range,
@@ -79,9 +89,9 @@ export class LiveInstrumentPreferences extends Resource {
         if (entry === null)
             return
 
-        const { octaver, deviceId, volume, range, enablePlayback } = JSON.parse(entry)
+        const { octaverEnabled, deviceId, volume, range, enablePlayback } = JSON.parse(entry)
 
-        this._octaver = octaver ?? 0
+        this._octaverEnabled = octaverEnabled ?? false
         this._deviceId = deviceId ?? null
         this._volume = volume ?? 1.0
         this._range = range ?? null

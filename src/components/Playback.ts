@@ -9,6 +9,7 @@ import { Bass } from "../sound/instrument/Instrument";
 import { type Level } from "../sound/Level";
 import { CameraRig } from "./CameraRig";
 import { PlaybackNote } from "./PlaybackNote";
+import { Metronome } from "./Metronome";
 
 export class Playback extends Component {
 
@@ -16,8 +17,11 @@ export class Playback extends Component {
     private _notes: PlaybackNote[] = []
     private _youtubePlayer: YoutubePlayer
     private _rig: CameraRig
+    private _metronome: Metronome
     private _speed = 1.0
     private _youtubeVolume = 1.0
+    private _metronomeVolume = 0.2
+    private _metronomeEnabled = false
 
     constructor(
         engine: Engine,
@@ -29,11 +33,13 @@ export class Playback extends Component {
         this._youtubeVolume = preferences.youtubeVolume
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
+        this._metronome = engine.createComponent(Metronome)
 
         this._youtubePlayer = this.engine.getResource(YoutubePlayer)
         const audioTrack = level.audioTrack
-        this._youtubePlayer.load(audioTrack.youtubeVideoId)
+
         this._youtubePlayer.setVolume(this._youtubeVolume)
+        this._youtubePlayer.load(audioTrack.youtubeVideoId)
 
         const instrument = new Bass()
         const neck = NeckMesh.create(instrument, engine.getResource(NoteMeshes))
@@ -70,6 +76,25 @@ export class Playback extends Component {
         this.changed()
     }
 
+    get metronomeVolume() {
+        return this._metronomeVolume
+    }
+
+    set metronomeVolume(value: number) {
+        this._metronomeVolume = value
+        this._metronome.volume = value
+        this.changed()
+    }
+
+    get metronomeEnabled() {
+        return this._metronomeEnabled
+    }
+
+    set metronomeEnabled(value: boolean) {
+        this._metronomeEnabled = value
+        this.changed()
+    }
+
     destroy() {
         for (const note of this._notes)
             note.destroy()
@@ -79,13 +104,6 @@ export class Playback extends Component {
     }
 
     update(deltaTime: number) {
-        if (
-            this.level.audioTrack.startTime > this._time &&
-            this.level.audioTrack.startTime <= this._time + deltaTime
-        ) {
-            this._youtubePlayer.play()
-        }
-
         if (this.level.audioTrack.startTime <= this._time) {
             // Try to compensate for Youtube lag
             const deltaTimeYoutube = this._time - this._youtubePlayer.time - this.level.audioTrack.startTime
@@ -99,6 +117,9 @@ export class Playback extends Component {
         this._time += deltaTime
 
         const ticks = tempo.ticksFromSeconds(this._time)
+        
+        if (this._metronomeEnabled) 
+            this._metronome.update(ticks)
 
         for (const note of this._notes)
             note.update(ticks)
@@ -114,6 +135,8 @@ export class Playback extends Component {
     play() {
         if (this._time >= this.level.audioTrack.startTime)
             this._youtubePlayer.play()
+        else
+            this._youtubePlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime - this._time))
     }
 
     pause() {
@@ -122,9 +145,11 @@ export class Playback extends Component {
 
     reset() {
         this._time = 0
+        this._youtubePlayer.clearScheduledPlay()
         this._youtubePlayer.pause()
         this._youtubePlayer.seek(0)
         this._rig.focus(this.level.focusTrack.initialFocus)
+        this._metronome.reset()
     }
 
 }

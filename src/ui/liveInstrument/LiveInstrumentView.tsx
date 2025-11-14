@@ -11,6 +11,7 @@ import { InstrumentList } from "../instrumentList/InstrumentList";
 import { Slider, SliderScale } from "../slider/Slider";
 import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
 import "./LiveInstrumentView.scss";
+import { Toggle } from "../toggle/Toggle";
 
 export function LiveInstrumentView() {
     const { instrument } = useResource(Player)
@@ -48,6 +49,12 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
             />
         </div>
 
+        <p>Octaver</p>
+        <Toggle
+            value={props.instrument.octaverEnabled}
+            onChange={v => { props.instrument.octaverEnabled = v }}
+        />
+        
         {
             enablePlayback ?
                 <VolumePreview instrument={props.instrument} /> :

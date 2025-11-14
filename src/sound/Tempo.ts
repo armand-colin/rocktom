@@ -1,5 +1,6 @@
-const PPQ = 96
 export class Tempo {
+
+    public static PPQ = 96
 
     private _microsecondsPerBeat: number
     readonly bpm: number
@@ -10,18 +11,18 @@ export class Tempo {
     }
 
     secondsFromTicks(ticks: number) {
-        const beats = ticks / PPQ
+        const beats = ticks / Tempo.PPQ
         const microseconds = beats * this._microsecondsPerBeat
         return microseconds / 1_000_000
     }
     
     ticksFromSeconds(seconds: number) {
         const beat = (seconds * 1_000_000) / this._microsecondsPerBeat
-        return (beat * PPQ) | 0
+        return (beat * Tempo.PPQ) | 0
     }
 
     ticksFromBeats(beats: number) {
-        return beats * PPQ
+        return beats * Tempo.PPQ
     }
 
 
