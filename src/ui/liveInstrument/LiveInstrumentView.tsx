@@ -6,12 +6,11 @@ import { useComponentInstance } from "../../hooks/useComponentInstance";
 import { Player } from "../../resources/Player";
 import { AudioRangeOverlay } from "../audioRangeOverlay/AudioRangeOverlay";
 import { Button } from "../button/Button";
+import { Icon } from "../icon/Icon";
 import { InstrumentList } from "../instrumentList/InstrumentList";
+import { Slider, SliderScale } from "../slider/Slider";
 import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
 import "./LiveInstrumentView.scss";
-import { Slider, SliderScale } from "../slider/Slider";
-import { Toggle } from "../toggle/Toggle";
-import { Icon } from "../icon/Icon";
 
 export function LiveInstrumentView() {
     const { instrument } = useResource(Player)
