@@ -96,14 +96,15 @@ export class AudioRangeTuner extends Component {
 
     private _udpateSilenceRange() {
         this._updateVolume()
-        const decibels = (this._analyserRange.peak - this._analyserRange.silence) * this._average + this._analyserRange.silence
+        const decibels = (this._analyserRange.peak - this._analyserRange.silence) * (this._average * 0.7) + this._analyserRange.silence
         this._range.silence = decibels
         this.changed()
     }
 
     private _updatePeakRange() {
         this._updateVolume()
-        const decibels = (this._analyserRange.peak - this._analyserRange.silence) * this._average + this._analyserRange.silence
+        // Buffing decibels a bit to be sure we are above the noise floor
+        const decibels = (this._analyserRange.peak - this._analyserRange.silence) * (this._average * 1.2) + this._analyserRange.silence
         this._range.peak = decibels
         this.changed()
     }
