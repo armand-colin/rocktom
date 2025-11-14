@@ -1,0 +1,32 @@
+.Toggle {
+    height: 12px;
+    width: 36px;
+    background: #414141;
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+
+    .knob {
+        width: 18px;
+        height: 18px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: left 0.2s;
+    }
+
+    &[data-active="true"] {
+        background: blue;
+        .knob {
+            left: calc(100% - 18px);
+        }
+    }
+
+    &[data-active="false"] {
+        .knob {
+            left: 0;
+        }
+    }
+}

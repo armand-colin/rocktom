@@ -1,11 +1,15 @@
 import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
-import { useContext, type ChangeEvent } from "react";
+import { useContext } from "react";
 import type { Playback } from "../components/Playback";
 import { Player } from "../resources/Player";
 import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
 import "./PlaybackView.scss";
 import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
+import { Slider } from "./slider/Slider";
+import { Icon } from "./icon/Icon";
+import { InputIcon } from "./inputIcon/InputIcon";
+import { Input } from "../resources/InputManager";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -48,7 +52,12 @@ function PlaybackControls(props: { playback: Playback }) {
                 </div>
             </div>
 
-            <button className="BackButton" onClick={() => player.clear()}>Back to song list</button><br />
+            <button 
+                className="BackButton" 
+                onClick={() => player.clear()}
+            >
+                <Icon name="arrow_back" /> Back to level selection
+            </button>
         </div>
     );
 }
@@ -79,32 +88,35 @@ function PlayButton() {
             player.play()
     }
 
-    return <button className="PlayButton" onClick={onClick}>{player.isPlaying ? "PAUSE" : "PLAY"} [SPACE]</button>
+    return <button 
+        className="PlayButton" 
+        onClick={onClick}
+    >
+        {player.isPlaying ? "PAUSE" : "PLAY"} <InputIcon input={Input.Play}/>
+    </button>
 }
 
 function ResetButton() {
     const player = useResource(Player)
-
-    return <button className="ResetButton" onClick={() => player.reset()}>RESET [R]</button>
+    return <button 
+        className="ResetButton" 
+        onClick={() => player.reset()}
+    >
+        RESET <InputIcon input={Input.Reset}/>
+    </button>
 }
 
 function YoutubeVolumeSlider(props: { playback: Playback }) {
     const { youtubeVolume } = useComponent(props.playback)
 
-    function onChange(event: ChangeEvent<HTMLInputElement>) {
-        const value = parseFloat(event.target.value)
-        props.playback.youtubeVolume = value
-    }
-
     return <div className="YoutubeVolumeSlider">
-        <label>Volume</label>
-        <input
-            type="range"
+        <Icon name="volume_up" />
+        <small>{(youtubeVolume * 100) | 0}%</small>
+        <Slider
             min={0}
             max={1}
-            step={0.01}
             value={youtubeVolume}
-            onChange={onChange}
+            onChange={v => { props.playback.youtubeVolume = v }}
         />
     </div>
 }

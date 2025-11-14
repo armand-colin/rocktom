@@ -10,15 +10,19 @@ export function useComponentInstance<T extends Component, Args extends unknown[]
     const instance = useRef<T | null>(null)
 
     useEffect(() => {
+        if (instance.current) {
+            instance.current.destroy()
+            instance.current = engine.createComponent(constructor, ...args)
+        }
+
         return () => {
             instance.current?.destroy()
             instance.current = null
         }
-    }, [instance])
+    }, [...args])
 
     if (instance.current === null)
         instance.current = engine.createComponent(constructor, ...args)
-
 
     return instance.current
 }

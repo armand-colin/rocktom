@@ -30,8 +30,6 @@ export class YoutubePlayer extends Resource {
             console.log('ready')
         })
 
-        Object.assign(window, { youtubePlayer: this })
-
         this._player.on('stateChange', (event) => {
             console.log('stateChange', event)
         })

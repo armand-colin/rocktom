@@ -1,0 +1,51 @@
+.Slider {
+    height: 12px;
+    background: var(--surface);
+    position: relative;
+    border-radius: 4px;
+    user-select: none;
+
+    .before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(var(--t) * (100% - 9px) + 9px);
+        height: 100%;
+        background: var(--primary);
+        border-radius: 4px;
+    }
+
+    .knob {
+        width: 12px;
+        height: 18px;
+        background: var(--text);
+        border-radius: 4px;
+        position: absolute;
+        top: 50%;
+        left: calc(var(--t) * (100% - 12px) + 6px);
+        transform: translate(-50%, -50%);
+    }
+
+    &[aria-disabled="true"] {
+        background: #2a2a2a;
+        pointer-events: none;
+
+        .knob {
+            background: #6a6a6a;
+        }
+    }
+
+    &:hover {
+        background: var(--surface-hover);
+        .before {
+            background: var(--primary-hover);
+        }
+    }
+    
+    &[data-active="true"] {
+        background: var(--surface-hover);
+        .before {
+            background: var(--primary-active);
+        }
+    }
+}

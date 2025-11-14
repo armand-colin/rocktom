@@ -22,6 +22,7 @@ export class LiveInstrument extends Component {
 
     private _volume: number
     private _range: AudioRange
+    private _enablePlayback: boolean
 
     constructor(engine: Engine, opts: Opts) {
         super(engine)
@@ -37,10 +38,13 @@ export class LiveInstrument extends Component {
         const preferences = engine.getResource(LiveInstrumentPreferences)
         this._range = preferences.range ?? AudioRange.default()
         this._volume = preferences.volume
+        this._enablePlayback = preferences.enablePlayback
 
         this._gain = soundEngine.createGainNode()
         this._gain.gain = this._volume
-        this._streamNode.connect(this._gain)
+
+        if (this._enablePlayback)
+            this._streamNode.connect(this._gain)
     }
 
     get volume() {
@@ -77,6 +81,25 @@ export class LiveInstrument extends Component {
     set range(value: AudioRange) {
         this._range = value
         this.engine.getResource(LiveInstrumentPreferences).range = value
+        this.changed()
+    }
+
+    get enablePlayback() {
+        return this._enablePlayback
+    }
+
+    set enablePlayback(value: boolean) {
+        if (this._enablePlayback === value)
+            return
+        
+        this._enablePlayback = value
+        
+        if (value)
+            this._streamNode.connect(this._gain)
+        else
+            this._streamNode.disconnect(this._gain)
+        
+        this.engine.getResource(LiveInstrumentPreferences).enablePlayback = value   
         this.changed()
     }
 

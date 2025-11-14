@@ -12,10 +12,10 @@ export class AudioInspector extends Component {
 
     private _volume: number = 0
 
-    constructor(engine: Engine, node: SoundNode) {
+    constructor(engine: Engine, node: SoundNode, audioRange?: AudioRange) {
         super(engine)
         this._node = node
-        this._analyser = engine.getResource(SoundEngine).createAnalyserNode(AudioRange.default())
+        this._analyser = engine.getResource(SoundEngine).createAnalyserNode(audioRange ?? AudioRange.default())
         this._node.connect(this._analyser)
 
         this.startCoroutine(this._update())

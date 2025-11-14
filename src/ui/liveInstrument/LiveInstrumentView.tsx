@@ -9,6 +9,9 @@ import { Button } from "../button/Button";
 import { InstrumentList } from "../instrumentList/InstrumentList";
 import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
 import "./LiveInstrumentView.scss";
+import { Slider, SliderScale } from "../slider/Slider";
+import { Toggle } from "../toggle/Toggle";
+import { Icon } from "../icon/Icon";
 
 export function LiveInstrumentView() {
     const { instrument } = useResource(Player)
@@ -23,24 +26,38 @@ export function LiveInstrumentView() {
 }
 
 function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
-    const { volume } = useComponent(props.instrument)
+    const { volume, enablePlayback } = useComponent(props.instrument)
     const { engine } = useContext(EngineContext)
 
     return <div className="CurrentLiveInstrument">
         <h1>{props.instrument.name}</h1>
-        <input
-            type="range"
-            min="0"
-            max="10"
-            step="0.05"
-            value={volume}
-            onChange={e => {
-                props.instrument.volume = parseFloat(e.target.value)
-            }}
-        />
-        <VolumePreview instrument={props.instrument} />
+
+        <div className="volume">
+            <button data-active={enablePlayback} onClick={() => props.instrument.enablePlayback = !enablePlayback}>
+                <Icon
+                    name={enablePlayback ? "volume_up" : "volume_off"}
+                />
+            </button>
+            <small>{volume | 0}%</small>
+            <Slider
+                min={0}
+                max={100}
+                value={volume}
+                onChange={v => { props.instrument.volume = v }}
+                scale={SliderScale.exponential(5)}
+                disabled={!enablePlayback}
+            />
+        </div>
+
+        {
+            enablePlayback ?
+                <VolumePreview instrument={props.instrument} /> :
+                undefined
+        }
+
         <TuneButton instrument={props.instrument} />
         <AudioRangeTuneButton instrument={props.instrument} />
+
         <Button onClick={(e) => {
             e.stopPropagation()
             engine.getResource(Player).setInstrument(null)
@@ -49,7 +66,8 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
 }
 
 function VolumePreview(props: { instrument: LiveInstrument }) {
-    const inspector = useComponentInstance(AudioInspector, props.instrument.rawOutput)
+    const { range } = useComponent(props.instrument)
+    const inspector = useComponentInstance(AudioInspector, props.instrument.rawOutput, range)
     const { volume } = useComponent(inspector)
 
     return <div

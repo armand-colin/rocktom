@@ -15,7 +15,7 @@ export function InstrumentList() {
     }
 
     return <div className="InstrumentList">
-        <h1>Microphone selection</h1>
+        <h3>Microphone selection</h3>
 
         <button onClick={onRefresh}>Refresh</button>
 

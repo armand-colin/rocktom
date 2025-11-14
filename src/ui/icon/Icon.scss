@@ -1,0 +1,18 @@
+@font-face {
+    font-family: "Icons";
+    src: url("../../assets/fonts/MaterialSymbols.ttf");
+}
+
+.Icon {
+    font-family: "Icons";
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    font-size: 1lh;
+    line-height: 1;
+    text-transform: none;
+    speak: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-variation-settings: "FILL" 100;
+}

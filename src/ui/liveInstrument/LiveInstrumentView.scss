@@ -18,3 +18,44 @@
         }
     }
 }
+
+.CurrentLiveInstrument {
+    .volume {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        > * {
+            flex-shrink: 0;
+        }
+
+        .Slider {
+            flex: 1;
+        }
+
+        > small {
+            padding: 4px 8px;
+            background: var(--container);
+            border-radius: 4px;
+            text-align: center;
+            width: 58px;
+        }
+        button {
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            &:hover {
+                background: var(--surface-hover);
+            }
+            &:active {
+                background: var(--surface-active);
+            }
+        }
+    }
+}

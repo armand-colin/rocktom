@@ -69,28 +69,63 @@
             border-radius: 4px;
             cursor: pointer;
             background: #7c7c7c;
-            width: 150px;
+            width: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .ResetButton {
             padding: 8px;
             border-radius: 4px;
             cursor: pointer;
-            width: 120px;
+            width: 140px;
             text-align: center;
             background: grey;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .BackButton {
-            padding: 0px;
+            padding: 0;
             opacity: 0.5;
             background: transparent;
             cursor: pointer;
+            display: flex;
+            gap: 4px;
+            font: var(--font-m);
 
             &:hover {
-                text-decoration: underline;
+                
                 opacity: 1;
             }
         }
+    }
+}
+
+.YoutubeVolumeSlider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+
+    small {
+        width: 50px;
+        text-align: center;
+        background: var(--container);
+        padding: 4px 0; 
+        border-radius: 4px;
+        flex-shrink: 0;
+    }
+
+    .Icon {
+        flex-shrink: 0;
+    }
+
+    .Slider {
+        flex: 1;
     }
 }

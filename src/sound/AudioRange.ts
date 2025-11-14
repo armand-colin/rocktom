@@ -7,7 +7,7 @@ export const AudioRange = {
     default(): AudioRange {
         return {
             silence: -120,
-            peak: -40,
+            peak: 0,
         }
     }
 }
