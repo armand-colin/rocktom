@@ -1,15 +1,17 @@
-import type { AudioTrack } from "./AudioTrack";
 import type { LinearizedTrack } from "./LinearizedTrack";
-import type { TempoTrack } from "./TempoTrack";
+import type { AudioTrack } from "./song/AudioTrack";
+import type { FocusTrack } from "./song/FocusTrack";
+import type { TempoTrack } from "./song/TempoTrack";
 import type { Timing } from "./timing/Timing";
 
 export class Level {
 
     timing: Timing
 
-    bassTrack: LinearizedTrack
-    audioTrack: AudioTrack
-    tempoTrack: TempoTrack
+    readonly bassTrack: LinearizedTrack
+    readonly audioTrack: AudioTrack
+    readonly tempoTrack: TempoTrack
+    readonly focusTrack: FocusTrack
 
     constructor(
         readonly name: string,
@@ -18,7 +20,8 @@ export class Level {
         tracks: {
             bass: LinearizedTrack,
             audio: AudioTrack,
-            tempo: TempoTrack
+            tempo: TempoTrack,
+            focus: FocusTrack
         }
     ) {
         this.timing = timing
@@ -26,6 +29,7 @@ export class Level {
         this.bassTrack = tracks.bass
         this.audioTrack = tracks.audio
         this.tempoTrack = tracks.tempo
+        this.focusTrack = tracks.focus
     }
 
     get durationInSeconds(): number {

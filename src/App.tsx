@@ -5,6 +5,7 @@ import { Player } from './resources/Player'
 import { PlaybackView } from './ui/PlaybackView'
 
 import { EngineContext, useResource } from '@niloc/ecs-react'
+import { demo } from './levels/demo'
 import { liz } from './levels/liz'
 import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { SoundEngine } from './resources/SoundEngine'
@@ -13,7 +14,8 @@ import { LevelList } from './ui/levelList/LevelList'
 
 const levels = [
   liz(),
-  timeIsRunningOut()
+  timeIsRunningOut(),
+  demo()
 ]
 
 function App() {

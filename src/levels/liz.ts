@@ -1,9 +1,10 @@
-import { AudioTrack } from "../sound/AudioTrack";
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
+import { AudioTrack } from "../sound/song/AudioTrack";
+import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
+import { TempoTrack } from "../sound/song/TempoTrack";
 import { TrackBuilder } from "../sound/song/Track";
-import { TempoTrack } from "../sound/TempoTrack";
 import { Timing } from "../sound/timing/Timing";
 
 export function liz(): Level {
@@ -82,6 +83,9 @@ export function liz(): Level {
         .pattern(intro)
         .pattern(preChorus)
 
+    const focusTrack = new FocusTrackBuilder([0, 9])
+        .build()
+
     const level = new Level(
         "Liz",
         "Remi Wolf",
@@ -89,7 +93,8 @@ export function liz(): Level {
         {
             audio: new AudioTrack("JIniBJm2F7A", 2.3),
             bass: track.linearize(),
-            tempo: new TempoTrack()
+            tempo: new TempoTrack(),
+            focus: focusTrack
         }
     )
 

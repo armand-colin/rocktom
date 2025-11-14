@@ -1,4 +1,5 @@
 import { Component, type Engine } from "@niloc/ecs";
+import { Duration } from "@niloc/utils";
 import { NeckMesh } from "../3d/NeckMesh";
 import { NoteMeshes } from "../resources/NoteMeshes";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
@@ -42,11 +43,13 @@ export class Playback extends Component {
         const renderer = engine.getResource(Renderer)
         renderer.add(neck)
 
+        Object.assign(window, { playback: this })
+
         this._notes = level.bassTrack.notes.map(note => {
             return this.engine.createComponent(PlaybackNote, instrument, note)
         })
 
-        this._rig.focus(0, 15)
+        this._rig.focus(level.focusTrack.initialFocus)
     }
 
     get ticksPerSecond() {
@@ -96,12 +99,22 @@ export class Playback extends Component {
             deltaTime -= deltaTimeYoutube / 24
         }
 
+        const beforeTicks = this.level.timing.ticksFromSeconds(this._time)
+
         deltaTime = deltaTime * this._speed
         this._time += deltaTime
 
         const ticks = this.level.timing.ticksFromSeconds(this._time)
+
         for (const note of this._notes)
             note.update(ticks)
+
+        const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
+
+        if (focusEvent) {
+            const duration = Duration.fromSeconds(this.level.timing.secondsFromTicks(focusEvent.duration))
+            this._rig.transition(focusEvent.focus, duration)
+        }
     }
 
     play() {
@@ -118,6 +131,7 @@ export class Playback extends Component {
         this._youtubePlayer.pause()
         this._youtubePlayer.seek(0)
         this._reader.reset()
+        this._rig.focus(this.level.focusTrack.initialFocus)
     }
 
 }

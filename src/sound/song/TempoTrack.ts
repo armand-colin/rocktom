@@ -1,4 +1,4 @@
-import type { Tempo } from "./Tempo"
+import type { Tempo } from "../Tempo"
 
 type TempoEvent = {
     time: number,

@@ -1,9 +1,10 @@
-import { AudioTrack } from "../sound/AudioTrack";
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
+import { AudioTrack } from "../sound/song/AudioTrack";
+import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
+import { TempoTrack } from "../sound/song/TempoTrack";
 import { TrackBuilder } from "../sound/song/Track";
-import { TempoTrack } from "../sound/TempoTrack";
 import { Timing } from "../sound/timing/Timing";
 
 export function timeIsRunningOut(): Level {
@@ -12,6 +13,8 @@ export function timeIsRunningOut(): Level {
 
     const long = timing.beatsToTicks(1)
     const short = timing.beatsToTicks(0.5)
+
+    const focusTrack = new FocusTrackBuilder([0, 9])
 
     const baseRiffPattern = new PatternBuilder("Main Riff")
         .note(Bass.E, 5, long)
@@ -75,18 +78,20 @@ export function timeIsRunningOut(): Level {
         .pattern(baseRiffPattern)
         .pattern(baseRiffPattern)
         .pattern(baseRiffPattern)
+        .addFocus([8, 15], focusTrack, timing.ticksFromSeconds(15))
         .pattern(preChorus)
+        .addFocus([1, 6], focusTrack, timing.ticksFromSeconds(7))
         .pattern(chorus)
-
 
     const level = new Level(
         "Time is Running Out",
         "Muse",
         timing,
         {
-            audio: new AudioTrack("O2IuJPh6h_A", 1.45),
+            audio: new AudioTrack("O2IuJPh6h_A", 1.55),
             bass: track.linearize(),
-            tempo: new TempoTrack()
+            tempo: new TempoTrack(),
+            focus: focusTrack.build()
         }
     )
 

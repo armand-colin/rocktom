@@ -1,7 +1,15 @@
 import { Component, Engine } from "@niloc/ecs";
 import type { Coroutine } from "@niloc/utils";
+import { Animation, AnimationCurve, Duration } from "@niloc/utils";
 import { Quaternion, Vector3, type Camera } from "three";
 import { Rules } from "../3d/Rules";
+import { Schedules } from "../Schedules";
+import type { Focus } from "../sound/song/Focus";
+
+type Transform = {
+    position: Vector3,
+    rotation: Quaternion
+}
 
 export class CameraRig extends Component {
 
@@ -14,10 +22,27 @@ export class CameraRig extends Component {
         Object.assign(window, { rig: this })
     }
 
-    focus(minFret: number, maxFret: number) {
-        const { position, rotation } = this._getFocusTransform(minFret, maxFret)
+    focus(focus: Focus) {
+        const { position, rotation } = this._getFocusTransform(focus)
         this._camera.position.copy(position)
         this._camera.quaternion.copy(rotation)
+
+        if (this._focusCoroutine) {
+            this._focusCoroutine.cancel()
+            this._focusCoroutine = null
+        }
+    }
+
+    transition(focus: Focus, duration: Duration) {
+        console.log("Transitionning to focus:", focus)
+
+        if (this._focusCoroutine) {
+            this._focusCoroutine.cancel()
+            this._focusCoroutine = null
+        }
+
+        const endTransform = this._getFocusTransform(focus)
+        this._focusCoroutine = this.startCoroutine(this._transitionCoroutine(endTransform, duration))
     }
 
     destroy() {
@@ -27,9 +52,30 @@ export class CameraRig extends Component {
         }
     }
 
-    private _getFocusTransform(minFret: number, maxFret: number): { rotation: Quaternion, position: Vector3 } {
-        const centerX = (Rules.getX(minFret) + Rules.getX(maxFret)) / 2
-        const distance = (maxFret - minFret) * 1
+    private *_transitionCoroutine(transform: Transform, duration: Duration) {
+        console.log("Transition coroutine started", duration)
+        let time = Date.now()
+        const startPosition = this._camera.position.clone()
+        const startRotation = this._camera.quaternion.clone()
+
+        const animation = new Animation(AnimationCurve.EaseInOut, duration, t => {
+            this._camera.position.lerpVectors(startPosition, transform.position, t)
+            this._camera.quaternion.slerpQuaternions(startRotation, transform.rotation, t)
+        })
+
+        while (true) {
+            if (animation.finished)
+                break
+
+            animation.update(Duration.fromMilliseconds(Date.now() - time))
+            time = Date.now()
+            yield Schedules.Frame
+        }
+    }
+
+    private _getFocusTransform(focus: Focus): Transform {
+        const centerX = (Rules.getX(focus.lowFret) + Rules.getX(focus.highFret)) / 2
+        const distance = (focus.highFret - focus.lowFret) * 1
 
         const position = new Vector3()
         position.x = centerX

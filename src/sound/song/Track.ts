@@ -1,5 +1,6 @@
 import type { Instrument } from "../instrument/Instrument";
 import { LinearizedTrack } from "../LinearizedTrack";
+import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Pattern } from "./Pattern";
 
 type TimedPattern = {
@@ -34,6 +35,10 @@ export class TrackBuilder {
         return this
     }
 
+    get time() {
+        return this._time
+    }
+
     pattern(pattern: Pattern): this {
         this._patterns.push({
             time: this._time,
@@ -46,6 +51,11 @@ export class TrackBuilder {
 
     build(): Track {
         return new Track(this._instrument, this._patterns)
+    }
+
+    addFocus(focus: [number, number], track: FocusTrackBuilder, duration: number): this {
+        track.add(this._time - duration, duration, focus)
+        return this
     }
 
     linearize(): LinearizedTrack {
