@@ -5,13 +5,13 @@ import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
 import { TrackBuilder } from "../sound/song/Track";
-import { Timing } from "../sound/timing/Timing";
+import { Tempo } from "../sound/Tempo";
 
 export function liz(): Level {
 
-    const timing = new Timing(80.6, 96)
+    const tempo = new Tempo(80.6)
 
-    const q = timing.beatsToTicks(0.25)
+    const q = tempo.ticksFromBeats(0.25)
 
     const intro = new PatternBuilder("Intro")
         // Beat 1
@@ -79,7 +79,7 @@ export function liz(): Level {
         .build()
 
     const track = new TrackBuilder(new Bass())
-        .silence(timing.beatsToTicks(4))
+        .silence(tempo.ticksFromBeats(4))
         .pattern(intro)
         .pattern(preChorus)
 
@@ -89,12 +89,11 @@ export function liz(): Level {
     const level = new Level(
         "Liz",
         "Remi Wolf",
-        timing,
         {
             audio: new AudioTrack("JIniBJm2F7A", 2.3),
             bass: track.linearize(),
-            tempo: new TempoTrack(),
-            focus: focusTrack
+            tempo: new TempoTrack(tempo),
+            focus: focusTrack,
         }
     )
 

@@ -34,8 +34,6 @@ export class CameraRig extends Component {
     }
 
     transition(focus: Focus, duration: Duration) {
-        console.log("Transitionning to focus:", focus)
-
         if (this._focusCoroutine) {
             this._focusCoroutine.cancel()
             this._focusCoroutine = null

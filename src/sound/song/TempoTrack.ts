@@ -7,9 +7,11 @@ type TempoEvent = {
 
 export class TempoTrack {
 
+    readonly initialTempo: Tempo
     events: TempoEvent[]
 
-    constructor() {
+    constructor(initialTempo: Tempo) {
+        this.initialTempo = initialTempo
         this.events = []
     }
 

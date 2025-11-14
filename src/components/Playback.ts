@@ -7,7 +7,6 @@ import { Renderer } from "../resources/Renderer";
 import { YoutubePlayer } from "../resources/YoutubePlayer";
 import { Bass } from "../sound/instrument/Instrument";
 import { type Level } from "../sound/Level";
-import { LevelReader } from "../sound/LevelReader";
 import { CameraRig } from "./CameraRig";
 import { PlaybackNote } from "./PlaybackNote";
 
@@ -16,7 +15,6 @@ export class Playback extends Component {
     private _time: number = 0
     private _notes: PlaybackNote[] = []
     private _youtubePlayer: YoutubePlayer
-    private _reader: LevelReader
     private _rig: CameraRig
     private _speed = 1.0
     private _youtubeVolume = 1.0
@@ -30,7 +28,6 @@ export class Playback extends Component {
         const preferences = engine.getResource(PlaybackPreferences)
         this._youtubeVolume = preferences.youtubeVolume
 
-        this._reader = new LevelReader(level)
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
 
         this._youtubePlayer = this.engine.getResource(YoutubePlayer)
@@ -50,10 +47,6 @@ export class Playback extends Component {
         })
 
         this._rig.focus(level.focusTrack.initialFocus)
-    }
-
-    get ticksPerSecond() {
-        return this.level.timing.ticksPerSecond
     }
 
     get speed() {
@@ -99,12 +92,13 @@ export class Playback extends Component {
             deltaTime -= deltaTimeYoutube / 24
         }
 
-        const beforeTicks = this.level.timing.ticksFromSeconds(this._time)
+        const tempo = this.level.tempoTrack.initialTempo
+        const beforeTicks = tempo.ticksFromSeconds(this._time)
 
         deltaTime = deltaTime * this._speed
         this._time += deltaTime
 
-        const ticks = this.level.timing.ticksFromSeconds(this._time)
+        const ticks = tempo.ticksFromSeconds(this._time)
 
         for (const note of this._notes)
             note.update(ticks)
@@ -112,7 +106,7 @@ export class Playback extends Component {
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
         if (focusEvent) {
-            const duration = Duration.fromSeconds(this.level.timing.secondsFromTicks(focusEvent.duration))
+            const duration = Duration.fromSeconds(tempo.secondsFromTicks(focusEvent.duration))
             this._rig.transition(focusEvent.focus, duration)
         }
     }
@@ -130,7 +124,6 @@ export class Playback extends Component {
         this._time = 0
         this._youtubePlayer.pause()
         this._youtubePlayer.seek(0)
-        this._reader.reset()
         this._rig.focus(this.level.focusTrack.initialFocus)
     }
 

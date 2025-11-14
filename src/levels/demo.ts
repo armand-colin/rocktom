@@ -5,13 +5,13 @@ import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
 import { TrackBuilder } from "../sound/song/Track";
-import { Timing } from "../sound/timing/Timing";
+import { Tempo } from "../sound/Tempo";
 
 export function demo(): Level {
 
-    const timing = new Timing(120, 96)
+    const tempo = new Tempo(120)
 
-    const white = timing.beatsToTicks(1)
+    const white = tempo.ticksFromBeats(1)
 
     const focus = new FocusTrackBuilder()
 
@@ -32,21 +32,20 @@ export function demo(): Level {
 
     const track = new TrackBuilder(new Bass())
         .pattern(pattern1)
-        .addFocus([0, 4], focus, timing.ticksFromSeconds(4))
+        .addFocus([0, 4], focus, tempo.ticksFromSeconds(4))
         .pattern(pattern2)
-        .addFocus([4, 8], focus, timing.ticksFromSeconds(4))
+        .addFocus([4, 8], focus, tempo.ticksFromSeconds(4))
         .pattern(pattern3)
-        .addFocus([0, 9], focus, timing.ticksFromSeconds(4))
+        .addFocus([0, 9], focus, tempo.ticksFromSeconds(4))
         .pattern(pattern3)
 
     const level = new Level(
         "Demo",
         "Rocktom",
-        timing,
         {
             audio: new AudioTrack("JIniBJm2F7A", 2.3),
             bass: track.linearize(),
-            tempo: new TempoTrack(),
+            tempo: new TempoTrack(tempo),
             focus: focus.build()
         }
     )
