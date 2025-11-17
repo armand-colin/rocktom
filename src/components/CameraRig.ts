@@ -1,11 +1,10 @@
 import { Component, Engine } from "@niloc/ecs";
 import type { Coroutine } from "@niloc/utils";
 import { Animation, AnimationCurve, Duration } from "@niloc/utils";
-import { Euler, log, PerspectiveCamera, Quaternion, Vector3 } from "three";
+import { Euler, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { Rules } from "../3d/Rules";
 import { Schedules } from "../Schedules";
 import type { Focus } from "../sound/song/Focus";
-import { Bass } from "../sound/instrument/Instrument";
 
 type Transform = {
     position: Vector3,
@@ -15,11 +14,6 @@ type Transform = {
 function rad(degrees: number) {
     return degrees * (Math.PI / 180)
 }
-
-function deg(radians: number) {
-    return radians * (180 / Math.PI)
-}
-
 
 export class CameraRig extends Component {
 
@@ -83,7 +77,7 @@ export class CameraRig extends Component {
     private _getFocusTransform(focus: Focus): Transform {
         const a = Rules.getX(focus.lowFret - 2.5)
         const b = Rules.getX(focus.highFret + 2.5)
-        const c = Rules.getY(1) - 0.5
+        // const c = Rules.getY(1) - 0.5
 
         const D = b - a
 

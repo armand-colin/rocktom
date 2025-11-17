@@ -15,6 +15,10 @@ export class Playback extends Component {
 
     private _time: number = 0
     private _notes: PlaybackNote[] = []
+
+    private _lastNoteIndex: number = -1
+    private _currentNotes: PlaybackNote[] = []
+
     private _youtubePlayer: YoutubePlayer
     private _rig: CameraRig
     private _metronome: Metronome
@@ -22,6 +26,8 @@ export class Playback extends Component {
     private _youtubeVolume = 1.0
     private _metronomeVolume = 0.2
     private _metronomeEnabled = false
+    private _playing = false
+    private _renderer: Renderer
 
     constructor(
         engine: Engine,
@@ -43,8 +49,8 @@ export class Playback extends Component {
 
         const instrument = new Bass()
         const neck = NeckMesh.create(instrument, engine.getResource(NoteMeshes))
-        const renderer = engine.getResource(Renderer)
-        renderer.add(neck)
+        this._renderer = engine.getResource(Renderer)
+        this._renderer.add(neck)
 
         Object.assign(window, { playback: this })
 
@@ -52,7 +58,43 @@ export class Playback extends Component {
             return this.engine.createComponent(PlaybackNote, instrument, note)
         })
 
+        this._updateWindow()
+
         this._rig.focus(level.focusTrack.initialFocus)
+    }
+
+    private _getTimeWindow() {
+        let minTime = this._time - 2.0
+        let maxTime = this._time + 10.0
+
+        // Shall convert those in ticks
+        minTime = this.level.tempoTrack.initialTempo.ticksFromSeconds(minTime)
+        maxTime = this.level.tempoTrack.initialTempo.ticksFromSeconds(maxTime)
+
+        return { minTime, maxTime }
+    }
+
+    private _updateWindow() {
+        const { minTime, maxTime } = this._getTimeWindow()
+
+        for (let i = 0; i < this._currentNotes.length; i++) {
+            const note = this._currentNotes[i]
+            if (note.note.time + note.note.duration < minTime) {
+                // Shall remove note
+                this._renderer.remove(note.object)
+                this._currentNotes.splice(i, 1)
+                i--
+            }
+        }
+
+        for (let i = this._lastNoteIndex + 1; i < this._notes.length; i++) {
+            const note = this._notes[i]
+            if (note.note.time < maxTime) {
+                this._currentNotes.push(note)
+                this._renderer.add(note.object)
+                this._lastNoteIndex = i
+            }
+        }
     }
 
     get speed() {
@@ -117,11 +159,12 @@ export class Playback extends Component {
         this._time += deltaTime
 
         const ticks = tempo.ticksFromSeconds(this._time)
-        
-        if (this._metronomeEnabled) 
+
+        if (this._metronomeEnabled)
             this._metronome.update(ticks)
 
-        for (const note of this._notes)
+        this._updateWindow()
+        for (const note of this._currentNotes)
             note.update(ticks)
 
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
@@ -133,6 +176,10 @@ export class Playback extends Component {
     }
 
     play() {
+        if (this._playing)
+            return
+
+        this._playing = true
         if (this._time >= this.level.audioTrack.startTime)
             this._youtubePlayer.play()
         else
@@ -141,6 +188,7 @@ export class Playback extends Component {
 
     pause() {
         this._youtubePlayer.pause()
+        this._playing = false
     }
 
     reset() {
@@ -150,6 +198,15 @@ export class Playback extends Component {
         this._youtubePlayer.seek(0)
         this._rig.focus(this.level.focusTrack.initialFocus)
         this._metronome.reset()
+
+        for (const note of this._currentNotes) 
+            this._renderer.remove(note.object)
+        this._currentNotes = []
+        this._lastNoteIndex = -1
+        this._updateWindow()
+        
+        if (this._playing)
+            this._youtubePlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime))
     }
 
 }

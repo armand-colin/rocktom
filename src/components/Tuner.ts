@@ -3,12 +3,14 @@ import { SoundEngine } from "../resources/SoundEngine";
 import { Schedules } from "../Schedules";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import type { LiveInstrument } from "./LiveInstrument";
+import type { String } from "../sound/instrument/String";
 
 export class Tuner extends Component {
 
     private _analyser: SoundAnalyserNode
     private _detectedFrequency: number = 0
     private _instrument: LiveInstrument
+    private _targetString: String | null = null
 
     constructor(engine: Engine, instrument: LiveInstrument) {
         super(engine)
@@ -20,9 +22,6 @@ export class Tuner extends Component {
     }
 
     get detectedFrequency() {
-        if (this._instrument.octaverEnabled)
-            return this._detectedFrequency / 2
-
         return this._detectedFrequency
     }
 
@@ -34,10 +33,37 @@ export class Tuner extends Component {
         return this._analyser.frequencyStep
     }
 
+    get targetString() {
+        return this._targetString
+    }
+
+    set targetString(value: String | null) {
+        this._targetString = value
+        this.changed()
+    }
+
     private *_update() {
         while (true) {
-            // const instrument = this.engine.getResource(Player).instrument
-            this._detectedFrequency = this._analyser.getLowestFrequency()
+            let baseFrequency = this._analyser.getStrongestFrequency()
+            if (this._instrument.octaverEnabled)
+                baseFrequency /= 2
+
+            this._detectedFrequency = baseFrequency
+
+            const targetFrequency = this._targetString ? 
+                this._targetString.note.frequency :
+                0
+
+            // Shall try powers of 2 to check if possible harmonic is closer to detected frequency
+            for (let i = 1; i <= 3; i++) {
+                const harmonic = baseFrequency / Math.pow(2, i)
+                const currentDistance = Math.abs(this._detectedFrequency - targetFrequency)
+                const distance = Math.abs(harmonic - targetFrequency)
+
+                if (distance < currentDistance)
+                    this._detectedFrequency = harmonic
+            }
+
             this.changed()
             yield Schedules.Frame
         }

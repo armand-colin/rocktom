@@ -17,6 +17,7 @@ function selfCorrelation(array: Float32Array, maximumIndex: number): number {
             values: array.slice(maximumIndex - 2, maximumIndex + 3)
         }
     })
+
     for (let i = maximumIndex - 2; i <= maximumIndex + 2; i++) {
         if (i > 0 && i < array.length) {
             amplitudeSum += array[i]
@@ -27,7 +28,7 @@ function selfCorrelation(array: Float32Array, maximumIndex: number): number {
     if (amplitudeSum === 0)
         return maximumIndex
 
-    return sum / amplitudeSum
+    return sum / amplitudeSum + 0.25
 }
 
 function getPeakIndex(array: Float32Array, index: number): number {
@@ -122,7 +123,7 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
         return 0
     }
 
-    getAllFrequencies(): number[] {
+    getAllFrequencies(): { frequency: number, amplitude: number }[] {
         // Shall detect all local maximas
         const minimas = []
         let upgoing = false
@@ -149,7 +150,22 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
             frequencies: minimas.map(index => this.frequencyStep * selfCorrelation(this._frequencies, index))
         })
 
-        return minimas.map(index => this.frequencyStep * selfCorrelation(this._frequencies, index))
+        return minimas.map(index => {
+            return {
+                frequency: this.frequencyStep * selfCorrelation(this._frequencies, index),
+                amplitude: this._frequencies[index]
+            }
+        })
+    }
+
+    getStrongestFrequency(): number {
+        const allFrequencies = this.getAllFrequencies()
+        if (allFrequencies.length === 0) 
+            return 0
+
+        allFrequencies.sort((a, b) => b.amplitude - a.amplitude)
+
+        return allFrequencies[0].frequency
     }
 
     getVolume() {

@@ -1,5 +1,5 @@
 import { useComponent } from "@niloc/ecs-react"
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
+import { useEffect, useMemo, useRef, type CSSProperties } from "react"
 import type { LiveInstrument } from "../../components/LiveInstrument"
 import { Tuner } from "../../components/Tuner"
 import { useComponentInstance } from "../../hooks/useComponentInstance"
@@ -11,14 +11,16 @@ import "./TunerOverlay.scss"
 const bass = new Bass()
 
 export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () => void }) {
-    const [string, setString] = useState(bass.strings[0])
     const tuner = useComponentInstance(Tuner, props.instrument)
-    const { detectedFrequency } = useComponent(tuner)
+    const { detectedFrequency, targetString } = useComponent(tuner)
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
     const cents = useMemo(() => {
-        return FineNote.cents(string.note.frequency, detectedFrequency)
-    }, [string, detectedFrequency])
+        if (!targetString)
+            return 0
+        
+        return FineNote.cents(targetString.note.frequency, detectedFrequency)
+    }, [targetString, detectedFrequency])
 
     const status = Math.abs(cents) < 5 ? "success" :
         Math.abs(cents) < 10 ? "warn" :
@@ -76,8 +78,8 @@ export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () =>
                 {
                     bass.strings.map(s => {
                         return <Button
-                            onClick={() => setString(s)}
-                            data-active={s === string}
+                            onClick={() => tuner.targetString = s}
+                            data-active={s === targetString}
                             style={{
                                 "--color": "#" + s.color.getHexString()
                             } as CSSProperties}
@@ -88,6 +90,7 @@ export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () =>
                 }
             </div>
 
+            <p>{detectedFrequency.toFixed(2)}Hz</p>
             <p>{cents}</p>
 
             <div
