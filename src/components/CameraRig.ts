@@ -90,7 +90,7 @@ export class CameraRig extends Component {
         const fov = rad(this._camera.fov) / 2
         const alpha = Math.atan(this._camera.aspect * Math.tan(fov))
         const beta = rad(5)
-        const gamma = rad(15)
+        const gamma = rad(12.5)
 
         const k = Math.tan(alpha + beta) / (Math.tan(alpha - beta) + Math.tan(alpha + beta))
         const d = Math.max(k * D / Math.tan(alpha + beta), 4)
@@ -98,7 +98,7 @@ export class CameraRig extends Component {
         const position = new Vector3()
         position.x = k * D + a
         position.z = d
-        position.y = 2.6
+        position.y = d * 0.6
 
         const rotation = new Quaternion()
         rotation.setFromEuler(new Euler(-gamma, beta, 0))
