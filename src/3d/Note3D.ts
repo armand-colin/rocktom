@@ -27,7 +27,7 @@ export class Note3D extends Object3D {
         this.add(this._tile)
         this.add(fretMesh)
         this.position.x = Rules.getX(note.fret)
-        this.position.y = Rules.getY(instrument, note.string)
+        this.position.y = Rules.getStringY(instrument, note.string)
         this.position.z = (0 - this._note.time) * TIME_RATIO // hide it in the beginning
         this._highlightMaterial = noteMeshes.getStringHighlightMaterial(this._note.string)
         this._baseMaterial = this._tile.material

@@ -18,10 +18,7 @@ export class Renderer extends Resource {
         this._windowSize = Vec2.create(window.innerWidth, window.innerHeight)
 
         this._scene = new ThreeScene()
-        this._camera = new PerspectiveCamera(75, this._windowSize.x / this._windowSize.y, 0.1, 1000)
-        this._camera.position.x = 0
-        this._camera.position.z = 7
-        this._camera.position.y = 4
+        this._camera = new PerspectiveCamera(60, this._windowSize.x / this._windowSize.y, 0.1, 1000)
 
         this._renderer = new WebGLRenderer({
             alpha: true,

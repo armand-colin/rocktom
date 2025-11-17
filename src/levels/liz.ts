@@ -83,7 +83,7 @@ export function liz(): Level {
         .pattern(intro)
         .pattern(preChorus)
 
-    const focusTrack = new FocusTrackBuilder([0, 9])
+    const focusTrack = new FocusTrackBuilder([4, 7])
         .build()
 
     const level = new Level(

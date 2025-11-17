@@ -1,22 +1,32 @@
 import { Component, Engine } from "@niloc/ecs";
 import type { Coroutine } from "@niloc/utils";
 import { Animation, AnimationCurve, Duration } from "@niloc/utils";
-import { Quaternion, Vector3, type Camera } from "three";
+import { Euler, log, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { Rules } from "../3d/Rules";
 import { Schedules } from "../Schedules";
 import type { Focus } from "../sound/song/Focus";
+import { Bass } from "../sound/instrument/Instrument";
 
 type Transform = {
     position: Vector3,
     rotation: Quaternion
 }
 
+function rad(degrees: number) {
+    return degrees * (Math.PI / 180)
+}
+
+function deg(radians: number) {
+    return radians * (180 / Math.PI)
+}
+
+
 export class CameraRig extends Component {
 
-    private _camera: Camera
+    private _camera: PerspectiveCamera
     private _focusCoroutine: Coroutine | null = null
 
-    constructor(engine: Engine, camera: Camera) {
+    constructor(engine: Engine, camera: PerspectiveCamera) {
         super(engine)
         this._camera = camera
         Object.assign(window, { rig: this })
@@ -51,7 +61,6 @@ export class CameraRig extends Component {
     }
 
     private *_transitionCoroutine(transform: Transform, duration: Duration) {
-        console.log("Transition coroutine started", duration)
         let time = Date.now()
         const startPosition = this._camera.position.clone()
         const startRotation = this._camera.quaternion.clone()
@@ -72,19 +81,27 @@ export class CameraRig extends Component {
     }
 
     private _getFocusTransform(focus: Focus): Transform {
-        const centerX = (Rules.getX(focus.lowFret) + Rules.getX(focus.highFret)) / 2
-        const distance = (focus.highFret - focus.lowFret) * 1
+        const a = Rules.getX(focus.lowFret - 2.5)
+        const b = Rules.getX(focus.highFret + 2.5)
+        const c = Rules.getY(1) - 0.5
+
+        const D = b - a
+
+        const fov = rad(this._camera.fov) / 2
+        const alpha = Math.atan(this._camera.aspect * Math.tan(fov))
+        const beta = rad(5)
+        const gamma = rad(15)
+
+        const k = Math.tan(alpha + beta) / (Math.tan(alpha - beta) + Math.tan(alpha + beta))
+        const d = Math.max(k * D / Math.tan(alpha + beta), 4)
 
         const position = new Vector3()
-        position.x = centerX
-        position.y = distance * 0.1 + 2
-        position.z = distance * 0.3 + 3
-
-        const lookAt = new Vector3(centerX, 0, -100)
-        lookAt.sub(position).normalize()
+        position.x = k * D + a
+        position.z = d
+        position.y = 2.6
 
         const rotation = new Quaternion()
-        rotation.setFromUnitVectors(new Vector3(0, 0, -1), lookAt)
+        rotation.setFromEuler(new Euler(-gamma, beta, 0))
 
         return { rotation, position }
     }

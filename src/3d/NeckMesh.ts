@@ -38,11 +38,11 @@ function create(instrument: Instrument, noteMeshes: NoteMeshes) {
         const stringMesh = new Mesh(stringGeometry, material)
         neck.add(stringMesh)
         // Centered y
-        stringMesh.position.y = Rules.getY(instrument, string)
+        stringMesh.position.y = Rules.getStringY(instrument, string)
         stringMesh.position.x = Rules.getX(Rules.maxFret / 2 + 0.5)
     }
 
-    const fretGeometry = new BoxGeometry(0.05, (instrument.strings.length - 1) * Rules.stringDistance, 0.05)
+    const fretGeometry = new BoxGeometry(0.05, Rules.neckHeight, 0.05)
     const fretMaterial = new MeshBasicMaterial({ color: 0x888888 })
 
     for (let i = 0; i <= Rules.maxFret; i++) {
@@ -58,7 +58,7 @@ function create(instrument: Instrument, noteMeshes: NoteMeshes) {
         const verticalStringMesh = new Mesh(verticalStringGeometry, verticalStringMaterial)
         neck.add(verticalStringMesh)
         verticalStringMesh.position.x = Rules.getX(i + 0.5)
-        verticalStringMesh.position.y = Rules.getY(instrument, instrument.strings[instrument.strings.length - 1])
+        verticalStringMesh.position.y = Rules.getY(1)
     }
 
     // Add fret numbers
