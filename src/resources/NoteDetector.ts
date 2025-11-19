@@ -30,7 +30,7 @@ export class NoteDetector extends Component {
 
     private _update() {
         const frequencies = this._analyser.getAllFrequencies()
-        this._detectedNotes = frequencies.map(frequency => FineNote.closestFrequency(frequency))
+        this._detectedNotes = frequencies.map(frequency => FineNote.closestFrequency(frequency.frequency))
         this.changed()
     }
 

@@ -17,7 +17,7 @@ export class YoutubePlayer extends Resource {
     private _player: PlayerInstance
     readonly element: HTMLDivElement
     private _time: number = 0
-    private _volume: number = 1
+    // private _volume: number = 1
     private _lagEstimate: Duration = Duration.fromSeconds(0)
     private _scheduledPlay: number | null = null
 
@@ -141,7 +141,7 @@ export class YoutubePlayer extends Resource {
     }
 
     setVolume(volume: number) {
-        this._volume = volume
+        // this._volume = volume
         this._player.setVolume(volume * 100)
     }
 
