@@ -1,7 +1,7 @@
 import { BufferGeometry, Mesh, MeshBasicMaterial, Object3D } from "three";
 import type { NoteMeshes } from "../resources/NoteMeshes";
 import type { Instrument } from "../sound/instrument/Instrument";
-import type { NoteEvent } from "../sound/song/Pattern";
+import type { NoteEvent } from "../sound/song/NoteEvent";
 import { Rules } from "./Rules";
 import { NoteTailGeometry } from "./NoteTailGeometry";
 
@@ -19,8 +19,6 @@ export class Note3D extends Object3D {
     constructor(note: NoteEvent, instrument: Instrument, noteMeshes: NoteMeshes) {
         super()
 
-        console.log('Build note', note)
-        
         this._note = note
 
         this._tile = noteMeshes.createTile(note.string)
@@ -29,7 +27,14 @@ export class Note3D extends Object3D {
 
         this.add(this._tile)
         this.add(fretMesh)
-        this.position.x = Rules.getX(note.fret)
+
+        if (this._note.fret === 0) {
+            const targetX = Rules.getX(this._note.fingerPosition + 1.5)
+            this.position.x = targetX
+        } else {
+            this.position.x = Rules.getX(note.fret)
+        }
+
         this.position.y = Rules.getStringY(instrument, note.string)
         this.position.z = (0 - this._note.time) * TIME_RATIO // hide it in the beginning
         this._highlightMaterial = noteMeshes.getStringHighlightMaterial(this._note.string)

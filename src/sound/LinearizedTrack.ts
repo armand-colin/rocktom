@@ -1,4 +1,4 @@
-import type { NoteEvent } from "./song/Pattern";
+import type { NoteEvent } from "./song/NoteEvent";
 
 export class LinearizedTrack {
 

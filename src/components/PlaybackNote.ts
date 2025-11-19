@@ -2,7 +2,7 @@ import { Component, Engine } from "@niloc/ecs";
 import { Note3D } from "../3d/Note3D";
 import { NoteMeshes } from "../resources/NoteMeshes";
 import type { Instrument } from "../sound/instrument/Instrument";
-import type { NoteEvent } from "../sound/song/Pattern";
+import type { NoteEvent } from "../sound/song/NoteEvent";
 
 export class PlaybackNote extends Component {
 

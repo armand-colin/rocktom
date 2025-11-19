@@ -68,7 +68,8 @@ export class TrackBuilder {
                     duration: note.duration,
                     string: note.string,
                     fret: note.fret,
-                    slide: note.slide
+                    slide: note.slide,
+                    fingerPosition: note.fingerPosition
                 })
             }
         }

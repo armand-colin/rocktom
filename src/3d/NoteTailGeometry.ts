@@ -1,5 +1,5 @@
 import { BufferGeometry, Float32BufferAttribute } from "three";
-import type { NoteEvent } from "../sound/song/Pattern";
+import type { NoteEvent } from "../sound/song/NoteEvent";
 import { Rules } from "./Rules";
 
 const EaseIn = (t: number) => t * t
@@ -14,6 +14,7 @@ export class NoteTailGeometry extends BufferGeometry {
     private _indices: number[] = []
     private _positions: number[] = []
     private _uvs: number[] = []
+    private _halfWidth: number
 
     static create(note: NoteEvent): NoteTailGeometry {
         // TODO: add hash that takes duration and slide offset into account
@@ -24,6 +25,11 @@ export class NoteTailGeometry extends BufferGeometry {
         super()
 
         this._note = note
+
+        this._halfWidth = Rules.fretWidth * 0.2
+
+        if (this._note.fret === 0)
+            this._halfWidth = 2 * Rules.fretWidth
 
         this._indices = []
         this._positions = []
@@ -47,10 +53,10 @@ export class NoteTailGeometry extends BufferGeometry {
 
         // Four vertices
         this._positions.push(
-            -Rules.fretWidth * 0.2, 0, 0,
-            Rules.fretWidth * 0.2, 0, 0,
-            -Rules.fretWidth * 0.2, 0, -length,
-            Rules.fretWidth * 0.2, 0, -length,
+            -this._halfWidth, 0, 0,
+            this._halfWidth, 0, 0,
+            -this._halfWidth, 0, -length,
+            this._halfWidth, 0, -length,
         )
 
         this._uvs.push(
@@ -85,8 +91,8 @@ export class NoteTailGeometry extends BufferGeometry {
         const baseIndex = this._positions.length / 3
 
         this._positions.push(
-            -Rules.fretWidth * 0.2, 0, -offsetZ,
-            Rules.fretWidth * 0.2, 0, -offsetZ,
+            -this._halfWidth, 0, -offsetZ,
+            this._halfWidth, 0, -offsetZ,
         )
 
         this._uvs.push(
@@ -110,8 +116,8 @@ export class NoteTailGeometry extends BufferGeometry {
             const baseIndex = this._positions.length / 3
 
             this._positions.push(
-                currentX - Rules.fretWidth * 0.2, 0, currentZ,
-                currentX + Rules.fretWidth * 0.2, 0, currentZ,
+                currentX - this._halfWidth, 0, currentZ,
+                currentX + this._halfWidth, 0, currentZ,
             )
 
             this._uvs.push(

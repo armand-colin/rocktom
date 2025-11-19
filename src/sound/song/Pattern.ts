@@ -1,16 +1,5 @@
 import type { String } from "../instrument/String"
-
-export interface NoteEvent {
-    time: number,
-    duration: number,
-    string: String,
-    fret: number,
-    slide?: {
-        fret: number,
-        duration: number,
-        connect: boolean
-    }
-}
+import type { NoteEvent } from "./NoteEvent"
 
 export class Pattern {
 
@@ -32,11 +21,17 @@ export class PatternBuilder {
     private _notes: NoteEvent[] = []
     private _time: number = 0
     private _name: string
+    private _fingerPosition: number | null = null
 
     constructor(name: string) {
         this._name = name
     }
 
+    fingerPosition(position: number): this {
+        this._fingerPosition = position
+        return this
+    }
+    
     silence(ticks: number): this {
         this._time += ticks
         return this
@@ -48,7 +43,8 @@ export class PatternBuilder {
             duration: duration,
             fret: fret,
             string: string,
-            slide: slide
+            slide: slide,
+            fingerPosition: this._fingerPosition ?? fret
         })
 
         this._time += duration
@@ -61,7 +57,8 @@ export class PatternBuilder {
                 time: this._time + i * duration,
                 duration: duration,
                 fret: fret,
-                string: string
+                string: string,
+                fingerPosition: this._fingerPosition ?? fret
             })
         }
 

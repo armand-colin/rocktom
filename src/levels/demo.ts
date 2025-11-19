@@ -17,6 +17,7 @@ export function demo(): Level {
 
     const pattern1 = new PatternBuilder("Sample")
         // Beat 1
+        .fingerPosition(2)
         .noteRepeat(Bass.E, 0, white, 1)
         .note(Bass.E, 4, white, { fret: 2, duration: white / 2, connect: false })
         .note(Bass.E, 4, white, { fret: 2, duration: white / 2, connect: true })
