@@ -67,7 +67,8 @@ export class TrackBuilder {
                     time: note.time + timedPattern.time,
                     duration: note.duration,
                     string: note.string,
-                    fret: note.fret
+                    fret: note.fret,
+                    slide: note.slide
                 })
             }
         }

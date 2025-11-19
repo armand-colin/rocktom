@@ -14,7 +14,6 @@ export class PlaybackNote extends Component {
         this.note = note
 
         this._object = new Note3D(note, instrument, engine.getResource(NoteMeshes))
-        
     }
 
     get object() {

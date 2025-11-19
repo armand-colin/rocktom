@@ -5,6 +5,11 @@ export interface NoteEvent {
     duration: number,
     string: String,
     fret: number,
+    slide?: {
+        fret: number,
+        duration: number,
+        connect: boolean
+    }
 }
 
 export class Pattern {
@@ -37,12 +42,13 @@ export class PatternBuilder {
         return this
     }
 
-    note(string: String, fret: number, duration: number): this {
+    note(string: String, fret: number, duration: number, slide?: { fret: number, duration: number, connect: boolean }): this {
         this._notes.push({
             time: this._time,
             duration: duration,
             fret: fret,
-            string: string
+            string: string,
+            slide: slide
         })
 
         this._time += duration

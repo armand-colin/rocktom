@@ -3,6 +3,7 @@ import type { NoteMeshes } from "../resources/NoteMeshes";
 import type { Instrument } from "../sound/instrument/Instrument";
 import type { NoteEvent } from "../sound/song/Pattern";
 import { Rules } from "./Rules";
+import { NoteTailGeometry } from "./NoteTailGeometry";
 
 const TIME_RATIO = 0.05
 
@@ -18,6 +19,8 @@ export class Note3D extends Object3D {
     constructor(note: NoteEvent, instrument: Instrument, noteMeshes: NoteMeshes) {
         super()
 
+        console.log('Build note', note)
+        
         this._note = note
 
         this._tile = noteMeshes.createTile(note.string)
@@ -33,9 +36,9 @@ export class Note3D extends Object3D {
         this._baseMaterial = this._tile.material
 
         if (this._note.duration > 0) {
-            const tail = noteMeshes.createTail(this._note.string, this._note.duration)
-            this._tail = tail
-            this.add(tail)
+            const geometry = NoteTailGeometry.create(note)
+            this._tail = new Mesh(geometry, this._baseMaterial)
+            this.add(this._tail)
         }
     }
 

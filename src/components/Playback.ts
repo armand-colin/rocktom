@@ -54,6 +54,7 @@ export class Playback extends Component {
 
         Object.assign(window, { playback: this })
 
+        console.log('Build playback notes', level.bassTrack.notes)
         this._notes = level.bassTrack.notes.map(note => {
             return this.engine.createComponent(PlaybackNote, instrument, note)
         })
