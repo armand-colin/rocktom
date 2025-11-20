@@ -1,5 +1,6 @@
 import type { Instrument } from "../instrument/Instrument";
 import { LinearizedTrack } from "../LinearizedTrack";
+import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Pattern } from "./Pattern";
 
@@ -40,6 +41,8 @@ export class TrackBuilder {
     }
 
     pattern(pattern: Pattern): this {
+        console.log("Adding pattern", pattern.name, "which spans", pattern.duration / Tempo.PPQ, "quarter notes")
+
         this._patterns.push({
             time: this._time,
             pattern: pattern
@@ -53,8 +56,13 @@ export class TrackBuilder {
         return new Track(this._instrument, this._patterns)
     }
 
-    addFocus(focus: [number, number], track: FocusTrackBuilder, duration: number): this {
-        track.add(this._time - duration, duration, focus)
+    addFocus(focus: [number, number], track: FocusTrackBuilder, duration: number, forward: boolean = false): this {
+        if (forward) {
+            track.add(this._time, duration, focus)
+        } else {
+            track.add(this._time - duration, duration, focus)
+        }
+
         return this
     }
 

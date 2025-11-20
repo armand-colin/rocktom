@@ -1,6 +1,5 @@
 import { Component, Engine } from "@niloc/ecs";
 import { Note3D } from "../3d/Note3D";
-import { NoteMeshes } from "../resources/NoteMeshes";
 import type { Instrument } from "../sound/instrument/Instrument";
 import type { NoteEvent } from "../sound/song/NoteEvent";
 
@@ -13,7 +12,7 @@ export class PlaybackNote extends Component {
         super(engine)
         this.note = note
 
-        this._object = new Note3D(note, instrument, engine.getResource(NoteMeshes))
+        this._object = new Note3D(note, instrument)
     }
 
     get object() {

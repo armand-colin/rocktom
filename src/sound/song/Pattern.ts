@@ -37,32 +37,40 @@ export class PatternBuilder {
         return this
     }
 
-    note(string: String, fret: number, duration: number, slide?: { fret: number, duration: number, connect: boolean }): this {
+    note(string: String, fret: number, duration: number, slide?: { fret: number, duration: number, connect: boolean }, offset?: number): this {
         this._notes.push({
             time: this._time,
             duration: duration,
             fret: fret,
             string: string,
-            slide: slide,
+            slide: slide ?? null,
             fingerPosition: this._fingerPosition ?? fret
         })
 
         this._time += duration
+
+        if (offset)
+            this._time += offset
+
         return this
     }
 
-    noteRepeat(string: String, fret: number, duration: number, times: number): this {
+    noteRepeat(string: String, fret: number, duration: number, times: number, offset?: number): this {
         for (let i = 0; i < times; i++) {
             this._notes.push({
-                time: this._time + i * duration,
+                time: this._time,
                 duration: duration,
                 fret: fret,
                 string: string,
-                fingerPosition: this._fingerPosition ?? fret
+                fingerPosition: this._fingerPosition ?? fret,
+                slide: null
             })
+
+            this._time += duration
+            if (offset)
+                this._time += offset
         }
 
-        this._time += duration * times
         return this
     }
 

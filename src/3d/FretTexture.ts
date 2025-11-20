@@ -1,23 +1,36 @@
 import { Texture } from "three"
 import { Rules } from "./Rules"
 
-function generate() {
-    const spriteSize = 128
-    const fontSize = (spriteSize * 0.75) | 0
-    const strokeSize = (spriteSize * 0.25) | 0
+export class FretTexture extends Texture {
 
-    const canvas = document.createElement("canvas")
-    const spriteCount = Rules.maxFret + 1
-    canvas.width = spriteSize * spriteCount
-    canvas.height = spriteSize
+    static _instance: FretTexture
 
-    const context = canvas.getContext("2d")!
+    static load(): FretTexture {
+        if (this._instance)
+            return this._instance
 
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-    const texture = new Texture(imageData)
-    texture.needsUpdate = true
+        this._instance = new FretTexture()
+        return this._instance
+    }
 
-    document.fonts.addEventListener('loadingdone', () => {
+    constructor() {
+        super()
+        this._updateTexture()
+        document.fonts.addEventListener('loadingdone', this._updateTexture)
+    }
+
+    private _updateTexture = () => {
+        const spriteSize = 128
+        const fontSize = (spriteSize * 0.75) | 0
+        const strokeSize = (spriteSize * 0.25) | 0
+
+        const canvas = document.createElement("canvas")
+        const spriteCount = Rules.maxFret + 1
+        canvas.width = spriteSize * spriteCount
+        canvas.height = spriteSize
+
+        const context = canvas.getContext("2d")!
+
         for (let fret = 0; fret <= Rules.maxFret; fret++) {
             context.fillStyle = "white"
             context.font = `${fontSize}px Stack`
@@ -30,13 +43,8 @@ function generate() {
         }
 
         const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
-        texture.image = imageData
-        texture.needsUpdate = true
-    })
+        this.image = imageData
+        this.needsUpdate = true
+    }
 
-    return texture
-}
-
-export const FretTexture = {
-    generate
 }

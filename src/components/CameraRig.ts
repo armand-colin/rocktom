@@ -26,7 +26,24 @@ export class CameraRig extends Component {
         Object.assign(window, { rig: this })
     }
 
+    private _clampFocus(focus: Focus): Focus {
+        const distance = focus.highFret - focus.lowFret
+        if (distance < 5) {
+            // Shall expand focus
+            const middle = (focus.highFret + focus.lowFret) / 2
+
+            return {
+                lowFret: middle - 2.5,
+                highFret: middle + 2.5
+            }
+        }
+
+        return focus
+    }
+
     focus(focus: Focus) {
+        focus = this._clampFocus(focus)
+
         const { position, rotation } = this._getFocusTransform(focus)
         this._camera.position.copy(position)
         this._camera.quaternion.copy(rotation)
@@ -38,6 +55,8 @@ export class CameraRig extends Component {
     }
 
     transition(focus: Focus, duration: Duration) {
+        focus = this._clampFocus(focus)
+
         if (this._focusCoroutine) {
             this._focusCoroutine.cancel()
             this._focusCoroutine = null
@@ -75,8 +94,8 @@ export class CameraRig extends Component {
     }
 
     private _getFocusTransform(focus: Focus): Transform {
-        const a = Rules.getX(focus.lowFret - 2.5)
-        const b = Rules.getX(focus.highFret + 2.5)
+        const a = Rules.getX(focus.lowFret - 1.5)
+        const b = Rules.getX(focus.highFret + 1.5)
         // const c = Rules.getY(1) - 0.5
 
         const D = b - a
@@ -84,10 +103,10 @@ export class CameraRig extends Component {
         const fov = rad(this._camera.fov) / 2
         const alpha = Math.atan(this._camera.aspect * Math.tan(fov))
         const beta = rad(5)
-        const gamma = rad(12.5)
+        const gamma = rad(12)
 
         const k = Math.tan(alpha + beta) / (Math.tan(alpha - beta) + Math.tan(alpha + beta))
-        const d = Math.max(k * D / Math.tan(alpha + beta), 4)
+        const d = k * D / Math.tan(alpha + beta)
 
         const position = new Vector3()
         position.x = k * D + a

@@ -1,7 +1,6 @@
 import { Component, type Engine } from "@niloc/ecs";
 import { Duration } from "@niloc/utils";
 import { NeckMesh } from "../3d/NeckMesh";
-import { NoteMeshes } from "../resources/NoteMeshes";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
 import { Renderer } from "../resources/Renderer";
 import { YoutubePlayer } from "../resources/YoutubePlayer";
@@ -48,7 +47,7 @@ export class Playback extends Component {
         this._youtubePlayer.load(audioTrack.youtubeVideoId)
 
         const instrument = new Bass()
-        const neck = NeckMesh.create(instrument, engine.getResource(NoteMeshes))
+        const neck = NeckMesh.create(instrument)
         this._renderer = engine.getResource(Renderer)
         this._renderer.add(neck)
 
@@ -142,6 +141,9 @@ export class Playback extends Component {
         for (const note of this._notes)
             note.destroy()
 
+        for (const note of this._currentNotes)
+            this._renderer.remove(note.object)
+        
         this._youtubePlayer.pause()
         this._rig.destroy()
     }

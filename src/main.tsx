@@ -4,13 +4,16 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { LiveInstrumentPreferences } from './resources/LiveInstrumentPreferences.ts'
-import { NoteMeshes } from './resources/NoteMeshes.ts'
 import { PlaybackPreferences } from './resources/PlaybackPreferences.ts'
+import { FretTexture } from './3d/FretTexture.ts'
+import { NoteMaterial } from './3d/NoteMaterial.ts'
 
 const engine = new Engine()
 
 engine.getResource(LiveInstrumentPreferences).recover()
-engine.getResource(NoteMeshes).load()
+FretTexture.load()
+NoteMaterial.load()
+
 engine.getResource(PlaybackPreferences).recover()
 
 createRoot(document.getElementById('root')!).render(
