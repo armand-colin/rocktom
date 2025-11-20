@@ -9,7 +9,7 @@ import { Tempo } from "../sound/Tempo";
 
 export function liz(): Level {
 
-    const tempo = new Tempo(80.6)
+    const tempo = new Tempo(80.55)
 
     const q = tempo.ticksFromBeats(0.25)
 
