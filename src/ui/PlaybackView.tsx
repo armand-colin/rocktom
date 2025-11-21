@@ -11,6 +11,8 @@ import { Icon } from "./icon/Icon";
 import { InputIcon } from "./inputIcon/InputIcon";
 import { Input } from "../resources/InputManager";
 import { Toggle } from "./toggle/Toggle";
+import type { PlaybackTime } from "../components/PlaybackTime";
+import { Tempo } from "../sound/Tempo";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -56,7 +58,7 @@ function PlaybackControls(props: { playback: Playback }) {
 
             <div className="metronome">
                 <label>
-                    Metronome <Toggle 
+                    Metronome <Toggle
                         value={metronomeEnabled}
                         onChange={v => { props.playback.metronomeEnabled = v }}
                     />
@@ -70,8 +72,10 @@ function PlaybackControls(props: { playback: Playback }) {
                 />
             </div>
 
-            <button 
-                className="BackButton" 
+            
+
+            <button
+                className="BackButton"
                 onClick={() => player.clear()}
             >
                 <Icon name="arrow_back" /> Back to level selection
@@ -106,21 +110,21 @@ function PlayButton() {
             player.play()
     }
 
-    return <button 
-        className="PlayButton" 
+    return <button
+        className="PlayButton"
         onClick={onClick}
     >
-        {player.isPlaying ? "PAUSE" : "PLAY"} <InputIcon input={Input.Play}/>
+        {player.isPlaying ? "PAUSE" : "PLAY"} <InputIcon input={Input.Play} />
     </button>
 }
 
 function ResetButton() {
     const player = useResource(Player)
-    return <button 
-        className="ResetButton" 
+    return <button
+        className="ResetButton"
         onClick={() => player.reset()}
     >
-        RESET <InputIcon input={Input.Reset}/>
+        RESET <InputIcon input={Input.Reset} />
     </button>
 }
 
@@ -136,5 +140,28 @@ function YoutubeVolumeSlider(props: { playback: Playback }) {
             value={youtubeVolume}
             onChange={v => { props.playback.youtubeVolume = v }}
         />
+    </div>
+}
+
+function PlaybackTimeView(props: { time: PlaybackTime }) {
+    const { time, ticks } = useComponent(props.time)
+
+    const minutes = (time / 60) | 0
+    const seconds = (time % 60) | 0
+    const milliseconds = ((time * 1000) % 1000) | 0
+
+    const beats = (ticks / Tempo.bars(1)) | 0
+    const quarterNotes = (ticks % Tempo.bars(1)) | 0
+
+    return <div className="PlaybackTimeView">
+        <p>
+            <span>{minutes.toString().padStart(2, '0')}:</span>
+            <span>{seconds.toString().padStart(2, '0')}.</span>
+            <span>{milliseconds.toString().padStart(3, '0')}</span>
+        </p>
+        <p>
+            <span>{beats}</span> :
+            <span>{quarterNotes.toString().padStart(2, '0')}</span>
+        </p>
     </div>
 }

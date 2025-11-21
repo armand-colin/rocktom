@@ -10,8 +10,9 @@ import { Tempo } from "../sound/Tempo";
 export function demo(): Level {
 
     const tempo = new Tempo(120)
+    const tempoTrack = new TempoTrack(tempo)
 
-    const white = tempo.ticksFromBeats(1)
+    const white = tempo.ticksFromQuarterNote(1)
 
     const focus = new FocusTrackBuilder()
 
@@ -39,8 +40,8 @@ export function demo(): Level {
         .addFocus([0, 4], focus, tempo.ticksFromSeconds(4))
         .pattern(pattern2)
         .addFocus([4, 8], focus, tempo.ticksFromSeconds(4))
+        .addTempo(new Tempo(60), tempoTrack)
         .pattern(pattern3)
-        .addFocus([0, 9], focus, tempo.ticksFromSeconds(4))
         .pattern(pattern3)
 
     const level = new Level(
@@ -49,7 +50,7 @@ export function demo(): Level {
         {
             audio: new AudioTrack("JIniBJm2F7A", 2.3),
             bass: track.linearize(),
-            tempo: new TempoTrack(tempo),
+            tempo: tempoTrack,
             focus: focus.build()
         }
     )

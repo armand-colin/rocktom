@@ -9,6 +9,7 @@ import { type Level } from "../sound/Level";
 import { CameraRig } from "./CameraRig";
 import { PlaybackNote } from "./PlaybackNote";
 import { Metronome } from "./Metronome";
+import { PlaybackTime } from "./PlaybackTime";
 
 export class Playback extends Component {
 
@@ -28,6 +29,8 @@ export class Playback extends Component {
     private _playing = false
     private _renderer: Renderer
 
+    readonly playbackTime: PlaybackTime
+
     constructor(
         engine: Engine,
         readonly level: Level,
@@ -36,6 +39,8 @@ export class Playback extends Component {
 
         const preferences = engine.getResource(PlaybackPreferences)
         this._youtubeVolume = preferences.youtubeVolume
+
+        this.playbackTime = engine.createComponent(PlaybackTime)
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome)
@@ -68,9 +73,11 @@ export class Playback extends Component {
         let maxTime = this._time + 10.0
 
         // Shall convert those in ticks
-        minTime = this.level.tempoTrack.initialTempo.ticksFromSeconds(minTime)
-        maxTime = this.level.tempoTrack.initialTempo.ticksFromSeconds(maxTime)
+        minTime = this.level.tempoTrack.ticksFromSeconds(minTime)
+        maxTime = this.level.tempoTrack.ticksFromSeconds(maxTime)
 
+        console.log("window", minTime, maxTime)
+        
         return { minTime, maxTime }
     }
 
@@ -143,7 +150,7 @@ export class Playback extends Component {
 
         for (const note of this._currentNotes)
             this._renderer.remove(note.object)
-        
+
         this._youtubePlayer.pause()
         this._rig.destroy()
     }
@@ -155,13 +162,12 @@ export class Playback extends Component {
             deltaTime -= deltaTimeYoutube / 24
         }
 
-        const tempo = this.level.tempoTrack.initialTempo
-        const beforeTicks = tempo.ticksFromSeconds(this._time)
+        const beforeTicks = this.level.tempoTrack.ticksFromSeconds(this._time)
 
         deltaTime = deltaTime * this._speed
         this._time += deltaTime
 
-        const ticks = tempo.ticksFromSeconds(this._time)
+        const ticks = this.level.tempoTrack.ticksFromSeconds(this._time)
 
         if (this._metronomeEnabled)
             this._metronome.update(ticks)
@@ -173,9 +179,11 @@ export class Playback extends Component {
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
         if (focusEvent) {
-            const duration = Duration.fromSeconds(tempo.secondsFromTicks(focusEvent.duration))
+            const duration = Duration.fromSeconds(this.level.tempoTrack.ticksFromSeconds(focusEvent.duration))
             this._rig.transition(focusEvent.focus, duration)
         }
+
+        // this.playbackTime.set(this._time, ticks)
     }
 
     play() {
@@ -196,6 +204,7 @@ export class Playback extends Component {
 
     reset() {
         this._time = 0
+        // this.playbackTime.set(0, 0)
         this._youtubePlayer.clearScheduledPlay()
         this._youtubePlayer.pause()
         this._youtubePlayer.seek(0)

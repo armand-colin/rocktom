@@ -5,6 +5,10 @@ export class Tempo {
     private _microsecondsPerBeat: number
     readonly bpm: number
 
+    static bars(beats: number): number {
+        return beats * 4 * Tempo.PPQ
+    }
+
     constructor(bpm: number) {
         this.bpm = bpm
         this._microsecondsPerBeat = 60_000_000 / bpm
@@ -21,7 +25,7 @@ export class Tempo {
         return (beat * Tempo.PPQ) | 0
     }
 
-    ticksFromBeats(beats: number) {
+    ticksFromQuarterNote(beats: number) {
         return beats * Tempo.PPQ
     }
 

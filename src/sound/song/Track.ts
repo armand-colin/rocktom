@@ -3,6 +3,7 @@ import { LinearizedTrack } from "../LinearizedTrack";
 import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Pattern } from "./Pattern";
+import type { TempoTrack } from "./TempoTrack";
 
 type TimedPattern = {
     time: number,
@@ -65,6 +66,11 @@ export class TrackBuilder {
 
         return this
     }
+
+    addTempo(tempo: Tempo, tempoTrack: TempoTrack): this {
+        tempoTrack.add(this._time, tempo)
+        return this
+    }  
 
     linearize(): LinearizedTrack {
         const notes = []

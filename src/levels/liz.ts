@@ -11,7 +11,7 @@ export function liz(): Level {
 
     const tempo = new Tempo(80.55)
 
-    const q = tempo.ticksFromBeats(0.25)
+    const q = tempo.ticksFromQuarterNote(0.25)
 
     const intro = new PatternBuilder("Intro")
         // Beat 1
@@ -79,7 +79,7 @@ export function liz(): Level {
         .build()
 
     const track = new TrackBuilder(new Bass())
-        .silence(tempo.ticksFromBeats(4))
+        .silence(tempo.ticksFromQuarterNote(4))
         .pattern(intro)
         .pattern(preChorus)
 

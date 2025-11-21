@@ -10,9 +10,15 @@ import { Tempo } from "../sound/Tempo";
 export function timeIsRunningOut(): Level {
 
     const tempo = new Tempo(118.2)
+    const tempoTrack = new TempoTrack(tempo)
 
-    const long = tempo.ticksFromBeats(1)
-    const short = tempo.ticksFromBeats(0.5)
+    const long = tempo.ticksFromQuarterNote(1)
+    const short = tempo.ticksFromQuarterNote(0.5)
+
+    tempoTrack.add(Tempo.bars(54), new Tempo(118.4))
+    tempoTrack.add(Tempo.bars(70), new Tempo(119.2))
+    tempoTrack.add(Tempo.bars(79), new Tempo(118.2))
+    tempoTrack.add(Tempo.bars(107), new Tempo(119.5))
 
     const focusTrack = new FocusTrackBuilder([1, 8])
 
@@ -43,6 +49,9 @@ export function timeIsRunningOut(): Level {
         .note(Bass.A, 5, 0, undefined, long)
         .note(Bass.E, 3, 0, undefined, short)
         .build()
+
+    console.log('Base Riff ticks:', baseRiff.duration)
+    console.log('Four beats:', Tempo.bars(4))
 
     const preChorus = new PatternBuilder("Pre-Chorus")
         .fingerPosition(3)
@@ -194,7 +203,7 @@ export function timeIsRunningOut(): Level {
         .build()
 
     const track = new TrackBuilder(new Bass())
-        .silence(tempo.ticksFromBeats(8))
+        .silence(tempo.ticksFromQuarterNote(8))
         .pattern(baseRiff)
         .pattern(baseRiff)
         .pattern(baseRiff)
@@ -236,7 +245,7 @@ export function timeIsRunningOut(): Level {
         "Time is Running Out",
         "Muse",
         {
-            audio: new AudioTrack("O2IuJPh6h_A", 1.6),
+            audio: new AudioTrack("O2IuJPh6h_A", 1.52),
             bass: track.linearize(),
             tempo: new TempoTrack(tempo),
             focus: focusTrack.build()

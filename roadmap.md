@@ -5,7 +5,7 @@
 [X] - Corriger l'accordage
 [X] - Implémenter le loading progressif des notes
 [X] - Implémenter les slides
-[ ] - Mettre les cordes à vide en large
+[X] - Mettre les cordes à vide en large
 [ ] - Ajouter la zone de doigts
 [ ] - Corriger le mouvement de la caméra lors d'une pause
 [ ] - Ajouter un niveau de difficulté aux niveaux

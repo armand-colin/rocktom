@@ -28,7 +28,10 @@ export class Level {
 
     get durationInSeconds(): number {
         const lastNote = this.bassTrack.notes[this.bassTrack.notes.length - 1]
-        return this.tempoTrack.initialTempo.secondsFromTicks(lastNote.time + lastNote.duration)
+        if (!lastNote)
+            return 0
+        
+        return this.tempoTrack.secondsFromTicks(lastNote.time + lastNote.duration)
     }
 
 }
