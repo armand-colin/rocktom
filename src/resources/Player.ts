@@ -73,6 +73,9 @@ export class Player extends Resource {
         if (this._playingCoroutine !== null)
             return
 
+        if (this._playback && this._playback.loading)
+            return
+        
         this._playingCoroutine = this.engine.scheduler.add(this._play())
         this._playback?.play()
         this.changed()

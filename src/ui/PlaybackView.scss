@@ -101,6 +101,11 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
         }
 
         .ResetButton {

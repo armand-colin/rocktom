@@ -40,7 +40,7 @@ function PlaybackControls(props: { playback: Playback }) {
             <h2>by {props.playback.level.author}</h2>
 
             <div className="buttons">
-                <PlayButton />
+                <PlayButton playback={props.playback} />
                 <ResetButton />
             </div>
 
@@ -104,8 +104,9 @@ function PlaybackSpeedButton(props: { playback: Playback, value: number }) {
     </button>
 }
 
-function PlayButton() {
+function PlayButton(props: { playback: Playback }) {
     const player = useResource(Player)
+    const { loading } = useComponent(props.playback)
 
     function onClick() {
         if (player.isPlaying)
@@ -117,6 +118,7 @@ function PlayButton() {
     return <button
         className="PlayButton"
         onClick={onClick}
+        disabled={loading}
     >
         {player.isPlaying ? "PAUSE" : "PLAY"} <InputIcon input={Input.Play} />
     </button>

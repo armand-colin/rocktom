@@ -27,6 +27,7 @@ export class Playback extends Component {
     private _metronomeEnabled = false
     private _playing = false
     private _renderer: Renderer
+    private _loading = true
 
     readonly playbackTime: PlaybackTime
 
@@ -49,6 +50,11 @@ export class Playback extends Component {
 
         this._youtubePlayer.setVolume(this._youtubeVolume)
         this._youtubePlayer.load(audioTrack.youtubeVideoId)
+            .then(() => {
+                this._loading = false
+                this.changed()
+            })
+
 
         const instrument = new Bass()
         const neck = NeckMesh.create(instrument)
@@ -64,6 +70,10 @@ export class Playback extends Component {
         this._updateWindow()
 
         this._rig.focus(level.focusTrack.initialFocus)
+    }
+
+    get loading() {
+        return this._loading
     }
 
     private _getTimeWindow() {
@@ -117,7 +127,7 @@ export class Playback extends Component {
                 note.update(ticks)
                 continue
             }
-            
+
             const lastNote = this._currentNotes[this._currentNotes.length - 1]
             if (lastNote.note.time < note.note.time) {
                 this._currentNotes.push(note)
@@ -183,7 +193,7 @@ export class Playback extends Component {
         this._time = this.level.tempoTrack.secondsFromTicks(ticks)
         this._updateWindow()
         // TODO: update rig
-        this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks)) 
+        this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
         this._youtubePlayer.seek(this._time)
     }
 
@@ -248,11 +258,11 @@ export class Playback extends Component {
         this._rig.focus(this.level.focusTrack.initialFocus)
         this._metronome.reset()
 
-        for (const note of this._currentNotes) 
+        for (const note of this._currentNotes)
             this._renderer.remove(note.object)
         this._currentNotes = []
         this._updateWindow()
-        
+
         if (this._playing)
             this._youtubePlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime))
     }
