@@ -42,8 +42,6 @@ export class TrackBuilder {
     }
 
     pattern(pattern: Pattern): this {
-        console.log("Adding pattern", pattern.name, "which spans", pattern.duration / Tempo.PPQ, "quarter notes")
-
         this._patterns.push({
             time: this._time,
             pattern: pattern

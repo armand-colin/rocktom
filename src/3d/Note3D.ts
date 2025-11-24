@@ -19,6 +19,7 @@ export class Note3D extends Object3D {
     private _fret: FretMesh | null = null
 
     private _note: NoteEvent
+    private _highlighted = false
 
     constructor(note: NoteEvent, instrument: Instrument) {
         super()
@@ -38,7 +39,7 @@ export class Note3D extends Object3D {
 
         if (note.fret > 0) {
             this._fret = FretMesh.create(note.fret)
-            this._fret.position.z = 0.1
+            this._fret.position.z = 0.02
             this.add(this._fret)
         }
 
@@ -51,6 +52,7 @@ export class Note3D extends Object3D {
     }
 
     update(ticks: number) {
+        
         // Update position based on time if needed
         this.position.z = (ticks - this._note.time) * TIME_RATIO
 
@@ -58,11 +60,21 @@ export class Note3D extends Object3D {
             ticks > this._note.time &&
             ticks <= this._note.time + this._note.duration
         ) {
+            if (this._highlighted)
+                return
+
+            this._highlighted = true
+
             // Setting highlight material
             this._head.material = this._highlightMaterial
             if (this._tail)
                 this._tail.material = this._highlightMaterial
         } else {
+            if (!this._highlighted)
+                return
+
+            this._highlighted = false
+
             // Setting base material
             this._head.material = this._baseMaterial
             if (this._tail)

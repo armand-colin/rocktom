@@ -40,7 +40,7 @@ export class Playback extends Component {
         const preferences = engine.getResource(PlaybackPreferences)
         this._youtubeVolume = preferences.youtubeVolume
 
-        this.playbackTime = engine.createComponent(PlaybackTime)
+        this.playbackTime = engine.createComponent(PlaybackTime, level.tempoTrack.getTempoAt(0))
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome)
@@ -58,7 +58,6 @@ export class Playback extends Component {
 
         Object.assign(window, { playback: this })
 
-        console.log('Build playback notes', level.bassTrack.notes)
         this._notes = level.bassTrack.notes.map(note => {
             return this.engine.createComponent(PlaybackNote, instrument, note)
         })
@@ -72,12 +71,9 @@ export class Playback extends Component {
         let minTime = this._time - 2.0
         let maxTime = this._time + 10.0
 
-        // Shall convert those in ticks
         minTime = this.level.tempoTrack.ticksFromSeconds(minTime)
         maxTime = this.level.tempoTrack.ticksFromSeconds(maxTime)
 
-        console.log("window", minTime, maxTime)
-        
         return { minTime, maxTime }
     }
 
@@ -183,7 +179,7 @@ export class Playback extends Component {
             this._rig.transition(focusEvent.focus, duration)
         }
 
-        // this.playbackTime.set(this._time, ticks)
+        this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
     }
 
     play() {
@@ -204,7 +200,7 @@ export class Playback extends Component {
 
     reset() {
         this._time = 0
-        // this.playbackTime.set(0, 0)
+        this.playbackTime.set(0, 0, this.level.tempoTrack.getTempoAt(0))
         this._youtubePlayer.clearScheduledPlay()
         this._youtubePlayer.pause()
         this._youtubePlayer.seek(0)

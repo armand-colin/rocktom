@@ -47,8 +47,6 @@ export class Metronome extends Component {
         // Play click sound
         if (!this._buffer) 
             return
-
-        console.log("Click")
         
         const audioNode = this.engine.getResource(SoundEngine).createAudioBufferNode(this._buffer)
         const gain = this.engine.getResource(SoundEngine).createGainNode()

@@ -72,7 +72,9 @@ function PlaybackControls(props: { playback: Playback }) {
                 />
             </div>
 
-            
+            <div className="time">
+                <PlaybackTimeView time={props.playback.playbackTime} />
+            </div>
 
             <button
                 className="BackButton"
@@ -144,7 +146,7 @@ function YoutubeVolumeSlider(props: { playback: Playback }) {
 }
 
 function PlaybackTimeView(props: { time: PlaybackTime }) {
-    const { time, ticks } = useComponent(props.time)
+    const { time, ticks, tempo } = useComponent(props.time)
 
     const minutes = (time / 60) | 0
     const seconds = (time % 60) | 0
@@ -160,6 +162,7 @@ function PlaybackTimeView(props: { time: PlaybackTime }) {
             <span>{milliseconds.toString().padStart(3, '0')}</span>
         </p>
         <p>
+            <span>{tempo.bpm} BPM</span>
             <span>{beats}</span> :
             <span>{quarterNotes.toString().padStart(2, '0')}</span>
         </p>

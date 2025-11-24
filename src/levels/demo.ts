@@ -8,11 +8,13 @@ import { TrackBuilder } from "../sound/song/Track";
 import { Tempo } from "../sound/Tempo";
 
 export function demo(): Level {
+    const tempoTrack = TempoTrack.fromKeyframes([
+        { seconds: 4, ticks: Tempo.bars(1) },
+        { seconds: 8, ticks: Tempo.bars(1 + 2) },
+        { seconds: 12, ticks: Tempo.bars(1 + 2 + 4) },
+    ])
 
-    const tempo = new Tempo(120)
-    const tempoTrack = new TempoTrack(tempo)
-
-    const white = tempo.ticksFromQuarterNote(1)
+    const white = Tempo.ticksFromQuarterNote(1)
 
     const focus = new FocusTrackBuilder()
 
@@ -37,10 +39,9 @@ export function demo(): Level {
 
     const track = new TrackBuilder(new Bass())
         .pattern(pattern1)
-        .addFocus([0, 4], focus, tempo.ticksFromSeconds(4))
+        .addFocus([0, 4], focus, tempoTrack.ticksFromSeconds(4))
         .pattern(pattern2)
-        .addFocus([4, 8], focus, tempo.ticksFromSeconds(4))
-        .addTempo(new Tempo(60), tempoTrack)
+        .addFocus([4, 8], focus, tempoTrack.ticksFromSeconds(4))
         .pattern(pattern3)
         .pattern(pattern3)
 

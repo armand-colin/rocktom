@@ -10,15 +10,32 @@ import { Tempo } from "../sound/Tempo";
 export function timeIsRunningOut(): Level {
 
     const tempo = new Tempo(118.2)
-    const tempoTrack = new TempoTrack(tempo)
+    const tempoTrack = TempoTrack.fromKeyframes([
+        { seconds: 4.06, ticks: Tempo.bars(2) },
+        { seconds: 12.21, ticks: Tempo.bars(6) },
+        { seconds: 44.67, ticks: Tempo.bars(22) },
+        { seconds: 89.31, ticks: Tempo.bars(45) },
+        { seconds: 60 + 47.57, ticks: Tempo.bars(53) },
+        { seconds: 120 + 13.98, ticks: Tempo.bars(66) },
+        { seconds: 120 + 18.02, ticks: Tempo.bars(68) },
+        { seconds: 120 + 38.14, ticks: Tempo.bars(78) },
+        { seconds: 120 + 42.20, ticks: Tempo.bars(80) },
+        { seconds: 180 + 2.52, ticks: Tempo.bars(90) },
+    ])
 
-    const long = tempo.ticksFromQuarterNote(1)
-    const short = tempo.ticksFromQuarterNote(0.5)
+    
+    const test1 = tempoTrack.ticksFromSeconds(12.22)
+    console.log('Ticks at 12.22', test1, Tempo.bars(6))
 
-    tempoTrack.add(Tempo.bars(54), new Tempo(118.4))
-    tempoTrack.add(Tempo.bars(70), new Tempo(119.2))
-    tempoTrack.add(Tempo.bars(79), new Tempo(118.2))
-    tempoTrack.add(Tempo.bars(107), new Tempo(119.5))
+    const long = Tempo.ticksFromQuarterNote(1)
+    const short = Tempo.ticksFromQuarterNote(0.5)
+
+    // tempoTrack.add(Tempo.bars(54), new Tempo(118.4))
+    // tempoTrack.add(Tempo.bars(70), new Tempo(119.2))
+    // tempoTrack.add(Tempo.bars(79), new Tempo(118.2))
+    // tempoTrack.add(Tempo.bars(107), new Tempo(119.5))
+
+    console.log('Tempo Track:', tempoTrack)
 
     const focusTrack = new FocusTrackBuilder([1, 8])
 
@@ -49,9 +66,6 @@ export function timeIsRunningOut(): Level {
         .note(Bass.A, 5, 0, undefined, long)
         .note(Bass.E, 3, 0, undefined, short)
         .build()
-
-    console.log('Base Riff ticks:', baseRiff.duration)
-    console.log('Four beats:', Tempo.bars(4))
 
     const preChorus = new PatternBuilder("Pre-Chorus")
         .fingerPosition(3)
@@ -203,7 +217,7 @@ export function timeIsRunningOut(): Level {
         .build()
 
     const track = new TrackBuilder(new Bass())
-        .silence(tempo.ticksFromQuarterNote(8))
+        .silence(Tempo.ticksFromQuarterNote(8))
         .pattern(baseRiff)
         .pattern(baseRiff)
         .pattern(baseRiff)
@@ -247,7 +261,7 @@ export function timeIsRunningOut(): Level {
         {
             audio: new AudioTrack("O2IuJPh6h_A", 1.52),
             bass: track.linearize(),
-            tempo: new TempoTrack(tempo),
+            tempo: tempoTrack,
             focus: focusTrack.build()
         }
     )

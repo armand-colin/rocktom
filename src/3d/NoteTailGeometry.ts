@@ -49,7 +49,6 @@ export class NoteTailGeometry extends BufferGeometry {
         const noteDuration = this._note.duration - slideDuration
         const length = noteDuration * Rules.timeRatio
         const tLength = noteDuration / this._note.duration
-        console.log('Built note with duration', this._note.slide)
 
         // Four vertices
         this._positions.push(
