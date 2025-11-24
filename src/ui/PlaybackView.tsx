@@ -13,6 +13,7 @@ import { Input } from "../resources/InputManager";
 import { Toggle } from "./toggle/Toggle";
 import type { PlaybackTime } from "../components/PlaybackTime";
 import { Tempo } from "../sound/Tempo";
+import { PlaybackProgressView } from "./PlaybackProgressView";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -74,6 +75,7 @@ function PlaybackControls(props: { playback: Playback }) {
 
             <div className="time">
                 <PlaybackTimeView time={props.playback.playbackTime} />
+                <PlaybackProgressView playback={props.playback} />
             </div>
 
             <button
@@ -161,6 +163,7 @@ function PlaybackTimeView(props: { time: PlaybackTime }) {
             <span>{seconds.toString().padStart(2, '0')}.</span>
             <span>{milliseconds.toString().padStart(3, '0')}</span>
         </p>
+        <p>{ticks}</p>
         <p>
             <span>{tempo.bpm} BPM</span>
             <span>{beats}</span> :

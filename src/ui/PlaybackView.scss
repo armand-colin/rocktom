@@ -70,6 +70,12 @@
             }
         }
 
+        .time {
+            .PlaybackProgressView {
+                width: 250px;
+            }
+        }
+
         .PlaybackSpeedButton {
             padding: 8px;
             border-radius: 4px;

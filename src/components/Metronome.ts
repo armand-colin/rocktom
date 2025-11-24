@@ -2,16 +2,27 @@ import { Component, Engine } from "@niloc/ecs";
 import { Tempo } from "../sound/Tempo";
 import sound from "../assets/sounds/metronome-click.mp3"
 import { SoundEngine } from "../resources/SoundEngine";
+import type { TempoTrack } from "../sound/song/TempoTrack";
+
+type NextTick = {
+    perfect: number,
+    adjusted: number
+}
 
 export class Metronome extends Component {
 
-    private _nextTick: number = Tempo.PPQ
+    static offsetSeconds = 0.28
+
+    private _nextTick: NextTick
     private _buffer: AudioBuffer | null = null
     private _volume = 1.0
+    private _tempoTrack: TempoTrack
 
-    constructor(engine: Engine) {
+    constructor(engine: Engine, tempoTrack: TempoTrack) {
         super(engine)
+        this._tempoTrack = tempoTrack
         this._loadBuffer()
+        this._nextTick = this._getNextTick(0)
     }
     
     get volume() {
@@ -20,6 +31,16 @@ export class Metronome extends Component {
 
     set volume(value: number) {
         this._volume = value
+    }
+
+    private _getNextTick(ticks: number): NextTick {
+        const perfectNextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
+        const offset = this._tempoTrack.ticksFromSeconds(
+            Metronome.offsetSeconds,
+            perfectNextTick
+        )
+
+        return { perfect: perfectNextTick, adjusted: perfectNextTick - offset }
     }
 
     private _loadBuffer() {
@@ -33,14 +54,21 @@ export class Metronome extends Component {
     }
 
     update(ticks: number) {
-        if (ticks >= this._nextTick) {
+        if (ticks >= this._nextTick.adjusted) {
             this._click()
-            this._nextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
+
+            const nextBase = ticks > this._nextTick.perfect ?
+                ticks : this._nextTick.perfect
+            this._nextTick = this._getNextTick(nextBase)
         }
     }
 
     reset() {
-        this._nextTick = Tempo.PPQ
+        this._nextTick = this._getNextTick(0)
+    }
+
+    click() {
+        this._click()
     }
 
     private _click() {

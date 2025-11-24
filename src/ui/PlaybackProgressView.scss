@@ -1,0 +1,14 @@
+.PlaybackProgressView {
+    height: 24px;
+    background: var(--surface);
+    position: relative;
+    border-radius: 8px;
+
+    .bar {
+        width: calc(var(--progress) * 100%);
+        height: 100%;
+        background: var(--primary);
+        border-radius: inherit;
+        pointer-events: none;
+    }
+}

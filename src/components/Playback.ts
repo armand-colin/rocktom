@@ -16,7 +16,6 @@ export class Playback extends Component {
     private _time: number = 0
     private _notes: PlaybackNote[] = []
 
-    private _lastNoteIndex: number = -1
     private _currentNotes: PlaybackNote[] = []
 
     private _youtubePlayer: YoutubePlayer
@@ -43,7 +42,7 @@ export class Playback extends Component {
         this.playbackTime = engine.createComponent(PlaybackTime, level.tempoTrack.getTempoAt(0))
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
-        this._metronome = engine.createComponent(Metronome)
+        this._metronome = engine.createComponent(Metronome, level.tempoTrack)
 
         this._youtubePlayer = this.engine.getResource(YoutubePlayer)
         const audioTrack = level.audioTrack
@@ -79,6 +78,7 @@ export class Playback extends Component {
 
     private _updateWindow() {
         const { minTime, maxTime } = this._getTimeWindow()
+        const ticks = this.level.tempoTrack.ticksFromSeconds(this._time)
 
         for (let i = 0; i < this._currentNotes.length; i++) {
             const note = this._currentNotes[i]
@@ -88,14 +88,42 @@ export class Playback extends Component {
                 this._currentNotes.splice(i, 1)
                 i--
             }
+
+            if (note.note.time >= maxTime) {
+                this._renderer.remove(note.object)
+                this._currentNotes.splice(i, 1)
+                i--
+            }
         }
 
-        for (let i = this._lastNoteIndex + 1; i < this._notes.length; i++) {
-            const note = this._notes[i]
-            if (note.note.time < maxTime) {
+        for (const note of this._notes) {
+            if (note.note.time + note.note.duration < minTime)
+                continue
+
+            if (note.note.time >= maxTime)
+                continue // we're finished here
+
+            if (this._currentNotes.length === 0) {
                 this._currentNotes.push(note)
                 this._renderer.add(note.object)
-                this._lastNoteIndex = i
+                note.update(ticks)
+                continue
+            }
+
+            const firstNote = this._currentNotes[0]
+            if (firstNote.note.time > note.note.time) {
+                this._currentNotes.unshift(note)
+                this._renderer.add(note.object)
+                note.update(ticks)
+                continue
+            }
+            
+            const lastNote = this._currentNotes[this._currentNotes.length - 1]
+            if (lastNote.note.time < note.note.time) {
+                this._currentNotes.push(note)
+                this._renderer.add(note.object)
+                note.update(ticks)
+                continue
             }
         }
     }
@@ -151,6 +179,14 @@ export class Playback extends Component {
         this._rig.destroy()
     }
 
+    seekTicks(ticks: number) {
+        this._time = this.level.tempoTrack.secondsFromTicks(ticks)
+        this._updateWindow()
+        // TODO: update rig
+        this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks)) 
+        this._youtubePlayer.seek(this._time)
+    }
+
     update(deltaTime: number) {
         if (this.level.audioTrack.startTime <= this._time) {
             // Try to compensate for Youtube lag
@@ -169,8 +205,13 @@ export class Playback extends Component {
             this._metronome.update(ticks)
 
         this._updateWindow()
-        for (const note of this._currentNotes)
+
+        for (const note of this._currentNotes) {
             note.update(ticks)
+            // if (note.note.time >= beforeTicks && note.note.time < ticks) {
+            //     this._metronome.click()
+            // }
+        }
 
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
@@ -210,7 +251,6 @@ export class Playback extends Component {
         for (const note of this._currentNotes) 
             this._renderer.remove(note.object)
         this._currentNotes = []
-        this._lastNoteIndex = -1
         this._updateWindow()
         
         if (this._playing)

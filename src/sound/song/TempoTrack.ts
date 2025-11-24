@@ -29,7 +29,7 @@ export class TempoTrack {
         for (let i = 1; i < keyframes.length; i++) {
             const nextFrame = keyframes[i]
             const prevFrame = keyframes[i - 1]
-            
+
             const tempo = Tempo.fromTicksPerSecond(
                 (nextFrame.ticks - prevFrame.ticks) / (nextFrame.seconds - prevFrame.seconds)
             )
@@ -38,7 +38,7 @@ export class TempoTrack {
         }
 
         return track
-    }   
+    }
 
     add(ticks: number, tempo: Tempo): this {
         this.events.push({
@@ -50,7 +50,7 @@ export class TempoTrack {
         return this
     }
 
-    getTempoAt(ticks: number): Tempo {  
+    getTempoAt(ticks: number): Tempo {
         let lastEvent: TempoEvent = {
             ticks: 0,
             time: 0,
@@ -60,7 +60,7 @@ export class TempoTrack {
         for (const event of this.events) {
             if (event.ticks > ticks)
                 break
-            
+
             lastEvent = event
         }
 
@@ -85,7 +85,12 @@ export class TempoTrack {
         return seconds
     }
 
-    ticksFromSeconds(seconds: number): number {
+    ticksFromSeconds(seconds: number, tickOffset: number = 0): number {
+        if (tickOffset > 0) {
+            const secondsOffset = this.secondsFromTicks(tickOffset)
+            seconds += secondsOffset
+        }
+
         let lastEvent: TempoEvent = {
             ticks: 0,
             time: 0,
@@ -97,12 +102,12 @@ export class TempoTrack {
                 break
 
             lastEvent = event
-    }
+        }
 
         const deltaSeconds = seconds - lastEvent.time
         const deltaTicks = lastEvent.tempo.ticksFromSeconds(deltaSeconds)
 
-        return lastEvent.ticks + deltaTicks
+        return lastEvent.ticks + deltaTicks - tickOffset
     }
 
 }

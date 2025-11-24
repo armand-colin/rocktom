@@ -10,11 +10,12 @@ import { Tempo } from "../sound/Tempo";
 export function timeIsRunningOut(): Level {
 
     const tempo = new Tempo(118.2)
+
     const tempoTrack = TempoTrack.fromKeyframes([
         { seconds: 4.06, ticks: Tempo.bars(2) },
         { seconds: 12.21, ticks: Tempo.bars(6) },
         { seconds: 44.67, ticks: Tempo.bars(22) },
-        { seconds: 89.31, ticks: Tempo.bars(45) },
+        { seconds: 89.31, ticks: Tempo.bars(44) },
         { seconds: 60 + 47.57, ticks: Tempo.bars(53) },
         { seconds: 120 + 13.98, ticks: Tempo.bars(66) },
         { seconds: 120 + 18.02, ticks: Tempo.bars(68) },
@@ -23,19 +24,8 @@ export function timeIsRunningOut(): Level {
         { seconds: 180 + 2.52, ticks: Tempo.bars(90) },
     ])
 
-    
-    const test1 = tempoTrack.ticksFromSeconds(12.22)
-    console.log('Ticks at 12.22', test1, Tempo.bars(6))
-
     const long = Tempo.ticksFromQuarterNote(1)
     const short = Tempo.ticksFromQuarterNote(0.5)
-
-    // tempoTrack.add(Tempo.bars(54), new Tempo(118.4))
-    // tempoTrack.add(Tempo.bars(70), new Tempo(119.2))
-    // tempoTrack.add(Tempo.bars(79), new Tempo(118.2))
-    // tempoTrack.add(Tempo.bars(107), new Tempo(119.5))
-
-    console.log('Tempo Track:', tempoTrack)
 
     const focusTrack = new FocusTrackBuilder([1, 8])
 
@@ -135,7 +125,7 @@ export function timeIsRunningOut(): Level {
 
     const bridgeOut = new PatternBuilder("Bridge Out")
         .fingerPosition(3)
-        .noteRepeat(Bass.E, 0, 0, 8, short) // 8
+        .noteRepeat(Bass.E, 0, 0, 7, short) // 8
         .note(Bass.A, 7, 0, undefined, short) // 9
         .note(Bass.A, 5, 0, undefined, short / 2) // 9.5
         .note(Bass.A, 7, 0, undefined, short / 2) // 10
@@ -150,7 +140,8 @@ export function timeIsRunningOut(): Level {
 
     const bridgeOutAlt = new PatternBuilder("Bridge Out Alt")
         .fingerPosition(5)
-        .noteRepeat(Bass.E, 0, 0, 10, short)
+        .noteRepeat(Bass.E, 0, 0, 8, short)
+        .noteRepeat(Bass.E, 0, 0, 2, short)
         .note(Bass.E, 12, short, { fret: 7, duration: short, connect: false })
         .silence(short)
         .note(Bass.E, 0, 0, undefined, short)

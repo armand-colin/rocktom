@@ -26,12 +26,16 @@ export class Level {
         this.focusTrack = tracks.focus
     }
 
-    get durationInSeconds(): number {
+    get durationInTicks() {
         const lastNote = this.bassTrack.notes[this.bassTrack.notes.length - 1]
         if (!lastNote)
             return 0
         
-        return this.tempoTrack.secondsFromTicks(lastNote.time + lastNote.duration)
+        return lastNote.time + lastNote.duration
+    }
+
+    get durationInSeconds(): number {
+        return this.tempoTrack.secondsFromTicks(this.durationInTicks)
     }
 
 }
