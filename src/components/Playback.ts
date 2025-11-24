@@ -218,15 +218,13 @@ export class Playback extends Component {
 
         for (const note of this._currentNotes) {
             note.update(ticks)
-            // if (note.note.time >= beforeTicks && note.note.time < ticks) {
-            //     this._metronome.click()
-            // }
         }
 
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
         if (focusEvent) {
-            const duration = Duration.fromSeconds(this.level.tempoTrack.ticksFromSeconds(focusEvent.duration))
+            console.log("Focus event", focusEvent)
+            const duration = Duration.fromSeconds(this.level.tempoTrack.secondsFromTicks(focusEvent.duration, ticks))
             this._rig.transition(focusEvent.focus, duration)
         }
 

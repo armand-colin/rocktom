@@ -78,6 +78,8 @@ export class CameraRig extends Component {
         const startPosition = this._camera.position.clone()
         const startRotation = this._camera.quaternion.clone()
 
+        console.log('Transitionning during', Duration.seconds(duration))
+        
         const animation = new Animation(AnimationCurve.EaseInOut, duration, t => {
             this._camera.position.lerpVectors(startPosition, transform.position, t)
             this._camera.quaternion.slerpQuaternions(startRotation, transform.rotation, t)

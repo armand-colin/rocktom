@@ -67,7 +67,12 @@ export class TempoTrack {
         return lastEvent.tempo
     }
 
-    secondsFromTicks(ticks: number): number {
+    secondsFromTicks(ticks: number, secondsOffset = 0): number {
+        if (secondsOffset > 0) {
+            const ticksOffset = this.ticksFromSeconds(secondsOffset)
+            ticks += ticksOffset
+        }
+
         let lastEvent: TempoEvent = {
             ticks: 0,
             time: 0,
@@ -82,7 +87,7 @@ export class TempoTrack {
         }
 
         const seconds = lastEvent.tempo.secondsFromTicks(ticks - lastEvent.ticks) + lastEvent.time
-        return seconds
+        return seconds - secondsOffset
     }
 
     ticksFromSeconds(seconds: number, tickOffset: number = 0): number {
