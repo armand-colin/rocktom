@@ -63,9 +63,10 @@ export class Playback extends Component {
 
         Object.assign(window, { playback: this })
 
-        this._notes = level.bassTrack.notes.map(note => {
-            return this.engine.createComponent(PlaybackNote, instrument, note)
-        })
+        this._notes = []
+        
+        for (const note of level.bassTrack.notes())
+            this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
 
         this._updateWindow()
 
@@ -223,7 +224,6 @@ export class Playback extends Component {
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
         if (focusEvent) {
-            console.log("Focus event", focusEvent)
             const duration = Duration.fromSeconds(this.level.tempoTrack.secondsFromTicks(focusEvent.duration, ticks))
             this._rig.transition(focusEvent.focus, duration)
         }

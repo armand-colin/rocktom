@@ -2,6 +2,7 @@ import type { Instrument } from "../instrument/Instrument";
 import { LinearizedTrack } from "../LinearizedTrack";
 import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
+import type { Marker } from "./Marker";
 import type { Pattern } from "./Pattern";
 import type { TempoTrack } from "./TempoTrack";
 
@@ -14,10 +15,42 @@ export class Track {
 
     readonly instrument: Instrument
     readonly patterns: { time: number, pattern: Pattern }[] = []
+    readonly markers: Marker[] = []
 
-    constructor(instrument: Instrument, patterns: TimedPattern[]) {
+    constructor(
+        instrument: Instrument, 
+        patterns: TimedPattern[],
+        markers: Marker[]
+    ) {
         this.instrument = instrument
         this.patterns = patterns
+        this.markers = markers
+    }
+
+    get lastNote() {
+        const lastPattern = this.patterns[this.patterns.length - 1]
+        if (!lastPattern)
+            return null
+
+        const lastNoteInPattern = lastPattern.pattern.notes[lastPattern.pattern.notes.length - 1]
+        if (!lastNoteInPattern)
+            return null
+
+        return {
+            ...lastNoteInPattern,
+            time: lastNoteInPattern.time + lastPattern.time
+        }
+    }
+
+    *notes() {
+        for (const { time, pattern} of this.patterns) {
+            for (const note of pattern.notes) {
+                yield {
+                    ...note,
+                    time: note.time + time
+                }
+            }
+        }
     }
 
 }
@@ -27,6 +60,7 @@ export class TrackBuilder {
     private _time: number = 0
     private _patterns: { time: number, pattern: Pattern }[] = []
     private _instrument: Instrument
+    private _markers: Marker[] = []
 
     constructor(instrument: Instrument) {
         this._instrument = instrument
@@ -52,7 +86,19 @@ export class TrackBuilder {
     }
 
     build(): Track {
-        return new Track(this._instrument, this._patterns)
+        return new Track(
+            this._instrument, 
+            this._patterns,
+            this._markers
+        )
+    }
+
+    marker(name: string): this {
+        this._markers.push({
+            time: this._time,
+            name: name
+        })
+        return this
     }
 
     addFocus(focus: [number, number], track: FocusTrackBuilder, duration: number, forward: boolean = false): this {

@@ -208,26 +208,33 @@ export function timeIsRunningOut(): Level {
         .build()
 
     const track = new TrackBuilder(new Bass())
+        .marker("Verse 1")
         .silence(Tempo.ticksFromQuarterNote(8))
         .pattern(baseRiff)
         .pattern(baseRiff)
         .pattern(baseRiff)
         .pattern(baseRiff)
         .pattern(baseRiff)
+        .marker("Pre Chorus 1")
         .addFocus([1, 10], focusTrack, tempo.ticksFromSeconds(7), true)
         .pattern(preChorus)
         .addFocus([1, 8], focusTrack, tempo.ticksFromSeconds(4), true)
+        .marker("Chorus 1")
         .pattern(chorus)
         .pattern(chorusOut)
+        .marker("Verse 2")
         .pattern(baseRiffAlt)
         .pattern(baseRiffAlt)
         .pattern(baseRiffAlt)
         .pattern(baseRiff)
+        .marker("Pre Chorus 2")
         .addFocus([1, 10], focusTrack, tempo.ticksFromSeconds(7), true)
         .pattern(preChorus)
         .addFocus([1, 8], focusTrack, tempo.ticksFromSeconds(4), true)
+        .marker("Chorus 2")
         .pattern(chorus)
         .pattern(chorusOutAlt)
+        .marker("Bridge")
         .pattern(bridge)
         .pattern(bridge)
         .pattern(bridge)
@@ -235,15 +242,20 @@ export function timeIsRunningOut(): Level {
         .pattern(baseRiff)
         .pattern(baseRiff)
         .pattern(baseRiff)
+        .marker("Pre Chorus 3")
         .addFocus([1, 10], focusTrack, tempo.ticksFromSeconds(7), true)
         .pattern(preChorus)
         .addFocus([1, 8], focusTrack, tempo.ticksFromSeconds(4), true)
+        .marker("Chorus 3")
         .pattern(chorus)
         .pattern(chorusOutAlt)
+        .marker("Outro")
         .pattern(bridge)
         .pattern(bridge)
+        .addFocus([3, 12], focusTrack, tempo.ticksFromSeconds(7), true)
         .pattern(bridge)
         .pattern(bridgeOutAlt)
+        .addFocus([3, 7], focusTrack, tempo.ticksFromSeconds(5), true)
         .pattern(outro)
 
     const level = new Level(
@@ -251,7 +263,7 @@ export function timeIsRunningOut(): Level {
         "Muse",
         {
             audio: new AudioTrack("O2IuJPh6h_A", 1.52),
-            bass: track.linearize(),
+            bass: track.build(),
             tempo: tempoTrack,
             focus: focusTrack.build()
         }

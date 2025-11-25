@@ -11,7 +11,7 @@ type NextTick = {
 
 export class Metronome extends Component {
 
-    static offsetSeconds = 0.28
+    static offsetSeconds = 0.125
 
     private _nextTick: NextTick
     private _buffer: AudioBuffer | null = null

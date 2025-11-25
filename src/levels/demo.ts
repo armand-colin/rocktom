@@ -50,7 +50,7 @@ export function demo(): Level {
         "Rocktom",
         {
             audio: new AudioTrack("JIniBJm2F7A", 2.3),
-            bass: track.linearize(),
+            bass: track.build(),
             tempo: tempoTrack,
             focus: focus.build()
         }

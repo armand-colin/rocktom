@@ -15,6 +15,15 @@
 }
 
 .PlaybackView {
+
+    >.PlaybackProgressView {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+    }
+
     .PlaybackControls {
         padding: 24px;
         position: absolute;

@@ -18,6 +18,7 @@ import { PlaybackProgressView } from "./PlaybackProgressView";
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const renderer = engine.getResource(Renderer)
+    const { isPlaying } = useResource(Player)
 
     return <div className="PlaybackView">
         <div className="canvas">
@@ -25,6 +26,11 @@ export function PlaybackView(props: { playback: Playback }) {
         </div>
 
         <PlaybackControls playback={props.playback} />
+        {
+            isPlaying ?
+                undefined :
+                <PlaybackProgressView playback={props.playback} />
+        }
         <LiveInstrumentView />
     </div>
 }
@@ -33,6 +39,7 @@ function PlaybackControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const player = engine.getResource(Player)
     const { metronomeEnabled, metronomeVolume } = useComponent(props.playback)
+    const { isPlaying } = useResource(Player)
 
     return (
         <div className="PlaybackControls">
@@ -44,39 +51,46 @@ function PlaybackControls(props: { playback: Playback }) {
                 <ResetButton />
             </div>
 
-            <YoutubeVolumeSlider playback={props.playback} />
+            {
+                !isPlaying ?
+                    <>
 
-            <div className="speed">
-                <p>Playback speed</p>
+                        <YoutubeVolumeSlider playback={props.playback} />
 
-                <div className="container">
-                    <PlaybackSpeedButton playback={props.playback} value={1.0} />
-                    <PlaybackSpeedButton playback={props.playback} value={0.9} />
-                    <PlaybackSpeedButton playback={props.playback} value={0.8} />
-                    <PlaybackSpeedButton playback={props.playback} value={0.7} />
-                </div>
-            </div>
+                        <div className="speed">
+                            <p>Playback speed</p>
 
-            <div className="metronome">
-                <label>
-                    Metronome <Toggle
-                        value={metronomeEnabled}
-                        onChange={v => { props.playback.metronomeEnabled = v }}
-                    />
-                </label>
-                <Slider
-                    min={0}
-                    max={1}
-                    value={metronomeVolume}
-                    onChange={v => { props.playback.metronomeVolume = v }}
-                    disabled={!metronomeEnabled}
-                />
-            </div>
+                            <div className="container">
+                                <PlaybackSpeedButton playback={props.playback} value={1.0} />
+                                <PlaybackSpeedButton playback={props.playback} value={0.9} />
+                                <PlaybackSpeedButton playback={props.playback} value={0.8} />
+                                <PlaybackSpeedButton playback={props.playback} value={0.7} />
+                            </div>
+                        </div>
 
-            <div className="time">
-                <PlaybackTimeView time={props.playback.playbackTime} />
-                <PlaybackProgressView playback={props.playback} />
-            </div>
+                        <div className="metronome">
+                            <label>
+                                Metronome <Toggle
+                                    value={metronomeEnabled}
+                                    onChange={v => { props.playback.metronomeEnabled = v }}
+                                />
+                            </label>
+                            <Slider
+                                min={0}
+                                max={1}
+                                value={metronomeVolume}
+                                onChange={v => { props.playback.metronomeVolume = v }}
+                                disabled={!metronomeEnabled}
+                            />
+                        </div>
+
+                        <div className="time">
+                            <PlaybackTimeView time={props.playback.playbackTime} />
+                        </div>
+
+                    </> :
+                    undefined
+            }
 
             <button
                 className="BackButton"

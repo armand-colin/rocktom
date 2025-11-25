@@ -1,11 +1,11 @@
-import type { LinearizedTrack } from "./LinearizedTrack";
 import type { AudioTrack } from "./song/AudioTrack";
 import type { FocusTrack } from "./song/FocusTrack";
 import type { TempoTrack } from "./song/TempoTrack";
+import type { Track } from "./song/Track";
 
 export class Level {
 
-    readonly bassTrack: LinearizedTrack
+    readonly bassTrack: Track
     readonly audioTrack: AudioTrack
     readonly tempoTrack: TempoTrack
     readonly focusTrack: FocusTrack
@@ -14,7 +14,7 @@ export class Level {
         readonly name: string,
         readonly author: string,
         tracks: {
-            bass: LinearizedTrack,
+            bass: Track,
             audio: AudioTrack,
             tempo: TempoTrack,
             focus: FocusTrack
@@ -27,10 +27,10 @@ export class Level {
     }
 
     get durationInTicks() {
-        const lastNote = this.bassTrack.notes[this.bassTrack.notes.length - 1]
+        const lastNote = this.bassTrack.lastNote
         if (!lastNote)
             return 0
-        
+
         return lastNote.time + lastNote.duration
     }
 
