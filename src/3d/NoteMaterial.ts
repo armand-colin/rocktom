@@ -1,4 +1,4 @@
-import { MeshBasicMaterial, Texture, TextureLoader } from "three"
+import { AddEquation, MeshBasicMaterial, Texture, TextureLoader } from "three"
 import type { String } from "../sound/instrument/String"
 
 import highlightTexture from "../assets/highlightTile.png"
@@ -40,7 +40,7 @@ export class NoteMaterial extends MeshBasicMaterial {
             if (this._highlightTexture === null)
                 this.load()
 
-            const material = new NoteMaterial(string, this._highlightTexture!)
+            const material = new NoteMaterial(string, this._highlightTexture!, true)
             this._highlightMaterials.set(string, material)
             return material
         }
@@ -48,10 +48,11 @@ export class NoteMaterial extends MeshBasicMaterial {
         return this._highlightMaterials.get(string)!
     }
 
-    private constructor(string: String, texture: Texture) {
+    private constructor(string: String, texture: Texture, emissive = false) {
         super({
             color: string.color,
             map: texture,
+            blendEquation: emissive ? AddEquation : undefined,
         })
     }
 }
