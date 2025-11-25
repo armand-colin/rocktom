@@ -16,8 +16,6 @@ export class Playback extends Component {
     private _time: number = 0
     private _notes: PlaybackNote[] = []
 
-    private _currentNotes: PlaybackNote[] = []
-
     private _youtubePlayer: YoutubePlayer
     private _rig: CameraRig
     private _metronome: Metronome
@@ -30,6 +28,7 @@ export class Playback extends Component {
     private _loading = true
 
     readonly playbackTime: PlaybackTime
+    private _window: NoteWindow
 
     constructor(
         engine: Engine,
@@ -64,10 +63,11 @@ export class Playback extends Component {
         Object.assign(window, { playback: this })
 
         this._notes = []
-        
+
         for (const note of level.bassTrack.notes())
             this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
 
+        this._window = new NoteWindow(this._notes, this._renderer)
         this._updateWindow()
 
         this._rig.focus(level.focusTrack.initialFocus)
@@ -91,52 +91,7 @@ export class Playback extends Component {
         const { minTime, maxTime } = this._getTimeWindow()
         const ticks = this.level.tempoTrack.ticksFromSeconds(this._time)
 
-        for (let i = 0; i < this._currentNotes.length; i++) {
-            const note = this._currentNotes[i]
-            if (note.note.time + note.note.duration < minTime) {
-                // Shall remove note
-                this._renderer.remove(note.object)
-                this._currentNotes.splice(i, 1)
-                i--
-            }
-
-            if (note.note.time >= maxTime) {
-                this._renderer.remove(note.object)
-                this._currentNotes.splice(i, 1)
-                i--
-            }
-        }
-
-        for (const note of this._notes) {
-            if (note.note.time + note.note.duration < minTime)
-                continue
-
-            if (note.note.time >= maxTime)
-                continue // we're finished here
-
-            if (this._currentNotes.length === 0) {
-                this._currentNotes.push(note)
-                this._renderer.add(note.object)
-                note.update(ticks)
-                continue
-            }
-
-            const firstNote = this._currentNotes[0]
-            if (firstNote.note.time > note.note.time) {
-                this._currentNotes.unshift(note)
-                this._renderer.add(note.object)
-                note.update(ticks)
-                continue
-            }
-
-            const lastNote = this._currentNotes[this._currentNotes.length - 1]
-            if (lastNote.note.time < note.note.time) {
-                this._currentNotes.push(note)
-                this._renderer.add(note.object)
-                note.update(ticks)
-                continue
-            }
-        }
+        this._window.update(ticks, minTime, maxTime)
     }
 
     get speed() {
@@ -183,8 +138,7 @@ export class Playback extends Component {
         for (const note of this._notes)
             note.destroy()
 
-        for (const note of this._currentNotes)
-            this._renderer.remove(note.object)
+        this._window.clear()
 
         this._youtubePlayer.pause()
         this._rig.destroy()
@@ -193,7 +147,16 @@ export class Playback extends Component {
     seekTicks(ticks: number) {
         this._time = this.level.tempoTrack.secondsFromTicks(ticks)
         this._updateWindow()
-        // TODO: update rig
+
+        // Find correct focus event
+        const focusEvent = this.level.focusTrack.getEventAtTicks(ticks)
+        if (!focusEvent) {
+            this._rig.focus(this.level.focusTrack.initialFocus)
+        } else {
+            this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
+        }
+        this._rig.update(ticks)
+
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
         this._youtubePlayer.seek(this._time)
         this._metronome.seekTicks(ticks)
@@ -218,16 +181,12 @@ export class Playback extends Component {
 
         this._updateWindow()
 
-        for (const note of this._currentNotes) {
-            note.update(ticks)
-        }
-
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
-        if (focusEvent) {
-            const duration = Duration.fromSeconds(this.level.tempoTrack.secondsFromTicks(focusEvent.duration, ticks))
-            this._rig.transition(focusEvent.focus, duration)
-        }
+        if (focusEvent)
+            this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
+
+        this._rig.update(ticks)
 
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
     }
@@ -255,15 +214,199 @@ export class Playback extends Component {
         this._youtubePlayer.pause()
         this._youtubePlayer.seek(0)
         this._rig.focus(this.level.focusTrack.initialFocus)
+        this._rig.update(0)
         this._metronome.reset()
 
-        for (const note of this._currentNotes)
-            this._renderer.remove(note.object)
-        this._currentNotes = []
         this._updateWindow()
 
         if (this._playing)
             this._youtubePlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime))
+    }
+
+}
+
+
+class Node {
+
+    next: Node | null = null
+    prev: Node | null = null
+
+    constructor(
+        readonly index: number,
+        readonly note: PlaybackNote
+    ) { }
+
+}
+
+class LinkedList {
+
+    private _size: number = 0
+
+    head: Node | null = null
+    tail: Node | null = null
+
+    get size() {
+        return this._size
+    }
+
+    pop(node: Node) {
+        if (node.next)
+            node.next.prev = node.prev
+
+        if (node.prev)
+            node.prev.next = node.next
+
+        if (node === this.head)
+            this.head = node.next
+
+        if (node === this.tail)
+            this.tail = node.prev
+
+        this._size--
+    }
+
+    push(node: Node) {
+        if (!this.head) {
+            this.head = node
+            this.tail = node
+        } else {
+            node.prev = this.tail
+
+            if (this.tail)
+                this.tail.next = node
+
+            this.tail = node
+        }
+
+        this._size++
+    }
+
+    unshift(node: Node) {
+        if (!this.head) {
+            this.head = node
+            this.tail = node
+        } else {
+            node.next = this.head
+            this.head.prev = node
+            this.head = node
+        }
+
+        this._size++
+    }
+
+    *iter() {
+        let node = this.head
+        while (node) {
+            yield node.note
+            node = node.next
+        }
+    }
+
+}
+
+class NoteWindow {
+
+    private _current = new LinkedList()
+
+    constructor(
+        readonly notes: PlaybackNote[],
+        readonly renderer: Renderer
+    ) { }
+
+    iter() {
+        return this._current.iter()
+    }
+
+    update(ticks: number, minTicks: number, maxTicks: number) {
+        this._prune(minTicks, maxTicks)
+
+        if (this._current.size === 0) {
+            // Shall find first note to add
+            for (let i = 0; i < this.notes.length; i++) {
+                const note = this.notes[i]
+                if (note.note.time + note.note.duration <= minTicks)
+                    continue
+
+                if (note.note.time + note.note.duration > maxTicks)
+                    return
+
+                const node = new Node(i, note)
+                this._current.push(node)
+                this.renderer.add(note.object)
+                break
+            }
+
+            this._increaseForwards(maxTicks)
+        } else {
+            this._increaseForwards(maxTicks)
+            this._increaseBackwards(minTicks)
+        }
+
+        for (const note of this._current.iter()) {
+            note.update(ticks)
+        }
+    }
+
+    clear() {
+        for (const note of this._current.iter())
+            this.renderer.remove(note.object)
+
+        this._current = new LinkedList()
+    }
+
+    private _prune(minTicks: number, maxTicks: number) {
+        let node = this._current.head
+        while (node) {
+            const note = node.note
+            if (note.note.time < minTicks || note.note.time + note.note.duration > maxTicks) {
+                const nextNode = node.next
+                this._current.pop(node)
+                node = nextNode
+                this.renderer.remove(note.object)
+                continue
+            }
+            node = node.next
+        }
+    }
+
+    private _increaseForwards(maxTicks: number) {
+        console.log("Increase forwards")
+        if (!this._current.tail)
+            return
+        
+        let index = this._current.tail.index + 1
+
+        while (index < this.notes.length) {
+            const note = this.notes[index]
+            if (note.note.time > maxTicks)
+                return
+            
+            const newNode = new Node(index, note)
+            this._current.push(newNode)
+            this.renderer.add(note.object)
+            
+            index++
+        }
+    }
+    
+    private _increaseBackwards(minTicks: number) {
+        console.log("Increase backwards")
+        if (!this._current.head)
+            return
+
+        let index = this._current.head.index - 1
+
+        while (index >= 0) {
+            const note = this.notes[index]
+            if (note.note.time + note.note.duration < minTicks)
+                return
+
+            const newNode = new Node(index, note)
+            this._current.unshift(newNode)
+            this.renderer.add(note.object)
+
+            index--
+        }
     }
 
 }

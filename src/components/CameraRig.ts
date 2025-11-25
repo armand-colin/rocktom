@@ -1,6 +1,6 @@
 import { Component, Engine } from "@niloc/ecs";
 import type { Coroutine } from "@niloc/utils";
-import { Animation, AnimationCurve, Duration } from "@niloc/utils";
+import { AnimationCurve } from "@niloc/utils";
 import { Euler, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { Rules } from "../3d/Rules";
 import { Schedules } from "../Schedules";
@@ -19,6 +19,7 @@ export class CameraRig extends Component {
 
     private _camera: PerspectiveCamera
     private _focusCoroutine: Coroutine | null = null
+    private _ticks: number = 0
 
     constructor(engine: Engine, camera: PerspectiveCamera) {
         super(engine)
@@ -54,7 +55,7 @@ export class CameraRig extends Component {
         }
     }
 
-    transition(focus: Focus, duration: Duration) {
+    transition(focus: Focus, startTicks: number, durationInTicks: number) {
         focus = this._clampFocus(focus)
 
         if (this._focusCoroutine) {
@@ -63,7 +64,11 @@ export class CameraRig extends Component {
         }
 
         const endTransform = this._getFocusTransform(focus)
-        this._focusCoroutine = this.startCoroutine(this._transitionCoroutine(endTransform, duration))
+        this._focusCoroutine = this.startCoroutine(this._transitionCoroutine(endTransform, startTicks, durationInTicks))
+    }
+
+    update(ticks: number) {
+        this._ticks = ticks
     }
 
     destroy() {
@@ -73,24 +78,23 @@ export class CameraRig extends Component {
         }
     }
 
-    private *_transitionCoroutine(transform: Transform, duration: Duration) {
-        let time = Date.now()
+    private *_transitionCoroutine(transform: Transform, startTicks: number, durationInTicks: number) {
         const startPosition = this._camera.position.clone()
         const startRotation = this._camera.quaternion.clone()
 
-        console.log('Transitionning during', Duration.seconds(duration))
-        
-        const animation = new Animation(AnimationCurve.EaseInOut, duration, t => {
-            this._camera.position.lerpVectors(startPosition, transform.position, t)
-            this._camera.quaternion.slerpQuaternions(startRotation, transform.rotation, t)
-        })
-
         while (true) {
-            if (animation.finished)
-                break
+            if (this._ticks >= startTicks + durationInTicks) {
+                this._camera.position.copy(transform.position)
+                this._camera.quaternion.copy(transform.rotation)
+                return
+            }
 
-            animation.update(Duration.fromMilliseconds(Date.now() - time))
-            time = Date.now()
+            const curve = AnimationCurve.EaseInOut
+            const t = (this._ticks - startTicks) / durationInTicks
+            const easedT = curve.sample(t)
+
+            this._camera.position.lerpVectors(startPosition, transform.position, easedT)
+            this._camera.quaternion.slerpQuaternions(startRotation, transform.rotation, easedT)
             yield Schedules.Frame
         }
     }

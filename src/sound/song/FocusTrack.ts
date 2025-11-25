@@ -39,6 +39,17 @@ export class FocusTrack {
         return null
     }
 
+    getEventAtTicks(tick: number): FocusEvent | null {
+        let lastEvent: FocusEvent | null = null
+        for (const event of this.events) {
+            if (event.time > tick)
+                break
+            
+            lastEvent = event
+        }
+
+        return lastEvent
+    }
 }
 
 export class FocusTrackBuilder {

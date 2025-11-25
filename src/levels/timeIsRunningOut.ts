@@ -261,7 +261,7 @@ export function timeIsRunningOut(): Level {
         .marker("Outro")
         .pattern(bridge)
         .pattern(bridge)
-        .addFocus([3, 12], focusTrack, tempo.ticksFromSeconds(7), true)
+        .addFocus([1, 12], focusTrack, tempo.ticksFromSeconds(7), true)
         .pattern(bridge)
         .pattern(bridgeOutAlt)
         .addFocus([3, 7], focusTrack, tempo.ticksFromSeconds(5), true)
