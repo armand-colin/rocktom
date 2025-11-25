@@ -4,25 +4,21 @@ import sound from "../assets/sounds/metronome-click.mp3"
 import { SoundEngine } from "../resources/SoundEngine";
 import type { TempoTrack } from "../sound/song/TempoTrack";
 
-type NextTick = {
-    perfect: number,
-    adjusted: number
-}
-
 export class Metronome extends Component {
 
-    static offsetSeconds = 0.125
+    static offsetSeconds = 0.09
 
-    private _nextTick: NextTick
+    private _nextTick: number = 0
     private _buffer: AudioBuffer | null = null
     private _volume = 1.0
     private _tempoTrack: TempoTrack
+    private _soundEngine: SoundEngine
 
     constructor(engine: Engine, tempoTrack: TempoTrack) {
         super(engine)
         this._tempoTrack = tempoTrack
         this._loadBuffer()
-        this._nextTick = this._getNextTick(0)
+        this._soundEngine = this.engine.getResource(SoundEngine)
     }
     
     get volume() {
@@ -31,16 +27,6 @@ export class Metronome extends Component {
 
     set volume(value: number) {
         this._volume = value
-    }
-
-    private _getNextTick(ticks: number): NextTick {
-        const perfectNextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
-        const offset = this._tempoTrack.ticksFromSeconds(
-            Metronome.offsetSeconds,
-            perfectNextTick
-        )
-
-        return { perfect: perfectNextTick, adjusted: perfectNextTick - offset }
     }
 
     private _loadBuffer() {
@@ -54,24 +40,32 @@ export class Metronome extends Component {
     }
 
     update(ticks: number) {
-        if (ticks >= this._nextTick.adjusted) {
-            this._click()
+        if (ticks >= this._nextTick) {
+            // Shall schedule next click
 
-            const nextBase = ticks > this._nextTick.perfect ?
-                ticks : this._nextTick.perfect
-            this._nextTick = this._getNextTick(nextBase)
+            this._nextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
+            // convert in time
+            const nextTickTime = this._tempoTrack.secondsFromTicks(this._nextTick)
+            const currentTime = this._tempoTrack.secondsFromTicks(ticks)
+
+            const clickTime = this._soundEngine.currentTime + (nextTickTime - currentTime) - Metronome.offsetSeconds
+            this._click(clickTime)
         }
     }
 
+    seekTicks(ticks: number) {
+        this._nextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
+    }
+    
     reset() {
-        this._nextTick = this._getNextTick(0)
+        this._nextTick = 0
     }
 
     click() {
         this._click()
     }
 
-    private _click() {
+    private _click(time?: number) {
         // Play click sound
         if (!this._buffer) 
             return
@@ -82,7 +76,7 @@ export class Metronome extends Component {
         audioNode.connect(gain)
         gain.connect(this.engine.getResource(SoundEngine).output)
 
-        audioNode.play()
+        audioNode.play(time)
     }
 
 }

@@ -196,6 +196,7 @@ export class Playback extends Component {
         // TODO: update rig
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
         this._youtubePlayer.seek(this._time)
+        this._metronome.seekTicks(ticks)
     }
 
     update(deltaTime: number) {

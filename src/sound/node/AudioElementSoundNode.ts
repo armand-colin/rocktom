@@ -16,8 +16,8 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         return source
     }
 
-    play() {
-        this.node.start()
+    play(time?: number) {
+        this.node.start(time)
     }
 
     pause() {

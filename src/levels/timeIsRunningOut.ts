@@ -19,9 +19,18 @@ export function timeIsRunningOut(): Level {
         { seconds: 60 + 47.57, ticks: Tempo.bars(53) },
         { seconds: 120 + 13.98, ticks: Tempo.bars(66) },
         { seconds: 120 + 18.02, ticks: Tempo.bars(68) },
+        { seconds: 120 + 26.10, ticks: Tempo.bars(72) },
+        { seconds: 120 + 32.12, ticks: Tempo.bars(75) },
         { seconds: 120 + 38.14, ticks: Tempo.bars(78) },
         { seconds: 120 + 42.20, ticks: Tempo.bars(80) },
         { seconds: 180 + 2.52, ticks: Tempo.bars(90) },
+        { seconds: 180 + 10.64, ticks: Tempo.bars(94) },
+        { seconds: 180 + 16.72, ticks: Tempo.bars(97) },
+        { seconds: 180 + 18.72, ticks: Tempo.bars(98) },
+        { seconds: 180 + 26.87, ticks: Tempo.bars(102) },
+        { seconds: 180 + 34.98, ticks: Tempo.bars(106) },
+        { seconds: 180 + 51.02, ticks: Tempo.bars(114) },
+        { seconds: 180 + 57.10, ticks: Tempo.bars(117) },
     ])
 
     const long = Tempo.ticksFromQuarterNote(1)
