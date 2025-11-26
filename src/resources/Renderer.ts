@@ -1,5 +1,5 @@
 import { Engine, Resource } from "@niloc/ecs"
-import { Coroutine, Vec2 } from "@niloc/utils"
+import { Coroutine, Emitter, Vec2 } from "@niloc/utils"
 import { Object3D, PerspectiveCamera, Scene as ThreeScene, WebGLRenderer } from "three"
 import { Schedules } from "../Schedules"
 export class Renderer extends Resource {
@@ -11,6 +11,8 @@ export class Renderer extends Resource {
     private _windowSize: Vec2
 
     private _renderer: WebGLRenderer
+
+    readonly event = new Emitter<{ resize: undefined }>()
 
     constructor(engine: Engine) {
         super(engine)
@@ -40,6 +42,7 @@ export class Renderer extends Resource {
         this._camera.updateProjectionMatrix()
 
         this._renderer.setSize(this._windowSize.x, this._windowSize.y)
+        this.event.emit('resize')
     }
 
     get element() {

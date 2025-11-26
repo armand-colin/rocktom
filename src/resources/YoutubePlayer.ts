@@ -33,7 +33,9 @@ export class YoutubePlayer extends Resource {
         this._player = Player(this.element, {
             playerVars: {
                 start: 0,
-                autoplay: 0
+                autoplay: 0,
+                controls: 0,
+                disablekb: 1,
             }
         })
 
@@ -128,6 +130,7 @@ export class YoutubePlayer extends Resource {
     }
 
     pause() {
+        this.clearScheduledPlay()
         this._player.pauseVideo()
     }
 

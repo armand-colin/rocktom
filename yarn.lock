@@ -420,27 +420,27 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@niloc/ecs-react@^0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@niloc/ecs-react/-/ecs-react-0.0.9.tgz#6924f228d852d49dfd842da2184132f85936dac7"
-  integrity sha512-yTxE40SfZVO32OPgKuFh1zyOUhKtFryVB5WxQsX9cwMLAgNARCoISzU8hj27wB8lawT4eL8cy5qPkfKXduZD0g==
+"@niloc/ecs-react@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@niloc/ecs-react/-/ecs-react-0.0.10.tgz#fd1cee4192e867e85f458ee2d81851cf1d5db9ff"
+  integrity sha512-ihCGFKVlck2HyKL24hSFa2FLKUps6W7vB7O/qz3BmrFxQtWLJdiy7KrQA41RStvFB0DBbQK0uyzxMj599dnW/w==
   dependencies:
-    "@niloc/ecs" "^0.0.8"
-    "@niloc/utils" "^0.1.15"
+    "@niloc/ecs" "^0.0.9"
+    "@niloc/utils" "^0.1.17"
     react "^19.2.0"
 
-"@niloc/ecs@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@niloc/ecs/-/ecs-0.0.8.tgz#503dab3ad0e1c96cd35668141f30c7b044003f8d"
-  integrity sha512-oveKpd7A/nf33mo+dBy8r6Mr4OVvnXNdBOkFM4/rXIbGnhDjeJzb38BJRRf9iuPeVE6KZQkvqVwJUQi3nTsd8Q==
+"@niloc/ecs@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@niloc/ecs/-/ecs-0.0.9.tgz#2b90934e1072e071e5e1277e2c6085e32643d098"
+  integrity sha512-6HZglr22XYQQOh9yObJXoTQJMedNDc58jMzwbRNAZXywJFjlBbas/iIcoGgR+X9r2IGmhOpmo3YgURhbJOMwdw==
   dependencies:
-    "@niloc/utils" "^0.1.15"
+    "@niloc/utils" "^0.1.17"
     nanoid "^3.3.6"
 
-"@niloc/utils@^0.1.15":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@niloc/utils/-/utils-0.1.15.tgz#57758cd8cb84ed60044509d40ee53dfc4a643d48"
-  integrity sha512-F1UE0BPedD7MAmT5EdndEJPugu7ZY1hgWpQAEqqgxbO2JPoiZXdOH02s6QpQO8PCHqNzl9PX4/xsXWlUrYJNsQ==
+"@niloc/utils@^0.1.17":
+  version "0.1.17"
+  resolved "https://registry.yarnpkg.com/@niloc/utils/-/utils-0.1.17.tgz#0250b031d05ec45685ec12560fe987d176cdd920"
+  integrity sha512-Zc6Ap7d0QnL+OiAnqbHgLoaA+MgIDqq71BQzR3wPX6QuYfTdg+gO4LJ8CmlOUkDJD94RNXQ483WJ0AALnoZn7g==
   dependencies:
     nanoid "^3.3.6"
     zod "^3.24.2"

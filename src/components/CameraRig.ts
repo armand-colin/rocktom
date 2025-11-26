@@ -5,6 +5,7 @@ import { Euler, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { Rules } from "../3d/Rules";
 import { Schedules } from "../Schedules";
 import type { Focus } from "../sound/song/Focus";
+import { Renderer } from "../resources/Renderer";
 
 type Transform = {
     position: Vector3,
@@ -21,9 +22,16 @@ export class CameraRig extends Component {
     private _focusCoroutine: Coroutine | null = null
     private _ticks: number = 0
 
+    private _currentFocus: {
+        focus: Focus,
+        transform: Transform
+    } | null = null
+
     constructor(engine: Engine, camera: PerspectiveCamera) {
         super(engine)
         this._camera = camera
+        const renderer = engine.getResource(Renderer)
+        renderer.event.on('resize', this._onResize)
         Object.assign(window, { rig: this })
     }
 
@@ -42,6 +50,20 @@ export class CameraRig extends Component {
         return focus
     }
 
+    private _onResize = () => {
+        // re calculate transforms
+        if (!this._currentFocus)
+            return
+
+        const transform = this._getFocusTransform(this._currentFocus.focus)
+        this._currentFocus.transform = transform
+
+        if (!this._focusCoroutine || this._focusCoroutine.finished) {
+            this._camera.position.copy(transform.position)
+            this._camera.quaternion.copy(transform.rotation)
+        }
+    }
+
     focus(focus: Focus) {
         focus = this._clampFocus(focus)
 
@@ -52,6 +74,14 @@ export class CameraRig extends Component {
         if (this._focusCoroutine) {
             this._focusCoroutine.cancel()
             this._focusCoroutine = null
+        }
+
+        this._currentFocus = {
+            focus: focus,
+            transform: {
+                position: position.clone(),
+                rotation: rotation.clone()
+            }
         }
     }
 
@@ -64,6 +94,12 @@ export class CameraRig extends Component {
         }
 
         const endTransform = this._getFocusTransform(focus)
+
+        this._currentFocus = {
+            focus: focus,
+            transform: endTransform
+        }
+
         this._focusCoroutine = this.startCoroutine(this._transitionCoroutine(endTransform, startTicks, durationInTicks))
     }
 
@@ -76,6 +112,8 @@ export class CameraRig extends Component {
             this._focusCoroutine.cancel()
             this._focusCoroutine = null
         }
+        const renderer = this.engine.getResource(Renderer)
+        renderer.event.off('resize', this._onResize)
     }
 
     private *_transitionCoroutine(transform: Transform, startTicks: number, durationInTicks: number) {
