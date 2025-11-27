@@ -1,9 +1,10 @@
+import { AnimationCurve } from "@niloc/utils";
 import { Mesh, MeshBasicMaterial, Object3D, PlaneGeometry, Texture, TextureLoader } from "three";
-import { Rules } from "./Rules";
+import { lerp } from "three/src/math/MathUtils.js";
+import texture from "../assets/highlightTile.png";
 import type { NoteEvent } from "../sound/song/NoteEvent";
 import { Tempo } from "../sound/Tempo";
-import texture from "../assets/highlightTile.png";
-import { AnimationCurve } from "@niloc/utils";
+import { Rules } from "./Rules";
 
 class PlayingNote3D extends Object3D {
 
@@ -63,6 +64,31 @@ class PlayingNote3D extends Object3D {
         const easedT = AnimationCurve.EaseOut.sample(t)
         this._material.opacity = 1.0 - easedT
         this.scale.setScalar(1 + easedT * PlayingNote3D._scaleRatio)
+
+        // Handle slide
+        if (this.event.slide) {
+            const slideStartTicks = this.event.time + this.event.duration - this.event.slide.duration
+
+            if (slideStartTicks > ticks)
+                return
+
+            const slideT = Math.max(0, Math.min(1, (ticks - slideStartTicks) / this.event.slide.duration))
+            const curve = this.event.slide.connect ?
+                AnimationCurve.EaseInOut :
+                AnimationCurve.EaseIn
+
+            console.log(slideT)
+
+            const easedSlideT = curve.sample(slideT)
+
+            const startX = Rules.getX(this.event.fret)
+            const endX = Rules.getX(this.event.slide.fret)
+            const x = lerp(startX, endX, easedSlideT)
+
+            console.log(x)
+
+            this.position.x = x
+        }
     }
 
     set(event: NoteEvent) {

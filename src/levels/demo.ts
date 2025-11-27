@@ -46,6 +46,7 @@ export function demo(): Level {
         .pattern(pattern3)
 
     const level = new Level(
+        "demo",
         "Demo",
         "Rocktom",
         {
