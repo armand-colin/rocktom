@@ -22,11 +22,12 @@ function getMaterial(string: String): Material {
 const stringLength = Rules.maxFret * Rules.fretWidth
 const stringGeometry = new BoxGeometry(stringLength, 0.05, 0.05)
 const verticalStringLength = 100
-const verticalStringGeometry = new BoxGeometry(0.05, 0.05, verticalStringLength)
+const verticalStringGeometry = new BoxGeometry(0.04, 0.04, verticalStringLength)
 
 function createTextMesh(fret: number) {
     const mesh = FretMesh.create(fret)
     mesh.position.x = Rules.getX(fret)
+    mesh.position.z = 0.03
     return mesh
 }
 
