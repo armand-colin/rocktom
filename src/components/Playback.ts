@@ -164,6 +164,7 @@ export class Playback extends Component {
         this._window.clear()
         this._audioPlayer.clear()
         this._rig.destroy()
+        this._renderer.remove(this._playingNotes)
     }
 
     seekTicks(ticks: number) {
