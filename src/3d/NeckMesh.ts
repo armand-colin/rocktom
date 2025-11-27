@@ -27,7 +27,7 @@ const verticalStringGeometry = new BoxGeometry(0.04, 0.04, verticalStringLength)
 function createTextMesh(fret: number) {
     const mesh = FretMesh.create(fret)
     mesh.position.x = Rules.getX(fret)
-    mesh.position.z = 0.03
+    mesh.position.z = -0.01
     return mesh
 }
 
@@ -43,7 +43,7 @@ function create(instrument: Instrument) {
         stringMesh.position.x = Rules.getX(Rules.maxFret / 2 + 0.5)
     }
 
-    const fretGeometry = new BoxGeometry(0.05, Rules.neckHeight, 0.05)
+    const fretGeometry = new BoxGeometry(0.04, Rules.neckHeight, 0.04)
     const fretMaterial = new MeshBasicMaterial({ color: 0x888888 })
 
     for (let i = 0; i <= Rules.maxFret; i++) {
