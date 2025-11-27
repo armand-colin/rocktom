@@ -1,6 +1,6 @@
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
-import { AudioTrack } from "../sound/song/AudioTrack";
+import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
@@ -91,7 +91,10 @@ export function liz(): Level {
         "Liz",
         "Remi Wolf",
         {
-            audio: new AudioTrack("JIniBJm2F7A", 2.35),
+            audio: new AudioTrack({
+                type: AudioType.YouTube,
+                youtubeVideoId: "JIniBJm2F7A"
+            }, 2.32),
             bass: track.build(),
             tempo: new TempoTrack(tempo),
             focus: focusTrack,

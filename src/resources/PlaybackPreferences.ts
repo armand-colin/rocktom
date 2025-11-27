@@ -2,25 +2,25 @@ import { Engine, Resource } from "@niloc/ecs";
 
 export class PlaybackPreferences extends Resource {
 
-    private _youtubeVolume = 1.0
+    private _audioVolume = 1.0
 
     constructor(engine: Engine) {
         super(engine)
     }
 
-    get youtubeVolume() {
-        return this._youtubeVolume
+    get audioVolume() {
+        return this._audioVolume
     }
 
-    set youtubeVolume(volume: number) {
-        this._youtubeVolume = volume
+    set audioVolume(volume: number) {
+        this._audioVolume = volume
         this.changed()
         this.save()
     }
 
     save() {
         localStorage.setItem('PlaybackPreferences', JSON.stringify({
-            youtubeVolume: this._youtubeVolume
+            audioVolume: this._audioVolume
         }))
     }
 
@@ -29,9 +29,9 @@ export class PlaybackPreferences extends Resource {
         if (entry === null)
             return
 
-        const { youtubeVolume } = JSON.parse(entry)
+        const { audioVolume } = JSON.parse(entry)
 
-        this._youtubeVolume = youtubeVolume
+        this._audioVolume = audioVolume ?? 1.0
     }
 
 }

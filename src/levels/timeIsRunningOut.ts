@@ -1,28 +1,42 @@
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
-import { AudioTrack } from "../sound/song/AudioTrack";
+import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
 import { TrackBuilder } from "../sound/song/Track";
 import { Tempo } from "../sound/Tempo";
+import audioUrl from "../assets/songs/TimeIsRunningOut.wav"
 
 export function timeIsRunningOut(): Level {
 
     const tempo = new Tempo(118.2)
 
     const tempoTrack = TempoTrack.fromKeyframes([
-        { seconds: 4.06, ticks: Tempo.bars(2) },
-        { seconds: 12.21, ticks: Tempo.bars(6) },
+        { seconds: 4.07, ticks: Tempo.bars(2) },
+        { seconds: 8.13, ticks: Tempo.bars(4) },
+        { seconds: 12.22, ticks: Tempo.bars(6) },
+        { seconds: 24.37, ticks: Tempo.bars(12) },
+        { seconds: 36.54, ticks: Tempo.bars(18) },
         { seconds: 44.67, ticks: Tempo.bars(22) },
-        { seconds: 89.31, ticks: Tempo.bars(44) },
+        { seconds: 52.78, ticks: Tempo.bars(26) },
+        { seconds: 60 + 0.90, ticks: Tempo.bars(30) },
+        { seconds: 60 + 9.01, ticks: Tempo.bars(34) },
+        { seconds: 60 + 17.15, ticks: Tempo.bars(38) },
+        { seconds: 60 + 23.23, ticks: Tempo.bars(41) },
+        { seconds: 60 + 29.31, ticks: Tempo.bars(44) },
         { seconds: 60 + 47.57, ticks: Tempo.bars(53) },
+        { seconds: 60 + 55.72, ticks: Tempo.bars(57) },
+        { seconds: 120 + 1.80, ticks: Tempo.bars(60) },
+        { seconds: 120 + 7.90, ticks: Tempo.bars(63) },
         { seconds: 120 + 13.98, ticks: Tempo.bars(66) },
         { seconds: 120 + 18.02, ticks: Tempo.bars(68) },
         { seconds: 120 + 26.10, ticks: Tempo.bars(72) },
         { seconds: 120 + 32.12, ticks: Tempo.bars(75) },
         { seconds: 120 + 38.14, ticks: Tempo.bars(78) },
         { seconds: 120 + 42.20, ticks: Tempo.bars(80) },
+        { seconds: 120 + 50.32, ticks: Tempo.bars(84) },
+        { seconds: 120 + 56.40, ticks: Tempo.bars(87) },
         { seconds: 180 + 2.52, ticks: Tempo.bars(90) },
         { seconds: 180 + 10.64, ticks: Tempo.bars(94) },
         { seconds: 180 + 16.72, ticks: Tempo.bars(97) },
@@ -134,16 +148,17 @@ export function timeIsRunningOut(): Level {
 
     const bridgeOut = new PatternBuilder("Bridge Out")
         .fingerPosition(3)
-        .noteRepeat(Bass.E, 0, 0, 7, short) // 8
-        .note(Bass.A, 7, 0, undefined, short) // 9
-        .note(Bass.A, 5, 0, undefined, short / 2) // 9.5
-        .note(Bass.A, 7, 0, undefined, short / 2) // 10
-        .note(Bass.A, 5, 0, undefined, short / 2) // 10.5
-        .note(Bass.A, 7, 0, undefined, short / 2) // 11
-        .note(Bass.E, 7, 0, undefined, short / 2) // 11.5
-        .silence(short / 2 * 3) // 13
-        .note(Bass.A, 7, 0, undefined, short / 2) // 14.5
-        .note(Bass.E, 7, 0, undefined, short / 2) // 15
+        .noteRepeat(Bass.E, 0, 0, 9, short)
+        .note(Bass.A, 5, 0, undefined, short / 2)
+        .note(Bass.E, 7, 0, undefined, short / 2)
+        .silence(short / 2)
+        .note(Bass.A, 5, 0, undefined, short / 2)
+        .note(Bass.A, 7, 0, undefined, short / 2)
+        .note(Bass.E, 0, 0, undefined, short / 2)
+        .note(Bass.E, 0, 0, undefined, short / 2)
+        .silence(short / 2)
+        .note(Bass.A, 7, 0, undefined, short / 2)
+        .note(Bass.E, 0, 0, undefined, short / 2)
         .note(Bass.A, 7, long, { fret: 5, duration: long, connect: false }) // 16
         .build()
 
@@ -272,7 +287,10 @@ export function timeIsRunningOut(): Level {
         "Time is Running Out",
         "Muse",
         {
-            audio: new AudioTrack("O2IuJPh6h_A", 1.52),
+            audio: new AudioTrack({
+                type: AudioType.Url,
+                url: audioUrl
+            }, 1.52),
             bass: track.build(),
             tempo: tempoTrack,
             focus: focusTrack.build()

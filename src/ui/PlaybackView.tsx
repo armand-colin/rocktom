@@ -149,16 +149,16 @@ function ResetButton() {
 }
 
 function YoutubeVolumeSlider(props: { playback: Playback }) {
-    const { youtubeVolume } = useComponent(props.playback)
+    const { audioVolume } = useComponent(props.playback)
 
     return <div className="YoutubeVolumeSlider">
         <Icon name="volume_up" />
-        <small>{(youtubeVolume * 100) | 0}%</small>
+        <small>{(audioVolume * 100) | 0}%</small>
         <Slider
             min={0}
             max={1}
-            value={youtubeVolume}
-            onChange={v => { props.playback.youtubeVolume = v }}
+            value={audioVolume}
+            onChange={v => { props.playback.audioVolume = v }}
         />
     </div>
 }

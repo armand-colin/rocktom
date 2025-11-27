@@ -1,11 +1,12 @@
 import { Engine, Resource } from "@niloc/ecs"
 import type { AudioRange } from "../sound/AudioRange"
-import { AudioBufferSoundNode } from "../sound/node/AudioElementSoundNode"
+import { AudioBufferSoundNode } from "../sound/node/AudioBufferSoundNode"
 import { DestinationSoundNode } from "../sound/node/DestinationSoundNode"
 import { GainSoundNode } from "../sound/node/GainSoundNode"
 import { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode"
 import { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode"
 import type { SoundNode } from "../sound/node/SoundNode"
+import { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode"
 
 export class SoundEngine extends Resource {
 
@@ -30,9 +31,7 @@ export class SoundEngine extends Resource {
         return this._audioContext.currentTime
     }
 
-    private _onStateChange = () => {
-        console.log('on state change', this._audioContext.state)
-    }
+    private _onStateChange = () => { }
 
     refresh() {
         this._audioContext.removeEventListener('statechange', this._onStateChange)
@@ -68,6 +67,12 @@ export class SoundEngine extends Resource {
 
     createAudioBufferNode(buffer: AudioBuffer): AudioBufferSoundNode {
         const node = new AudioBufferSoundNode(this._audioContext, buffer)
+        this._nodes.push(node)
+        return node
+    }
+
+    createAudioElementNode(audio: HTMLAudioElement): AudioElementSoundNode {
+        const node = new AudioElementSoundNode(this._audioContext, audio)
         this._nodes.push(node)
         return node
     }
