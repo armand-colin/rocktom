@@ -183,7 +183,6 @@ export class Playback extends Component {
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
         const audioSeekTime = Math.max(0, this._time - this.level.audioTrack.startTime)
         this._audioPlayer.seek(audioSeekTime)
-        this._metronome.seekTicks(ticks)
         this._playingNotes.update(ticks)
     }
 

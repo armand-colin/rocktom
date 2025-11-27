@@ -11,7 +11,6 @@ export class Metronome extends Component {
     // Offset from the audio sample
     static offsetSeconds = 0.04
 
-    private _nextTick: number = 0
     private _volume = 1.0
     private _tempoTrack: TempoTrack
     private _soundEngine: SoundEngine
@@ -57,16 +56,12 @@ export class Metronome extends Component {
         if (deltaTime <= Metronome.offsetSeconds) {
             // Play immediately
             this._click()
-            this._nextTick = nextClick
         }
     }
 
-    seekTicks(ticks: number) {
-        this._nextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
-    }
-
     reset() {
-        this._nextTick = 0
+        this._audio.pause()
+        this._audio.currentTime = 0
     }
 
     click() {
