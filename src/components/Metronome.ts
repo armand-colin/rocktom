@@ -3,60 +3,68 @@ import { Tempo } from "../sound/Tempo";
 import sound from "../assets/sounds/metronome-click.mp3"
 import { SoundEngine } from "../resources/SoundEngine";
 import type { TempoTrack } from "../sound/song/TempoTrack";
+import type { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode";
+import type { GainSoundNode } from "../sound/node/GainSoundNode";
 
 export class Metronome extends Component {
 
-    static offsetSeconds = 0.09
+    // Offset from the audio sample
+    static offsetSeconds = 0.04
 
     private _nextTick: number = 0
-    private _buffer: AudioBuffer | null = null
     private _volume = 1.0
     private _tempoTrack: TempoTrack
     private _soundEngine: SoundEngine
 
+    private _audio: HTMLAudioElement
+    private _node: AudioElementSoundNode
+    private _gain: GainSoundNode
+
+
     constructor(engine: Engine, tempoTrack: TempoTrack) {
         super(engine)
         this._tempoTrack = tempoTrack
-        this._loadBuffer()
+
+        this._audio = new Audio(sound)
+
         this._soundEngine = this.engine.getResource(SoundEngine)
+
+        this._node = this._soundEngine.createAudioElementNode(this._audio)
+        this._gain = this._soundEngine.createGainNode()
+        this._node.connect(this._gain)
+        this._gain.connect(this._soundEngine.output)
     }
-    
+
     get volume() {
         return this._volume
     }
 
     set volume(value: number) {
         this._volume = value
+        this._gain.gain = value
     }
 
-    private _loadBuffer() {
-        const soundEngine = this.engine.getResource(SoundEngine)
-        fetch(sound)
-            .then(response => response.arrayBuffer())
-            .then(data => soundEngine.createAudioBuffer(data))
-            .then(buffer => {
-                this._buffer = buffer
-            })
-    }
+    update(ticks: number, speed: number) {
+        // Shall schedule next click
+        const nextClick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
 
-    update(ticks: number) {
-        if (ticks >= this._nextTick) {
-            // Shall schedule next click
+        // convert in time
+        const nextTickTime = this._tempoTrack.secondsFromTicks(nextClick)
+        const currentTime = this._tempoTrack.secondsFromTicks(ticks)
 
-            this._nextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
-            // convert in time
-            const nextTickTime = this._tempoTrack.secondsFromTicks(this._nextTick)
-            const currentTime = this._tempoTrack.secondsFromTicks(ticks)
+        const deltaTime = (nextTickTime - currentTime) / speed
 
-            const clickTime = this._soundEngine.currentTime + (nextTickTime - currentTime) - Metronome.offsetSeconds
-            this._click(clickTime)
+        if (deltaTime <= Metronome.offsetSeconds) {
+            // Play immediately
+            this._click()
+            this._nextTick = nextClick
         }
     }
 
     seekTicks(ticks: number) {
         this._nextTick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
     }
-    
+
     reset() {
         this._nextTick = 0
     }
@@ -65,18 +73,16 @@ export class Metronome extends Component {
         this._click()
     }
 
-    private _click(time?: number) {
+    private _click() {
         // Play click sound
-        if (!this._buffer) 
-            return
-        
-        const audioNode = this.engine.getResource(SoundEngine).createAudioBufferNode(this._buffer)
-        const gain = this.engine.getResource(SoundEngine).createGainNode()
-        gain.gain = this._volume
-        audioNode.connect(gain)
-        gain.connect(this.engine.getResource(SoundEngine).output)
-
-        audioNode.play(time)
+        this._audio.currentTime = 0
+        this._audio.play()
     }
 
+    destroy(): void {
+        super.destroy()
+        this._node.disconnect()
+        this._gain.disconnect()
+        this._audio.pause()
+    }
 }

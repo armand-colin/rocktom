@@ -2,6 +2,7 @@ import { Engine, Resource } from "@niloc/ecs";
 import { Duration } from "@niloc/utils";
 import Player from "youtube-player";
 import type { YouTubePlayer as PlayerInstance } from "youtube-player/dist/types";
+import type { AudioPlayer } from "../core/AudioPlayer";
 
 enum YouTubePlayerState {
     UNSTARTED = -1,
@@ -12,7 +13,7 @@ enum YouTubePlayerState {
     CUED = 5
 }
 
-export class YoutubePlayer extends Resource {
+export class YoutubePlayer extends Resource implements AudioPlayer {
 
     private _player: PlayerInstance
     readonly element: HTMLDivElement
@@ -43,9 +44,7 @@ export class YoutubePlayer extends Resource {
             console.error('Youtube Player Error:', error)
         })
 
-        this._player.on('ready', () => {
-            console.log('ready')
-        })
+        this._player.on('ready', () => { })
 
         this._player.on('stateChange', (event) => {
             this._state = event.data
@@ -97,7 +96,7 @@ export class YoutubePlayer extends Resource {
         })
     }
 
-    get time() {
+    getTime() {
         this._player.getCurrentTime().then(time => {
             this._time = time
         })
@@ -146,6 +145,10 @@ export class YoutubePlayer extends Resource {
     setVolume(volume: number) {
         // this._volume = volume
         this._player.setVolume(volume * 100)
+    }
+
+    clear(): void {
+        this.pause()
     }
 
 }

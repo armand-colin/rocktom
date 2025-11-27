@@ -1,6 +1,6 @@
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
-import { AudioTrack } from "../sound/song/AudioTrack";
+import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
@@ -49,7 +49,10 @@ export function demo(): Level {
         "Demo",
         "Rocktom",
         {
-            audio: new AudioTrack("JIniBJm2F7A", 2.3),
+            audio: new AudioTrack({
+                type: AudioType.YouTube,
+                youtubeVideoId: "JIniBJm2F7A"
+            }, 2.3),
             bass: track.build(),
             tempo: tempoTrack,
             focus: focus.build()

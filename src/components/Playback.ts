@@ -10,17 +10,20 @@ import { CameraRig } from "./CameraRig";
 import { PlaybackNote } from "./PlaybackNote";
 import { Metronome } from "./Metronome";
 import { PlaybackTime } from "./PlaybackTime";
+import type { AudioPlayer } from "../core/AudioPlayer";
+import { AudioType } from "../sound/song/AudioTrack";
+import { UrlAudioPlayer } from "./UrlAudioPlayer";
+import { PlayingNotes3D } from "../3d/PlayingNotes3D";
 
 export class Playback extends Component {
 
     private _time: number = 0
     private _notes: PlaybackNote[] = []
+    private _playingNotes: PlayingNotes3D
 
-    private _youtubePlayer: YoutubePlayer
     private _rig: CameraRig
     private _metronome: Metronome
     private _speed = 1.0
-    private _youtubeVolume = 1.0
     private _metronomeVolume = 0.2
     private _metronomeEnabled = false
     private _playing = false
@@ -30,6 +33,9 @@ export class Playback extends Component {
     readonly playbackTime: PlaybackTime
     private _window: NoteWindow
 
+    private _audioPlayerVolume: number = 1.0
+    private _audioPlayer: AudioPlayer
+
     constructor(
         engine: Engine,
         readonly level: Level,
@@ -37,30 +43,45 @@ export class Playback extends Component {
         super(engine)
 
         const preferences = engine.getResource(PlaybackPreferences)
-        this._youtubeVolume = preferences.youtubeVolume
+
+        const payload = level.audioTrack.payload
+        if (payload.type === AudioType.YouTube) {
+            const player = engine.getResource(YoutubePlayer)
+            player.load(payload.youtubeVideoId)
+                .then(() => {
+                    this._loading = false
+                    this.changed()
+                })
+            this._audioPlayer = player
+        } else {
+            const urlPlayer = engine.createComponent(UrlAudioPlayer, payload.url)
+            this._audioPlayer = urlPlayer
+            if (urlPlayer.loaded)
+                this._loading = false
+            else
+                urlPlayer.events.on('loaded', () => {
+                    this._loading = false
+                    this.changed()
+                })
+        }
+
+        this._audioPlayerVolume = preferences.audioVolume
+        this._audioPlayer.setVolume(this._audioPlayerVolume)
 
         this.playbackTime = engine.createComponent(PlaybackTime, level.tempoTrack.getTempoAt(0))
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
 
-        this._youtubePlayer = this.engine.getResource(YoutubePlayer)
-        const audioTrack = level.audioTrack
 
-        this._youtubePlayer.setVolume(this._youtubeVolume)
-        this._youtubePlayer.load(audioTrack.youtubeVideoId)
-            .then(() => {
-                this._loading = false
-                this.changed()
-            })
-
+        this._renderer = engine.getResource(Renderer)
 
         const instrument = new Bass()
         const neck = NeckMesh.create(instrument)
-        this._renderer = engine.getResource(Renderer)
         this._renderer.add(neck)
 
-        Object.assign(window, { playback: this })
+        this._playingNotes = new PlayingNotes3D()
+        this._renderer.add(this._playingNotes)
 
         this._notes = []
 
@@ -71,6 +92,8 @@ export class Playback extends Component {
         this._updateWindow()
 
         this._rig.focus(level.focusTrack.initialFocus)
+
+        Object.assign(window, { playback: this })
     }
 
     get loading() {
@@ -100,18 +123,18 @@ export class Playback extends Component {
 
     set speed(value: number) {
         this._speed = value
-        this._youtubePlayer.setSpeed(value)
+        this._audioPlayer.setSpeed(value)
         this.changed()
     }
 
-    get youtubeVolume() {
-        return this._youtubeVolume
+    get audioVolume() {
+        return this._audioPlayerVolume
     }
 
-    set youtubeVolume(value: number) {
-        this._youtubeVolume = value
-        this.engine.getResource(PlaybackPreferences).youtubeVolume = value
-        this._youtubePlayer.setVolume(value)
+    set audioVolume(value: number) {
+        this._audioPlayerVolume = value
+        this.engine.getResource(PlaybackPreferences).audioVolume = value
+        this._audioPlayer.setVolume(value)
         this.changed()
     }
 
@@ -139,8 +162,7 @@ export class Playback extends Component {
             note.destroy()
 
         this._window.clear()
-
-        this._youtubePlayer.pause()
+        this._audioPlayer.clear()
         this._rig.destroy()
     }
 
@@ -158,28 +180,36 @@ export class Playback extends Component {
         this._rig.update(ticks)
 
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
-        this._youtubePlayer.seek(this._time)
+        const audioSeekTime = Math.max(0, this._time - this.level.audioTrack.startTime)
+        this._audioPlayer.seek(audioSeekTime)
         this._metronome.seekTicks(ticks)
+        this._playingNotes.update(ticks)
     }
 
     update(deltaTime: number) {
         if (this.level.audioTrack.startTime <= this._time) {
-            // Try to compensate for Youtube lag
-            const deltaTimeYoutube = this._time - this._youtubePlayer.time - this.level.audioTrack.startTime
-            deltaTime -= deltaTimeYoutube / 24
+            // Try to compensate for audio latency
+            const audioDeltaTime = this._time - this._audioPlayer.getTime() - this.level.audioTrack.startTime
+            deltaTime -= audioDeltaTime / 24
+            Object.assign(window, { latency: audioDeltaTime })
         }
 
-        const beforeTicks = this.level.tempoTrack.ticksFromSeconds(this._time)
-
         deltaTime = deltaTime * this._speed
+
+        const beforeTicks = this.level.tempoTrack.ticksFromSeconds(this._time)
         this._time += deltaTime
 
         const ticks = this.level.tempoTrack.ticksFromSeconds(this._time)
 
         if (this._metronomeEnabled)
-            this._metronome.update(ticks)
+            this._metronome.update(ticks, this._speed)
 
         this._updateWindow()
+        for (const { note } of this._window.iter()) {
+            if (note.time >= beforeTicks && note.time < ticks) {
+                this._playingNotes.play(note)
+            }
+        }
 
         const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
@@ -187,6 +217,7 @@ export class Playback extends Component {
             this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
 
         this._rig.update(ticks)
+        this._playingNotes.update(ticks)
 
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
     }
@@ -197,30 +228,31 @@ export class Playback extends Component {
 
         this._playing = true
         if (this._time >= this.level.audioTrack.startTime)
-            this._youtubePlayer.play()
+            this._audioPlayer.play()
         else
-            this._youtubePlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime - this._time))
+            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime - this._time))
     }
 
     pause() {
-        this._youtubePlayer.pause()
+        this._audioPlayer.pause()
         this._playing = false
     }
 
     reset() {
         this._time = 0
         this.playbackTime.set(0, 0, this.level.tempoTrack.getTempoAt(0))
-        this._youtubePlayer.clearScheduledPlay()
-        this._youtubePlayer.pause()
-        this._youtubePlayer.seek(0)
+        this._audioPlayer.clearScheduledPlay()
+        this._audioPlayer.pause()
+        this._audioPlayer.seek(0)
         this._rig.focus(this.level.focusTrack.initialFocus)
         this._rig.update(0)
+        this._playingNotes.update(0)
         this._metronome.reset()
 
         this._updateWindow()
 
         if (this._playing)
-            this._youtubePlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime))
+            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime))
     }
 
 }
@@ -370,27 +402,25 @@ class NoteWindow {
     }
 
     private _increaseForwards(maxTicks: number) {
-        console.log("Increase forwards")
         if (!this._current.tail)
             return
-        
+
         let index = this._current.tail.index + 1
 
         while (index < this.notes.length) {
             const note = this.notes[index]
             if (note.note.time > maxTicks)
                 return
-            
+
             const newNode = new Node(index, note)
             this._current.push(newNode)
             this.renderer.add(note.object)
-            
+
             index++
         }
     }
-    
+
     private _increaseBackwards(minTicks: number) {
-        console.log("Increase backwards")
         if (!this._current.head)
             return
 
