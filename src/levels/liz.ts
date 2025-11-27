@@ -87,6 +87,7 @@ export function liz(): Level {
         .build()
 
     const level = new Level(
+        "remi-wolf-liz",
         "Liz",
         "Remi Wolf",
         {

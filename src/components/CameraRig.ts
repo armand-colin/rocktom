@@ -3,9 +3,9 @@ import type { Coroutine } from "@niloc/utils";
 import { AnimationCurve } from "@niloc/utils";
 import { Euler, PerspectiveCamera, Quaternion, Vector3 } from "three";
 import { Rules } from "../3d/Rules";
+import { Renderer } from "../resources/Renderer";
 import { Schedules } from "../Schedules";
 import type { Focus } from "../sound/song/Focus";
-import { Renderer } from "../resources/Renderer";
 
 type Transform = {
     position: Vector3,

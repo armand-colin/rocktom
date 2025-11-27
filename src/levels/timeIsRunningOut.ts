@@ -268,6 +268,7 @@ export function timeIsRunningOut(): Level {
         .pattern(outro)
 
     const level = new Level(
+        "muse-time-is-running-out",
         "Time is Running Out",
         "Muse",
         {

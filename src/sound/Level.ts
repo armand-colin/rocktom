@@ -5,12 +5,14 @@ import type { Track } from "./song/Track";
 
 export class Level {
 
+    readonly id: string
     readonly bassTrack: Track
     readonly audioTrack: AudioTrack
     readonly tempoTrack: TempoTrack
     readonly focusTrack: FocusTrack
 
     constructor(
+        id: string,
         readonly name: string,
         readonly author: string,
         tracks: {
@@ -20,6 +22,7 @@ export class Level {
             focus: FocusTrack
         }
     ) {
+        this.id = id
         this.bassTrack = tracks.bass
         this.audioTrack = tracks.audio
         this.tempoTrack = tracks.tempo

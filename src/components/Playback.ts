@@ -1,5 +1,5 @@
 import { Component, type Engine } from "@niloc/ecs";
-import { Duration } from "@niloc/utils";
+import { Duration, LinkedList } from "@niloc/utils";
 import { NeckMesh } from "../3d/NeckMesh";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
 import { Renderer } from "../resources/Renderer";
@@ -7,8 +7,8 @@ import { YoutubePlayer } from "../resources/YoutubePlayer";
 import { Bass } from "../sound/instrument/Instrument";
 import { type Level } from "../sound/Level";
 import { CameraRig } from "./CameraRig";
-import { PlaybackNote } from "./PlaybackNote";
 import { Metronome } from "./Metronome";
+import { PlaybackNote } from "./PlaybackNote";
 import { PlaybackTime } from "./PlaybackTime";
 
 export class Playback extends Component {
@@ -225,88 +225,9 @@ export class Playback extends Component {
 
 }
 
-
-class Node {
-
-    next: Node | null = null
-    prev: Node | null = null
-
-    constructor(
-        readonly index: number,
-        readonly note: PlaybackNote
-    ) { }
-
-}
-
-class LinkedList {
-
-    private _size: number = 0
-
-    head: Node | null = null
-    tail: Node | null = null
-
-    get size() {
-        return this._size
-    }
-
-    pop(node: Node) {
-        if (node.next)
-            node.next.prev = node.prev
-
-        if (node.prev)
-            node.prev.next = node.next
-
-        if (node === this.head)
-            this.head = node.next
-
-        if (node === this.tail)
-            this.tail = node.prev
-
-        this._size--
-    }
-
-    push(node: Node) {
-        if (!this.head) {
-            this.head = node
-            this.tail = node
-        } else {
-            node.prev = this.tail
-
-            if (this.tail)
-                this.tail.next = node
-
-            this.tail = node
-        }
-
-        this._size++
-    }
-
-    unshift(node: Node) {
-        if (!this.head) {
-            this.head = node
-            this.tail = node
-        } else {
-            node.next = this.head
-            this.head.prev = node
-            this.head = node
-        }
-
-        this._size++
-    }
-
-    *iter() {
-        let node = this.head
-        while (node) {
-            yield node.note
-            node = node.next
-        }
-    }
-
-}
-
 class NoteWindow {
 
-    private _current = new LinkedList()
+    private _current = LinkedList.create<{ i: number, note: PlaybackNote }>()
 
     constructor(
         readonly notes: PlaybackNote[],
@@ -314,7 +235,7 @@ class NoteWindow {
     ) { }
 
     iter() {
-        return this._current.iter()
+        return LinkedList.iter(this._current)
     }
 
     update(ticks: number, minTicks: number, maxTicks: number) {
@@ -330,8 +251,7 @@ class NoteWindow {
                 if (note.note.time + note.note.duration > maxTicks)
                     return
 
-                const node = new Node(i, note)
-                this._current.push(node)
+                LinkedList.push(this._current, { i, note })
                 this.renderer.add(note.object)
                 break
             }
@@ -342,25 +262,25 @@ class NoteWindow {
             this._increaseBackwards(minTicks)
         }
 
-        for (const note of this._current.iter()) {
-            note.update(ticks)
+        for (const node of LinkedList.iter(this._current)) {
+            node.note.update(ticks)
         }
     }
 
     clear() {
-        for (const note of this._current.iter())
-            this.renderer.remove(note.object)
+        for (const node of LinkedList.iter(this._current))
+            this.renderer.remove(node.note.object)
 
-        this._current = new LinkedList()
+        this._current = LinkedList.create()
     }
 
     private _prune(minTicks: number, maxTicks: number) {
         let node = this._current.head
         while (node) {
-            const note = node.note
+            const note = node.value.note
             if (note.note.time < minTicks || note.note.time + note.note.duration > maxTicks) {
                 const nextNode = node.next
-                this._current.pop(node)
+                LinkedList.remove(this._current, node)
                 node = nextNode
                 this.renderer.remove(note.object)
                 continue
@@ -373,36 +293,34 @@ class NoteWindow {
         console.log("Increase forwards")
         if (!this._current.tail)
             return
-        
-        let index = this._current.tail.index + 1
+
+        let index = this._current.tail.value.i + 1
 
         while (index < this.notes.length) {
             const note = this.notes[index]
             if (note.note.time > maxTicks)
                 return
-            
-            const newNode = new Node(index, note)
-            this._current.push(newNode)
+
+            LinkedList.push(this._current, { i: index, note })
             this.renderer.add(note.object)
-            
+
             index++
         }
     }
-    
+
     private _increaseBackwards(minTicks: number) {
         console.log("Increase backwards")
         if (!this._current.head)
             return
 
-        let index = this._current.head.index - 1
+        let index = this._current.head.value.i - 1
 
         while (index >= 0) {
             const note = this.notes[index]
             if (note.note.time + note.note.duration < minTicks)
                 return
 
-            const newNode = new Node(index, note)
-            this._current.unshift(newNode)
+            LinkedList.unshift(this._current, { i: index, note })
             this.renderer.add(note.object)
 
             index--
