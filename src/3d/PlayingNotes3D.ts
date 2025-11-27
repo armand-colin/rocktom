@@ -3,7 +3,7 @@ import { Mesh, MeshBasicMaterial, Object3D, PlaneGeometry, Texture, TextureLoade
 import { lerp } from "three/src/math/MathUtils.js";
 import texture from "../assets/highlightTile.png";
 import type { NoteEvent } from "../sound/song/NoteEvent";
-import { Tempo } from "../sound/Tempo";
+import type { TempoTrack } from "../sound/song/TempoTrack";
 import { Rules } from "./Rules";
 
 class PlayingNote3D extends Object3D {
@@ -24,15 +24,14 @@ class PlayingNote3D extends Object3D {
 
     private _ticks: number = 0
     private _event: NoteEvent
-    private _duration: number
-
+    private _fadeOutDuration: number
     private _material: MeshBasicMaterial
     private _mesh: Mesh
 
-    constructor(event: NoteEvent) {
+    constructor(event: NoteEvent, fadeOutDuration: number) {
         super()
         this._event = event
-        this._duration = Math.max(event.duration, Tempo.PPQ)
+        this._fadeOutDuration = fadeOutDuration
         this._material = new MeshBasicMaterial({
             color: event.string.color,
             map: PlayingNote3D.texture,
@@ -54,13 +53,20 @@ class PlayingNote3D extends Object3D {
     }
 
     get finished() {
+        const endTicks = this._event.time + this._event.duration + this._fadeOutDuration
+
         return this._ticks < this._event.time ||
-            this._ticks >= this._event.time + this._duration
+            this._ticks >= endTicks
     }
 
     update(ticks: number) {
         this._ticks = ticks
-        const t = Math.max(0, Math.min(1, (ticks - this._event.time) / this._duration))
+        let t =
+            ticks > this._event.time + this._event.duration ?
+                (ticks - (this._event.time + this._event.duration)) / this._fadeOutDuration :
+                0
+
+        t = Math.max(0, Math.min(1, t))
         const easedT = AnimationCurve.EaseOut.sample(t)
         this._material.opacity = 1.0 - easedT
         this.scale.setScalar(1 + easedT * PlayingNote3D._scaleRatio)
@@ -88,11 +94,14 @@ class PlayingNote3D extends Object3D {
             console.log(x)
 
             this.position.x = x
+            this.scale.x = 1 - easedSlideT
         }
     }
 
-    set(event: NoteEvent) {
+    set(event: NoteEvent, fadeOutDuration: number) {
         this._event = event
+        this._fadeOutDuration = fadeOutDuration
+
         // update material
         this._material.color.set(event.string.color)
 
@@ -101,7 +110,6 @@ class PlayingNote3D extends Object3D {
             PlayingNote3D._geometry
 
         this._mesh.geometry = geometry
-        this._duration = Math.max(event.duration, Tempo.PPQ)
 
         this._updatePosition()
     }
@@ -121,26 +129,32 @@ export class PlayingNotes3D extends Object3D {
 
     private _pool: PlayingNote3D[] = []
     private _active: Set<PlayingNote3D> = new Set()
+    private _tempoTrack: TempoTrack
 
-    constructor() {
+    static fadeOutDurationInSeconds = 0.4
+
+    constructor(tempoTrack: TempoTrack) {
         super()
+        this._tempoTrack = tempoTrack
     }
 
     play(event: NoteEvent) {
+        const fadeOutDurationTicks = this._tempoTrack.ticksFromSeconds(PlayingNotes3D.fadeOutDurationInSeconds, event.time + event.duration)
+
         for (const active of this._active) {
             if (active.event.fret === event.fret && active.event.string === event.string) {
-                active.set(event)
+                active.set(event, fadeOutDurationTicks)
                 return
             }
         }
 
         if (this._pool.length === 0) {
-            const note = new PlayingNote3D(event)
+            const note = new PlayingNote3D(event, fadeOutDurationTicks)
             this._active.add(note)
             this.add(note)
         } else {
             const note = this._pool.pop()!
-            note.set(event)
+            note.set(event, fadeOutDurationTicks)
             this._active.add(note)
             this.add(note)
         }

@@ -80,7 +80,7 @@ export class Playback extends Component {
         const neck = NeckMesh.create(instrument)
         this._renderer.add(neck)
 
-        this._playingNotes = new PlayingNotes3D()
+        this._playingNotes = new PlayingNotes3D(this.level.tempoTrack)
         this._renderer.add(this._playingNotes)
 
         this._notes = []
