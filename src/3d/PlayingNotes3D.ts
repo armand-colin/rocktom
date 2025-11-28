@@ -83,15 +83,11 @@ class PlayingNote3D extends Object3D {
                 AnimationCurve.EaseInOut :
                 AnimationCurve.EaseIn
 
-            console.log(slideT)
-
             const easedSlideT = curve.sample(slideT)
 
             const startX = Rules.getX(this.event.fret)
             const endX = Rules.getX(this.event.slide.fret)
             const x = lerp(startX, endX, easedSlideT)
-
-            console.log(x)
 
             this.position.x = x
             this.scale.x = 1 - easedSlideT

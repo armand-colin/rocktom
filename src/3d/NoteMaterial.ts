@@ -1,58 +1,92 @@
-import { AddEquation, MeshBasicMaterial, Texture, TextureLoader } from "three"
+import { MeshBasicMaterial, Texture, TextureLoader } from "three"
 import type { String } from "../sound/instrument/String"
 
-import highlightTexture from "../assets/highlightTile.png"
-import baseTexture from "../assets/tile.png"
+import headTexture from "../assets/sprites/head.png"
+import headHighlightTexture from "../assets/sprites/headHighlight.png"
+import tailTexture from "../assets/sprites/tail.png"
+import tailHighlightTexture from "../assets/sprites/tailHighlight.png"
 
 export class NoteMaterial extends MeshBasicMaterial {
 
     static _loader = new TextureLoader()
 
-    static _highlightTexture: Texture | null = null
-    static _baseTexture: Texture | null = null
+    static _headTexture: Texture | null = null
+    static _headHighlightTexture: Texture | null = null
+    static _tailTexture: Texture | null = null
+    static _tailHighlightTexture: Texture | null = null
 
-    static _baseMaterials: Map<String, NoteMaterial> = new Map()
-    static _highlightMaterials: Map<String, NoteMaterial> = new Map()
+    static _headMaterials: Map<String, NoteMaterial> = new Map()
+    static _headHighlightMaterials: Map<String, NoteMaterial> = new Map()
+    static _tailMaterials: Map<String, NoteMaterial> = new Map()
+    static _tailHighlightMaterials: Map<String, NoteMaterial> = new Map()
 
     static load() {
-        if (!this._highlightTexture)
-            this._highlightTexture = this._loader.load(highlightTexture)
+        if (!this._headHighlightTexture)
+            this._headHighlightTexture = this._loader.load(headHighlightTexture)
 
-        if (!this._baseTexture)
-            this._baseTexture = this._loader.load(baseTexture)
+        if (!this._headTexture)
+            this._headTexture = this._loader.load(headTexture)
+
+        if (!this._tailHighlightTexture)
+            this._tailHighlightTexture = this._loader.load(tailHighlightTexture)
+
+        if (!this._tailTexture)
+            this._tailTexture = this._loader.load(tailTexture)
     }
 
-    static base(string: String): NoteMaterial {
-        if (!this._baseMaterials.has(string)) {
-            if (this._baseTexture === null)
+    static head(string: String): NoteMaterial {
+        if (!this._headMaterials.has(string)) {
+            if (this._headTexture === null)
                 this.load()
 
-            const material = new NoteMaterial(string, this._baseTexture!)
-            this._baseMaterials.set(string, material)
+            const material = new NoteMaterial(string, this._headTexture!)
+            this._headMaterials.set(string, material)
             return material
         }
 
-        return this._baseMaterials.get(string)!
+        return this._headMaterials.get(string)!
     }
 
-    static highlight(string: String): NoteMaterial {
-        if (!this._highlightMaterials.has(string)) {
-            if (this._highlightTexture === null)
+    static headHighlight(string: String): NoteMaterial {
+        if (!this._headHighlightMaterials.has(string)) {
+            if (this._headHighlightTexture === null)
                 this.load()
 
-            const material = new NoteMaterial(string, this._highlightTexture!, true)
-            this._highlightMaterials.set(string, material)
+            const material = new NoteMaterial(string, this._headHighlightTexture!)
+            this._headHighlightMaterials.set(string, material)
             return material
         }
 
-        return this._highlightMaterials.get(string)!
+        return this._headHighlightMaterials.get(string)!
     }
 
-    private constructor(string: String, texture: Texture, emissive = false) {
+    static tail(string: String): NoteMaterial {
+        if (!this._tailMaterials.has(string)) {
+            if (this._tailTexture === null)
+                this.load()
+
+            const material = new NoteMaterial(string, this._tailTexture!)
+            this._tailMaterials.set(string, material)
+        }
+        return this._tailMaterials.get(string)!
+    }
+
+    static tailHighlight(string: String): NoteMaterial {
+        if (!this._tailHighlightMaterials.has(string)) {
+            if (this._tailHighlightTexture === null)
+                this.load()
+
+            const material = new NoteMaterial(string, this._tailHighlightTexture!)
+            this._tailHighlightMaterials.set(string, material)
+        }
+        return this._tailHighlightMaterials.get(string)!
+    }
+
+    private constructor(string: String, texture: Texture) {
         super({
             color: string.color,
             map: texture,
-            blendEquation: emissive ? AddEquation : undefined,
+            transparent: true,
         })
     }
 }

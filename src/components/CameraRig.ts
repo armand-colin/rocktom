@@ -35,15 +35,18 @@ export class CameraRig extends Component {
         Object.assign(window, { rig: this })
     }
 
-    private _clampFocus(focus: Focus): Focus {
+    private _mapFocus(focus: Focus): Focus {
+        // clamp focus
         const distance = focus.highFret - focus.lowFret
-        if (distance < 5) {
+        const minDistance = 5 * this._camera.aspect
+
+        if (distance < minDistance) {
             // Shall expand focus
             const middle = (focus.highFret + focus.lowFret) / 2
 
             return {
-                lowFret: middle - 2.5,
-                highFret: middle + 2.5
+                lowFret: middle - minDistance / 2,
+                highFret: middle + minDistance / 2
             }
         }
 
@@ -65,8 +68,6 @@ export class CameraRig extends Component {
     }
 
     focus(focus: Focus) {
-        focus = this._clampFocus(focus)
-
         const { position, rotation } = this._getFocusTransform(focus)
         this._camera.position.copy(position)
         this._camera.quaternion.copy(rotation)
@@ -86,8 +87,6 @@ export class CameraRig extends Component {
     }
 
     transition(focus: Focus, startTicks: number, durationInTicks: number) {
-        focus = this._clampFocus(focus)
-
         if (this._focusCoroutine) {
             this._focusCoroutine.cancel()
             this._focusCoroutine = null
@@ -138,6 +137,8 @@ export class CameraRig extends Component {
     }
 
     private _getFocusTransform(focus: Focus): Transform {
+        focus = this._mapFocus(focus)
+
         const a = Rules.getX(focus.lowFret - 1.5)
         const b = Rules.getX(focus.highFret + 1.5)
         // const c = Rules.getY(1) - 0.5
