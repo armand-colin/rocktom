@@ -1,32 +1,57 @@
-import type { AudioTrack } from "./song/AudioTrack";
-import type { FocusTrack } from "./song/FocusTrack";
-import type { TempoTrack } from "./song/TempoTrack";
-import type { Track } from "./song/Track";
+import { AudioTrack, AudioType } from "./song/AudioTrack";
+import { FocusTrack } from "./song/FocusTrack";
+import { TempoTrack } from "./song/TempoTrack";
+import { NoteTrack } from "./song/NoteTrack";
+import { nanoid } from "nanoid";
+import type { Instrument } from "./instrument/Instrument";
+import { Tempo } from "./Tempo";
+import { Focus } from "./song/Focus";
 
 export class Level {
 
     readonly id: string
-    readonly bassTrack: Track
+    name: string
+    author: string
+
+    readonly bassTrack: NoteTrack
     readonly audioTrack: AudioTrack
     readonly tempoTrack: TempoTrack
     readonly focusTrack: FocusTrack
 
-    constructor(
-        id: string,
-        readonly name: string,
-        readonly author: string,
+    static create(instrument: Instrument) {
+        return new Level({
+            name: "New Level",
+            author: "Unknown",
+            instrument,
+            tracks: {
+                bass: new NoteTrack(instrument, [], []),
+                audio: new AudioTrack({ type: AudioType.None }, 0, 0),
+                tempo: new TempoTrack(new Tempo(120)),
+                focus: new FocusTrack(Focus.default(), [])
+            }
+        })
+    }
+
+    constructor(opts: {
+        id?: string,
+        name: string,
+        author: string,
+        instrument: Instrument,
         tracks: {
-            bass: Track,
+            bass: NoteTrack,
             audio: AudioTrack,
             tempo: TempoTrack,
             focus: FocusTrack
         }
-    ) {
-        this.id = id
-        this.bassTrack = tracks.bass
-        this.audioTrack = tracks.audio
-        this.tempoTrack = tracks.tempo
-        this.focusTrack = tracks.focus
+    }) {
+        this.id = opts?.id ?? nanoid()
+        this.name = opts.name
+        this.author = opts.author
+
+        this.bassTrack = opts.tracks?.bass 
+        this.audioTrack = opts.tracks?.audio
+        this.tempoTrack = opts.tracks?.tempo
+        this.focusTrack = opts.tracks?.focus
     }
 
     get durationInTicks() {

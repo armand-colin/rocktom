@@ -13,3 +13,21 @@ export interface AudioPlayer {
     clear(): void
 
 }
+
+function mock(timeFunction: () => number): AudioPlayer {
+    return {
+        getTime: timeFunction,
+        schedulePlay: () => { },
+        clearScheduledPlay: () => { },
+        play: () => { },
+        pause: () => { },
+        seek: () => { },
+        setSpeed: () => { },
+        setVolume: () => { },
+        clear: () => { },
+    }
+}
+
+export const AudioPlayer = {
+    mock
+}

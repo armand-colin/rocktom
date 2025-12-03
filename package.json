@@ -15,6 +15,7 @@
     "@niloc/utils": "^0.1.19",
     "@types/three": "^0.181.0",
     "@types/youtube-player": "^5.5.11",
+    "nanoid": "^5.1.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "sass": "^1.93.2",

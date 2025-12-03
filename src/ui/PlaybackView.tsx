@@ -158,7 +158,7 @@ function YoutubeVolumeSlider(props: { playback: Playback }) {
             min={0}
             max={1}
             value={audioVolume}
-            onChange={v => { props.playback.audioVolume = v }}
+            onChange={v => { props.playback.audioVolume  = v }}
         />
     </div>
 }

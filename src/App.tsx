@@ -9,8 +9,11 @@ import { demo } from './levels/demo'
 import { liz } from './levels/liz'
 import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { SoundEngine } from './resources/SoundEngine'
-import type { Level } from './sound/Level'
+import { Level } from './sound/Level'
 import { LevelList } from './ui/levelList/LevelList'
+import { State } from './resources/State'
+import { LevelEditorView } from './ui/levelEditor/LevelEditorView'
+import { Bass } from './sound/instrument/Instrument'
 
 const levels = [
   liz(),
@@ -21,6 +24,8 @@ const levels = [
 function App() {
   const { engine } = useContext(EngineContext)
   const { playback } = useResource(Player)
+  const state = useResource(State)
+  const { editor } = state
 
   async function onSelectLevel(level: Level) {
     engine.getResource(SoundEngine).resume()
@@ -34,12 +39,23 @@ function App() {
     player.bind(playback)
   }
 
+  function onCreate() {
+    const level = Level.create(new Bass())
+    state.editLevel(level)
+  }
+
   return (
-    <div className="app">
+    <div className="App">
       {
-        playback ?
-          <PlaybackView playback={playback} /> :
-          <LevelList onSelect={onSelectLevel} levels={levels} />
+        editor ?
+          <LevelEditorView editor={editor} /> :
+          playback ?
+            <PlaybackView playback={playback} /> :
+            <LevelList 
+              onSelect={onSelectLevel} 
+              levels={levels} 
+              onCreate={onCreate}
+            />
       }
     </div>
   )

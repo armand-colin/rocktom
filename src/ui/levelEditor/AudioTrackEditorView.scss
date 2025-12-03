@@ -1,0 +1,22 @@
+.AudioTrackEditorView {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    outline: 1px solid var(--outline);
+
+    .head {
+        padding: 8px;
+    }
+
+    .content {
+        position: relative;
+
+        .audio {
+            position: absolute;
+            height: 100%;
+            width: calc(var(--duration) * var(--ratio) * 1px);
+            left: calc((var(--ticks) * var(--ratio) + var(--offset)) * 1px);
+            background:var(--primary);
+            border-radius: 4px;
+        }
+    }
+}

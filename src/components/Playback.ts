@@ -1,8 +1,8 @@
 import { Component, type Engine } from "@niloc/ecs";
-import { Duration, LinkedList } from "@niloc/utils";
+import { Duration } from "@niloc/utils";
 import { NeckMesh } from "../3d/NeckMesh";
 import { PlayingNotes3D } from "../3d/PlayingNotes3D";
-import type { AudioPlayer } from "../core/AudioPlayer";
+import { AudioPlayer } from "../core/AudioPlayer";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
 import { Renderer } from "../resources/Renderer";
 import { YoutubePlayer } from "../resources/YoutubePlayer";
@@ -14,6 +14,7 @@ import { Metronome } from "./Metronome";
 import { PlaybackNote } from "./PlaybackNote";
 import { PlaybackTime } from "./PlaybackTime";
 import { UrlAudioPlayer } from "./UrlAudioPlayer";
+import { NoteWindow } from "../core/NoteWindow";
 
 export class Playback extends Component {
 
@@ -45,24 +46,34 @@ export class Playback extends Component {
         const preferences = engine.getResource(PlaybackPreferences)
 
         const payload = level.audioTrack.payload
-        if (payload.type === AudioType.YouTube) {
-            const player = engine.getResource(YoutubePlayer)
-            player.load(payload.youtubeVideoId)
-                .then(() => {
-                    this._loading = false
-                    this.changed()
-                })
-            this._audioPlayer = player
-        } else {
-            const urlPlayer = engine.createComponent(UrlAudioPlayer, payload.url)
-            this._audioPlayer = urlPlayer
-            if (urlPlayer.loaded)
+        switch (payload.type) {
+            case AudioType.None: {
                 this._loading = false
-            else
-                urlPlayer.events.on('loaded', () => {
+                this._audioPlayer = AudioPlayer.mock(() => this._time)
+                break
+            }
+            case AudioType.YouTube: {
+                const player = engine.getResource(YoutubePlayer)
+                player.load(payload.youtubeVideoId)
+                    .then(() => {
+                        this._loading = false
+                        this.changed()
+                    })
+                this._audioPlayer = player
+                break
+            }
+            case AudioType.Url: {
+                const urlPlayer = engine.createComponent(UrlAudioPlayer, payload.url)
+                this._audioPlayer = urlPlayer
+                if (urlPlayer.loaded)
                     this._loading = false
-                    this.changed()
-                })
+                else
+                    urlPlayer.events.on('loaded', () => {
+                        this._loading = false
+                        this.changed()
+                    })
+                break
+            }
         }
 
         this._audioPlayerVolume = preferences.audioVolume
@@ -181,15 +192,15 @@ export class Playback extends Component {
         this._rig.update(ticks)
 
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
-        const audioSeekTime = Math.max(0, this._time - this.level.audioTrack.startTime)
+        const audioSeekTime = Math.max(0, this._time - this.level.audioTrack.time)
         this._audioPlayer.seek(audioSeekTime)
         this._playingNotes.update(ticks)
     }
 
     update(deltaTime: number) {
-        if (this.level.audioTrack.startTime <= this._time) {
+        if (this.level.audioTrack.time <= this._time) {
             // Try to compensate for audio latency
-            const audioDeltaTime = this._time - this._audioPlayer.getTime() - this.level.audioTrack.startTime
+            const audioDeltaTime = this._time - this._audioPlayer.getTime() - this.level.audioTrack.time
             deltaTime -= audioDeltaTime / 24
             Object.assign(window, { latency: audioDeltaTime })
         }
@@ -227,10 +238,10 @@ export class Playback extends Component {
             return
 
         this._playing = true
-        if (this._time >= this.level.audioTrack.startTime)
+        if (this._time >= this.level.audioTrack.time)
             this._audioPlayer.play()
         else
-            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime - this._time))
+            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time - this._time))
     }
 
     pause() {
@@ -252,109 +263,7 @@ export class Playback extends Component {
         this._updateWindow()
 
         if (this._playing)
-            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.startTime))
-    }
-
-}
-
-class NoteWindow {
-
-    private _current = LinkedList.create<{ i: number, note: PlaybackNote }>()
-
-    constructor(
-        readonly notes: PlaybackNote[],
-        readonly renderer: Renderer
-    ) { }
-
-    iter() {
-        return LinkedList.iter(this._current)
-    }
-
-    update(ticks: number, minTicks: number, maxTicks: number) {
-        this._prune(minTicks, maxTicks)
-
-        if (this._current.size === 0) {
-            // Shall find first note to add
-            for (let i = 0; i < this.notes.length; i++) {
-                const note = this.notes[i]
-                if (note.note.time + note.note.duration <= minTicks)
-                    continue
-
-                if (note.note.time + note.note.duration > maxTicks)
-                    return
-
-                LinkedList.push(this._current, { i, note })
-                this.renderer.add(note.object)
-                break
-            }
-
-            this._increaseForwards(maxTicks)
-        } else {
-            this._increaseForwards(maxTicks)
-            this._increaseBackwards(minTicks)
-        }
-
-        for (const node of LinkedList.iter(this._current)) {
-            node.note.update(ticks)
-        }
-    }
-
-    clear() {
-        for (const node of LinkedList.iter(this._current))
-            this.renderer.remove(node.note.object)
-
-        this._current = LinkedList.create()
-    }
-
-    private _prune(minTicks: number, maxTicks: number) {
-        let node = this._current.head
-        while (node) {
-            const note = node.value.note
-            if (note.note.time < minTicks || note.note.time + note.note.duration > maxTicks) {
-                const nextNode = node.next
-                LinkedList.remove(this._current, node)
-                node = nextNode
-                this.renderer.remove(note.object)
-                continue
-            }
-            node = node.next
-        }
-    }
-
-    private _increaseForwards(maxTicks: number) {
-        if (!this._current.tail)
-            return
-
-        let index = this._current.tail.value.i + 1
-
-        while (index < this.notes.length) {
-            const note = this.notes[index]
-            if (note.note.time > maxTicks)
-                return
-
-            LinkedList.push(this._current, { i: index, note })
-            this.renderer.add(note.object)
-
-            index++
-        }
-    }
-
-    private _increaseBackwards(minTicks: number) {
-        if (!this._current.head)
-            return
-
-        let index = this._current.head.value.i - 1
-
-        while (index >= 0) {
-            const note = this.notes[index]
-            if (note.note.time + note.note.duration < minTicks)
-                return
-
-            LinkedList.unshift(this._current, { i: index, note })
-            this.renderer.add(note.object)
-
-            index--
-        }
+            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time))
     }
 
 }

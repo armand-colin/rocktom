@@ -1,5 +1,5 @@
+import { nanoid } from "nanoid";
 import type { Instrument } from "../instrument/Instrument";
-import { LinearizedTrack } from "../LinearizedTrack";
 import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Marker } from "./Marker";
@@ -11,7 +11,7 @@ type TimedPattern = {
     pattern: Pattern
 }
 
-export class Track {
+export class NoteTrack {
 
     readonly instrument: Instrument
     readonly patterns: { time: number, pattern: Pattern }[] = []
@@ -55,7 +55,7 @@ export class Track {
 
 }
 
-export class TrackBuilder {
+export class NoteTrackBuilder {
 
     private _time: number = 0
     private _patterns: { time: number, pattern: Pattern }[] = []
@@ -85,8 +85,8 @@ export class TrackBuilder {
         return this
     }
 
-    build(): Track {
-        return new Track(
+    build(): NoteTrack {
+        return new NoteTrack(
             this._instrument, 
             this._patterns,
             this._markers
@@ -95,6 +95,7 @@ export class TrackBuilder {
 
     marker(name: string): this {
         this._markers.push({
+            id: nanoid(),
             time: this._time,
             name: name
         })
@@ -114,25 +115,6 @@ export class TrackBuilder {
     addTempo(tempo: Tempo, tempoTrack: TempoTrack): this {
         tempoTrack.add(this._time, tempo)
         return this
-    }  
-
-    linearize(): LinearizedTrack {
-        const notes = []
-
-        for (const timedPattern of this._patterns) {
-            for (const note of timedPattern.pattern.notes) {
-                notes.push({
-                    time: note.time + timedPattern.time,
-                    duration: note.duration,
-                    string: note.string,
-                    fret: note.fret,
-                    slide: note.slide,
-                    fingerPosition: note.fingerPosition
-                })
-            }
-        }
-
-        return new LinearizedTrack(notes)
-    }
+    } 
 
 }

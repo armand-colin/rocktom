@@ -4,7 +4,7 @@ import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
-import { TrackBuilder } from "../sound/song/Track";
+import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { Tempo } from "../sound/Tempo";
 
 export function liz(): Level {
@@ -78,7 +78,7 @@ export function liz(): Level {
         // Beat 5
         .build()
 
-    const track = new TrackBuilder(new Bass())
+    const track = new NoteTrackBuilder(new Bass())
         .silence(Tempo.ticksFromQuarterNote(4))
         .pattern(intro)
         .pattern(preChorus)
@@ -86,20 +86,21 @@ export function liz(): Level {
     const focusTrack = new FocusTrackBuilder([4, 7])
         .build()
 
-    const level = new Level(
-        "remi-wolf-liz",
-        "Liz",
-        "Remi Wolf",
-        {
+    const level = new Level({
+        id: "remi-wolf-liz",
+        name: "Liz",
+        author: "Remi Wolf",
+        instrument: new Bass(),
+        tracks: {
             audio: new AudioTrack({
                 type: AudioType.YouTube,
                 youtubeVideoId: "JIniBJm2F7A"
-            }, 2.32),
+            }, 2.32, 125),
             bass: track.build(),
             tempo: new TempoTrack(tempo),
             focus: focusTrack,
         }
-    )
+    })
 
     return level
 }

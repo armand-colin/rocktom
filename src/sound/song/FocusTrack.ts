@@ -1,6 +1,8 @@
+import { nanoid } from "nanoid"
 import { Focus } from "./Focus"
 
 export type FocusEvent = {
+    id: string,
     time: number,
     duration: number,
     focus: Focus
@@ -66,6 +68,7 @@ export class FocusTrackBuilder {
 
     add(time: number, duration: number, frets: [number, number]): this {
         this._events.push({
+            id: nanoid(),
             time,
             duration,
             focus: {

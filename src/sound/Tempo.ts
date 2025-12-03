@@ -9,6 +9,10 @@ export class Tempo {
         return beats * 4 * Tempo.PPQ
     }
 
+    static beats(beats: number) {
+        return beats * Tempo.PPQ
+    }
+
     static ticksFromQuarterNote(beats: number) {
         return beats * Tempo.PPQ
     }

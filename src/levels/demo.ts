@@ -4,7 +4,7 @@ import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
-import { TrackBuilder } from "../sound/song/Track";
+import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { Tempo } from "../sound/Tempo";
 
 export function demo(): Level {
@@ -37,7 +37,7 @@ export function demo(): Level {
         .noteRepeat(Bass.A, 6, white, 4)
         .build()
 
-    const track = new TrackBuilder(new Bass())
+    const track = new NoteTrackBuilder(new Bass())
         .pattern(pattern1)
         .addFocus([0, 4], focus, tempoTrack.ticksFromSeconds(4))
         .pattern(pattern2)
@@ -45,20 +45,21 @@ export function demo(): Level {
         .pattern(pattern3)
         .pattern(pattern3)
 
-    const level = new Level(
-        "demo",
-        "Demo",
-        "Rocktom",
-        {
+    const level = new Level({
+        id: "demo",
+        name: "Demo",
+        author: "Rocktom",
+        instrument: new Bass(),
+        tracks: {
             audio: new AudioTrack({
                 type: AudioType.YouTube,
                 youtubeVideoId: "JIniBJm2F7A"
-            }, 2.3),
+            }, 2.3, 125),
             bass: track.build(),
             tempo: tempoTrack,
             focus: focus.build()
         }
-    )
+    })
 
     return level
 

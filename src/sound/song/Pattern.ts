@@ -1,20 +1,35 @@
+import { nanoid } from "nanoid"
 import type { String } from "../instrument/String"
-import type { NoteEvent } from "./NoteEvent"
+import { NoteEvent, type NoteSlide } from "./NoteEvent"
+
+export class TimedPattern {
+
+    readonly id: string
+    time: number
+    pattern: Pattern
+
+    constructor(opts: { id?: string, time: number, pattern: Pattern }) {
+        this.id = opts.id ?? nanoid()
+        this.time = opts.time
+        this.pattern = opts.pattern
+    }
+}
 
 export class Pattern {
 
+    readonly id: string
     readonly name: string
     readonly notes: NoteEvent[]
     readonly duration: number
 
-    constructor(name: string, notes: NoteEvent[], duration: number) {
-        this.name = name
-        this.notes = notes
-        this.duration = duration
+    constructor(opts: { name: string, notes: NoteEvent[], duration: number, id?: string }) {
+        this.id = opts.id ?? nanoid()
+        this.name = opts.name
+        this.notes = opts.notes
+        this.duration = opts.duration
     }
 
 }
-
 
 export class PatternBuilder {
 
@@ -31,21 +46,21 @@ export class PatternBuilder {
         this._fingerPosition = position
         return this
     }
-    
+
     silence(ticks: number): this {
         this._time += ticks
         return this
     }
 
-    note(string: String, fret: number, duration: number, slide?: { fret: number, duration: number, connect: boolean }, offset?: number): this {
-        this._notes.push({
+    note(string: String, fret: number, duration: number, slide?: NoteSlide, offset?: number): this {
+        this._notes.push(NoteEvent.create({
             time: this._time,
             duration: duration,
             fret: fret,
             string: string,
-            slide: slide ?? null,
+            slide: slide,
             fingerPosition: this._fingerPosition ?? fret
-        })
+        }))
 
         this._time += duration
 
@@ -57,14 +72,14 @@ export class PatternBuilder {
 
     noteRepeat(string: String, fret: number, duration: number, times: number, offset?: number): this {
         for (let i = 0; i < times; i++) {
-            this._notes.push({
+            this._notes.push(NoteEvent.create({
                 time: this._time,
                 duration: duration,
                 fret: fret,
                 string: string,
                 fingerPosition: this._fingerPosition ?? fret,
                 slide: null
-            })
+            }))
 
             this._time += duration
             if (offset)
@@ -75,7 +90,11 @@ export class PatternBuilder {
     }
 
     build(): Pattern {
-        return new Pattern(this._name, this._notes, this._time)
+        return new Pattern({
+            name: this._name, 
+            notes: this._notes, 
+            duration: this._time
+        })
     }
 
 }

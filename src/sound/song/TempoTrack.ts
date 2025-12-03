@@ -1,6 +1,8 @@
+import { nanoid } from "nanoid"
 import { Tempo } from "../Tempo"
 
 type TempoEvent = {
+    id: string,
     ticks: number,
     time: number,
     tempo: Tempo
@@ -8,11 +10,11 @@ type TempoEvent = {
 
 export class TempoTrack {
 
-    private readonly _initialTempo: Tempo
+    initialTempo: Tempo
     events: TempoEvent[]
 
     constructor(initialTempo: Tempo) {
-        this._initialTempo = initialTempo
+        this.initialTempo = initialTempo
         this.events = []
     }
 
@@ -40,8 +42,31 @@ export class TempoTrack {
         return track
     }
 
+    /*
+    * Refreshes all the events "time" based on their ticks and tempos
+    */
+    refreshTime() {
+        // First, sort all events by ticks, ascending
+        this.events.sort((a, b) => a.ticks - b.ticks)
+
+        let lastEvent: TempoEvent = {
+            id: nanoid(),
+            ticks: 0,
+            time: 0,
+            tempo: this.initialTempo
+        }
+
+        for (const event of this.events) {
+            const deltaSeconds = lastEvent.tempo.secondsFromTicks(event.ticks - lastEvent.ticks)
+            event.time = lastEvent.time + deltaSeconds
+            
+            lastEvent = event
+        }
+    }
+
     add(ticks: number, tempo: Tempo): this {
         this.events.push({
+            id: nanoid(),
             ticks,
             time: this.secondsFromTicks(ticks),
             tempo
@@ -52,9 +77,10 @@ export class TempoTrack {
 
     getTempoAt(ticks: number): Tempo {
         let lastEvent: TempoEvent = {
+            id: nanoid(),
             ticks: 0,
             time: 0,
-            tempo: this._initialTempo
+            tempo: this.initialTempo
         }
 
         for (const event of this.events) {
@@ -74,9 +100,10 @@ export class TempoTrack {
         }
 
         let lastEvent: TempoEvent = {
+            id: nanoid(),
             ticks: 0,
             time: 0,
-            tempo: this._initialTempo
+            tempo: this.initialTempo
         }
 
         for (const event of this.events) {
@@ -97,9 +124,10 @@ export class TempoTrack {
         }
 
         let lastEvent: TempoEvent = {
+            id: nanoid(),
             ticks: 0,
             time: 0,
-            tempo: this._initialTempo
+            tempo: this.initialTempo
         }
 
         for (const event of this.events) {

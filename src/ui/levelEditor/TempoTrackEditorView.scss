@@ -1,0 +1,41 @@
+.TempoTrackEditorView {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    align-items: center;
+    height: 52px;
+    outline: 1px solid var(--outline);
+
+    .start {
+        padding: 8px;
+        .NumberInput {
+            width: 100%;
+        }
+    }
+
+    .events {
+        position: relative;
+        width: 100%;
+        height: 100%;
+
+        .event {
+            position: absolute;
+            left: calc((var(--ticks) * var(--tick-ratio) + var(--tick-offset)) * 1px);
+            height: 100%;
+
+            .marker {
+                position: absolute;
+                bottom: 0;
+                height: 24px;
+                border: 1px solid red;
+            }
+            .time {
+                position: absolute;
+                left: 0;
+                transform: translateX(-50%);
+                padding: 4px 8px;
+                background: var(--surface);
+                border-radius: 4px;
+            }
+        }
+    }
+}
