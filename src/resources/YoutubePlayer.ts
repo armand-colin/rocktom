@@ -104,6 +104,10 @@ export class YoutubePlayer extends Resource implements AudioPlayer {
         return this._time
     }
 
+    getDuration() {
+        return this._player.getDuration()
+    }
+
     schedulePlay(playAfter: Duration) {
         if (this._scheduledPlay !== null) {
             clearTimeout(this._scheduledPlay)

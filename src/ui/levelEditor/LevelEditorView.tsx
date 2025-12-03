@@ -1,12 +1,22 @@
+import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
-import { TempoTrackEditorView } from "./TempoTrackEditorView";
-import "./LevelEditorView.scss"
+import { Button } from "../button/Button";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
+import "./LevelEditorView.scss";
+import { TempoTrackEditorView } from "./TempoTrackEditorView";
+import { TimeTransformView } from "./TimeTransformView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     return <div className="LevelEditorView">
         <div className="head">
             {props.editor.level.name}
+            <PlayerControls player={props.editor.player} />
+        </div>
+        <div className="time">
+            <TimeTransformView
+                transform={props.editor.timeTransform}
+                time={props.editor.player.playbackTime}
+            />
         </div>
         <div className="audio">
             <AudioTrackEditorView
@@ -21,5 +31,14 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
                 editor={props.editor.tempoTrack}
             />
         </div>
+    </div>
+}
+
+
+function PlayerControls(props: { player: EditorPlayer }) {
+    return <div className="PlayerControls">
+        <Button onClick={() => props.player.play()}>Play</Button>
+        <Button onClick={() => props.player.pause()}>Pause</Button>
+        <Button onClick={() => props.player.reset()}>Reset</Button>
     </div>
 }

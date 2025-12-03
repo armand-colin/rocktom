@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid"
 import { Tempo } from "../Tempo"
 
-type TempoEvent = {
+export type TempoEvent = {
     id: string,
     ticks: number,
     time: number,
@@ -43,9 +43,10 @@ export class TempoTrack {
     }
 
     /*
-    * Refreshes all the events "time" based on their ticks and tempos
+    * Refreshes all the events "tempo" based on their time and ticks
     */
-    refreshTime() {
+    refreshTempo() {
+        console.log("Refreshing tempo")
         // First, sort all events by ticks, ascending
         this.events.sort((a, b) => a.ticks - b.ticks)
 
@@ -57,11 +58,17 @@ export class TempoTrack {
         }
 
         for (const event of this.events) {
-            const deltaSeconds = lastEvent.tempo.secondsFromTicks(event.ticks - lastEvent.ticks)
-            event.time = lastEvent.time + deltaSeconds
-            
+            const deltaTicks = event.ticks - lastEvent.ticks
+            const deltaSeconds = event.time - lastEvent.time
+            lastEvent.tempo = Tempo.fromTicksPerSecond(deltaTicks / deltaSeconds)
+
+            if (lastEvent.ticks === 0)
+                this.initialTempo = lastEvent.tempo
+
             lastEvent = event
         }
+
+        console.log(this.events)
     }
 
     add(ticks: number, tempo: Tempo): this {
@@ -70,6 +77,43 @@ export class TempoTrack {
             ticks,
             time: this.secondsFromTicks(ticks),
             tempo
+        })
+
+        return this
+    }
+
+    insert(ticks: number): this {
+        let lastEvent: TempoEvent = {
+            id: nanoid(),
+            ticks: 0,
+            time: 0,
+            tempo: this.initialTempo
+        }
+
+        for (let i = 0; i < this.events.length; i++) {
+            const event = this.events[i]
+
+            if (event.ticks > ticks) {
+                // we must insert just before
+                const tempo = lastEvent.tempo
+                this.events.splice(i, 0, {
+                    id: nanoid(),
+                    tempo: tempo,
+                    ticks: ticks,
+                    time: this.secondsFromTicks(ticks)
+                })
+                return this
+            }
+
+            lastEvent = event
+        }
+
+        // Shall add at the end
+        this.events.push({
+            id: nanoid(),
+            ticks,
+            time: this.secondsFromTicks(ticks),
+            tempo: lastEvent.tempo,
         })
 
         return this

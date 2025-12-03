@@ -5,6 +5,7 @@
 
     .head {
         padding: 8px;
+        border-right: 1px solid var(--outline);
     }
 
     .content {
@@ -15,7 +16,7 @@
             height: 100%;
             width: calc(var(--duration) * var(--ratio) * 1px);
             left: calc((var(--ticks) * var(--ratio) + var(--offset)) * 1px);
-            background:var(--primary);
+            background: var(--primary);
             border-radius: 4px;
         }
     }

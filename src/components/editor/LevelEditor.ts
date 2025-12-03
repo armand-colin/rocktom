@@ -1,8 +1,9 @@
 import { Component, Engine } from "@niloc/ecs";
-import { TempoTrackEditor } from "./TempoTrackEditor";
 import type { Level } from "../../sound/Level";
-import { TimeTransform } from "./TimeTransform";
 import { AudioTrackEditor } from "./AudioTrackEditor";
+import { EditorPlayer } from "./EditorPlayer";
+import { TempoTrackEditor } from "./TempoTrackEditor";
+import { TimeTransform } from "./TimeTransform";
 
 export class LevelEditor extends Component {
 
@@ -10,6 +11,7 @@ export class LevelEditor extends Component {
     readonly tempoTrack: TempoTrackEditor
     readonly audioTrack: AudioTrackEditor
     readonly timeTransform: TimeTransform
+    readonly player: EditorPlayer
 
     constructor(engine: Engine, level: Level) {
         super(engine)
@@ -17,6 +19,11 @@ export class LevelEditor extends Component {
         this.tempoTrack = engine.createComponent(TempoTrackEditor, level.tempoTrack)
         this.timeTransform = engine.createComponent(TimeTransform)
         this.audioTrack = engine.createComponent(AudioTrackEditor, level.audioTrack)
+        this.player = engine.createComponent(EditorPlayer, level)
+
+        this.audioTrack.onChange(() => {
+            this.player.refreshAudioPlayer()
+        })
     }
 
 }

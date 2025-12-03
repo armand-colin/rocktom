@@ -13,14 +13,52 @@ export class TempoTrackEditor extends Component {
 
     setInitial(bpm: number) {
         this.track.initialTempo = new Tempo(bpm)
-        this.track.refreshTime()
+        this.track.refreshTempo()
         this.changed()
     }
 
     addEvent(ticks: number) {
-        const tempo = this.track.getTempoAt(ticks)
-        this.track.add(ticks, tempo)
-        this.track.refreshTime()
+        // Shall get last event index
+        this.track.insert(ticks)
+        this.changed()
+    }
+
+    setEventTime(id: string, time: number) {
+        if (time < 0)
+            // This shall not happen
+            return
+
+
+        for (let i = 0; i < this.track.events.length; i++) {
+            const event = this.track.events[i]
+
+            if (event.id !== id)
+                continue
+
+            // Check for previous and next envent, to get sure that time is in between events
+            const prevEvent = i > 0 ? this.track.events[i - 1] : null
+            const nextEvent = i < this.track.events.length - 1 ? this.track.events[i + 1] : null
+
+            if (prevEvent && time < prevEvent.time)
+                return
+
+            if (nextEvent && time > nextEvent.time)
+                return
+
+            event.time = time
+            this.track.refreshTempo()
+            this.changed()
+            return
+        }
+    }
+
+    removeEvent(id: string) {
+        const index = this.track.events.findIndex(event => event.id === id)
+        if (index === -1)
+            return
+
+        this.track.events.splice(index, 1)
+        this.track.refreshTempo()
         this.changed()
     }
 

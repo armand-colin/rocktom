@@ -12,6 +12,7 @@ export class AudioTrackEditor extends Component {
 
     setType(type: AudioType) {
         let payload: AudioTrackPayload
+
         switch (type) {
             case AudioType.None: {
                 payload = { type: AudioType.None }
@@ -44,6 +45,28 @@ export class AudioTrackEditor extends Component {
 
     setDuration(duration: number) {
         this.track.duration = duration
+        this.changed()
+    }
+
+    setUrl(url: string) {
+        if (this.track.payload.type !== AudioType.Url)
+            return
+
+        this.track.payload = {
+            ...this.track.payload,
+            url
+        }
+        this.changed()
+    }
+
+    setYouTubeVideoId(id: string) {
+        if (this.track.payload.type !== AudioType.YouTube)
+            return
+
+        this.track.payload = {
+            ...this.track.payload,
+            youtubeVideoId: id
+        }
         this.changed()
     }
 

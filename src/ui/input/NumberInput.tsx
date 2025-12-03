@@ -7,7 +7,9 @@ type Props = {
     step?: number,
     min?: number,
     max?: number,
-    onChange: (value: number) => void
+    onChange: (value: number) => void,
+    autoFocus?: boolean,
+    onBlur?: () => void
 }
 
 export function NumberInput(props: Props) {
@@ -33,5 +35,7 @@ export function NumberInput(props: Props) {
         min={props.min}
         max={props.max}
         onChange={onChange}
+        onBlur={props.onBlur}
+        autoFocus={props.autoFocus}
     />
 }

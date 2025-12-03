@@ -9,11 +9,12 @@ import { demo } from './levels/demo'
 import { liz } from './levels/liz'
 import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { SoundEngine } from './resources/SoundEngine'
-import { Level } from './sound/Level'
-import { LevelList } from './ui/levelList/LevelList'
 import { State } from './resources/State'
-import { LevelEditorView } from './ui/levelEditor/LevelEditorView'
 import { Bass } from './sound/instrument/Instrument'
+import { Level } from './sound/Level'
+import { LevelEditorView } from './ui/levelEditor/LevelEditorView'
+import { LevelList } from './ui/levelList/LevelList'
+import { PopupManagerView } from './ui/popup/PopupManagerView'
 
 const levels = [
   liz(),
@@ -51,12 +52,13 @@ function App() {
           <LevelEditorView editor={editor} /> :
           playback ?
             <PlaybackView playback={playback} /> :
-            <LevelList 
-              onSelect={onSelectLevel} 
-              levels={levels} 
+            <LevelList
+              onSelect={onSelectLevel}
+              levels={levels}
               onCreate={onCreate}
             />
       }
+      <PopupManagerView />
     </div>
   )
 }

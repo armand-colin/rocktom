@@ -1,0 +1,33 @@
+.PopupManagerView {
+    position: fixed;
+    pointer-events: none;
+
+    .Popup {
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        @keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        &[data-state="closing"] {
+            animation: fadeout 0.2s ease forwards;
+        }
+
+        .body {
+        }
+    }
+}

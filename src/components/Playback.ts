@@ -3,18 +3,16 @@ import { Duration } from "@niloc/utils";
 import { NeckMesh } from "../3d/NeckMesh";
 import { PlayingNotes3D } from "../3d/PlayingNotes3D";
 import { AudioPlayer } from "../core/AudioPlayer";
+import { AudioPlayerFactory } from "../core/AudioPlayerFactory";
+import { NoteWindow } from "../core/NoteWindow";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
 import { Renderer } from "../resources/Renderer";
-import { YoutubePlayer } from "../resources/YoutubePlayer";
 import { Bass } from "../sound/instrument/Instrument";
 import { type Level } from "../sound/Level";
-import { AudioType } from "../sound/song/AudioTrack";
 import { CameraRig } from "./CameraRig";
 import { Metronome } from "./Metronome";
 import { PlaybackNote } from "./PlaybackNote";
 import { PlaybackTime } from "./PlaybackTime";
-import { UrlAudioPlayer } from "./UrlAudioPlayer";
-import { NoteWindow } from "../core/NoteWindow";
 
 export class Playback extends Component {
 
@@ -45,36 +43,15 @@ export class Playback extends Component {
 
         const preferences = engine.getResource(PlaybackPreferences)
 
-        const payload = level.audioTrack.payload
-        switch (payload.type) {
-            case AudioType.None: {
+        this._audioPlayer = AudioPlayerFactory.create(
+            engine,
+            level.audioTrack,
+            () => this._time,
+            () => {
                 this._loading = false
-                this._audioPlayer = AudioPlayer.mock(() => this._time)
-                break
+                this.changed()
             }
-            case AudioType.YouTube: {
-                const player = engine.getResource(YoutubePlayer)
-                player.load(payload.youtubeVideoId)
-                    .then(() => {
-                        this._loading = false
-                        this.changed()
-                    })
-                this._audioPlayer = player
-                break
-            }
-            case AudioType.Url: {
-                const urlPlayer = engine.createComponent(UrlAudioPlayer, payload.url)
-                this._audioPlayer = urlPlayer
-                if (urlPlayer.loaded)
-                    this._loading = false
-                else
-                    urlPlayer.events.on('loaded', () => {
-                        this._loading = false
-                        this.changed()
-                    })
-                break
-            }
-        }
+        )
 
         this._audioPlayerVolume = preferences.audioVolume
         this._audioPlayer.setVolume(this._audioPlayerVolume)
