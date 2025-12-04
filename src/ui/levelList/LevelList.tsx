@@ -8,7 +8,12 @@ function formatSeconds(seconds: number) {
     const secs = (seconds % 60) | 0
     return `${minutes}:${secs.toString().padStart(2, '0')}`
 }
-export function LevelList(props: { levels: Level[], onSelect: (level: Level) => void, onCreate: () => void }) {
+export function LevelList(props: { 
+    levels: Level[], 
+    onSelect: (level: Level) => void, 
+    onEdit: (level: Level) => void,
+    onCreate: () => void 
+}) {
     return <div className="LevelList">
         <h1>Rocktom</h1>
         <h2>List of available songs</h2>
@@ -23,6 +28,12 @@ export function LevelList(props: { levels: Level[], onSelect: (level: Level) => 
                     >
                         <p>{level.name} by {level.author}</p>
                         <small>{formatSeconds(level.durationInSeconds | 0)}</small>
+                        <Button onClick={(e) => {
+                            e.stopPropagation()
+                            props.onEdit(level)
+                        }}>
+                            Edit
+                        </Button>
                     </li>
                 ))
             }

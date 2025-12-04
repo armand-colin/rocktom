@@ -27,8 +27,16 @@ if (macosPlatforms.indexOf(platform) !== -1) {
     os = OSType.Linux
 }
 
+function isCtrl(event: MouseEvent | KeyboardEvent | WheelEvent): boolean {
+    if (os === OSType.MacOS) {
+        return event.metaKey
+    } else {
+        return event.ctrlKey
+    }
+}
 
 export const OS = {
     current: os,
     isMacOS: os === OSType.MacOS,
+    isCtrl: isCtrl
 }

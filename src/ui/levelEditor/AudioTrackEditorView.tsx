@@ -12,6 +12,8 @@ import { Button } from "../button/Button";
 import { NumberInput } from "../input/NumberInput";
 import { Select } from "../select/Select";
 import "./AudioTrackEditorView.scss";
+import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
+import type { TempoTrack } from "../../sound/song/TempoTrack";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
@@ -19,17 +21,11 @@ export function AudioTrackEditorView(props: {
     editor: AudioTrackEditor
 }) {
     const { track } = useComponent(props.editor)
-    const { track: tempoTrack } = useComponent(props.tempoTrack)
-    const { ratio, offset } = useComponent(props.transform)
     const popupManager = usePopupManager()
 
     function onTypeChange(type: AudioType) {
         props.editor.setType(type)
     }
-
-    const startTicks = tempoTrack.ticksFromSeconds(track.time)
-    const endTicks = tempoTrack.ticksFromSeconds(track.time + track.duration)
-    const durationTicks = endTicks - startTicks
 
     function onSetUrl() {
         if (track.payload.type === AudioType.Url)
@@ -52,14 +48,11 @@ export function AudioTrackEditorView(props: {
             />)
     }
 
-    return <div
+    return <TrackEditorView
         className="AudioTrackEditorView"
-        style={{
-            "--ratio": ratio,
-            "--offset": offset
-        } as CSSProperties}
+        time={props.transform}
     >
-        <div className="head">
+        <TrackEditorHead>
             <Select
                 options={[
                     { value: AudioType.None, label: "None" },
@@ -82,23 +75,34 @@ export function AudioTrackEditorView(props: {
                         <Button onClick={onSetUrl}>Set url</Button>
                     </>
             }
-        </div>
-        <div
-            className="content"
-            style={{
-                "--ticks": startTicks,
-                "--duration": durationTicks
-            } as CSSProperties}
-        >
+        </TrackEditorHead>
+
+        <TrackEditorContent>
             {
-                track.payload.type === AudioType.Url ?
-                    <div className="audio"></div>
-                    : track.payload.type === AudioType.YouTube ?
-                        <div className="audio"></div>
-                        : undefined
+                track.payload.type === AudioType.Url || track.payload.type === AudioType.YouTube ?
+                    <AudioView
+                        time={track.time}
+                        duration={track.duration}
+                        tempo={props.tempoTrack.track}
+                    /> :
+                    undefined
             }
-        </div>
-    </div >
+        </TrackEditorContent>
+
+    </TrackEditorView>
+}
+
+function AudioView(props: { time: number, duration: number, tempo: TempoTrack }) {
+    const ticks = props.tempo.ticksFromSeconds(props.time)
+    const duration = props.tempo.ticksFromSeconds(props.duration, ticks)
+
+    return <div
+        className="AudioView"
+        style={{
+            "--ticks": ticks,
+            "--duration": duration
+        } as CSSProperties}
+    ></div>
 }
 
 

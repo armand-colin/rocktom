@@ -56,6 +56,7 @@ function App() {
               onSelect={onSelectLevel}
               levels={levels}
               onCreate={onCreate}
+              onEdit={level => state.editLevel(level)}
             />
       }
       <PopupManagerView />

@@ -4,16 +4,16 @@ import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor"
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import { NumberInput } from "../input/NumberInput";
 import "./TempoTrackEditorView.scss";
+import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 
 export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor }) {
     const { track } = useComponent(props.editor)
-    const { offset, ratio } = useComponent(props.transform)
 
     function onInitialChange(bpm: number) {
         props.editor.setInitial(bpm)
     }
 
-    function onDoubleClick(e: MouseEvent<HTMLDivElement>) {
+    function onDoubleClick(e: MouseEvent) {
         const div = e.currentTarget
         const rect = div.getBoundingClientRect()
         const mouseX = e.clientX - rect.left
@@ -23,24 +23,20 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
         props.editor.addEvent(ticks)
     }
 
-    return <div
+    return <TrackEditorView
         className="TempoTrackEditorView"
-        style={{
-            "--tick-offset": offset,
-            "--tick-ratio": ratio
-        } as CSSProperties}
+        time={props.transform}
     >
-        <div className="start">
+        <TrackEditorHead>
             <NumberInput
                 name="initialBpm"
                 value={track.initialTempo.bpm}
                 step={1}
                 onChange={onInitialChange}
             />
-        </div>
+        </TrackEditorHead>
 
-        <div
-            className="events"
+        <TrackEditorContent
             onDoubleClick={onDoubleClick}
         >
             {
@@ -55,8 +51,8 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                     onRemove={() => props.editor.removeEvent(event.id)}
                 />)
             }
-        </div>
-    </div>
+        </TrackEditorContent>
+    </TrackEditorView>
 }
 
 function EventView(props: {
@@ -81,7 +77,7 @@ function EventView(props: {
 
     return <div
         onDoubleClick={e => e.stopPropagation()}
-        className="event"
+        className="EventView"
         style={{
             "--ticks": props.ticks
         } as CSSProperties}

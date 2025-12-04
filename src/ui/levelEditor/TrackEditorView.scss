@@ -1,0 +1,17 @@
+.TrackEditorView {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    outline: 1px solid var(--outline);
+
+    > .TrackEditorHead {
+        grid-column: 1;
+        border-right: 1px solid var(--outline);
+        padding: 8px;
+    }
+
+    > .TrackEditorContent {
+        grid-column: 2;
+        position: relative;
+        overflow: hidden;
+    }
+}

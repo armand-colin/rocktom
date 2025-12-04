@@ -4,11 +4,25 @@ import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { PlaybackTime } from "../../components/PlaybackTime";
 import { Tempo } from "../../sound/Tempo";
 import "./TimeTransformView.scss";
+import { TrackEditorContent, TrackEditorView } from "./TrackEditorView";
+
+export const TimeTransformViewId = "TimeTransformView";
+
+
+function formatBars(ticks: number): string {
+    const bars = Math.trunc(ticks / Tempo.bars(1))
+    const beats = Math.trunc((ticks % Tempo.bars(1)) / Tempo.beats(1))
+    if (beats > 0) {
+        return `${bars}:${beats}`
+    } else {
+        return `${bars}`
+    }
+}
 
 export function TimeTransformView(props: { transform: TimeTransform, time: PlaybackTime }) {
     const ref = useRef<HTMLDivElement | null>(null)
     const [width, setWidth] = useState(100)
-    const { ratio, offset } = props.transform
+    const { ratio, offset } = useComponent(props.transform)
     const { ticks } = useComponent(props.time)
 
     function onRef(el: HTMLDivElement | null) {
@@ -30,9 +44,19 @@ export function TimeTransformView(props: { transform: TimeTransform, time: Playb
 
     const markers = useMemo(() => {
         const markers: ReactNode[] = []
-        const step = Tempo.bars(1)
-        const start = offset - (offset % step)
-        const end = offset + width / ratio
+        let step = Tempo.bars(1)
+
+        while (step * ratio > 400) {
+            step /= 2
+        }
+
+        while (step * ratio < 150) {
+            step *= 2
+        }
+
+        let { start, end } = props.transform.getBounds(width)
+        start = start - (start % step)
+        end = end + (step - (end % step))
 
         let i = start
         while (i < end) {
@@ -40,7 +64,7 @@ export function TimeTransformView(props: { transform: TimeTransform, time: Playb
                 className="marker"
                 style={{ "--ticks": i } as CSSProperties}
             >
-                {(i / step + 1).toFixed(0)}
+                {formatBars(i)}
             </div>)
             i += step
         }
@@ -48,20 +72,19 @@ export function TimeTransformView(props: { transform: TimeTransform, time: Playb
         return markers
     }, [width, ratio, offset])
 
-    return <div
+    return <TrackEditorView
         className="TimeTransformView"
-        style={{
-            "--ratio": ratio,
-            "--offset": offset
-        } as CSSProperties}
+        time={props.transform}
     >
-        <div className="head"></div>
-        <div className="markers" ref={onRef}>
+        <TrackEditorContent
+            ref={onRef}
+            id={TimeTransformViewId}
+        >
             {markers}
             <div
                 className="playhead"
                 style={{ "--ticks": ticks } as CSSProperties}
             />
-        </div>
-    </div>
+        </TrackEditorContent>
+    </TrackEditorView>
 }

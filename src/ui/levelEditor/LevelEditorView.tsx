@@ -1,3 +1,4 @@
+import { useResource } from "@niloc/ecs-react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
 import { Button } from "../button/Button";
@@ -5,10 +6,15 @@ import { AudioTrackEditorView } from "./AudioTrackEditorView";
 import "./LevelEditorView.scss";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./TimeTransformView";
+import { State } from "../../resources/State";
+import { NoteTrackEditorView } from "./NoteTrackEditorView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
+    const state = useResource(State)
+
     return <div className="LevelEditorView">
         <div className="head">
+            <Button onClick={() => state.editLevel(null)}>Back</Button>
             {props.editor.level.name}
             <PlayerControls player={props.editor.player} />
         </div>
@@ -29,6 +35,12 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
             <TempoTrackEditorView
                 transform={props.editor.timeTransform}
                 editor={props.editor.tempoTrack}
+            />
+        </div>
+        <div className="note">
+            <NoteTrackEditorView
+                time={props.editor.timeTransform}
+                editor={props.editor.noteTrack}
             />
         </div>
     </div>

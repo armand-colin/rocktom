@@ -10,9 +10,15 @@ export class State extends Resource {
         super(engine)
     }
 
-    editLevel(level: Level) {
-        const editor = this.engine.createComponent(LevelEditor, level)
-        this._editor = editor
+    editLevel(level: Level | null) {
+        this._editor?.destroy()
+        this._editor = null
+
+        if (level) {
+            const editor = this.engine.createComponent(LevelEditor, level)
+            this._editor = editor
+        }
+
         this.changed()
     }
 

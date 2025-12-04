@@ -1,0 +1,41 @@
+.NoteTrackEditorView {
+    height: 120px;
+
+    .TimedPatternView {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
+        width: calc(var(--duration) * var(--ratio) * 1px);
+
+        display: grid;
+        grid-template-rows: 0fr 1fr;
+        border-radius: 8px;
+        outline: 1px solid var(--outline);
+        overflow: hidden;
+
+        .head {
+            padding: 4px 8px;
+            height: 26px;
+            background: var(--surface);
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .notes {
+            position: relative;
+
+            .note {
+                position: absolute;
+                background: var(--color);
+                border-radius: 2px;
+                height: calc(100% / var(--fret-amplitude));
+                width: max(calc(var(--note-duration) / var(--duration) * 100%), 4px);
+                left: calc((var(--note-ticks) / var(--duration)) * 100%);
+                top: calc((var(--max-fret) - var(--note-fret)) / var(--fret-amplitude) * 100%);
+            }
+        }
+    }
+}

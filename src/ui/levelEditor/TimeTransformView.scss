@@ -1,36 +1,23 @@
 .TimeTransformView {
-    display: grid;
-    grid-template-columns: 150px 1fr;
-    outline: 1px solid var(--outline);
+    height: 24px;
 
-    .head {
+    .marker {
         height: 100%;
-        width: 100%;
-        border-right: 1px solid var(--outline);
+        border-left: 1px solid var(--outline);
+        position: absolute;
+        left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
+        display: flex;
+        padding: 0 4px;
+        align-items: center;
+        margin-left: -1px;
     }
 
-    .markers {
-        position: relative;
-        height: 24px;
-
-        .marker {
-            height: 100%;
-            border-left: 1px solid var(--outline);
-            position: absolute;
-            left: calc(((var(--ticks) * var(--ratio)) + var(--offset)) * 1px);
-            display: flex;
-            padding: 0 4px;
-            align-items: center;
-            margin-left: -1px;
-        }
-
-        .playhead {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--primary);
-            left: calc((var(--ticks) * var(--ratio) + var(--offset)) * 1px);
-        }
+    .playhead {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--primary);
+        left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
     }
 }

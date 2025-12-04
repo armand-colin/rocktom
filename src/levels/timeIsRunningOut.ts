@@ -291,7 +291,7 @@ export function timeIsRunningOut(): Level {
             audio: new AudioTrack({
                 type: AudioType.Url,
                 url: audioUrl
-            }, 1.52, 180),
+            }, 1.52, 4 * 60 + 1),
             note: track.build(),
             tempo: tempoTrack,
             focus: focusTrack.build()

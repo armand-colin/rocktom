@@ -1,55 +1,37 @@
 .TempoTrackEditorView {
-    display: grid;
-    grid-template-columns: 150px 1fr;
-    align-items: center;
     height: 52px;
-    outline: 1px solid var(--outline);
 
-    .start {
-        padding: 8px;
-        border-right: 1px solid var(--outline);
-        height: 100%;
-        display: flex;
-        align-items: center;
-
-        .NumberInput {
-            width: 100%;
-        }
+    .NumberInput {
+        width: 100%;
     }
 
-    .events {
-        position: relative;
-        width: 100%;
+    .EventView {
+        position: absolute;
+        left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
         height: 100%;
 
-        .event {
+        .marker {
             position: absolute;
-            left: calc((var(--ticks) * var(--tick-ratio) + var(--tick-offset)) * 1px);
-            height: 100%;
+            bottom: 0;
+            height: 24px;
+            border: 1px solid red;
+        }
 
-            .marker {
-                position: absolute;
-                bottom: 0;
-                height: 24px;
-                border: 1px solid red;
+        .time {
+            position: absolute;
+            left: 0;
+            top: 1px;
+            transform: translateX(-50%);
+
+            .NumberInput {
+                width: 100px;
             }
 
-            .time {
-                position: absolute;
-                left: 0;
-                top: 1px;
-                transform: translateX(-50%);
-
-                .NumberInput {
-                    width: 100px;
-                }
-
-                span {
-                    padding: 4px 8px;
-                    background: var(--surface);
-                    border-radius: 4px;
-                    display: inline-block;
-                }
+            span {
+                padding: 4px 8px;
+                background: var(--surface);
+                border-radius: 4px;
+                display: inline-block;
             }
         }
     }

@@ -7,6 +7,7 @@ import type { Pattern } from "./Pattern";
 import type { TempoTrack } from "./TempoTrack";
 
 export type TimedPattern = {
+    id: string,
     time: number,
     pattern: Pattern
 }
@@ -14,9 +15,8 @@ export type TimedPattern = {
 export class NoteTrack {
 
     readonly instrument: Instrument
-    readonly timedPatterns: { time: number, pattern: Pattern }[] = []
+    readonly timedPatterns: TimedPattern[] = []
     readonly markers: Marker[] = []
-
     readonly patterns = new Map<string, Pattern>()
 
     constructor(
@@ -63,7 +63,7 @@ export class NoteTrack {
 export class NoteTrackBuilder {
 
     private _time: number = 0
-    private _patterns: { time: number, pattern: Pattern }[] = []
+    private _patterns: TimedPattern[] = []
     private _instrument: Instrument
     private _markers: Marker[] = []
 
@@ -82,6 +82,7 @@ export class NoteTrackBuilder {
 
     pattern(pattern: Pattern): this {
         this._patterns.push({
+            id: nanoid(),
             time: this._time,
             pattern: pattern
         })

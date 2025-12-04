@@ -31,6 +31,17 @@ export class TimeTransform extends Component {
             return max
     }
 
+    getBounds(pixels: number): { start: number, end: number } {
+        // Start is -offset
+        const start = -this._offset
+        const end = -this._offset + pixels / this._ratio
+
+        return {
+            start,
+            end
+        }
+    }
+
     setRatio(ratio: number) {
         this._ratio = ratio
         this.changed()
@@ -38,6 +49,7 @@ export class TimeTransform extends Component {
 
     setOffset(offset: number) {
         this._offset = offset
+        console.log("offset set to", offset)
         this.changed()
     }
 
