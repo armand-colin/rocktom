@@ -4,5 +4,5 @@
     bottom: 0;
     width: 2px;
     background: var(--primary);
-    left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
+    left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px - 1px);
 }

@@ -17,6 +17,7 @@ export class EditorPlayer extends Component {
     private _audioPlayer: AudioPlayer
     private _loaded: boolean = false
     private _metronome: Metronome
+    private _previousSeek: number = 0
 
     constructor(engine: Engine, level: Level) {
         super(engine)
@@ -64,7 +65,12 @@ export class EditorPlayer extends Component {
         this.changed()
     }
 
+    seekToPreviousState() {
+        this.seekTicks(this._previousSeek)
+    }
+
     seekTicks(ticks: number) {
+        this._previousSeek = ticks
         const time = this.level.tempoTrack.secondsFromTicks(ticks)
         this._time = time
         this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))

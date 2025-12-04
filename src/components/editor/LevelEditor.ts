@@ -8,6 +8,9 @@ import { TimeTransform } from "./TimeTransform";
 import { OS } from "../../utils/OS";
 import { TimeTransformViewId } from "../../ui/levelEditor/TimeTransformView";
 import { lerp } from "three/src/math/MathUtils.js";
+import { Input, InputManager } from "../../resources/InputManager";
+import { PatternEditor } from "./PatternEditor";
+import type { Pattern } from "../../sound/song/Pattern";
 
 export class LevelEditor extends Component {
 
@@ -17,6 +20,8 @@ export class LevelEditor extends Component {
     readonly timeTransform: TimeTransform
     readonly player: EditorPlayer
     readonly noteTrack: NoteTrackEditor
+
+    private _pattern: PatternEditor | null = null
 
     constructor(engine: Engine, level: Level) {
         super(engine)
@@ -32,6 +37,32 @@ export class LevelEditor extends Component {
         })
 
         window.addEventListener("wheel", this._onWheel)
+
+        const inputManager = engine.getResource(InputManager)
+        inputManager.register(Input.Play, () => {
+            if (this.player.playing) {
+                this.player.pause()
+                this.player.seekToPreviousState()
+            } else {
+                this.player.play()
+            }
+        })
+    }
+
+    get pattern() {
+        return this._pattern
+    }
+
+    editPattern(pattern: Pattern | null) {
+        this._pattern?.destroy()
+        this._pattern = null
+
+        if (pattern) {
+            const editor = this.engine.createComponent(PatternEditor, pattern) as PatternEditor
+            this._pattern = editor
+        }
+
+        this.changed()
     }
 
     private _onWheel = (event: WheelEvent) => {

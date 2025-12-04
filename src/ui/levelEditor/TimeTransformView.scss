@@ -4,7 +4,9 @@
     .TimeTransformContainer {
         position: absolute;
         inset: 0;
+        cursor: default;
     }
+    
     .marker {
         height: 100%;
         border-left: 1px solid var(--outline);

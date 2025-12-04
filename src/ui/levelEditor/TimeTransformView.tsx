@@ -79,7 +79,6 @@ export function TimeTransformView(props: {
     }, [width, ratio, offset])
 
     function onClick(e: MouseEvent) {
-        console.log('on click')
         const div = ref.current
         if (!div)
             return
@@ -88,8 +87,8 @@ export function TimeTransformView(props: {
         const mouseX = e.clientX - rect.left
         const mouseT = mouseX / rect.width
         const { start, end } = props.transform.getBounds(rect.width)
-        const targetTicks = lerp(start, end, mouseT)
-        console.log('seek ticks', targetTicks)
+        let targetTicks = lerp(start, end, mouseT)
+        targetTicks = props.transform.magnetize(targetTicks)
 
         props.player.seekTicks(targetTicks)
     }
