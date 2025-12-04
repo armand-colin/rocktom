@@ -1,6 +1,10 @@
 .TimeTransformView {
     height: 24px;
 
+    .TimeTransformContainer {
+        position: absolute;
+        inset: 0;
+    }
     .marker {
         height: 100%;
         border-left: 1px solid var(--outline);

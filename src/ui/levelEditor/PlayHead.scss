@@ -1,0 +1,8 @@
+.PlayHead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--primary);
+    left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
+}

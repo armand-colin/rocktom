@@ -64,6 +64,22 @@ export class EditorPlayer extends Component {
         this.changed()
     }
 
+    seekTicks(ticks: number) {
+        const time = this.level.tempoTrack.secondsFromTicks(ticks)
+        this._time = time
+        this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
+        const audioTime = time - this.level.audioTrack.time
+
+        if (audioTime >= 0) {
+            this._audioPlayer.seek(audioTime)
+        } else {
+            this._audioPlayer.pause()
+            this._audioPlayer.seek(0)
+            if (this.playing)
+                this._playAudio()
+        }
+    }
+
     reset() {
         this._time = 0
         this.playbackTime.set(0, 0, this.level.tempoTrack.getTempoAt(0))

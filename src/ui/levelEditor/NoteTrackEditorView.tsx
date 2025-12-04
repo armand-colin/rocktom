@@ -5,21 +5,23 @@ import type { Pattern } from "../../sound/song/Pattern";
 import type { CSSProperties } from "react";
 import "./NoteTrackEditorView.scss"
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
+import type { PlaybackTime } from "../../components/PlaybackTime";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
-    time: TimeTransform
+    transform: TimeTransform,
+    time: PlaybackTime
 }) {
     const { track } = useComponent(props.editor)
 
     return <TrackEditorView
         className="NoteTrackEditorView"
-        time={props.time}
+        transform={props.transform}
     >
         <TrackEditorHead>
             {track.instrument.name}
         </TrackEditorHead>
-        <TrackEditorContent>
+        <TrackEditorContent time={props.time}>
             {track.timedPatterns.map((pattern) => <TimedPatternView
                 key={pattern.id}
                 pattern={pattern.pattern}

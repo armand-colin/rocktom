@@ -5,8 +5,9 @@ import type { TimeTransform } from "../../components/editor/TimeTransform";
 import { NumberInput } from "../input/NumberInput";
 import "./TempoTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
+import type { PlaybackTime } from "../../components/PlaybackTime";
 
-export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor }) {
+export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: PlaybackTime }) {
     const { track } = useComponent(props.editor)
 
     function onInitialChange(bpm: number) {
@@ -25,7 +26,7 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
 
     return <TrackEditorView
         className="TempoTrackEditorView"
-        time={props.transform}
+        transform={props.transform}
     >
         <TrackEditorHead>
             <NumberInput
@@ -38,6 +39,7 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
 
         <TrackEditorContent
             onDoubleClick={onDoubleClick}
+            time={props.time}
         >
             {
                 track.events.map(event => <EventView

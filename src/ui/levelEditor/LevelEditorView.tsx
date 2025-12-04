@@ -22,10 +22,12 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
             <TimeTransformView
                 transform={props.editor.timeTransform}
                 time={props.editor.player.playbackTime}
+                player={props.editor.player}
             />
         </div>
         <div className="audio">
             <AudioTrackEditorView
+                time={props.editor.player.playbackTime}
                 tempoTrack={props.editor.tempoTrack}
                 transform={props.editor.timeTransform}
                 editor={props.editor.audioTrack}
@@ -33,13 +35,15 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
         </div>
         <div className="tempo">
             <TempoTrackEditorView
+                time={props.editor.player.playbackTime}
                 transform={props.editor.timeTransform}
                 editor={props.editor.tempoTrack}
             />
         </div>
         <div className="note">
             <NoteTrackEditorView
-                time={props.editor.timeTransform}
+                time={props.editor.player.playbackTime}
+                transform={props.editor.timeTransform}
                 editor={props.editor.noteTrack}
             />
         </div>

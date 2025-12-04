@@ -14,11 +14,13 @@ import { Select } from "../select/Select";
 import "./AudioTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import type { TempoTrack } from "../../sound/song/TempoTrack";
+import type { PlaybackTime } from "../../components/PlaybackTime";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
     tempoTrack: TempoTrackEditor,
-    editor: AudioTrackEditor
+    editor: AudioTrackEditor,
+    time: PlaybackTime
 }) {
     const { track } = useComponent(props.editor)
     const popupManager = usePopupManager()
@@ -50,7 +52,7 @@ export function AudioTrackEditorView(props: {
 
     return <TrackEditorView
         className="AudioTrackEditorView"
-        time={props.transform}
+        transform={props.transform}
     >
         <TrackEditorHead>
             <Select
@@ -77,7 +79,7 @@ export function AudioTrackEditorView(props: {
             }
         </TrackEditorHead>
 
-        <TrackEditorContent>
+        <TrackEditorContent time={props.time}>
             {
                 track.payload.type === AudioType.Url || track.payload.type === AudioType.YouTube ?
                     <AudioView

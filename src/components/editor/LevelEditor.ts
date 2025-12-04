@@ -82,4 +82,10 @@ export class LevelEditor extends Component {
         this.timeTransform.setOffset(offset)
     }
 
+    destroy() {
+        super.destroy()
+        this.player.destroy()
+        window.removeEventListener("wheel", this._onWheel)
+    }
+
 }

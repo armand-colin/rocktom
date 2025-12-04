@@ -1,10 +1,12 @@
 import { useComponent } from "@niloc/ecs-react";
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { PlaybackTime } from "../../components/PlaybackTime";
 import { Tempo } from "../../sound/Tempo";
 import "./TimeTransformView.scss";
 import { TrackEditorContent, TrackEditorView } from "./TrackEditorView";
+import { lerp } from "three/src/math/MathUtils.js";
+import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 
 export const TimeTransformViewId = "TimeTransformView";
 
@@ -19,11 +21,14 @@ function formatBars(ticks: number): string {
     }
 }
 
-export function TimeTransformView(props: { transform: TimeTransform, time: PlaybackTime }) {
+export function TimeTransformView(props: {
+    transform: TimeTransform,
+    time: PlaybackTime,
+    player: EditorPlayer
+}) {
     const ref = useRef<HTMLDivElement | null>(null)
     const [width, setWidth] = useState(100)
     const { ratio, offset } = useComponent(props.transform)
-    const { ticks } = useComponent(props.time)
 
     function onRef(el: HTMLDivElement | null) {
         ref.current = el
@@ -61,6 +66,7 @@ export function TimeTransformView(props: { transform: TimeTransform, time: Playb
         let i = start
         while (i < end) {
             markers.push(<div
+                key={i}
                 className="marker"
                 style={{ "--ticks": i } as CSSProperties}
             >
@@ -72,19 +78,35 @@ export function TimeTransformView(props: { transform: TimeTransform, time: Playb
         return markers
     }, [width, ratio, offset])
 
+    function onClick(e: MouseEvent) {
+        console.log('on click')
+        const div = ref.current
+        if (!div)
+            return
+
+        const rect = div.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseT = mouseX / rect.width
+        const { start, end } = props.transform.getBounds(rect.width)
+        const targetTicks = lerp(start, end, mouseT)
+        console.log('seek ticks', targetTicks)
+
+        props.player.seekTicks(targetTicks)
+    }
+
     return <TrackEditorView
         className="TimeTransformView"
-        time={props.transform}
+        transform={props.transform}
     >
-        <TrackEditorContent
-            ref={onRef}
-            id={TimeTransformViewId}
-        >
-            {markers}
+        <TrackEditorContent time={props.time}>
             <div
-                className="playhead"
-                style={{ "--ticks": ticks } as CSSProperties}
-            />
+                className="TimeTransformContainer"
+                ref={onRef}
+                id={TimeTransformViewId}
+                onClick={onClick}
+            >
+                {markers}
+            </div>
         </TrackEditorContent>
     </TrackEditorView>
 }
