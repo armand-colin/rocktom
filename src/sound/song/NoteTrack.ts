@@ -6,7 +6,7 @@ import type { Marker } from "./Marker";
 import type { Pattern } from "./Pattern";
 import type { TempoTrack } from "./TempoTrack";
 
-type TimedPattern = {
+export type TimedPattern = {
     time: number,
     pattern: Pattern
 }
@@ -14,21 +14,26 @@ type TimedPattern = {
 export class NoteTrack {
 
     readonly instrument: Instrument
-    readonly patterns: { time: number, pattern: Pattern }[] = []
+    readonly timedPatterns: { time: number, pattern: Pattern }[] = []
     readonly markers: Marker[] = []
 
+    readonly patterns = new Map<string, Pattern>()
+
     constructor(
-        instrument: Instrument, 
+        instrument: Instrument,
         patterns: TimedPattern[],
         markers: Marker[]
     ) {
         this.instrument = instrument
-        this.patterns = patterns
+        this.timedPatterns = patterns
         this.markers = markers
+
+        for (const { pattern } of patterns)
+            this.patterns.set(pattern.id, pattern)
     }
 
     get lastNote() {
-        const lastPattern = this.patterns[this.patterns.length - 1]
+        const lastPattern = this.timedPatterns[this.timedPatterns.length - 1]
         if (!lastPattern)
             return null
 
@@ -43,7 +48,7 @@ export class NoteTrack {
     }
 
     *notes() {
-        for (const { time, pattern} of this.patterns) {
+        for (const { time, pattern } of this.timedPatterns) {
             for (const note of pattern.notes) {
                 yield {
                     ...note,
@@ -87,7 +92,7 @@ export class NoteTrackBuilder {
 
     build(): NoteTrack {
         return new NoteTrack(
-            this._instrument, 
+            this._instrument,
             this._patterns,
             this._markers
         )
@@ -115,6 +120,6 @@ export class NoteTrackBuilder {
     addTempo(tempo: Tempo, tempoTrack: TempoTrack): this {
         tempoTrack.add(this._time, tempo)
         return this
-    } 
+    }
 
 }

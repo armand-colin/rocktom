@@ -1,6 +1,6 @@
 import "./Icon.scss";
 
-export type IconName = "home" | "volume_up" | "volume_off" | "space_bar" | "shift" | "arrow_back"
+export type IconName = "home" | "volume_up" | "volume_off" | "space_bar" | "shift" | "arrow_back" | "code" | "arrow_drop_down"
 
 type Props = {
     name: IconName

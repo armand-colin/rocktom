@@ -73,7 +73,7 @@ export class Playback extends Component {
 
         this._notes = []
 
-        for (const note of level.bassTrack.notes())
+        for (const note of level.noteTrack.notes())
             this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
 
         this._window = new NoteWindow(this._notes, this._renderer)

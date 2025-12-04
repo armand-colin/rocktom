@@ -101,7 +101,7 @@ function EventView(props: {
                         autoFocus={true}
                         onBlur={() => setChangingTime(false)}
                     /> :
-                    props.time.toFixed(2)
+                    <span>{props.time.toFixed(2)}</span>
             }
         </div>
         <div className="marker"></div>

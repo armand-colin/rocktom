@@ -1,5 +1,30 @@
 .NumberInput {
     background: var(--surface);
-    padding: 4px 8px;
     border-radius: 4px;
+    display: grid;
+    grid-template-columns: 1fr 26px;
+    overflow: hidden;
+
+    input {
+        background: none;
+        width: auto;
+        padding: 4px 8px;
+        display: block;
+        min-width: 0;
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+
+    .slider {
+        background: var(--surface-hover);
+        flex-shrink: 0;
+        width: 26px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: ew-resize;
+    }
 }

@@ -1,7 +1,7 @@
 import { useComponent } from "@niloc/ecs-react";
-import type { Playback } from "../components/Playback";
 import { useMemo, type CSSProperties, type MouseEvent } from "react";
-import "./PlaybackProgressView.scss"
+import type { Playback } from "../components/Playback";
+import "./PlaybackProgressView.scss";
 
 export function PlaybackProgressView(props: { playback: Playback }) {
     const { ticks } = useComponent(props.playback.playbackTime)
@@ -18,11 +18,11 @@ export function PlaybackProgressView(props: { playback: Playback }) {
     const markers = useMemo(() => {
         const markersElements = []
 
-        for (let i = 0; i < props.playback.level.bassTrack.markers.length; i++) {
-            const marker = props.playback.level.bassTrack.markers[i]
+        for (let i = 0; i < props.playback.level.noteTrack.markers.length; i++) {
+            const marker = props.playback.level.noteTrack.markers[i]
             let duration = 0
-            if (i < props.playback.level.bassTrack.markers.length - 1) {
-                const nextMarker = props.playback.level.bassTrack.markers[i + 1]
+            if (i < props.playback.level.noteTrack.markers.length - 1) {
+                const nextMarker = props.playback.level.noteTrack.markers[i + 1]
                 duration = nextMarker.time - marker.time
             } else {
                 duration = props.playback.level.durationInTicks - marker.time
@@ -43,7 +43,7 @@ export function PlaybackProgressView(props: { playback: Playback }) {
         }
 
         return markersElements
-    }, [props.playback.level.bassTrack.markers])
+    }, [props.playback.level.noteTrack.markers])
 
     return <div
         className="PlaybackProgressView"

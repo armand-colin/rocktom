@@ -1,4 +1,6 @@
-import { useEffect, useState, type ChangeEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent } from "react"
+import { Slider } from "../../utils/Slider"
+import { Icon } from "../icon/Icon"
 import "./NumberInput.scss"
 
 type Props = {
@@ -9,11 +11,12 @@ type Props = {
     max?: number,
     onChange: (value: number) => void,
     autoFocus?: boolean,
-    onBlur?: () => void
+    onBlur?: () => void,
 }
 
 export function NumberInput(props: Props) {
     const [value, setValue] = useState(props.value.toString())
+    const sliderRef = useRef<Slider | null>(null)
 
     function onChange(e: ChangeEvent<HTMLInputElement>) {
         setValue(e.target.value)
@@ -22,20 +25,51 @@ export function NumberInput(props: Props) {
             props.onChange(number)
     }
 
+    function onMouseDown(e: MouseEvent) {
+        e.preventDefault()
+        const slider = new Slider({
+            event: e.nativeEvent,
+            value: props.value,
+            step: props.step,
+            min: props.min,
+            max: props.max,
+        })
+
+        if (sliderRef.current)
+            sliderRef.current.destroy()
+
+        sliderRef.current = slider
+
+        slider.on("change", (value: number) => {
+            props.onChange(value)
+        })
+    }
+
+    useEffect(() => {
+        return () => {
+            sliderRef.current?.destroy()
+            sliderRef.current = null
+        }
+    }, [])
+
     useEffect(() => {
         setValue(props.value.toString())
     }, [props.value])
 
-    return <input
-        className="NumberInput"
-        type="number"
-        name={props.name}
-        value={value}
-        step={props.step}
-        min={props.min}
-        max={props.max}
-        onChange={onChange}
-        onBlur={props.onBlur}
-        autoFocus={props.autoFocus}
-    />
+    return <div className="NumberInput">
+        <input
+            type="number"
+            name={props.name}
+            value={value}
+            step={props.step}
+            min={props.min}
+            max={props.max}
+            onChange={onChange}
+            onBlur={props.onBlur}
+            autoFocus={props.autoFocus}
+        />
+        <div className="slider" onMouseDown={onMouseDown}>
+            <Icon name="code" />
+        </div>
+    </div>
 }

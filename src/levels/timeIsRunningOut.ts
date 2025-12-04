@@ -1,12 +1,12 @@
+import audioUrl from "../assets/songs/TimeIsRunningOut.wav";
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
 import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
+import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
-import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { Tempo } from "../sound/Tempo";
-import audioUrl from "../assets/songs/TimeIsRunningOut.wav"
 
 export function timeIsRunningOut(): Level {
 
@@ -292,7 +292,7 @@ export function timeIsRunningOut(): Level {
                 type: AudioType.Url,
                 url: audioUrl
             }, 1.52, 180),
-            bass: track.build(),
+            note: track.build(),
             tempo: tempoTrack,
             focus: focusTrack.build()
         }

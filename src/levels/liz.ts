@@ -2,9 +2,9 @@ import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
 import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
+import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
 import { TempoTrack } from "../sound/song/TempoTrack";
-import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { Tempo } from "../sound/Tempo";
 
 export function liz(): Level {
@@ -96,7 +96,7 @@ export function liz(): Level {
                 type: AudioType.YouTube,
                 youtubeVideoId: "JIniBJm2F7A"
             }, 2.32, 125),
-            bass: track.build(),
+            note: track.build(),
             tempo: new TempoTrack(tempo),
             focus: focusTrack,
         }

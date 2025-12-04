@@ -1,6 +1,6 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
 import { Duration } from "@niloc/utils";
-import { useContext, useState, type ChangeEvent, type CSSProperties } from "react";
+import { useContext, useState, type CSSProperties } from "react";
 import type { AudioTrackEditor } from "../../components/editor/AudioTrackEditor";
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
@@ -10,6 +10,7 @@ import { UrlAudio } from "../../utils/UrlAudio";
 import { YouTubeAudio } from "../../utils/YouTubeAudio";
 import { Button } from "../button/Button";
 import { NumberInput } from "../input/NumberInput";
+import { Select } from "../select/Select";
 import "./AudioTrackEditorView.scss";
 
 export function AudioTrackEditorView(props: {
@@ -22,8 +23,7 @@ export function AudioTrackEditorView(props: {
     const { ratio, offset } = useComponent(props.transform)
     const popupManager = usePopupManager()
 
-    function onTypeChange(e: ChangeEvent<HTMLSelectElement>) {
-        const type = parseInt(e.target.value) as AudioType
+    function onTypeChange(type: AudioType) {
         props.editor.setType(type)
     }
 
@@ -60,14 +60,15 @@ export function AudioTrackEditorView(props: {
         } as CSSProperties}
     >
         <div className="head">
-            <select
-                onChange={onTypeChange}
+            <Select
+                options={[
+                    { value: AudioType.None, label: "None" },
+                    { value: AudioType.Url, label: "URL" },
+                    { value: AudioType.YouTube, label: "YouTube" },
+                ]}
                 value={track.payload.type}
-            >
-                <option value={AudioType.None}>None</option>
-                <option value={AudioType.Url}>URL</option>
-                <option value={AudioType.YouTube}>YouTube</option>
-            </select>
+                onChange={onTypeChange}
+            />
             {
                 track.payload.type === AudioType.None ?
                     undefined :
@@ -97,7 +98,7 @@ export function AudioTrackEditorView(props: {
                         : undefined
             }
         </div>
-    </div>
+    </div >
 }
 
 

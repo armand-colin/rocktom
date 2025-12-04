@@ -33,13 +33,23 @@
                 height: 24px;
                 border: 1px solid red;
             }
+
             .time {
                 position: absolute;
                 left: 0;
+                top: 1px;
                 transform: translateX(-50%);
-                padding: 4px 8px;
-                background: var(--surface);
-                border-radius: 4px;
+
+                .NumberInput {
+                    width: 100px;
+                }
+
+                span {
+                    padding: 4px 8px;
+                    background: var(--surface);
+                    border-radius: 4px;
+                    display: inline-block;
+                }
             }
         }
     }

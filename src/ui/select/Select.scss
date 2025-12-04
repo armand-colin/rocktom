@@ -1,0 +1,57 @@
+.Select {
+    position: relative;
+
+    .current {
+        display: grid;
+        grid-template-columns: 1fr 26px;
+        background: var(--surface);
+        border-radius: 4px;
+        cursor: pointer;
+
+        > * {
+            pointer-events: none;
+        }
+
+        span {
+            padding: 4px 8px;
+        }
+        .caret {
+            background: var(--surface-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0 4px 4px 0;
+        }
+    }
+
+    &[data-open="true"] .options {
+        display: block;
+    }
+
+    .options {
+        max-height: 200px;
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% - 4px);
+        background: var(--surface);
+        padding-top: 4px;
+        border-radius: 0 0 4px 4px;
+
+        .option {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            &:hover {
+                background: var(--surface-hover);
+            }
+            &:active {
+                background: var(--surface-active);
+            }
+            > * {
+                pointer-events: none;
+            }
+        }
+    }
+}
