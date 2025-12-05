@@ -105,6 +105,7 @@ export class WestResizer extends Resizer {
             size: Vec2.create(newWidth, resizer.startTransform.size.y),
             position: Vec2.create(newX, resizer.startTransform.position.y),
         }
+
         return transform
     }
 
