@@ -73,7 +73,10 @@ export class EastResizer extends Resizer {
 
 }
 
+// TODO: refactor 3 remaining resizers like EastResizer, with static update method
+
 export class SouthResizer extends Resizer {
+
 
     protected update(mouse: Vec2): Transform2D {
         let height = this.startTransform.size.y + (mouse.y - this.startMouse.y)
