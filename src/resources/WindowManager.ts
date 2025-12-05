@@ -1,5 +1,5 @@
 import { Engine, Resource } from "@niloc/ecs";
-import { Vec2 } from "@niloc/utils";
+import { Emitter, Vec2 } from "@niloc/utils";
 import { nanoid } from "nanoid";
 import type { ReactNode } from "react";
 import type { Transform2D } from "../utils/Transform2D";
@@ -10,7 +10,8 @@ export type Window = {
     size: Vec2,
     close(): void,
     content: ReactNode,
-    name: string
+    name: string,
+    events: Emitter<{ closed: void }>
 }
 
 export class WindowManager extends Resource {
@@ -51,7 +52,8 @@ export class WindowManager extends Resource {
                 this.changed()
             },
             content,
-            name
+            name,
+            events: new Emitter()
         }
 
         this._windows.push(window)
@@ -78,13 +80,31 @@ export class WindowManager extends Resource {
         this.changed()
     }
 
+    setContent(id: string, render: (close: () => void) => ReactNode) {
+        const index = this._windows.findIndex(w => w.id === id)
+        if (index === -1)
+            return
+
+        const window = this._windows[index]
+        const close = window.close
+        window.content = render(close)
+
+        this.changed()
+    }
+
     private _constraintWindows() {
         // TODO
     }
 
     private _close(id: string) {
-        this._windows = this._windows.filter(w => w.id !== id)
+        const index = this._windows.findIndex(w => w.id === id)
+        if (index === -1)
+            return
+
+        const window = this._windows[index]
+        this._windows.splice(index, 1)
         this.changed()
+        window.events.emit('closed')
     }
 
 }

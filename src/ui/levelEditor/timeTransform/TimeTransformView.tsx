@@ -1,14 +1,14 @@
 import { useComponent } from "@niloc/ecs-react";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
-import type { TimeTransform } from "../../components/editor/TimeTransform";
-import { Tempo } from "../../sound/Tempo";
-import "./TimeTransformView.scss";
-import { TrackEditorContent, TrackEditorView } from "./TrackEditorView";
 import { lerp } from "three/src/math/MathUtils.js";
-import type { EditorPlayer } from "../../components/editor/EditorPlayer";
-import type { Time } from "../../components/Time";
+import type { EditorPlayer } from "../../../components/editor/EditorPlayer";
+import type { TimeTransform } from "../../../components/editor/TimeTransform";
+import type { Time } from "../../../components/Time";
+import { Tempo } from "../../../sound/Tempo";
+import { TrackEditorContent, TrackEditorView } from "../TrackEditorView";
+import "./TimeTransformView.scss";
 
-export const TimeTransformViewId = "TimeTransformView";
+export const TimeTransformContainerId = "TimeTransformContainer";
 
 
 function formatBars(ticks: number): string {
@@ -101,7 +101,7 @@ export function TimeTransformView(props: {
             <div
                 className="TimeTransformContainer"
                 ref={onRef}
-                id={TimeTransformViewId}
+                id={TimeTransformContainerId}
                 onClick={onClick}
             >
                 {markers}

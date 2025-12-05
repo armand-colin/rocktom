@@ -1,10 +1,13 @@
 import { Component, Engine } from "@niloc/ecs";
+import { lerp } from "three/src/math/MathUtils.js";
 import { Tempo } from "../../sound/Tempo";
+import { OS } from "../../utils/OS";
 
 export class TimeTransform extends Component {
 
     private _ratio: number = 1
     private _offset: number = 0
+    private _hardOffset: number = 0
     private _step: number | null = Tempo.beats(1)
 
     constructor(engine: Engine) {
@@ -17,6 +20,10 @@ export class TimeTransform extends Component {
 
     get offset() {
         return this._offset
+    }
+
+    get hardOffset() {
+        return this._hardOffset
     }
 
     magnetize(ticks: number) {
@@ -42,6 +49,11 @@ export class TimeTransform extends Component {
         }
     }
 
+    setHardOffset(offset: number) {
+        this._hardOffset = offset
+        this.changed()
+    }
+
     setRatio(ratio: number) {
         this._ratio = ratio
         this.changed()
@@ -50,6 +62,54 @@ export class TimeTransform extends Component {
     setOffset(offset: number) {
         this._offset = offset
         console.log("offset set to", offset)
+        this.changed()
+    }
+
+
+    handleWheel(event: WheelEvent, container: HTMLElement) {
+        if (OS.isCtrl(event)) {
+            this._handleZoom(event, container)
+        } else {
+            this._handlePan(event)
+        }
+    }
+
+    private _handleZoom(event: WheelEvent, container: HTMLElement) {
+        const delta = event.deltaY
+        const percentChange = 1 - delta * 0.001
+
+        const mouseX = event.clientX
+
+        const rect = container.getBoundingClientRect()
+        const offsetX = mouseX - rect.left
+
+        // Shall zoom centered on ticksAtMouse
+        let ratio = this.ratio
+        ratio = ratio * percentChange
+        ratio = Math.max(0.01, Math.min(10, ratio))
+
+        // New offset to keep ticksAtMouse under the mouse
+        const previousWidth = rect.width / this.ratio
+        const width = rect.width / ratio
+        const mouseT = offsetX / rect.width
+        const offsetDelta = lerp(0, width - previousWidth, mouseT)
+
+        let offset = this.offset + offsetDelta
+        offset = Math.min(0, offset)
+
+        this._offset = offset
+        this._ratio = ratio
+        this.changed()
+    }
+
+    private _handlePan(event: WheelEvent) {
+        const delta = -event.deltaX
+
+        let offset = this.offset
+        offset = offset + delta / this.ratio
+        offset = Math.min(0, offset)
+
+        this._offset = offset
         this.changed()
     }
 

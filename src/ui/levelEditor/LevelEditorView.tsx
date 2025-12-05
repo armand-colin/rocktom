@@ -1,33 +1,45 @@
-import { useComponent, useResource } from "@niloc/ecs-react";
+import { EngineContext, useResource } from "@niloc/ecs-react";
+import { useContext, useEffect } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
+import { Input, InputManager } from "../../resources/InputManager";
 import { State } from "../../resources/State";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button } from "../button/Button";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
 import "./LevelEditorView.scss";
 import { NoteTrackEditorView } from "./NoteTrackEditorView";
-import { PatternEditorView } from "./PatternEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
-import { TimeTransformView } from "./TimeTransformView";
+import { TimeTransformView } from "./timeTransform/TimeTransformView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const state = useResource(State)
-    const { pattern } = useComponent(props.editor)
+    const { engine } = useContext(EngineContext)
+    const inputManager = engine.getResource(InputManager)
+
+    useEffect(() => {
+        function onPlay() {
+            if (props.editor.player.playing) {
+                props.editor.player.pause()
+                props.editor.player.seekToPreviousState()
+            } else {
+                props.editor.player.play()
+            }
+        }
+
+        inputManager.register(Input.Play, onPlay)
+
+        return () => {
+            inputManager.unregister(Input.Play, onPlay)
+        }
+    }, [])
 
     return <div className="LevelEditorView">
         <div className="head">
             <Button onClick={() => state.editLevel(null)}>Back</Button>
             {props.editor.level.name}
             <PlayerControls player={props.editor.player} />
-            {
-                pattern ?
-                    <PatternEditorView
-                        onClose={() => props.editor.editPattern(null)}
-                        editor={pattern}
-                    /> :
-                    <SongEditorView editor={props.editor} />
-            }
+            <SongEditorView editor={props.editor} />
         </div>
     </div>
 }
@@ -48,7 +60,10 @@ function SongEditorView(props: { editor: LevelEditor }) {
         props.editor.editPattern(pattern.pattern)
     }
 
-    return <div className="SongEditorView">
+    return <div
+        className="SongEditorView"
+        onWheel={e => props.editor.timeTransform.handleWheel(e.nativeEvent, e.currentTarget)}
+    >
         <div className="time">
             <TimeTransformView
                 transform={props.editor.timeTransform}
