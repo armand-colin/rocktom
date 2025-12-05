@@ -1,16 +1,16 @@
 import { Component, Engine } from "@niloc/ecs";
+import { lerp } from "three/src/math/MathUtils.js";
+import { Input, InputManager } from "../../resources/InputManager";
 import type { Level } from "../../sound/Level";
+import type { Pattern } from "../../sound/song/Pattern";
+import { TimeTransformViewId } from "../../ui/levelEditor/TimeTransformView";
+import { OS } from "../../utils/OS";
 import { AudioTrackEditor } from "./AudioTrackEditor";
 import { EditorPlayer } from "./EditorPlayer";
 import { NoteTrackEditor } from "./NoteTrackEditor";
+import { PatternEditor } from "./PatternEditor";
 import { TempoTrackEditor } from "./TempoTrackEditor";
 import { TimeTransform } from "./TimeTransform";
-import { OS } from "../../utils/OS";
-import { TimeTransformViewId } from "../../ui/levelEditor/TimeTransformView";
-import { lerp } from "three/src/math/MathUtils.js";
-import { Input, InputManager } from "../../resources/InputManager";
-import { PatternEditor } from "./PatternEditor";
-import type { Pattern } from "../../sound/song/Pattern";
 
 export class LevelEditor extends Component {
 
@@ -37,6 +37,7 @@ export class LevelEditor extends Component {
         })
 
         window.addEventListener("wheel", this._onWheel)
+        window.addEventListener("scroll", this._onScroll)
 
         const inputManager = engine.getResource(InputManager)
         inputManager.register(Input.Play, () => {
@@ -64,8 +65,13 @@ export class LevelEditor extends Component {
 
         this.changed()
     }
+    private _onScroll = (event: Event) => {
+        event.preventDefault()
+    }
 
     private _onWheel = (event: WheelEvent) => {
+        event.preventDefault()
+
         if (OS.isCtrl(event)) {
             this._handleZoom(event)
         } else {
@@ -117,6 +123,7 @@ export class LevelEditor extends Component {
         super.destroy()
         this.player.destroy()
         window.removeEventListener("wheel", this._onWheel)
+        window.removeEventListener("scroll", this._onScroll)
     }
 
 }
