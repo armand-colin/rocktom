@@ -2,12 +2,12 @@ import { useComponent } from "@niloc/ecs-react";
 import { useState, type CSSProperties, type MouseEvent } from "react";
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
+import type { Time } from "../../components/Time";
 import { NumberInput } from "../input/NumberInput";
 import "./TempoTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
-import type { PlaybackTime } from "../../components/Time";
 
-export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: PlaybackTime }) {
+export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: Time }) {
     const { track } = useComponent(props.editor)
 
     function onInitialChange(bpm: number) {

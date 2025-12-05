@@ -1,7 +1,8 @@
 import { Engine, Resource } from "@niloc/ecs";
-import type { Vec2 } from "@niloc/utils";
+import { Vec2 } from "@niloc/utils";
 import { nanoid } from "nanoid";
 import type { ReactNode } from "react";
+import type { Transform2D } from "../utils/Transform2D";
 
 export type Window = {
     id: string,
@@ -15,13 +16,25 @@ export type Window = {
 export class WindowManager extends Resource {
 
     private _windows: Window[] = []
+    private _windowSize: Vec2
 
     constructor(engine: Engine) {
         super(engine)
+        this._windowSize = Vec2.create(window.innerWidth, window.innerHeight)
+
+        window.addEventListener("resize", () => {
+            this._windowSize = Vec2.create(window.innerWidth, window.innerHeight)
+            this._constraintWindows()
+            this.changed()
+        })
     }
 
     get windows() {
         return this._windows
+    }
+
+    get windowSize() {
+        return this._windowSize
     }
 
     add(name: string, render: (close: () => void) => ReactNode) {
@@ -44,6 +57,29 @@ export class WindowManager extends Resource {
         this._windows.push(window)
         this.changed()
         return window
+    }
+
+    setPosition(id: string, position: Vec2) {
+        const index = this._windows.findIndex(w => w.id === id)
+        if (index === -1)
+            return
+
+        this._windows[index].position = position
+        this.changed()
+    }
+
+    setTransform(id: string, transform: Transform2D) {
+        const index = this._windows.findIndex(w => w.id === id)
+        if (index === -1)
+            return
+
+        this._windows[index].position = transform.position
+        this._windows[index].size = transform.size
+        this.changed()
+    }
+
+    private _constraintWindows() {
+        // TODO
     }
 
     private _close(id: string) {
