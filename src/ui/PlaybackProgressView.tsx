@@ -4,7 +4,7 @@ import type { Playback } from "../components/Playback";
 import "./PlaybackProgressView.scss";
 
 export function PlaybackProgressView(props: { playback: Playback }) {
-    const { ticks } = useComponent(props.playback.playbackTime)
+    const { ticks } = useComponent(props.playback.time)
     const duration = props.playback.level.durationInTicks
 
     function onClick(e: MouseEvent) {

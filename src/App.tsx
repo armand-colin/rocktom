@@ -14,6 +14,7 @@ import { Level } from './sound/Level'
 import { LevelEditorView } from './ui/levelEditor/LevelEditorView'
 import { LevelList } from './ui/levelList/LevelList'
 import { PopupManagerView } from './ui/popup/PopupManagerView'
+import { WindowManagerView } from './ui/window/WindowManagerView'
 
 const levels = [
   liz(),
@@ -56,6 +57,8 @@ function App() {
               onEdit={level => state.editLevel(level)}
             />
       }
+
+      <WindowManagerView />
       <PopupManagerView />
     </div>
   )
