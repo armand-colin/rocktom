@@ -1,12 +1,12 @@
 import { useComponent } from "@niloc/ecs-react";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
-import type { PlaybackTime } from "../../components/PlaybackTime";
 import { Tempo } from "../../sound/Tempo";
 import "./TimeTransformView.scss";
 import { TrackEditorContent, TrackEditorView } from "./TrackEditorView";
 import { lerp } from "three/src/math/MathUtils.js";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
+import type { Time } from "../../components/Time";
 
 export const TimeTransformViewId = "TimeTransformView";
 
@@ -23,7 +23,7 @@ function formatBars(ticks: number): string {
 
 export function TimeTransformView(props: {
     transform: TimeTransform,
-    time: PlaybackTime,
+    time: Time,
     player: EditorPlayer
 }) {
     const ref = useRef<HTMLDivElement | null>(null)

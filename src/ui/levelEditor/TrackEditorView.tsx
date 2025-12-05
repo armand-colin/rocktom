@@ -3,7 +3,7 @@ import "./TrackEditorView.scss"
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import { useComponent } from "@niloc/ecs-react";
 import { PlayHead } from "./PlayHead";
-import type { PlaybackTime } from "../../components/PlaybackTime";
+import type { Time } from "../../components/Time";
 
 export function TrackEditorView(props: {
     children: ReactNode,
@@ -32,7 +32,7 @@ export function TrackEditorHead(props: { children: ReactNode }) {
 
 type ContentProps = {
     children: ReactNode,
-    time: PlaybackTime,
+    time: Time,
     id?: string,
     onDoubleClick?: (e: MouseEvent) => void
 }

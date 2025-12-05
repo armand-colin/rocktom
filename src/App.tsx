@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import './App.css'
 import { Playback } from './components/Playback'
-import { Player } from './resources/Player'
 import { PlaybackView } from './ui/PlaybackView'
 
 import { EngineContext, useResource } from '@niloc/ecs-react'
@@ -24,9 +23,8 @@ const levels = [
 
 function App() {
   const { engine } = useContext(EngineContext)
-  const { playback } = useResource(Player)
   const state = useResource(State)
-  const { editor } = state
+  const { editor, playback } = state
 
   async function onSelectLevel(level: Level) {
     engine.getResource(SoundEngine).resume()
@@ -36,8 +34,7 @@ function App() {
       level,
     )
 
-    const player = engine.getResource(Player)
-    player.bind(playback)
+    state.setPlayback(playback)
   }
 
   function onCreate() {

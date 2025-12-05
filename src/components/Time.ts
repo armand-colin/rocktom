@@ -1,9 +1,9 @@
 import { Component, Engine } from "@niloc/ecs";
 import { Tempo } from "../sound/Tempo";
 
-export class PlaybackTime extends Component {
+export class Time extends Component {
 
-    private _time: number = 0
+    private _seconds: number = 0
     private _ticks: number = 0
     private _tempo: Tempo
 
@@ -12,8 +12,8 @@ export class PlaybackTime extends Component {
         this._tempo = tempo
     }
 
-    get time(): number {
-        return this._time
+    get seconds(): number {
+        return this._seconds
     }
 
     get ticks(): number {
@@ -24,8 +24,8 @@ export class PlaybackTime extends Component {
         return this._tempo
     }
 
-    set(time: number, ticks: number, tempo: Tempo): void {
-        this._time = time
+    set(seconds: number, ticks: number, tempo: Tempo): void {
+        this._seconds = seconds
         this._ticks = ticks
         this._tempo = tempo
         this.changed()

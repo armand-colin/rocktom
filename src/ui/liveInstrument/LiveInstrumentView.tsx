@@ -3,7 +3,6 @@ import { useContext, useState, type CSSProperties, type ReactNode } from "react"
 import { AudioInspector } from "../../components/AudioInspector";
 import type { LiveInstrument } from "../../components/LiveInstrument";
 import { useComponentInstance } from "../../hooks/useComponentInstance";
-import { Player } from "../../resources/Player";
 import { AudioRangeOverlay } from "../audioRangeOverlay/AudioRangeOverlay";
 import { Button } from "../button/Button";
 import { Icon } from "../icon/Icon";
@@ -12,9 +11,10 @@ import { Slider, SliderScale } from "../slider/Slider";
 import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
 import "./LiveInstrumentView.scss";
 import { Toggle } from "../toggle/Toggle";
+import { State } from "../../resources/State";
 
 export function LiveInstrumentView() {
-    const { instrument } = useResource(Player)
+    const { instrument } = useResource(State)
 
     return <div className="LiveInstrumentView">
         {
@@ -66,7 +66,7 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
 
         <Button onClick={(e) => {
             e.stopPropagation()
-            engine.getResource(Player).setInstrument(null)
+            engine.getResource(State).setInstrument(null)
         }}>Remove</Button>
     </div>
 }

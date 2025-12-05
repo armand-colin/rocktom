@@ -3,9 +3,9 @@ import { useContext } from "react";
 import { LiveInstrument } from "../../components/LiveInstrument";
 import { LiveInstrumentPreferences } from "../../resources/LiveInstrumentPreferences";
 import { MediaStreamList, type MediaStreamDescription } from "../../resources/MediaStreamList";
-import { Player } from "../../resources/Player";
 import { SoundEngine } from "../../resources/SoundEngine";
 import "./InstrumentList.scss";
+import { State } from "../../resources/State";
 
 export function InstrumentList() {
     const mediaStreamList = useResource(MediaStreamList)
@@ -33,7 +33,7 @@ export function InstrumentList() {
 }
 
 function StreamItem(props: { stream: MediaStreamDescription }) {
-    const player = useResource(Player)
+    const state = useResource(State)
     const liveInstrumentPreferences = useResource(LiveInstrumentPreferences)
     const { engine } = useContext(EngineContext)
 
@@ -47,7 +47,7 @@ function StreamItem(props: { stream: MediaStreamDescription }) {
         })
 
         engine.getResource(SoundEngine).resume()
-        player.setInstrument(liveInstrument)
+        state.setInstrument(liveInstrument)
     }
 
     return <li

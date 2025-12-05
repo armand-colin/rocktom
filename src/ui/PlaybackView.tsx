@@ -1,7 +1,6 @@
-import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
-import { useContext } from "react";
+import { EngineContext, useComponent } from "@niloc/ecs-react";
+import { useContext, useEffect } from "react";
 import type { Playback } from "../components/Playback";
-import { Player } from "../resources/Player";
 import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
 import "./PlaybackView.scss";
@@ -9,16 +8,40 @@ import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
 import { Slider } from "./slider/Slider";
 import { Icon } from "./icon/Icon";
 import { InputIcon } from "./inputIcon/InputIcon";
-import { Input } from "../resources/InputManager";
+import { Input, InputManager } from "../resources/InputManager";
 import { Toggle } from "./toggle/Toggle";
-import type { PlaybackTime } from "../components/PlaybackTime";
 import { Tempo } from "../sound/Tempo";
 import { PlaybackProgressView } from "./PlaybackProgressView";
+import { State } from "../resources/State";
+import type { Time } from "../components/Time";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const renderer = engine.getResource(Renderer)
-    const { isPlaying } = useResource(Player)
+    const inputManager = engine.getResource(InputManager)
+
+    const { playing } = useComponent(props.playback)
+
+    useEffect(() => {
+        function onPlay() {
+            if (props.playback.playing)
+                props.playback.pause()
+            else
+                props.playback.play()
+        }
+
+        function onReset() {
+            props.playback.reset()
+        }
+
+        inputManager.register(Input.Play, onPlay)
+        inputManager.register(Input.Reset, onReset)
+
+        return () => {
+            inputManager.unregister(Input.Play, onPlay)
+            inputManager.unregister(Input.Reset, onReset)
+        }
+    }, [])
 
     return <div className="PlaybackView">
         <div className="canvas">
@@ -27,7 +50,7 @@ export function PlaybackView(props: { playback: Playback }) {
 
         <PlaybackControls playback={props.playback} />
         {
-            isPlaying ?
+            playing ?
                 undefined :
                 <PlaybackProgressView playback={props.playback} />
         }
@@ -37,9 +60,8 @@ export function PlaybackView(props: { playback: Playback }) {
 
 function PlaybackControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
-    const player = engine.getResource(Player)
-    const { metronomeEnabled, metronomeVolume } = useComponent(props.playback)
-    const { isPlaying } = useResource(Player)
+    const state = engine.getResource(State)
+    const { metronomeEnabled, metronomeVolume, playing } = useComponent(props.playback)
 
     return (
         <div className="PlaybackControls">
@@ -48,11 +70,11 @@ function PlaybackControls(props: { playback: Playback }) {
 
             <div className="buttons">
                 <PlayButton playback={props.playback} />
-                <ResetButton />
+                <ResetButton playback={props.playback} />
             </div>
 
             {
-                !isPlaying ?
+                !playing ?
                     <>
 
                         <YoutubeVolumeSlider playback={props.playback} />
@@ -85,7 +107,7 @@ function PlaybackControls(props: { playback: Playback }) {
                         </div>
 
                         <div className="time">
-                            <PlaybackTimeView time={props.playback.playbackTime} />
+                            <PlaybackTimeView time={props.playback.time} />
                         </div>
 
                     </> :
@@ -94,7 +116,7 @@ function PlaybackControls(props: { playback: Playback }) {
 
             <button
                 className="BackButton"
-                onClick={() => player.clear()}
+                onClick={() => state.setPlayback(null)}
             >
                 <Icon name="arrow_back" /> Back to level selection
             </button>
@@ -119,14 +141,13 @@ function PlaybackSpeedButton(props: { playback: Playback, value: number }) {
 }
 
 function PlayButton(props: { playback: Playback }) {
-    const player = useResource(Player)
-    const { loading } = useComponent(props.playback)
+    const { loading, playing } = useComponent(props.playback)
 
     function onClick() {
-        if (player.isPlaying)
-            player.pause()
+        if (props.playback.playing)
+            props.playback.pause()
         else
-            player.play()
+            props.playback.play()
     }
 
     return <button
@@ -134,15 +155,14 @@ function PlayButton(props: { playback: Playback }) {
         onClick={onClick}
         disabled={loading}
     >
-        {player.isPlaying ? "PAUSE" : "PLAY"} <InputIcon input={Input.Play} />
+        {playing ? "PAUSE" : "PLAY"} <InputIcon input={Input.Play} />
     </button>
 }
 
-function ResetButton() {
-    const player = useResource(Player)
+function ResetButton(props: { playback: Playback }) {
     return <button
         className="ResetButton"
-        onClick={() => player.reset()}
+        onClick={() => props.playback.reset()}
     >
         RESET <InputIcon input={Input.Reset} />
     </button>
@@ -163,15 +183,15 @@ function YoutubeVolumeSlider(props: { playback: Playback }) {
     </div>
 }
 
-function PlaybackTimeView(props: { time: PlaybackTime }) {
-    const { time, ticks, tempo } = useComponent(props.time)
+function PlaybackTimeView(props: { time: Time }) {
+    const time  = useComponent(props.time)
 
-    const minutes = (time / 60) | 0
-    const seconds = (time % 60) | 0
-    const milliseconds = ((time * 1000) % 1000) | 0
+    const minutes = (time.seconds / 60) | 0
+    const milliseconds = ((time.seconds * 1000) % 1000) | 0
+    const seconds = (time.seconds % 60) | 0
 
-    const beats = (ticks / Tempo.bars(1)) | 0
-    const quarterNotes = (ticks % Tempo.bars(1)) | 0
+    const beats = (time.ticks / Tempo.bars(1)) | 0
+    const quarterNotes = (time.ticks % Tempo.bars(1)) | 0
 
     return <div className="PlaybackTimeView">
         <p>
@@ -179,9 +199,9 @@ function PlaybackTimeView(props: { time: PlaybackTime }) {
             <span>{seconds.toString().padStart(2, '0')}.</span>
             <span>{milliseconds.toString().padStart(3, '0')}</span>
         </p>
-        <p>{ticks}</p>
+        <p>{time.ticks}</p>
         <p>
-            <span>{tempo.bpm} BPM</span>
+            <span>{time.tempo.bpm} BPM</span>
             <span>{beats}</span> :
             <span>{quarterNotes.toString().padStart(2, '0')}</span>
         </p>

@@ -14,13 +14,13 @@ import { Select } from "../select/Select";
 import "./AudioTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import type { TempoTrack } from "../../sound/song/TempoTrack";
-import type { PlaybackTime } from "../../components/PlaybackTime";
+import type { Time } from "../../components/Time";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
     tempoTrack: TempoTrackEditor,
     editor: AudioTrackEditor,
-    time: PlaybackTime
+    time: Time
 }) {
     const { track } = useComponent(props.editor)
     const popupManager = usePopupManager()

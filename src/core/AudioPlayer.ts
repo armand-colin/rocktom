@@ -4,7 +4,6 @@ export interface AudioPlayer {
 
     getTime(): number
     schedulePlay(playAfter: Duration): void
-    clearScheduledPlay(): void
     play(): void
     pause(): void
     seek(seconds: number): void
@@ -18,7 +17,6 @@ function mock(timeFunction: () => number): AudioPlayer {
     return {
         getTime: timeFunction,
         schedulePlay: () => { },
-        clearScheduledPlay: () => { },
         play: () => { },
         pause: () => { },
         seek: () => { },

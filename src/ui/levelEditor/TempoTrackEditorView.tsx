@@ -5,7 +5,7 @@ import type { TimeTransform } from "../../components/editor/TimeTransform";
 import { NumberInput } from "../input/NumberInput";
 import "./TempoTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
-import type { PlaybackTime } from "../../components/PlaybackTime";
+import type { PlaybackTime } from "../../components/Time";
 
 export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: PlaybackTime }) {
     const { track } = useComponent(props.editor)

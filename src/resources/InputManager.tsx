@@ -121,6 +121,10 @@ export class InputManager extends Resource {
         this.getAction(input)?.register(callback)
     }
 
+    unregister(input: Input, callback: () => void) {
+        this.getAction(input)?.unregister(callback)
+    }
+
     getAction(input: Input): Action {
         const bindings = this._bindings.get(input)
 

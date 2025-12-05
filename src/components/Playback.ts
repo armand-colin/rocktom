@@ -1,5 +1,5 @@
 import { Component, type Engine } from "@niloc/ecs";
-import { Duration } from "@niloc/utils";
+import { Coroutine, Duration } from "@niloc/utils";
 import { NeckMesh } from "../3d/NeckMesh";
 import { PlayingNotes3D } from "../3d/PlayingNotes3D";
 import { AudioPlayer } from "../core/AudioPlayer";
@@ -12,24 +12,27 @@ import { type Level } from "../sound/Level";
 import { CameraRig } from "./CameraRig";
 import { Metronome } from "./Metronome";
 import { PlaybackNote } from "./PlaybackNote";
-import { PlaybackTime } from "./PlaybackTime";
+import { Time } from "./Time";
+import { SoundEngine } from "../resources/SoundEngine";
+import { Schedules } from "../Schedules";
 
 export class Playback extends Component {
 
-    private _time: number = 0
+    readonly time: Time
+
     private _notes: PlaybackNote[] = []
     private _playingNotes: PlayingNotes3D
 
+    private _soundEngine: SoundEngine
     private _rig: CameraRig
     private _metronome: Metronome
     private _speed = 1.0
     private _metronomeVolume = 0.2
     private _metronomeEnabled = false
-    private _playing = false
+    private _playingCoroutine: Coroutine | null = null
     private _renderer: Renderer
     private _loading = true
 
-    readonly playbackTime: PlaybackTime
     private _window: NoteWindow
 
     private _audioPlayerVolume: number = 1.0
@@ -41,12 +44,14 @@ export class Playback extends Component {
     ) {
         super(engine)
 
-        const preferences = engine.getResource(PlaybackPreferences)
+        this.time = engine.createComponent(Time, level.tempoTrack.getTempoAt(0))
 
+        const preferences = engine.getResource(PlaybackPreferences)
+        this._soundEngine = engine.getResource(SoundEngine)
         this._audioPlayer = AudioPlayerFactory.create(
             engine,
             level.audioTrack,
-            () => this._time,
+            () => this.time.seconds,
             () => {
                 this._loading = false
                 this.changed()
@@ -55,8 +60,6 @@ export class Playback extends Component {
 
         this._audioPlayerVolume = preferences.audioVolume
         this._audioPlayer.setVolume(this._audioPlayerVolume)
-
-        this.playbackTime = engine.createComponent(PlaybackTime, level.tempoTrack.getTempoAt(0))
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
@@ -88,9 +91,13 @@ export class Playback extends Component {
         return this._loading
     }
 
+    get playing() {
+        return this._playingCoroutine !== null
+    }
+
     private _getTimeWindow() {
-        let minTime = this._time - 2.0
-        let maxTime = this._time + 10.0
+        let minTime = this.time.seconds - 2.0
+        let maxTime = this.time.seconds + 10.0
 
         minTime = this.level.tempoTrack.ticksFromSeconds(minTime)
         maxTime = this.level.tempoTrack.ticksFromSeconds(maxTime)
@@ -100,7 +107,7 @@ export class Playback extends Component {
 
     private _updateWindow() {
         const { minTime, maxTime } = this._getTimeWindow()
-        const ticks = this.level.tempoTrack.ticksFromSeconds(this._time)
+        const ticks = this.level.tempoTrack.ticksFromSeconds(this.time.seconds)
 
         this._window.update(ticks, minTime, maxTime)
     }
@@ -145,18 +152,21 @@ export class Playback extends Component {
         this.changed()
     }
 
-    destroy() {
-        for (const note of this._notes)
-            note.destroy()
+    play() {
+        if (this.playing)
+            return
 
-        this._window.clear()
-        this._audioPlayer.clear()
-        this._rig.destroy()
-        this._renderer.remove(this._playingNotes)
+        this._playingCoroutine = this.startCoroutine(this._play())
+
+        if (this.time.seconds >= this.level.audioTrack.time)
+            this._audioPlayer.play()
+        else
+            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time - this.time.seconds))
     }
 
     seekTicks(ticks: number) {
-        this._time = this.level.tempoTrack.secondsFromTicks(ticks)
+        const seconds = this.level.tempoTrack.secondsFromTicks(ticks)
+        this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
         this._updateWindow()
 
         // Find correct focus event
@@ -168,27 +178,35 @@ export class Playback extends Component {
         }
         this._rig.update(ticks)
 
-        this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
-        const audioSeekTime = Math.max(0, this._time - this.level.audioTrack.time)
+        const audioSeekTime = Math.max(0, this.time.seconds - this.level.audioTrack.time)
         this._audioPlayer.seek(audioSeekTime)
         this._playingNotes.update(ticks)
     }
 
-    update(deltaTime: number) {
-        if (this.level.audioTrack.time <= this._time) {
+    private *_play() {
+        let lastUpdate = this._soundEngine.currentTime
+        while (true) {
+            const deltaTime = this._soundEngine.currentTime - lastUpdate
+            this._update(deltaTime)
+            lastUpdate = this._soundEngine.currentTime
+            yield Schedules.Frame
+        }
+    }
+
+    private _update(deltaTime: number) {
+        if (this.level.audioTrack.time <= this.time.seconds) {
             // Try to compensate for audio latency
-            const audioDeltaTime = this._time - this._audioPlayer.getTime() - this.level.audioTrack.time
+            const audioDeltaTime = this.time.seconds - this._audioPlayer.getTime() - this.level.audioTrack.time
             deltaTime -= audioDeltaTime / 24
-            Object.assign(window, { latency: audioDeltaTime })
         }
 
         deltaTime = deltaTime * this._speed
 
-        const beforeTicks = this.level.tempoTrack.ticksFromSeconds(this._time)
-        this._time += deltaTime
-
-        const ticks = this.level.tempoTrack.ticksFromSeconds(this._time)
-
+        const beforeTicks = this.level.tempoTrack.ticksFromSeconds(this.time.seconds)
+        const seconds = this.time.seconds + deltaTime
+        const ticks = this.level.tempoTrack.ticksFromSeconds(seconds)
+        this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
+        
         if (this._metronomeEnabled)
             this._metronome.update(ticks, this._speed)
 
@@ -206,30 +224,20 @@ export class Playback extends Component {
 
         this._rig.update(ticks)
         this._playingNotes.update(ticks)
-
-        this.playbackTime.set(this._time, ticks, this.level.tempoTrack.getTempoAt(ticks))
-    }
-
-    play() {
-        if (this._playing)
-            return
-
-        this._playing = true
-        if (this._time >= this.level.audioTrack.time)
-            this._audioPlayer.play()
-        else
-            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time - this._time))
     }
 
     pause() {
+        if (!this.playing)
+            return
+
+        this._playingCoroutine?.cancel()
+        this._playingCoroutine = null
+
         this._audioPlayer.pause()
-        this._playing = false
     }
 
     reset() {
-        this._time = 0
-        this.playbackTime.set(0, 0, this.level.tempoTrack.getTempoAt(0))
-        this._audioPlayer.clearScheduledPlay()
+        this.time.set(0, 0, this.level.tempoTrack.getTempoAt(0))
         this._audioPlayer.pause()
         this._audioPlayer.seek(0)
         this._rig.focus(this.level.focusTrack.initialFocus)
@@ -239,8 +247,18 @@ export class Playback extends Component {
 
         this._updateWindow()
 
-        if (this._playing)
+        if (this.playing)
             this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time))
+    }
+
+    destroy() {
+        for (const note of this._notes)
+            note.destroy()
+
+        this._window.clear()
+        this._audioPlayer.clear()
+        this._rig.destroy()
+        this._renderer.remove(this._playingNotes)
     }
 
 }

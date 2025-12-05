@@ -5,7 +5,7 @@ import type { Pattern, TimedPattern } from "../../sound/song/Pattern";
 import type { CSSProperties } from "react";
 import "./NoteTrackEditorView.scss"
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
-import type { PlaybackTime } from "../../components/PlaybackTime";
+import type { PlaybackTime } from "../../components/Time";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
