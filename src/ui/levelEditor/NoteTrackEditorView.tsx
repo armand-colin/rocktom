@@ -1,16 +1,16 @@
 import { useComponent } from "@niloc/ecs-react";
+import type { CSSProperties } from "react";
 import type { NoteTrackEditor } from "../../components/editor/NoteTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
+import type { Time } from "../../components/Time";
 import type { Pattern, TimedPattern } from "../../sound/song/Pattern";
-import type { CSSProperties } from "react";
-import "./NoteTrackEditorView.scss"
+import "./NoteTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
-import type { PlaybackTime } from "../../components/Time";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
     transform: TimeTransform,
-    time: PlaybackTime,
+    time: Time,
     onEdit: (pattern: TimedPattern) => void
 }) {
     const { track } = useComponent(props.editor)
@@ -35,13 +35,13 @@ export function NoteTrackEditorView(props: {
 
 function TimedPatternView(props: { pattern: Pattern, time: number, onEdit: () => void }) {
     const minFret = props.pattern.notes.reduce((min, note) => {
-        if (note.fret < min) 
+        if (note.fret < min)
             return note.fret
         return min
     }, 0)
 
     const maxFret = props.pattern.notes.reduce((max, note) => {
-        if (note.fret > max) 
+        if (note.fret > max)
             return note.fret
         return max
     }, minFret)

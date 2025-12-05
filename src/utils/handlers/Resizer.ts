@@ -12,11 +12,11 @@ export type ResizerOpts = {
 
 export abstract class Resizer implements Handler {
 
-    protected startMouse: Vec2
-    protected startTransform: Transform2D
+    readonly startMouse: Vec2
+    readonly startTransform: Transform2D
 
-    protected minSize: Vec2
-    protected windowSize: Vec2
+    readonly minSize: Vec2
+    windowSize: Vec2
 
     readonly events = new Emitter<{ changed: { size: Vec2, position: Vec2 } }>()
 
@@ -55,7 +55,7 @@ export abstract class Resizer implements Handler {
 
 export class EastResizer extends Resizer {
 
-    static update(resizer: EastResizer, mouse: Vec2): Transform2D {
+    static update(resizer: Resizer, mouse: Vec2): Transform2D {
         let width = resizer.startTransform.size.x + (mouse.x - resizer.startMouse.x)
         width = Math.max(resizer.minSize.x, width)
 
@@ -73,54 +73,133 @@ export class EastResizer extends Resizer {
 
 }
 
-// TODO: refactor 3 remaining resizers like EastResizer, with static update method
-
 export class SouthResizer extends Resizer {
 
-
-    protected update(mouse: Vec2): Transform2D {
-        let height = this.startTransform.size.y + (mouse.y - this.startMouse.y)
-        height = Math.max(this.minSize.y, height)
+    static update(resizer: Resizer, mouse: Vec2): Transform2D {
+        let height = resizer.startTransform.size.y + (mouse.y - resizer.startMouse.y)
+        height = Math.max(resizer.minSize.y, height)
         const transform: Transform2D = {
-            size: Vec2.create(this.startTransform.size.x, height),
-            position: this.startTransform.position,
+            size: Vec2.create(resizer.startTransform.size.x, height),
+            position: resizer.startTransform.position,
         }
         return transform
+    }
+
+    protected update(mouse: Vec2): Transform2D {
+        return SouthResizer.update(this, mouse)
     }
 
 }
 
 export class WestResizer extends Resizer {
 
-    protected update(mouse: Vec2): Transform2D {
-        let deltaX = mouse.x - this.startMouse.x
-        let newWidth = this.startTransform.size.x - deltaX
-        if (newWidth < this.minSize.x) {
-            newWidth = this.minSize.x
-            deltaX = this.startTransform.size.x - newWidth
+    static update(resizer: Resizer, mouse: Vec2): Transform2D {
+        let deltaX = mouse.x - resizer.startMouse.x
+        let newWidth = resizer.startTransform.size.x - deltaX
+        if (newWidth < resizer.minSize.x) {
+            newWidth = resizer.minSize.x
+            deltaX = resizer.startTransform.size.x - newWidth
         }
-        const newX = this.startTransform.position.x + deltaX
+        const newX = resizer.startTransform.position.x + deltaX
         const transform: Transform2D = {
-            size: Vec2.create(newWidth, this.startTransform.size.y),
-            position: Vec2.create(newX, this.startTransform.position.y),
+            size: Vec2.create(newWidth, resizer.startTransform.size.y),
+            position: Vec2.create(newX, resizer.startTransform.position.y),
         }
         return transform
     }
+
+    protected update(mouse: Vec2): Transform2D {
+        return WestResizer.update(this, mouse)
+    }
+
 }
 
 export class NorthResizer extends Resizer {
-    protected update(mouse: Vec2): Transform2D {
-        let deltaY = mouse.y - this.startMouse.y
-        let newHeight = this.startTransform.size.y - deltaY
-        if (newHeight < this.minSize.y) {
-            newHeight = this.minSize.y
-            deltaY = this.startTransform.size.y - newHeight
+
+    static update(resizer: Resizer, mouse: Vec2): Transform2D {
+        let deltaY = mouse.y - resizer.startMouse.y
+        let newHeight = resizer.startTransform.size.y - deltaY
+
+        if (newHeight < resizer.minSize.y) {
+            newHeight = resizer.minSize.y
+            deltaY = resizer.startTransform.size.y - newHeight
         }
-        const newY = this.startTransform.position.y + deltaY
+
+        const newY = resizer.startTransform.position.y + deltaY
         const transform: Transform2D = {
-            size: Vec2.create(this.startTransform.size.x, newHeight),
-            position: Vec2.create(this.startTransform.position.x, newY),
+            size: Vec2.create(resizer.startTransform.size.x, newHeight),
+            position: Vec2.create(resizer.startTransform.position.x, newY),
         }
+
         return transform
     }
+
+    protected update(mouse: Vec2): Transform2D {
+        return NorthResizer.update(this, mouse)
+    }
+
+}
+
+export class NorthEastResizer extends Resizer {
+
+    protected update(mouse: Vec2): Transform2D {
+        const eastTransform = EastResizer.update(this, mouse)
+        const northTransform = NorthResizer.update(this, mouse)
+
+        const transform: Transform2D = {
+            size: Vec2.create(eastTransform.size.x, northTransform.size.y),
+            position: Vec2.create(northTransform.position.x, northTransform.position.y),
+        }
+
+        return transform
+    }
+
+}
+
+export class SouthEastResizer extends Resizer {
+
+    protected update(mouse: Vec2): Transform2D {
+        const eastTransform = EastResizer.update(this, mouse)
+        const southTransform = SouthResizer.update(this, mouse)
+
+        const transform: Transform2D = {
+            size: Vec2.create(eastTransform.size.x, southTransform.size.y),
+            position: Vec2.create(southTransform.position.x, southTransform.position.y),
+        }
+
+        return transform
+    }
+
+}
+
+export class SouthWestResizer extends Resizer {
+
+    protected update(mouse: Vec2): Transform2D {
+        const westTransform = WestResizer.update(this, mouse)
+        const southTransform = SouthResizer.update(this, mouse)
+
+        const transform: Transform2D = {
+            size: Vec2.create(westTransform.size.x, southTransform.size.y),
+            position: Vec2.create(westTransform.position.x, southTransform.position.y),
+        }
+
+        return transform
+    }
+
+}
+
+export class NorthWestResizer extends Resizer {
+
+    protected update(mouse: Vec2): Transform2D {
+        const westTransform = WestResizer.update(this, mouse)
+        const northTransform = NorthResizer.update(this, mouse)
+
+        const transform: Transform2D = {
+            size: Vec2.create(westTransform.size.x, northTransform.size.y),
+            position: Vec2.create(westTransform.position.x, northTransform.position.y),
+        }
+
+        return transform
+    }
+
 }

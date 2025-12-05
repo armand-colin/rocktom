@@ -1,9 +1,7 @@
-import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
-import { useContext } from "react";
+import { useComponent, useResource } from "@niloc/ecs-react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
 import { State } from "../../resources/State";
-import { WindowManager } from "../../resources/WindowManager";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button } from "../button/Button";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
@@ -44,22 +42,13 @@ function PlayerControls(props: { player: EditorPlayer }) {
 }
 
 function SongEditorView(props: { editor: LevelEditor }) {
-    const { engine } = useContext(EngineContext)
-    const windowManager = engine.getResource(WindowManager)
 
     function onEdit(pattern: TimedPattern) {
         props.editor.player.seekTicks(pattern.time)
         props.editor.editPattern(pattern.pattern)
     }
 
-    function onPopWindow() {
-        windowManager.add("Test window", () => <div>
-            <h1>Bonjour !</h1>
-        </div>)
-    }
-
     return <div className="SongEditorView">
-        <Button onClick={onPopWindow}>PopWindow</Button>
         <div className="time">
             <TimeTransformView
                 transform={props.editor.timeTransform}

@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, type CSSProperties, type MouseEvent, typ
 import { WindowManager } from "../../resources/WindowManager";
 import type { Handler } from "../../utils/handlers/Handler";
 import { Mover } from "../../utils/handlers/Mover";
-import { EastResizer, NorthResizer, Resizer, SouthResizer, WestResizer, type ResizerOpts } from "../../utils/handlers/Resizer";
+import { EastResizer, NorthEastResizer, NorthResizer, NorthWestResizer, Resizer, SouthEastResizer, SouthResizer, SouthWestResizer, WestResizer, type ResizerOpts } from "../../utils/handlers/Resizer";
 import { Icon } from "../icon/Icon";
 import "./WindowManagerView.scss";
 
@@ -118,5 +118,10 @@ function WindowView(props: {
 		<div className="resizer" data-direction="south" onMouseDown={onResize(SouthResizer)}></div>
 		<div className="resizer" data-direction="north" onMouseDown={onResize(NorthResizer)}></div>
 		<div className="resizer" data-direction="west" onMouseDown={onResize(WestResizer)}></div>
+
+		<div className="resizer" data-direction="north-east" onMouseDown={onResize(NorthEastResizer)}></div>
+		<div className="resizer" data-direction="north-west" onMouseDown={onResize(NorthWestResizer)}></div>
+		<div className="resizer" data-direction="south-east" onMouseDown={onResize(SouthEastResizer)}></div>
+		<div className="resizer" data-direction="south-west" onMouseDown={onResize(SouthWestResizer)}></div>
 	</div>
 }
