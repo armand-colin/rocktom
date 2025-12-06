@@ -46,7 +46,6 @@ export class TempoTrack {
     * Refreshes all the events "tempo" based on their time and ticks
     */
     refreshTempo() {
-        console.log("Refreshing tempo")
         // First, sort all events by ticks, ascending
         this.events.sort((a, b) => a.ticks - b.ticks)
 
@@ -67,8 +66,6 @@ export class TempoTrack {
 
             lastEvent = event
         }
-
-        console.log(this.events)
     }
 
     add(ticks: number, tempo: Tempo): this {

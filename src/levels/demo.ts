@@ -14,11 +14,12 @@ export function demo(): Level {
         { seconds: 12, ticks: Tempo.bars(1 + 2 + 4) },
     ])
 
+    const instrument = new Bass()
     const white = Tempo.ticksFromQuarterNote(1)
 
     const focus = new FocusTrackBuilder()
 
-    const pattern1 = new PatternBuilder("Sample")
+    const pattern1 = new PatternBuilder("Sample", instrument)
         // Beat 1
         .fingerPosition(2)
         .noteRepeat(Bass.E, 0, white, 1)
@@ -27,17 +28,17 @@ export function demo(): Level {
         .note(Bass.E, 2, white)
         .build()
 
-    const pattern2 = new PatternBuilder("Sample")
+    const pattern2 = new PatternBuilder("Sample", instrument)
         // Beat 1
         .noteRepeat(Bass.E, 5, white, 4)
         .build()
 
-    const pattern3 = new PatternBuilder("Sample")
+    const pattern3 = new PatternBuilder("Sample", instrument)
         // Beat 1
         .noteRepeat(Bass.A, 6, white, 4)
         .build()
 
-    const track = new NoteTrackBuilder(new Bass())
+    const track = new NoteTrackBuilder(instrument)
         .pattern(pattern1)
         .addFocus([0, 4], focus, tempoTrack.ticksFromSeconds(4))
         .pattern(pattern2)
@@ -49,7 +50,7 @@ export function demo(): Level {
         id: "demo",
         name: "Demo",
         author: "Rocktom",
-        instrument: new Bass(),
+        instrument: instrument,
         tracks: {
             audio: new AudioTrack({
                 type: AudioType.YouTube,

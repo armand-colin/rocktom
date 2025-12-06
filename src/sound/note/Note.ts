@@ -1,10 +1,5 @@
 import { frequencies } from "./frequencies";
 
-export interface Note {
-    readonly index: number,
-    readonly frequency: number,
-}
-
 export interface FineNote {
     readonly index: number,
     readonly baseFrequency: number,
@@ -29,12 +24,52 @@ const names = [
     "B",
 ]
 
-function fromName(name: string, octave: number): Note {
-    const noteIndex = names.indexOf(name)
+export class Note {
 
-    return {
-        index: noteIndex + octave * 12,
-        frequency: frequencies[noteIndex + octave * 12]
+    readonly index: number
+
+    constructor(index: number) {
+        this.index = index
+    }
+
+    get name() {
+        return names[this.index % 12]
+    }
+
+    get octave() {
+        return (this.index / 12) | 0
+    }
+
+    get frequency() {
+        return frequencies[this.index]
+    }
+
+    add(semitones: number): Note {
+        const newIndex = this.index + semitones
+        return notes[newIndex]
+    }
+
+    static fromIndex(index: number): Note {
+        return notes[index]
+    }
+
+    static add(note: Note, semitones: number): Note {
+        const newIndex = note.index + semitones
+        return notes[newIndex]
+    }
+
+    static fromName(name: string, octave: number): Note {
+        const noteIndex = names.indexOf(name) + octave * 12
+        return notes[noteIndex]
+    }
+
+}
+
+const notes: Note[] = []
+for (let octave = 0; octave < 8; octave++) {
+    for (let i = 0; i < names.length; i++) {
+        const index = octave * 12 + i
+        notes.push(new Note(index))
     }
 }
 
@@ -70,12 +105,4 @@ export const FineNote = {
     closestFrequency,
     cents,
     names
-}
-
-export const Note = {
-    fromName,
-    fromIndex: (index: number): Note => ({
-        index,
-        frequency: frequencies[index]
-    })
 }

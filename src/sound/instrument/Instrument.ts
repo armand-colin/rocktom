@@ -9,9 +9,33 @@ export class Instrument {
     readonly name: string
     readonly strings: String[]
 
+    private _lowestString: String
+    private _highestString: String
+
     constructor(name: string, strings: String[]) {
         this.name = name
         this.strings = strings
+
+        let lowestString = strings[0]
+        let highestString = strings[0]
+
+        for (const string of strings) {
+            if (string.note.index < lowestString.note.index)
+                lowestString = string
+            if (string.note.index > highestString.note.index)
+                highestString = string
+        }
+
+        this._lowestString = lowestString
+        this._highestString = highestString
+    }
+
+    get lowestString(): String {
+        return this._lowestString
+    }
+
+    get highestString(): String {
+        return this._highestString
     }
 
 }

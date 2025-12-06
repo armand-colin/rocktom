@@ -11,6 +11,7 @@ import { Tempo } from "../sound/Tempo";
 export function timeIsRunningOut(): Level {
 
     const tempo = new Tempo(118.2)
+    const instrument = new Bass()
 
     const tempoTrack = TempoTrack.fromKeyframes([
         { seconds: 4.07, ticks: Tempo.bars(2) },
@@ -52,7 +53,7 @@ export function timeIsRunningOut(): Level {
 
     const focusTrack = new FocusTrackBuilder([0, 8])
 
-    const baseRiff = new PatternBuilder("Main Riff")
+    const baseRiff = new PatternBuilder("Main Riff", instrument)
         .fingerPosition(3)
         .note(Bass.E, 5, 0, undefined, long)
         .note(Bass.A, 3, 0, undefined, short)
@@ -80,7 +81,7 @@ export function timeIsRunningOut(): Level {
         .note(Bass.E, 3, 0, undefined, short)
         .build()
 
-    const preChorus = new PatternBuilder("Pre-Chorus")
+    const preChorus = new PatternBuilder("Pre-Chorus", instrument)
         .fingerPosition(3)
         .noteRepeat(Bass.D, 3, 0, 8, short)
         .noteRepeat(Bass.D, 5, 0, 8, short)
@@ -97,7 +98,7 @@ export function timeIsRunningOut(): Level {
         .note(Bass.A, 10, long, { fret: 0, duration: long, connect: false })
         .build()
 
-    const chorus = new PatternBuilder("Chorus")
+    const chorus = new PatternBuilder("Chorus", instrument)
         .noteRepeat(Bass.E, 1, 0, 8, short)
         .noteRepeat(Bass.E, 3, 0, 8, short)
         .noteRepeat(Bass.E, 5, 0, 8, short)
@@ -107,7 +108,7 @@ export function timeIsRunningOut(): Level {
         .noteRepeat(Bass.E, 5, 0, 8, short)
         .build()
 
-    const chorusOut = new PatternBuilder("Chorus Out")
+    const chorusOut = new PatternBuilder("Chorus Out", instrument)
         .fingerPosition(1)
         .note(Bass.E, 1, 0, undefined, short)
         .note(Bass.E, 1, 0, undefined, short)
@@ -119,14 +120,14 @@ export function timeIsRunningOut(): Level {
         .note(Bass.E, 3, 0, undefined, short)
         .build()
 
-    const chorusOutAlt = new PatternBuilder("Chorus Out Alt")
+    const chorusOutAlt = new PatternBuilder("Chorus Out Alt", instrument)
         .fingerPosition(3)
         .noteRepeat(Bass.A, 3, 0, 6, short)
         .note(Bass.E, 5, 0, undefined, short)
         .note(Bass.A, 3, 0, undefined, short)
         .build()
 
-    const bridge = new PatternBuilder("Bridge")
+    const bridge = new PatternBuilder("Bridge", instrument)
         .fingerPosition(5)
         .note(Bass.A, 5, 0, undefined, short)
         .note(Bass.A, 5, 0, undefined, short)
@@ -146,7 +147,7 @@ export function timeIsRunningOut(): Level {
         .note(Bass.A, 3, 0, undefined, short)
         .build()
 
-    const bridgeOut = new PatternBuilder("Bridge Out")
+    const bridgeOut = new PatternBuilder("Bridge Out", instrument)
         .fingerPosition(3)
         .noteRepeat(Bass.E, 0, 0, 9, short)
         .note(Bass.A, 5, 0, undefined, short / 2)
@@ -162,7 +163,7 @@ export function timeIsRunningOut(): Level {
         .note(Bass.A, 7, long, { fret: 5, duration: long, connect: false }) // 16
         .build()
 
-    const bridgeOutAlt = new PatternBuilder("Bridge Out Alt")
+    const bridgeOutAlt = new PatternBuilder("Bridge Out Alt", instrument)
         .fingerPosition(5)
         .noteRepeat(Bass.E, 0, 0, 8, short)
         .noteRepeat(Bass.E, 0, 0, 2, short)
@@ -174,7 +175,7 @@ export function timeIsRunningOut(): Level {
         .silence(short)
         .build()
 
-    const baseRiffAlt = new PatternBuilder("Main Riff Alt")
+    const baseRiffAlt = new PatternBuilder("Main Riff Alt", instrument)
         .fingerPosition(3)
         .note(Bass.E, 5, 0, undefined, short)
         .note(Bass.E, 5, 0, undefined, short)
@@ -207,7 +208,7 @@ export function timeIsRunningOut(): Level {
         .note(Bass.E, 3, 0, undefined, short)
         .build()
 
-    const outro = new PatternBuilder("Outro")
+    const outro = new PatternBuilder("Outro", instrument)
         .fingerPosition(3)
         .note(Bass.E, 5, 0, undefined, short)
         .note(Bass.E, 5, 0, undefined, short)

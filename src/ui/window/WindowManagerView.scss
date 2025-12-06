@@ -13,6 +13,8 @@
         border-radius: 8px;
         pointer-events: auto;
         outline: 1px solid var(--outline);
+        display: grid;
+        grid-template-rows: 0fr 1fr;
 
         > .head {
             display: grid;

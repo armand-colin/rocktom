@@ -57,7 +57,7 @@ function SongEditorView(props: { editor: LevelEditor }) {
 
     function onEdit(pattern: TimedPattern) {
         props.editor.player.seekTicks(pattern.time)
-        props.editor.editPattern(pattern.pattern)
+        props.editor.editPattern(pattern)
     }
 
     return <div

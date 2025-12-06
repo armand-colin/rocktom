@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid"
+import type { Instrument } from "../instrument/Instrument"
 import type { String } from "../instrument/String"
 import { NoteEvent, type NoteSlide } from "./NoteEvent"
 
@@ -21,12 +22,23 @@ export class Pattern {
     readonly name: string
     readonly notes: NoteEvent[]
     readonly duration: number
+    readonly instrument: Instrument
 
-    constructor(opts: { name: string, notes: NoteEvent[], duration: number, id?: string }) {
+    constructor(opts: { name: string, instrument: Instrument, notes: NoteEvent[], duration: number, id?: string }) {
         this.id = opts.id ?? nanoid()
         this.name = opts.name
         this.notes = opts.notes
         this.duration = opts.duration
+        this.instrument = opts.instrument
+    }
+
+    remove(noteId: string) {
+        const index = this.notes.findIndex(n => n.id === noteId)
+        if (index === -1)
+            return false
+
+        this.notes.splice(index, 1)
+        return true
     }
 
 }
@@ -37,9 +49,11 @@ export class PatternBuilder {
     private _time: number = 0
     private _name: string
     private _fingerPosition: number | null = null
+    private _instrument: Instrument
 
-    constructor(name: string) {
+    constructor(name: string, instrument: Instrument) {
         this._name = name
+        this._instrument = instrument
     }
 
     fingerPosition(position: number): this {
@@ -91,8 +105,9 @@ export class PatternBuilder {
 
     build(): Pattern {
         return new Pattern({
-            name: this._name, 
-            notes: this._notes, 
+            instrument: this._instrument,
+            name: this._name,
+            notes: this._notes,
             duration: this._time
         })
     }

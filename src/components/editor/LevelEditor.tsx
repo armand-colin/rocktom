@@ -1,7 +1,7 @@
 import { Component, Engine } from "@niloc/ecs";
 import { WindowManager, type Window } from "../../resources/WindowManager";
 import type { Level } from "../../sound/Level";
-import type { Pattern } from "../../sound/song/Pattern";
+import type { TimedPattern } from "../../sound/song/Pattern";
 import { PatternEditorView } from "../../ui/levelEditor/PatternEditorView";
 import { AudioTrackEditor } from "./AudioTrackEditor";
 import { EditorPlayer } from "./EditorPlayer";
@@ -43,7 +43,7 @@ export class LevelEditor extends Component {
         return this._pattern
     }
 
-    editPattern(pattern: Pattern | null) {
+    editPattern(pattern: TimedPattern | null) {
         this._pattern?.destroy()
         this._pattern = null
 

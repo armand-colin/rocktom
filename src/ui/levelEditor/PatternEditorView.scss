@@ -1,2 +1,58 @@
 .PatternEditorView {
+    display: grid;
+    grid-template-rows: 0fr 1fr;
+    height: 100%;
+    width: 100%;
+
+    > .head {
+        padding: 4px 8px;
+    }
+
+    > .body {
+        --note-height: calc(100% / var(--index-range));
+        display: grid;
+        grid-template-rows: 0fr 1fr;
+
+        > .TrackEditorView > .keyboard {
+            position: relative;
+            overflow: hidden;
+        }
+
+        > .TrackEditorView > .notes {
+            position: relative;
+            overflow: hidden;
+
+            .shadow-note {
+                position: absolute;
+                height: var(--note-height);
+                width: 100%;
+                top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1) / var(--index-range) * 100%);
+                border-bottom: 1px solid var(--outline);
+            }
+        }
+
+        .KeyboardNoteView {
+            position: absolute;
+            height: var(--note-height);
+            width: 100%;
+            top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1) / var(--index-range) * 100%);
+            background: var(--surface);
+            outline: 1px solid var(--outline);
+
+            &[data-available="true"] {
+                background-color: var(--color);
+            }
+        }
+
+        .NoteView {
+            position: absolute;
+            height: var(--note-height);
+            width: 100%;
+            top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1) / var(--index-range) * 100%);
+            background-color: var(--color);
+            left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
+            width: max(calc(var(--duration) * var(--ratio) * 1px), 5px);
+            overflow: hidden;
+        }
+    }
 }

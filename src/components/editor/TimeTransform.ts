@@ -61,10 +61,8 @@ export class TimeTransform extends Component {
 
     setOffset(offset: number) {
         this._offset = offset
-        console.log("offset set to", offset)
         this.changed()
     }
-
 
     handleWheel(event: WheelEvent, container: HTMLElement) {
         if (OS.isCtrl(event)) {

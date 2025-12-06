@@ -7,6 +7,10 @@
         grid-column: 1;
         border-right: 1px solid var(--outline);
         padding: 8px;
+
+        &[data-no-padding="true"] {
+            padding: 0;
+        }
     }
 
     > .TrackEditorContent {

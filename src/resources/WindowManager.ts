@@ -47,10 +47,7 @@ export class WindowManager extends Resource {
             id,
             position: { x: 100, y: 100 },
             size: { x: 400, y: 300 },
-            close: () => {
-                this._windows = this._windows.filter(w => w.id !== id)
-                this.changed()
-            },
+            close,
             content,
             name,
             events: new Emitter()

@@ -28,7 +28,7 @@ export function TimeTransformView(props: {
 }) {
     const ref = useRef<HTMLDivElement | null>(null)
     const [width, setWidth] = useState(100)
-    const { ratio, offset } = useComponent(props.transform)
+    const { ratio, offset, hardOffset } = useComponent(props.transform)
 
     function onRef(el: HTMLDivElement | null) {
         ref.current = el
@@ -89,6 +89,7 @@ export function TimeTransformView(props: {
         const { start, end } = props.transform.getBounds(rect.width)
         let targetTicks = lerp(start, end, mouseT)
         targetTicks = props.transform.magnetize(targetTicks)
+        targetTicks = targetTicks + hardOffset
 
         props.player.seekTicks(targetTicks)
     }

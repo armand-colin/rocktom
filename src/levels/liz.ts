@@ -10,10 +10,11 @@ import { Tempo } from "../sound/Tempo";
 export function liz(): Level {
 
     const tempo = new Tempo(80.55)
+    const instrument = new Bass()
 
     const q = Tempo.ticksFromQuarterNote(0.25)
 
-    const intro = new PatternBuilder("Intro")
+    const intro = new PatternBuilder("Intro", instrument)
         // Beat 1
         .note(Bass.E, 6, q)
         .silence(q * 5)
@@ -44,7 +45,7 @@ export function liz(): Level {
         .silence(q * 8)
         .build()
 
-    const preChorus = new PatternBuilder("Pre-Chorus")
+    const preChorus = new PatternBuilder("Pre-Chorus", instrument)
         // Beat 1
         .note(Bass.E, 6, q * 3)
         .silence(q * 3)
@@ -78,7 +79,7 @@ export function liz(): Level {
         // Beat 5
         .build()
 
-    const track = new NoteTrackBuilder(new Bass())
+    const track = new NoteTrackBuilder(instrument)
         .silence(Tempo.ticksFromQuarterNote(4))
         .pattern(intro)
         .pattern(preChorus)
@@ -90,7 +91,7 @@ export function liz(): Level {
         id: "remi-wolf-liz",
         name: "Liz",
         author: "Remi Wolf",
-        instrument: new Bass(),
+        instrument: instrument,
         tracks: {
             audio: new AudioTrack({
                 type: AudioType.YouTube,
