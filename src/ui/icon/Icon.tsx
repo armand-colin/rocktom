@@ -9,7 +9,9 @@ export type IconName =
     "arrow_back" |
     "code" |
     "arrow_drop_down" |
-    "close"
+    "close" |
+    "acute" | 
+    "instant_mix"
 
 type Props = {
     name: IconName

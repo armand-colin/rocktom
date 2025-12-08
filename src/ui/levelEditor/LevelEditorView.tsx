@@ -1,4 +1,4 @@
-import { EngineContext, useResource } from "@niloc/ecs-react";
+import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
 import { useContext, useEffect } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
@@ -11,11 +11,16 @@ import "./LevelEditorView.scss";
 import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
+import { Icon } from "../icon/Icon";
+import { Mixer } from "../../resources/Mixer";
+import { WindowManager } from "../../resources/WindowManager";
+import { MixerView } from "../mixerView/MixerView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const state = useResource(State)
     const { engine } = useContext(EngineContext)
     const inputManager = engine.getResource(InputManager)
+    const windowManager = engine.getResource(WindowManager)
 
     useEffect(() => {
         function onPlay() {
@@ -34,11 +39,19 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
         }
     }, [])
 
+    function showMixer() {
+        windowManager.add(
+            { name: "Mixer", id: "mixer" }, 
+            () => <MixerView />
+        )
+    }
+
     return <div className="LevelEditorView">
         <div className="head">
             <Button onClick={() => state.editLevel(null)}>Back</Button>
             {props.editor.level.name}
             <PlayerControls player={props.editor.player} />
+            <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
             <SongEditorView editor={props.editor} />
         </div>
     </div>
@@ -46,10 +59,15 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
 
 
 function PlayerControls(props: { player: EditorPlayer }) {
+    const { engine } = useContext(EngineContext)
+    const mixer = engine.getResource(Mixer)
+    const { enabled } = useComponent(mixer.metronome)
+
     return <div className="PlayerControls">
         <Button onClick={() => props.player.play()}>Play</Button>
         <Button onClick={() => props.player.pause()}>Pause</Button>
         <Button onClick={() => props.player.reset()}>Reset</Button>
+        <Button data-active={enabled} onClick={() => mixer.metronome.toggleEnabled()}><Icon name="acute"/></Button>
     </div>
 }
 

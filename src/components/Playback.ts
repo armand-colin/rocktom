@@ -27,8 +27,6 @@ export class Playback extends Component {
     private _rig: CameraRig
     private _metronome: Metronome
     private _speed = 1.0
-    private _metronomeVolume = 0.2
-    private _metronomeEnabled = false
     private _playingCoroutine: Coroutine | null = null
     private _renderer: Renderer
     private _loading = true
@@ -133,25 +131,6 @@ export class Playback extends Component {
         this.changed()
     }
 
-    get metronomeVolume() {
-        return this._metronomeVolume
-    }
-
-    set metronomeVolume(value: number) {
-        this._metronomeVolume = value
-        this._metronome.volume = value
-        this.changed()
-    }
-
-    get metronomeEnabled() {
-        return this._metronomeEnabled
-    }
-
-    set metronomeEnabled(value: boolean) {
-        this._metronomeEnabled = value
-        this.changed()
-    }
-
     play() {
         if (this.playing)
             return
@@ -162,6 +141,8 @@ export class Playback extends Component {
             this._audioPlayer.play()
         else
             this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time - this.time.seconds))
+
+        this.changed()
     }
 
     seekTicks(ticks: number) {
@@ -181,6 +162,7 @@ export class Playback extends Component {
         const audioSeekTime = Math.max(0, this.time.seconds - this.level.audioTrack.time)
         this._audioPlayer.seek(audioSeekTime)
         this._playingNotes.update(ticks)
+        this.changed()
     }
 
     private *_play() {
@@ -207,8 +189,7 @@ export class Playback extends Component {
         const ticks = this.level.tempoTrack.ticksFromSeconds(seconds)
         this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
         
-        if (this._metronomeEnabled)
-            this._metronome.update(ticks, this._speed)
+        this._metronome.update(ticks, this._speed)
 
         this._updateWindow()
         for (const { note } of this._window.iter()) {
@@ -234,6 +215,7 @@ export class Playback extends Component {
         this._playingCoroutine = null
 
         this._audioPlayer.pause()
+        this.changed()
     }
 
     reset() {
@@ -249,6 +231,8 @@ export class Playback extends Component {
 
         if (this.playing)
             this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time))
+        
+        this.changed()
     }
 
     destroy() {

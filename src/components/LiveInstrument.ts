@@ -2,8 +2,8 @@ import { Component, Engine } from "@niloc/ecs";
 import { LiveInstrumentPreferences } from "../resources/LiveInstrumentPreferences";
 import { SoundEngine } from "../resources/SoundEngine";
 import { AudioRange } from "../sound/AudioRange";
-import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
+import { Mixer } from "../resources/Mixer";
 
 type Opts = {
     stream: MediaStream,
@@ -18,11 +18,8 @@ export class LiveInstrument extends Component {
     private _streamId: string
 
     private _streamNode: MediaStreamSoundNode
-    private _gain: GainSoundNode
 
-    private _volume: number
     private _range: AudioRange
-    private _enablePlayback: boolean
     private _octaverEnabled: boolean
 
     constructor(engine: Engine, opts: Opts) {
@@ -38,26 +35,10 @@ export class LiveInstrument extends Component {
 
         const preferences = engine.getResource(LiveInstrumentPreferences)
         this._range = preferences.range ?? AudioRange.default()
-        this._volume = preferences.volume
-        this._enablePlayback = preferences.enablePlayback
         this._octaverEnabled = preferences.octaverEnabled
 
-        this._gain = soundEngine.createGainNode()
-        this._gain.gain = this._volume
-
-        if (this._enablePlayback)
-            this._streamNode.connect(this._gain)
-    }
-
-    get volume() {
-        return this._volume
-    }
-
-    set volume(value: number) {
-        this._volume = value
-        this._gain.gain = value
-        this.engine.getResource(LiveInstrumentPreferences).volume = value
-        this.changed()
+        const mixer = engine.getResource(Mixer)
+        mixer.feedback.connect(this._streamNode)
     }
 
     get name() {
@@ -66,10 +47,6 @@ export class LiveInstrument extends Component {
 
     get streamId() {
         return this._streamId
-    }
-
-    get output() {
-        return this._gain
     }
 
     get rawOutput() {
@@ -96,28 +73,9 @@ export class LiveInstrument extends Component {
         this.changed()
     }
 
-    get enablePlayback() {
-        return this._enablePlayback
-    }
-
-    set enablePlayback(value: boolean) {
-        if (this._enablePlayback === value)
-            return
-        
-        this._enablePlayback = value
-        
-        if (value)
-            this._streamNode.connect(this._gain)
-        else
-            this._streamNode.disconnect(this._gain)
-        
-        this.engine.getResource(LiveInstrumentPreferences).enablePlayback = value   
-        this.changed()
-    }
-
     destroy() {
         this._mediaStream.getTracks().forEach(track => track.stop())
-        this._gain.disconnect()
+        this._streamNode.disconnect()
     }
 
 }

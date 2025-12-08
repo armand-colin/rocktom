@@ -50,7 +50,6 @@ export class EditorPlayer extends Component {
         this._updateCoroutine = this.startCoroutine(this._update())
 
         this._playAudio()
-
         this.changed()
     }
 
@@ -133,6 +132,7 @@ export class EditorPlayer extends Component {
             const seconds = this.time.seconds + deltaTime
             const ticks = this.level.tempoTrack.ticksFromSeconds(seconds)
             this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
+
             this._metronome.update(ticks, 1)
             
             lastUpdate = now

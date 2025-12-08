@@ -12,6 +12,7 @@ import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
 import "./LiveInstrumentView.scss";
 import { Toggle } from "../toggle/Toggle";
 import { State } from "../../resources/State";
+import { Mixer } from "../../resources/Mixer";
 
 export function LiveInstrumentView() {
     const { instrument } = useResource(State)
@@ -26,16 +27,17 @@ export function LiveInstrumentView() {
 }
 
 function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
-    const { volume, enablePlayback } = useComponent(props.instrument)
     const { engine } = useContext(EngineContext)
+    const mixer = engine.getResource(Mixer)
+    const { volume, enabled } = useComponent(mixer.feedback)
 
     return <div className="CurrentLiveInstrument">
         <h1>{props.instrument.name}</h1>
 
         <div className="volume">
-            <button data-active={enablePlayback} onClick={() => props.instrument.enablePlayback = !enablePlayback}>
+            <button data-active={enabled} onClick={() => mixer.feedback.toggleEnabled()}>
                 <Icon
-                    name={enablePlayback ? "volume_up" : "volume_off"}
+                    name={enabled ? "volume_up" : "volume_off"}
                 />
             </button>
             <small>{volume | 0}%</small>
@@ -43,9 +45,9 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
                 min={0}
                 max={100}
                 value={volume}
-                onChange={v => { props.instrument.volume = v }}
+                onChange={v => { mixer.feedback.setVolume(v) }}
                 scale={SliderScale.exponential(5)}
-                disabled={!enablePlayback}
+                disabled={!enabled}
             />
         </div>
 
@@ -56,7 +58,7 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
         />
         
         {
-            enablePlayback ?
+            enabled ?
                 <VolumePreview instrument={props.instrument} /> :
                 undefined
         }

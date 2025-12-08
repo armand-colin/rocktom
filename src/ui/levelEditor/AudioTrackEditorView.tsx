@@ -15,6 +15,8 @@ import "./AudioTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import type { TempoTrack } from "../../sound/song/TempoTrack";
 import type { Time } from "../../components/Time";
+import { Toggle } from "../toggle/Toggle";
+import { Mixer } from "../../resources/Mixer";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
@@ -22,8 +24,11 @@ export function AudioTrackEditorView(props: {
     editor: AudioTrackEditor,
     time: Time
 }) {
-    const { track } = useComponent(props.editor)
+    const { track, audioWaveform } = useComponent(props.editor)
     const popupManager = usePopupManager()
+    const { engine } = useContext(EngineContext)
+    const mixer = engine.getResource(Mixer)
+    const { enabled } = useComponent(mixer.audio)
 
     function onTypeChange(type: AudioType) {
         props.editor.setType(type)
@@ -77,6 +82,7 @@ export function AudioTrackEditorView(props: {
                         <Button onClick={onSetUrl}>Set url</Button>
                     </>
             }
+            <Toggle value={enabled} onChange={enabled => mixer.audio.setEnabled(enabled)} />
         </TrackEditorHead>
 
         <TrackEditorContent time={props.time}>
@@ -86,6 +92,7 @@ export function AudioTrackEditorView(props: {
                         time={track.time}
                         duration={track.duration}
                         tempo={props.tempoTrack.track}
+                        waveform={audioWaveform?.audioWaveform ?? null}
                     /> :
                     undefined
             }
@@ -94,7 +101,12 @@ export function AudioTrackEditorView(props: {
     </TrackEditorView>
 }
 
-function AudioView(props: { time: number, duration: number, tempo: TempoTrack }) {
+function AudioView(props: {
+    time: number,
+    duration: number,
+    tempo: TempoTrack,
+    waveform: string | null
+}) {
     const ticks = props.tempo.ticksFromSeconds(props.time)
     const duration = props.tempo.ticksFromSeconds(props.duration, ticks)
 
@@ -102,9 +114,15 @@ function AudioView(props: { time: number, duration: number, tempo: TempoTrack })
         className="AudioView"
         style={{
             "--ticks": ticks,
-            "--duration": duration
+            "--duration": duration,
         } as CSSProperties}
-    ></div>
+    >
+        {
+            props.waveform !== null ?
+                <img src={props.waveform} /> :
+                undefined
+        }
+    </div>
 }
 
 

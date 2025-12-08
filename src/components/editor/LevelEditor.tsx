@@ -55,7 +55,7 @@ export class LevelEditor extends Component {
 
             if (!this._patternWindow) {
                 const window = windowManager.add(
-                    "Pattern editor",
+                    { name: "Pattern editor" },
                     () => <PatternEditorView editor={editor} player={this.player} />
                 )
 

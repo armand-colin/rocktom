@@ -4,43 +4,29 @@ import sound from "../assets/sounds/metronome-click.mp3"
 import { SoundEngine } from "../resources/SoundEngine";
 import type { TempoTrack } from "../sound/song/TempoTrack";
 import type { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode";
-import type { GainSoundNode } from "../sound/node/GainSoundNode";
+import { Mixer } from "../resources/Mixer";
 
 export class Metronome extends Component {
 
     // Offset from the audio sample
     static offsetSeconds = 0.04
 
-    private _volume = 1.0
     private _tempoTrack: TempoTrack
     private _soundEngine: SoundEngine
 
     private _audio: HTMLAudioElement
     private _node: AudioElementSoundNode
-    private _gain: GainSoundNode
-
 
     constructor(engine: Engine, tempoTrack: TempoTrack) {
         super(engine)
         this._tempoTrack = tempoTrack
 
         this._audio = new Audio(sound)
-
         this._soundEngine = this.engine.getResource(SoundEngine)
 
         this._node = this._soundEngine.createAudioElementNode(this._audio)
-        this._gain = this._soundEngine.createGainNode()
-        this._node.connect(this._gain)
-        this._gain.connect(this._soundEngine.output)
-    }
-
-    get volume() {
-        return this._volume
-    }
-
-    set volume(value: number) {
-        this._volume = value
-        this._gain.gain = value
+        const mixer = this.engine.getResource(Mixer)
+        mixer.metronome.connect(this._node)
     }
 
     update(ticks: number, speed: number) {
@@ -72,12 +58,12 @@ export class Metronome extends Component {
         // Play click sound
         this._audio.currentTime = 0
         this._audio.play()
+        
     }
 
     destroy(): void {
         super.destroy()
         this._node.disconnect()
-        this._gain.disconnect()
         this._audio.pause()
     }
 }

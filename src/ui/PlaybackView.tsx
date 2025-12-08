@@ -14,6 +14,7 @@ import { Tempo } from "../sound/Tempo";
 import { PlaybackProgressView } from "./PlaybackProgressView";
 import { State } from "../resources/State";
 import type { Time } from "../components/Time";
+import { Mixer } from "../resources/Mixer";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -61,7 +62,10 @@ export function PlaybackView(props: { playback: Playback }) {
 function PlaybackControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const state = engine.getResource(State)
-    const { metronomeEnabled, metronomeVolume, playing } = useComponent(props.playback)
+    const mixer = engine.getResource(Mixer)
+    
+    const { playing } = useComponent(props.playback)
+    const { enabled: metronomeEnabled, volume: metronomeVolume } = useComponent(mixer.metronome)
 
     return (
         <div className="PlaybackControls">
@@ -94,14 +98,14 @@ function PlaybackControls(props: { playback: Playback }) {
                             <label>
                                 Metronome <Toggle
                                     value={metronomeEnabled}
-                                    onChange={v => { props.playback.metronomeEnabled = v }}
+                                    onChange={v => mixer.metronome.setEnabled(v)}
                                 />
                             </label>
                             <Slider
                                 min={0}
                                 max={1}
                                 value={metronomeVolume}
-                                onChange={v => { props.playback.metronomeVolume = v }}
+                                onChange={v => mixer.metronome.setVolume(v)}
                                 disabled={!metronomeEnabled}
                             />
                         </div>

@@ -1,21 +1,17 @@
 import { Engine, Resource } from "@niloc/ecs";
 import { LevelEditor } from "../components/editor/LevelEditor";
 import { Level } from "../sound/Level";
-import { SoundEngine } from "./SoundEngine";
 import type { LiveInstrument } from "../components/LiveInstrument";
 import type { Playback } from "../components/Playback";
 
 export class State extends Resource {
 
-    private _soundEngine: SoundEngine
     private _instrument: LiveInstrument | null = null
-
     private _editor: LevelEditor | null = null
     private _playback: Playback | null = null
 
     constructor(engine: Engine) {
         super(engine)
-        this._soundEngine = this.engine.getResource(SoundEngine)
     }
 
     get editor() {
@@ -47,9 +43,6 @@ export class State extends Resource {
             this._instrument.destroy()
 
         this._instrument = instrument
-
-        if (instrument)
-            instrument.output.connect(this._soundEngine.output)
 
         this.changed()
     }

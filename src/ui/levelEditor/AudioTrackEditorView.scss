@@ -4,7 +4,12 @@
         height: 100%;
         width: calc(var(--duration) * var(--ratio) * 1px);
         left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
-        background: var(--primary);
+        background: var(--waveform, var(--primary));
         border-radius: 4px;
+        img {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
     }
 }

@@ -38,7 +38,17 @@ export class WindowManager extends Resource {
         return this._windowSize
     }
 
-    add(name: string, render: (close: () => void) => ReactNode) {
+    add(
+        opts: {
+            name: string,
+            id?: string,
+        },
+        render: (close: () => void) => ReactNode
+    ): Window {
+        const index = opts.id ? this._windows.findIndex(w => w.id === opts.id) : -1
+        if (index !== -1)
+            return this._windows[index]
+
         const id = nanoid()
         const close = () => this._close(id)
         const content = render(close)
@@ -49,7 +59,7 @@ export class WindowManager extends Resource {
             size: { x: 400, y: 300 },
             close,
             content,
-            name,
+            name: opts.name,
             events: new Emitter()
         }
 

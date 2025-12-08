@@ -1,14 +1,13 @@
 import { Component, Engine } from "@niloc/ecs";
 import type { AudioPlayer } from "../core/AudioPlayer";
-import { GainSoundNode } from "../sound/node/GainSoundNode";
 import { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode";
 import { SoundEngine } from "../resources/SoundEngine";
 import { Duration, Emitter } from "@niloc/utils";
+import { Mixer } from "../resources/Mixer";
 
 export class UrlAudioPlayer extends Component implements AudioPlayer {
 
     private _audio: HTMLAudioElement
-    private _gain: GainSoundNode
     private _node: AudioElementSoundNode
     private _scheduledPlay: number | null = null
     private _loaded = false
@@ -19,10 +18,10 @@ export class UrlAudioPlayer extends Component implements AudioPlayer {
         super(engine)
         this._audio = new Audio(url)
         const soundEngine = engine.getResource(SoundEngine)
-        this._gain = soundEngine.createGainNode()
         this._node = soundEngine.createAudioElementNode(this._audio)
-        this._node.connect(this._gain)
-        this._gain.connect(soundEngine.output)
+
+        const mixer = engine.getResource(Mixer)
+        mixer.audio.connect(this._node)
 
         this._audio.addEventListener('loadeddata', () => {
             this._loaded = true
@@ -58,7 +57,7 @@ export class UrlAudioPlayer extends Component implements AudioPlayer {
     }
 
     setVolume(volume: number): void {
-        this._gain.gain = volume
+        this.engine.getResource(Mixer).audio.setVolume(volume)
     }
 
     schedulePlay(playAfter: Duration): void {
@@ -80,7 +79,6 @@ export class UrlAudioPlayer extends Component implements AudioPlayer {
         this.pause()
         this._audio.remove()
         this._node.disconnect()
-        this._gain.disconnect()
         this.destroy()
     }
 
