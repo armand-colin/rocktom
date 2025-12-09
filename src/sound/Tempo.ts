@@ -1,3 +1,7 @@
+export type SerializedTempo = {
+    bpm: number
+}
+
 export class Tempo {
 
     public static PPQ = 96
@@ -33,10 +37,20 @@ export class Tempo {
         const microseconds = beats * this._microsecondsPerBeat
         return microseconds / 1_000_000
     }
-    
+
     ticksFromSeconds(seconds: number) {
         const beat = (seconds * 1_000_000) / this._microsecondsPerBeat
         return (beat * Tempo.PPQ) | 0
+    }
+
+    serialize(): SerializedTempo {
+        return {
+            bpm: this.bpm
+        }
+    }
+
+    static deserialize(data: SerializedTempo): Tempo {
+        return new Tempo(data.bpm)
     }
 
 }

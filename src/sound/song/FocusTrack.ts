@@ -8,6 +8,11 @@ export type FocusEvent = {
     focus: Focus
 }
 
+export type SerializedFocusTrack = {
+    initialFocus: Focus,
+    events: FocusEvent[]
+}
+
 export class FocusTrack {
 
     readonly initialFocus: Focus
@@ -46,12 +51,24 @@ export class FocusTrack {
         for (const event of this.events) {
             if (event.time > tick)
                 break
-            
+
             lastEvent = event
         }
 
         return lastEvent
     }
+
+    serialize(): SerializedFocusTrack {
+        return {
+            initialFocus: { ...this.initialFocus },
+            events: this.events.map(e => ({ ...e }))
+        }
+    }
+
+    static deserialize(data: SerializedFocusTrack): FocusTrack {
+        return new FocusTrack(data.initialFocus, data.events.map(e => ({ ...e })))
+    }
+
 }
 
 export class FocusTrackBuilder {

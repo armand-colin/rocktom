@@ -1,25 +1,12 @@
 import { useComponent } from "@niloc/ecs-react";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
-import { lerp } from "three/src/math/MathUtils.js";
 import type { EditorPlayer } from "../../../components/editor/EditorPlayer";
 import type { TimeTransform } from "../../../components/editor/TimeTransform";
 import type { Time } from "../../../components/Time";
-import { Tempo } from "../../../sound/Tempo";
 import { TrackEditorContent, TrackEditorView } from "../TrackEditorView";
 import "./TimeTransformView.scss";
 
 export const TimeTransformContainerId = "TimeTransformContainer";
-
-
-function formatBars(ticks: number): string {
-    const bars = Math.trunc(ticks / Tempo.bars(1))
-    const beats = Math.trunc((ticks % Tempo.bars(1)) / Tempo.beats(1))
-    if (beats > 0) {
-        return `${bars}:${beats}`
-    } else {
-        return `${bars}`
-    }
-}
 
 export function TimeTransformView(props: {
     transform: TimeTransform,
@@ -28,7 +15,7 @@ export function TimeTransformView(props: {
 }) {
     const ref = useRef<HTMLDivElement | null>(null)
     const [width, setWidth] = useState(100)
-    const { ratio, offset, hardOffset } = useComponent(props.transform)
+    const { ratio, offset } = useComponent(props.transform)
 
     function onRef(el: HTMLDivElement | null) {
         ref.current = el
@@ -49,30 +36,15 @@ export function TimeTransformView(props: {
 
     const markers = useMemo(() => {
         const markers: ReactNode[] = []
-        let step = Tempo.bars(1)
 
-        while (step * ratio > 400) {
-            step /= 2
-        }
-
-        while (step * ratio < 150) {
-            step *= 2
-        }
-
-        let { start, end } = props.transform.getBounds(width)
-        start = start - (start % step)
-        end = end + (step - (end % step))
-
-        let i = start
-        while (i < end) {
+        for (const marker of props.transform.getMarkers(width)) {
             markers.push(<div
-                key={i}
+                key={marker.ticks}
                 className="marker"
-                style={{ "--ticks": i } as CSSProperties}
+                style={{ "--ticks": marker.ticks } as CSSProperties}
             >
-                {formatBars(i)}
+                {marker.name}
             </div>)
-            i += step
         }
 
         return markers
@@ -85,13 +57,10 @@ export function TimeTransformView(props: {
 
         const rect = div.getBoundingClientRect()
         const mouseX = e.clientX - rect.left
-        const mouseT = mouseX / rect.width
-        const { start, end } = props.transform.getBounds(rect.width)
-        let targetTicks = lerp(start, end, mouseT)
-        targetTicks = props.transform.magnetize(targetTicks)
-        targetTicks = targetTicks + hardOffset
+        const mouseTicks = mouseX / props.transform.ratio
+        const ticks = props.transform.getTicksAt(mouseTicks)
 
-        props.player.seekTicks(targetTicks)
+        props.player.seekTicks(ticks)
     }
 
     return <TrackEditorView

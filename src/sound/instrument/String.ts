@@ -1,4 +1,5 @@
 import type { Color } from "three"
+import { Rules } from "../../3d/Rules"
 import { Note } from "../note/Note"
 
 export class String {
@@ -11,11 +12,11 @@ export class String {
     readonly highlightColor: Color
 
     constructor(
-        index: number, 
+        index: number,
         t: number,
-        name: string, 
-        note: Note, 
-        color: Color, 
+        name: string,
+        note: Note,
+        color: Color,
         highlightColor: Color
     ) {
         this.index = index
@@ -28,6 +29,10 @@ export class String {
 
     fret(fret: number): Note {
         return Note.fromIndex(this.note.index + fret)
+    }
+
+    canPlay(note: Note): boolean {
+        return note.index >= this.note.index && this.note.index - note.index <= Rules.maxFret
     }
 
 }

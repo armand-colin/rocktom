@@ -6,11 +6,13 @@ import { Schedules } from "../../Schedules";
 import type { Level } from "../../sound/Level";
 import { Metronome } from "../Metronome";
 import { Time } from "../Time";
+import type { VirtualBass } from "../VirtualBass";
 
 export class EditorPlayer extends Component {
 
     readonly level: Level
     readonly time: Time
+    readonly virtualBass: VirtualBass
 
     private _updateCoroutine: Coroutine | null = null
     private _audioPlayer: AudioPlayer
@@ -18,10 +20,11 @@ export class EditorPlayer extends Component {
     private _metronome: Metronome
     private _previousSeek: number = 0
 
-    constructor(engine: Engine, level: Level) {
+    constructor(engine: Engine, level: Level, virtualBass: VirtualBass) {
         super(engine)
         this.level = level
         this.time = engine.createComponent(Time, level.tempoTrack.getTempoAt(0))
+        this.virtualBass = virtualBass
 
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
         this._audioPlayer = AudioPlayerFactory.create(
@@ -134,7 +137,7 @@ export class EditorPlayer extends Component {
             this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
 
             this._metronome.update(ticks, 1)
-            
+
             lastUpdate = now
 
             yield Schedules.Frame

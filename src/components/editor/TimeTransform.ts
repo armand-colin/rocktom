@@ -3,12 +3,18 @@ import { lerp } from "three/src/math/MathUtils.js";
 import { Tempo } from "../../sound/Tempo";
 import { OS } from "../../utils/OS";
 
+export type TimeMarker = {
+    ticks: number,
+    name: string,
+    type: "bar" | "beat" | "other"
+}
+
 export class TimeTransform extends Component {
 
     private _ratio: number = 1
     private _offset: number = 0
     private _hardOffset: number = 0
-    private _step: number | null = Tempo.beats(1)
+    private _step: number | null = Tempo.beats(1 / 4)
 
     constructor(engine: Engine) {
         super(engine)
@@ -38,14 +44,37 @@ export class TimeTransform extends Component {
             return max
     }
 
-    getBounds(pixels: number): { start: number, end: number } {
-        // Start is -offset
-        const start = -this._offset
-        const end = -this._offset + pixels / this._ratio
+    getTicksAt(ticks: number) {
+        let targetTicks = ticks - this._offset - this._hardOffset
+        targetTicks = this.magnetize(targetTicks)
+        return targetTicks
+    }
 
-        return {
-            start,
-            end
+    *getMarkers(pixelWidth: number, minSpace: number = 150, maxSpace: number = 400): IterableIterator<TimeMarker> {
+        let start = -this._offset
+        let end = -this._offset + pixelWidth / this._ratio
+        let step = Tempo.bars(1)
+
+        while (step * this.ratio > maxSpace) {
+            step /= 2
+        }
+
+        while (step * this.ratio < minSpace) {
+            step *= 2
+        }
+
+        start = start - (start % step)
+        end = end - (end % step) + step
+
+        let i = start
+        while (i < end) {
+            yield {
+                ticks: i,
+                name: Math.trunc(i / Tempo.bars(1)).toString(),
+                type: i % Tempo.bars(1) === 0 ? "bar" : i % Tempo.beats(1) === 0 ? "beat" : "other"
+            }
+
+            i += step
         }
     }
 

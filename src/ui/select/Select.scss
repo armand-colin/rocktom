@@ -38,6 +38,7 @@
         background: var(--surface);
         padding-top: 4px;
         border-radius: 0 0 4px 4px;
+        z-index: 2;
 
         .option {
             cursor: pointer;

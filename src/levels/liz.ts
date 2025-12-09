@@ -91,7 +91,6 @@ export function liz(): Level {
         id: "remi-wolf-liz",
         name: "Liz",
         author: "Remi Wolf",
-        instrument: instrument,
         tracks: {
             audio: new AudioTrack({
                 type: AudioType.YouTube,

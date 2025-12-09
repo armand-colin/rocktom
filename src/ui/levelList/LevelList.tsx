@@ -1,3 +1,5 @@
+import { useResource } from "@niloc/ecs-react";
+import { LevelStorage } from "../../resources/LevelStorage";
 import type { Level } from "../../sound/Level";
 import { Button } from "../button/Button";
 import { LiveInstrumentView } from "../liveInstrument/LiveInstrumentView";
@@ -8,12 +10,13 @@ function formatSeconds(seconds: number) {
     const secs = (seconds % 60) | 0
     return `${minutes}:${secs.toString().padStart(2, '0')}`
 }
-export function LevelList(props: { 
-    levels: Level[], 
-    onSelect: (level: Level) => void, 
+export function LevelList(props: {
+    onSelect: (level: Level) => void,
     onEdit: (level: Level) => void,
-    onCreate: () => void 
+    onCreate: () => void
 }) {
+    const { levels } = useResource(LevelStorage)
+
     return <div className="LevelList">
         <h1>Rocktom</h1>
         <h2>List of available songs</h2>
@@ -21,13 +24,14 @@ export function LevelList(props: {
         <Button onClick={props.onCreate}>Create</Button>
         <ul>
             {
-                props.levels.map((level, i) => (
+                levels.map((level) => (
                     <li
-                        key={i}
+                        key={level.id}
                         onClick={() => props.onSelect(level)}
                     >
                         <p>{level.name} by {level.author}</p>
                         <small>{formatSeconds(level.durationInSeconds | 0)}</small>
+
                         <Button onClick={(e) => {
                             e.stopPropagation()
                             props.onEdit(level)

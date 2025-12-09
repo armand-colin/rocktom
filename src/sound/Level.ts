@@ -1,11 +1,23 @@
 import { nanoid } from "nanoid";
 import type { Instrument } from "./instrument/Instrument";
-import { AudioTrack, AudioType } from "./song/AudioTrack";
+import { AudioTrack, AudioType, type SerializedAudioTrack } from "./song/AudioTrack";
 import { Focus } from "./song/Focus";
-import { FocusTrack } from "./song/FocusTrack";
-import { NoteTrack } from "./song/NoteTrack";
-import { TempoTrack } from "./song/TempoTrack";
+import { FocusTrack, type SerializedFocusTrack } from "./song/FocusTrack";
+import { NoteTrack, type SerializedNoteTrack } from "./song/NoteTrack";
+import { TempoTrack, type SerializedTempoTrack } from "./song/TempoTrack";
 import { Tempo } from "./Tempo";
+
+type SerializedLevel = {
+    id: string,
+    name: string,
+    author: string,
+    tracks: {
+        note: SerializedNoteTrack,
+        audio: SerializedAudioTrack,
+        tempo: SerializedTempoTrack,
+        focus: SerializedFocusTrack
+    }
+}
 
 export class Level {
 
@@ -22,7 +34,6 @@ export class Level {
         return new Level({
             name: "New Level",
             author: "Unknown",
-            instrument,
             tracks: {
                 note: new NoteTrack(instrument, [], []),
                 audio: new AudioTrack({ type: AudioType.None }, 0, 0),
@@ -36,7 +47,6 @@ export class Level {
         id?: string,
         name: string,
         author: string,
-        instrument: Instrument,
         tracks: {
             note: NoteTrack,
             audio: AudioTrack,
@@ -64,6 +74,34 @@ export class Level {
 
     get durationInSeconds(): number {
         return this.tempoTrack.secondsFromTicks(this.durationInTicks)
+    }
+
+    serialize(): SerializedLevel {
+        return {
+            id: this.id,
+            name: this.name,
+            author: this.author,
+            tracks: {
+                note: this.noteTrack.serialize(),
+                audio: this.audioTrack.serialize(),
+                tempo: this.tempoTrack.serialize(),
+                focus: this.focusTrack.serialize()
+            }
+        }
+    }
+
+    static deserialize(data: SerializedLevel): Level {
+        return new Level({
+            id: data.id,
+            name: data.name,
+            author: data.author,
+            tracks: {
+                note: NoteTrack.deserialize(data.tracks.note),
+                audio: AudioTrack.deserialize(data.tracks.audio),
+                tempo: TempoTrack.deserialize(data.tracks.tempo),
+                focus: FocusTrack.deserialize(data.tracks.focus)
+            }
+        })
     }
 
 }

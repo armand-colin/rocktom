@@ -1,19 +1,63 @@
 import { nanoid } from "nanoid"
-import type { Instrument } from "../instrument/Instrument"
+import { Instrument, type InstrumentType } from "../instrument/Instrument"
 import type { String } from "../instrument/String"
-import { NoteEvent, type NoteSlide } from "./NoteEvent"
+import { NoteEvent, type NoteSlide, type SerializedNoteEvent } from "./NoteEvent"
+
+export type SerializedTimedPattern = {
+    id: string,
+    time: number,
+    patternId: string,
+    duration: number
+}
 
 export class TimedPattern {
 
     readonly id: string
     time: number
     pattern: Pattern
+    duration: number
 
-    constructor(opts: { id?: string, time: number, pattern: Pattern }) {
+    constructor(opts: {
+        id?: string,
+        time: number,
+        pattern: Pattern,
+        duration?: number
+    }) {
         this.id = opts.id ?? nanoid()
         this.time = opts.time
         this.pattern = opts.pattern
+        this.duration = opts.duration ?? this.pattern.duration
     }
+
+    serialize(): SerializedTimedPattern {
+        return {
+            id: this.id,
+            time: this.time,
+            patternId: this.pattern.id,
+            duration: this.duration
+        }
+    }
+
+    static deserialize(data: SerializedTimedPattern, patterns: Map<string, Pattern>): TimedPattern {
+        const pattern = patterns.get(data.patternId)
+        if (!pattern)
+            throw new Error(`Pattern with ID ${data.patternId} not found during TimedPattern deserialization`)
+
+        return new TimedPattern({
+            id: data.id,
+            time: data.time,
+            pattern: pattern,
+            duration: data.duration
+        })
+    }
+
+}
+
+export type SerializedPattern = {
+    id: string,
+    name: string,
+    notes: SerializedNoteEvent[],
+    instrument: InstrumentType,
 }
 
 export class Pattern {
@@ -21,15 +65,21 @@ export class Pattern {
     readonly id: string
     readonly name: string
     readonly notes: NoteEvent[]
-    readonly duration: number
     readonly instrument: Instrument
 
-    constructor(opts: { name: string, instrument: Instrument, notes: NoteEvent[], duration: number, id?: string }) {
+    constructor(opts: { name: string, instrument: Instrument, notes: NoteEvent[], id?: string }) {
         this.id = opts.id ?? nanoid()
         this.name = opts.name
         this.notes = opts.notes
-        this.duration = opts.duration
         this.instrument = opts.instrument
+    }
+
+    get duration() {
+        if (this.notes.length === 0)
+            return 0
+
+        const lastNote = this.notes[this.notes.length - 1]
+        return lastNote.time + lastNote.duration
     }
 
     remove(noteId: string) {
@@ -39,6 +89,35 @@ export class Pattern {
 
         this.notes.splice(index, 1)
         return true
+    }
+
+    add(note: NoteEvent) {
+        // Sorted insert
+        for (let i = 0; i < this.notes.length; i++) {
+            if (this.notes[i].time > note.time) {
+                this.notes.splice(i, 0, note)
+                return
+            }
+        }
+        this.notes.push(note)
+    }
+
+    serialize(): SerializedPattern {
+        return {
+            id: this.id,
+            name: this.name,
+            notes: this.notes.map(n => NoteEvent.serialize(n)),
+            instrument: this.instrument.type
+        }
+    }
+
+    static deserialize(data: SerializedPattern): Pattern {
+        return new Pattern({
+            id: data.id,
+            name: data.name,
+            instrument: Instrument.fromType(data.instrument),
+            notes: data.notes.map(n => NoteEvent.deserialize(n, Instrument.fromType(data.instrument))),
+        })
     }
 
 }
@@ -108,7 +187,6 @@ export class PatternBuilder {
             instrument: this._instrument,
             name: this._name,
             notes: this._notes,
-            duration: this._time
         })
     }
 

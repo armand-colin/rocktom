@@ -1,8 +1,10 @@
 import { Component, Engine } from "@niloc/ecs";
+import { LevelStorage } from "../../resources/LevelStorage";
 import { WindowManager, type Window } from "../../resources/WindowManager";
 import type { Level } from "../../sound/Level";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { PatternEditorView } from "../../ui/levelEditor/PatternEditorView";
+import { VirtualBass } from "../VirtualBass";
 import { AudioTrackEditor } from "./AudioTrackEditor";
 import { EditorPlayer } from "./EditorPlayer";
 import { NoteTrackEditor } from "./NoteTrackEditor";
@@ -19,6 +21,8 @@ export class LevelEditor extends Component {
     readonly player: EditorPlayer
     readonly noteTrack: NoteTrackEditor
 
+    readonly virtualBass: VirtualBass
+
     private _pattern: PatternEditor | null = null
     private _patternWindow: Window | null = null
 
@@ -28,8 +32,10 @@ export class LevelEditor extends Component {
         this.tempoTrack = engine.createComponent(TempoTrackEditor, level.tempoTrack)
         this.timeTransform = engine.createComponent(TimeTransform)
         this.audioTrack = engine.createComponent(AudioTrackEditor, level.audioTrack)
-        this.player = engine.createComponent(EditorPlayer, level)
-        this.noteTrack = engine.createComponent(NoteTrackEditor, level.noteTrack)
+
+        this.virtualBass = engine.createComponent(VirtualBass)
+        this.player = engine.createComponent(EditorPlayer, level, this.virtualBass)
+        this.noteTrack = engine.createComponent(NoteTrackEditor, level.noteTrack, this.virtualBass)
 
         this.audioTrack.onChange(() => {
             this.player.refreshAudioPlayer()
@@ -48,7 +54,7 @@ export class LevelEditor extends Component {
         this._pattern = null
 
         if (pattern) {
-            const editor = this.engine.createComponent(PatternEditor, pattern) as PatternEditor
+            const editor = this.engine.createComponent(PatternEditor, pattern, this.virtualBass) as PatternEditor
             this._pattern = editor
 
             const windowManager = this.engine.getResource(WindowManager)
@@ -91,6 +97,11 @@ export class LevelEditor extends Component {
 
     private _onWheel = (event: WheelEvent) => {
         event.preventDefault()
+    }
+
+    save() {
+        const storage = this.engine.getResource(LevelStorage)
+        storage.save(this.level)
     }
 
     destroy() {

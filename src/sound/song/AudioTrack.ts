@@ -14,6 +14,12 @@ export type AudioTrackPayload = {
     type: AudioType.None,
 }
 
+export type SerializedAudioTrack = {
+    payload: AudioTrackPayload,
+    time: number,
+    duration: number
+}
+
 export class AudioTrack {
 
     payload: AudioTrackPayload
@@ -24,6 +30,18 @@ export class AudioTrack {
         this.payload = payload
         this.time = time
         this.duration = duration
+    }
+
+    serialize(): SerializedAudioTrack {
+        return {
+            payload: { ...this.payload },
+            time: this.time,
+            duration: this.duration
+        }
+    }
+
+    static deserialize(data: SerializedAudioTrack): AudioTrack {
+        return new AudioTrack(data.payload, data.time, data.duration)
     }
 
 }

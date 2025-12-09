@@ -2,18 +2,32 @@ import { Color } from "three"
 import { Note } from "../note/Note"
 import { String } from "./String"
 
+export enum InstrumentType {
+    Bass = "bass"
+}
+
 export class Instrument {
 
     public static String = String
 
     readonly name: string
     readonly strings: String[]
+    readonly type: InstrumentType
 
     private _lowestString: String
     private _highestString: String
 
-    constructor(name: string, strings: String[]) {
+    static fromType(type: InstrumentType): Instrument {
+        switch (type) {
+            case InstrumentType.Bass:
+                return new Bass()
+        }
+        throw new Error(`Unknown instrument type: ${type}`)
+    }
+
+    constructor(name: string, type: InstrumentType, strings: String[]) {
         this.name = name
+        this.type = type
         this.strings = strings
 
         let lowestString = strings[0]
@@ -48,12 +62,16 @@ export class Bass extends Instrument {
     static G = new String(3, 3 / 3, "G", Note.fromName("G", 2), new Color("#ff6a13"), new Color("rgba(255, 122, 13, 1)"))
 
     constructor() {
-        super("Bass", [
-            Bass.E,
-            Bass.A,
-            Bass.D,
-            Bass.G
-        ])
+        super(
+            "Bass",
+            InstrumentType.Bass,
+            [
+                Bass.E,
+                Bass.A,
+                Bass.D,
+                Bass.G
+            ]
+        )
     }
 
 }

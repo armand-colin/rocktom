@@ -1,12 +1,13 @@
 import { Engine, Resource } from "@niloc/ecs"
 import type { AudioRange } from "../sound/AudioRange"
 import { AudioBufferSoundNode } from "../sound/node/AudioBufferSoundNode"
+import { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode"
 import { DestinationSoundNode } from "../sound/node/DestinationSoundNode"
 import { GainSoundNode } from "../sound/node/GainSoundNode"
 import { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode"
+import { OscillatorSoundNode } from "../sound/node/OscillatorSoundNode"
 import { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode"
 import type { SoundNode } from "../sound/node/SoundNode"
-import { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode"
 
 export class SoundEngine extends Resource {
 
@@ -79,6 +80,12 @@ export class SoundEngine extends Resource {
 
     createAudioBuffer(buffer: ArrayBuffer) {
         return this._audioContext.decodeAudioData(buffer)
+    }
+
+    createOscillatorNode(): OscillatorSoundNode {
+        const node = new OscillatorSoundNode(this._audioContext)
+        this._nodes.push(node)
+        return node
     }
 
     resume() {

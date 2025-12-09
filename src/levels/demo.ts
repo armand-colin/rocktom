@@ -50,7 +50,6 @@ export function demo(): Level {
         id: "demo",
         name: "Demo",
         author: "Rocktom",
-        instrument: instrument,
         tracks: {
             audio: new AudioTrack({
                 type: AudioType.YouTube,

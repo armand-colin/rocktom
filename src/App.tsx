@@ -4,9 +4,6 @@ import { Playback } from './components/Playback'
 import { PlaybackView } from './ui/PlaybackView'
 
 import { EngineContext, useResource } from '@niloc/ecs-react'
-import { demo } from './levels/demo'
-import { liz } from './levels/liz'
-import { timeIsRunningOut } from './levels/timeIsRunningOut'
 import { SoundEngine } from './resources/SoundEngine'
 import { State } from './resources/State'
 import { Bass } from './sound/instrument/Instrument'
@@ -15,12 +12,6 @@ import { LevelEditorView } from './ui/levelEditor/LevelEditorView'
 import { LevelList } from './ui/levelList/LevelList'
 import { PopupManagerView } from './ui/popup/PopupManagerView'
 import { WindowManagerView } from './ui/window/WindowManagerView'
-
-const levels = [
-  liz(),
-  timeIsRunningOut(),
-  demo()
-]
 
 function App() {
   const { engine } = useContext(EngineContext)
@@ -44,7 +35,10 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div
+      className="App"
+      onContextMenu={e => e.preventDefault()}
+    >
       {
         editor ?
           <LevelEditorView editor={editor} /> :
@@ -52,7 +46,6 @@ function App() {
             <PlaybackView playback={playback} /> :
             <LevelList
               onSelect={onSelectLevel}
-              levels={levels}
               onCreate={onCreate}
               onEdit={level => state.editLevel(level)}
             />

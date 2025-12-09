@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid"
-import { Tempo } from "../Tempo"
+import { Tempo, type SerializedTempo } from "../Tempo"
 
 export type TempoEvent = {
     id: string,
@@ -8,14 +8,26 @@ export type TempoEvent = {
     tempo: Tempo
 }
 
+type SerializedTempoEvent = {
+    id: string,
+    ticks: number,
+    time: number,
+    tempo: SerializedTempo
+}
+
+export type SerializedTempoTrack = {
+    initialTempo: SerializedTempo,
+    events: SerializedTempoEvent[]
+}
+
 export class TempoTrack {
 
     initialTempo: Tempo
     events: TempoEvent[]
 
-    constructor(initialTempo: Tempo) {
+    constructor(initialTempo: Tempo, events?: TempoEvent[]) {
         this.initialTempo = initialTempo
-        this.events = []
+        this.events = events ?? []
     }
 
     static fromKeyframes(keyframes: { seconds: number, ticks: number }[]) {
@@ -182,6 +194,31 @@ export class TempoTrack {
         const deltaTicks = lastEvent.tempo.ticksFromSeconds(deltaSeconds)
 
         return lastEvent.ticks + deltaTicks - tickOffset
+    }
+
+    serialize(): SerializedTempoTrack {
+        return {
+            events: this.events.map(event => ({
+                id: event.id,
+                ticks: event.ticks,
+                time: event.time,
+                tempo: event.tempo.serialize()
+            })),
+            initialTempo: this.initialTempo.serialize()
+        }
+    }
+
+    static deserialize(data: SerializedTempoTrack): TempoTrack {
+        const initialTempo = Tempo.deserialize(data.initialTempo)
+        const events = data.events.map(eventData => ({
+            id: eventData.id,
+            ticks: eventData.ticks,
+            time: eventData.time,
+            tempo: Tempo.deserialize(eventData.tempo)
+        }))
+        const track = new TempoTrack(initialTempo, events)
+
+        return track
     }
 
 }

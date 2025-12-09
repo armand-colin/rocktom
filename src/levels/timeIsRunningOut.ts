@@ -287,7 +287,6 @@ export function timeIsRunningOut(): Level {
         id: "muse-time-is-running-out",
         name: "Time is Running Out",
         author: "Muse",
-        instrument: new Bass(),
         tracks: {
             audio: new AudioTrack({
                 type: AudioType.Url,

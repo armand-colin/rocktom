@@ -3,18 +3,18 @@ import { useContext, useEffect } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
 import { Input, InputManager } from "../../resources/InputManager";
+import { Mixer } from "../../resources/Mixer";
 import { State } from "../../resources/State";
+import { WindowManager } from "../../resources/WindowManager";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button } from "../button/Button";
+import { Icon } from "../icon/Icon";
+import { MixerView } from "../mixerView/MixerView";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
 import "./LevelEditorView.scss";
 import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
-import { Icon } from "../icon/Icon";
-import { Mixer } from "../../resources/Mixer";
-import { WindowManager } from "../../resources/WindowManager";
-import { MixerView } from "../mixerView/MixerView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const state = useResource(State)
@@ -41,7 +41,7 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
 
     function showMixer() {
         windowManager.add(
-            { name: "Mixer", id: "mixer" }, 
+            { name: "Mixer", id: "mixer" },
             () => <MixerView />
         )
     }
@@ -50,6 +50,7 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
         <div className="head">
             <Button onClick={() => state.editLevel(null)}>Back</Button>
             {props.editor.level.name}
+            <Button onClick={() => props.editor.save()}>Save</Button>
             <PlayerControls player={props.editor.player} />
             <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
             <SongEditorView editor={props.editor} />
@@ -67,7 +68,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
         <Button onClick={() => props.player.play()}>Play</Button>
         <Button onClick={() => props.player.pause()}>Pause</Button>
         <Button onClick={() => props.player.reset()}>Reset</Button>
-        <Button data-active={enabled} onClick={() => mixer.metronome.toggleEnabled()}><Icon name="acute"/></Button>
+        <Button data-active={enabled} onClick={() => mixer.metronome.toggleEnabled()}><Icon name="acute" /></Button>
     </div>
 }
 

@@ -1,15 +1,17 @@
 import { nanoid } from "nanoid";
-import type { Instrument } from "../instrument/Instrument";
+import { Instrument, type InstrumentType } from "../instrument/Instrument";
 import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Marker } from "./Marker";
-import type { Pattern } from "./Pattern";
+import { Pattern, TimedPattern, type SerializedPattern } from "./Pattern";
 import type { TempoTrack } from "./TempoTrack";
 
-export type TimedPattern = {
-    id: string,
-    time: number,
-    pattern: Pattern
+
+export type SerializedNoteTrack = {
+    instrument: InstrumentType,
+    patterns: SerializedPattern[],
+    timedPatterns: { id: string, patternId: string, ticks: number }[],
+    markers: Marker[]
 }
 
 export class NoteTrack {
@@ -58,6 +60,63 @@ export class NoteTrack {
         }
     }
 
+    addTimedPattern(timedPattern: TimedPattern) {
+        // Array is sorted, so sorted insert
+        let insertIndex = this.timedPatterns.findIndex(tp => tp.time > timedPattern.time)
+
+        if (insertIndex === -1)
+            insertIndex = this.timedPatterns.length
+
+        this.timedPatterns.splice(insertIndex, 0, timedPattern)
+    }
+
+    removeTimedPattern(id: string): boolean {
+        const index = this.timedPatterns.findIndex(tp => tp.id === id)
+        if (index === -1)
+            return false
+        this.timedPatterns.splice(index, 1)
+        return true
+    }
+
+    serialize(): SerializedNoteTrack {
+        return {
+            instrument: this.instrument.type,
+            patterns: Array.from(this.patterns.values()).map(p => p.serialize()),
+            markers: this.markers,
+            timedPatterns: this.timedPatterns.map(tp => ({
+                id: tp.id,
+                patternId: tp.pattern.id,
+                ticks: tp.time
+            }))
+        }
+    }
+
+    static deserialize(data: SerializedNoteTrack): NoteTrack {
+        const patternsMap = new Map<string, Pattern>()
+        for (const patternData of data.patterns) {
+            const pattern = Pattern.deserialize(patternData)
+            patternsMap.set(pattern.id, pattern)
+        }
+
+        const timedPatterns: TimedPattern[] = data.timedPatterns.map(tpData => {
+            const pattern = patternsMap.get(tpData.patternId)
+            if (!pattern)
+                throw new Error(`Pattern with id ${tpData.patternId} not found`)
+
+            return new TimedPattern({
+                id: tpData.id,
+                time: tpData.ticks,
+                pattern: pattern
+            })
+        })
+
+        return new NoteTrack(
+            Instrument.fromType(data.instrument),
+            timedPatterns,
+            data.markers
+        )
+    }
+
 }
 
 export class NoteTrackBuilder {
@@ -81,11 +140,12 @@ export class NoteTrackBuilder {
     }
 
     pattern(pattern: Pattern): this {
-        this._patterns.push({
+        this._patterns.push(new TimedPattern({
             id: nanoid(),
             time: this._time,
-            pattern: pattern
-        })
+            pattern: pattern,
+            duration: pattern.duration
+        }))
 
         this._time += pattern.duration
         return this

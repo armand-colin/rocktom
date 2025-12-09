@@ -12,6 +12,7 @@
         --note-height: calc(100% / var(--index-range));
         display: grid;
         grid-template-rows: 0fr 1fr;
+        background: var(--surface);
 
         > .TrackEditorView > .keyboard {
             position: relative;
@@ -27,7 +28,7 @@
                 height: var(--note-height);
                 width: 100%;
                 top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1) / var(--index-range) * 100%);
-                border-bottom: 1px solid var(--outline);
+                border-bottom: 1px solid var(--marker-beat);
             }
         }
 
@@ -51,8 +52,71 @@
             top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1) / var(--index-range) * 100%);
             background-color: var(--color);
             left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
-            width: max(calc(var(--duration) * var(--ratio) * 1px), 5px);
-            overflow: hidden;
+            width: calc(var(--duration) * var(--ratio) * 1px);
+            border-radius: 2px;
+
+            &[data-instant="true"] {
+                width: 6px;
+                left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px - 3px);
+            }
+
+            &[data-selected="true"] {
+                outline: 2px solid var(--outline);
+            }
+
+            .resizer {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: -2px;
+                width: 4px;
+                cursor: ew-resize;
+            }
+
+            > p {
+                overflow: hidden;
+            }
+
+            .fret-hint {
+                position: absolute;
+                right: calc(100% + 4px);
+                top: 0;
+                bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: var(--color);
+                z-index: 3;
+                color: white;
+                padding: 0 8px;
+                opacity: 0;
+            }
+
+            &:hover > .fret-hint {
+                opacity: 1;
+            }
+        }
+
+        .TimeMarkersView {
+            position: absolute;
+            inset: 0;
+
+            > .marker {
+                position: absolute;
+                bottom: 0;
+                top: 0;
+                width: 1px;
+                background: var(--marker);
+                left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px - 1px);
+
+                &[data-type="bar"] {
+                    background: var(--marker-bar);
+                    width: 1px;
+                }
+                &[data-type="beat"] {
+                    background: var(--marker-beat);
+                }
+            }
         }
     }
 }

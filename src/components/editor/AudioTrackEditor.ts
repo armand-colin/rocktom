@@ -10,6 +10,7 @@ type Waveform = {
 export class AudioTrackEditor extends Component {
 
     readonly track: AudioTrack
+
     private _audioWaveform: Waveform | null = null
 
 

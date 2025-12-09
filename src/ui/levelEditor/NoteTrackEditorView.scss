@@ -12,7 +12,6 @@
         grid-template-rows: 0fr 1fr;
         border-radius: 8px;
         outline: 1px solid var(--outline);
-        overflow: hidden;
 
         .head {
             padding: 4px 8px;
@@ -36,6 +35,15 @@
                 left: calc((var(--note-ticks) / var(--duration)) * 100%);
                 top: calc((var(--max-fret) - var(--note-fret)) / var(--fret-amplitude) * 100%);
             }
+        }
+
+        .resizer {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: -2px;
+            width: 4px;
+            cursor: ew-resize;
         }
     }
 }

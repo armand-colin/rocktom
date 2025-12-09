@@ -1,10 +1,17 @@
 import { useComponent } from "@niloc/ecs-react";
-import { useMemo, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { Rules } from "../../3d/Rules";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { PatternEditor } from "../../components/editor/PatternEditor";
+import type { TimeTransform } from "../../components/editor/TimeTransform";
+import type { VirtualBass } from "../../components/VirtualBass";
 import type { String } from "../../sound/instrument/String";
 import { Note } from "../../sound/note/Note";
+import type { Handler } from "../../utils/handlers/Handler";
+import { TimeMover } from "../../utils/handlers/TimeMover";
+import { TimeResizer } from "../../utils/handlers/TimeResizer";
+import { MouseButtons } from "../../utils/MouseButtons";
+import { Select } from "../select/Select";
 import "./PatternEditorView.scss";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
@@ -14,9 +21,28 @@ export function PatternEditorView(props: {
     player: EditorPlayer
 }) {
     const { pattern, string } = useComponent(props.editor)
+    const { elements: selection } = useComponent(props.editor.selection)
 
+    const notesRef = useRef<HTMLDivElement | null>(null)
     const minNote = pattern.instrument.lowestString.fret(0)
     const maxNote = pattern.instrument.highestString.fret(Rules.maxFret)
+
+    function stringUp() {
+        const string = props.editor.string
+        const index = (string.index + 1) % props.editor.pattern.instrument.strings.length
+        const newString = props.editor.pattern.instrument.strings[index]
+
+        if (newString)
+            props.editor.setString(newString)
+    }
+
+    function onMouseDown(e: MouseEvent) {
+        if (e.buttons === MouseButtons.Middle) {
+            e.preventDefault()
+            e.stopPropagation()
+            stringUp()
+        }
+    }
 
     const notes = useMemo(() => {
         const notes = []
@@ -26,9 +52,50 @@ export function PatternEditorView(props: {
         return notes
     }, [minNote, maxNote])
 
-    return <div className="PatternEditorView">
+    function onNotesClick(e: MouseEvent) {
+        if (!notesRef.current)
+            return
+
+        if (e.buttons !== MouseButtons.Left)
+            return
+
+        // Shall find ticks and note
+        const rect = notesRef.current.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+        const ticks = props.editor.transform.magnetize(mouseX / props.editor.transform.ratio - props.editor.transform.offset)
+        const noteIndex = Math.round(((1 - (mouseY / rect.height)) * (maxNote.index - minNote.index - 1)) + minNote.index)
+        const fret = noteIndex - string.note.index
+
+        if (fret < 0 || fret > Rules.maxFret) {
+            // Find closest string that matches
+            const strings = props.editor.pattern.instrument.strings
+            for (const s of strings) {
+                const f = noteIndex - s.note.index
+                if (f >= 0 && f <= Rules.maxFret) {
+                    props.editor.addNote(s, f, ticks)
+                    return
+                }
+            }
+        }
+
+        props.editor.addNote(string, fret, ticks)
+    }
+
+    return <div
+        className="PatternEditorView"
+        onMouseDown={onMouseDown}
+    >
         <div className="head">
             {pattern.name}
+            <Select
+                value={string.index ?? -1}
+                onChange={index => props.editor.setString(props.editor.pattern.instrument.strings[index])}
+                options={props.editor.pattern.instrument.strings.map(string => ({
+                    label: string.name,
+                    value: string.index
+                }))}
+            />
         </div>
         <div
             className="body"
@@ -60,13 +127,17 @@ export function PatternEditorView(props: {
                             key={note.index}
                             note={note}
                             string={string}
+                            instrument={props.editor.virtualBass}
                         />)
                     }
                 </TrackEditorHead>
                 <TrackEditorContent
                     time={props.player.time}
                     className="notes"
+                    ref={notesRef}
+                    onMouseDown={onNotesClick}
                 >
+                    <TimeMarkersView transform={props.editor.transform} />
                     {
                         notes.map(note => <div
                             className="shadow-note"
@@ -85,6 +156,7 @@ export function PatternEditorView(props: {
                             time={note.time}
                             duration={note.duration}
                             editor={props.editor}
+                            selected={selection.includes(note)}
                         />)
                     }
                 </TrackEditorContent>
@@ -93,7 +165,21 @@ export function PatternEditorView(props: {
     </div >
 }
 
-function KeyboardNoteView(props: { note: Note, string: String }) {
+function KeyboardNoteView(props: { note: Note, string: String, instrument: VirtualBass }) {
+    function play(e: MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (e.buttons === MouseButtons.Left)
+            props.instrument.playNote(props.note)
+    }
+
+    function stop(e: MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+        props.instrument.stopNote(props.note)
+    }
+
     return <div
         className="KeyboardNoteView"
         data-available={props.note.index >= props.string.note.index && props.note.index <= props.string.fret(Rules.maxFret).index}
@@ -101,6 +187,11 @@ function KeyboardNoteView(props: { note: Note, string: String }) {
             "--index": props.note.index,
             "--color": "#" + props.string.color.getHexString(),
         } as CSSProperties}
+
+        onMouseDown={play}
+        onMouseUp={stop}
+        onMouseLeave={stop}
+        onMouseEnter={play}
     >
         {props.note.name}{props.note.octave}
     </div>
@@ -112,9 +203,11 @@ function NoteView(props: {
     fret: number,
     time: number,
     duration: number,
-    editor: PatternEditor
+    editor: PatternEditor,
+    selected: boolean
 }) {
     const note = props.string.fret(props.fret)
+    const handler = useRef<Handler | null>(null)
 
     function onContextMenu(e: React.MouseEvent<HTMLDivElement>) {
         e.stopPropagation()
@@ -124,14 +217,78 @@ function NoteView(props: {
 
     function onEnter(e: React.MouseEvent<HTMLDivElement>) {
         // if right click is pressed while entering
-        if (e.buttons & 2) {
+        if (e.buttons & MouseButtons.Right) {
             e.preventDefault()
             props.editor.removeNote(props.id)
         }
     }
 
+    function onResize(e: MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        if (e.buttons === MouseButtons.Left) {
+            handler.current?.destroy()
+
+            const resizer = new TimeResizer({
+                event: e.nativeEvent,
+                duration: props.duration,
+                transform: props.editor.transform,
+            })
+
+            resizer.events.on("changed", duration => props.editor.setNoteDuration(props.id, duration))
+
+            handler.current = resizer
+        }
+    }
+
+    function onMouseDown(e: MouseEvent) {
+        if (e.buttons === MouseButtons.Middle) {
+            e.preventDefault()
+            e.stopPropagation()
+
+            const string = props.string
+            const note = props.string.fret(props.fret)
+
+            for (let i = 1; i < props.editor.pattern.instrument.strings.length; i++) {
+                const index = (string.index + i) % props.editor.pattern.instrument.strings.length
+                const newString = props.editor.pattern.instrument.strings[index]
+                if (newString.canPlay(note)) {
+                    props.editor.setNoteString(props.id, newString)
+                    return
+                }
+            }
+        }
+
+        if (e.buttons === MouseButtons.Left) {
+            e.preventDefault()
+            e.stopPropagation()
+            handler.current?.destroy()
+
+            const mover = new TimeMover({
+                event: e.nativeEvent,
+                startTicks: props.time,
+                transform: props.editor.transform,
+                minTicks: 0
+            })
+
+            mover.events.on("change", time => props.editor.setNoteTime(props.id, time))
+
+            handler.current = mover
+        }
+    }
+
+    useEffect(() => {
+        return () => {
+            handler.current?.destroy()
+            handler.current = null
+        }
+    }, [])
+
     return <div
         className="NoteView"
+        data-instant={props.duration === 0}
+        data-selected={props.selected}
         style={{
             "--color": "#" + props.string.color.getHexString(),
             "--index": note.index,
@@ -140,7 +297,64 @@ function NoteView(props: {
         } as CSSProperties}
         onContextMenu={onContextMenu}
         onMouseEnter={onEnter}
+        onMouseDown={onMouseDown}
     >
-        {note.name}{note.octave}
+        <p>{note.name}{note.octave}</p>
+        <div className="fret-hint">{props.fret}</div>
+        <div className="resizer" onMouseDown={onResize}></div>
+    </div>
+}
+
+function TimeMarkersView(props: { transform: TimeTransform }) {
+    const { offset, ratio } = useComponent(props.transform)
+    const [width, setWidth] = useState(100)
+    const ref = useRef<HTMLElement | null>(null)
+    const observer = useRef<ResizeObserver | null>(null)
+
+    function onRef(e: HTMLElement | null) {
+        if (!observer.current) {
+            observer.current = new ResizeObserver(() => {
+                if (ref.current)
+                    setWidth(ref.current.clientWidth)
+            })
+        }
+
+        observer.current.disconnect()
+
+        if (e) {
+            ref.current = e
+            observer.current.observe(e)
+            setWidth(e.clientWidth)
+        }
+    }
+
+    useEffect(() => {
+        return () => {
+            observer.current?.disconnect()
+            observer.current = null
+        }
+    }, [])
+
+    const markers = useMemo(() => {
+        const markers = []
+
+        for (const marker of props.transform.getMarkers(width, 20, 50)) {
+            markers.push(<div
+                className="marker"
+                data-type={marker.type}
+                style={{
+                    "--ticks": marker.ticks
+                } as CSSProperties}
+            ></div>)
+        }
+
+        return markers
+    }, [offset, ratio, width])
+
+    return <div
+        className="TimeMarkersView"
+        ref={onRef}
+    >
+        {markers}
     </div>
 }
