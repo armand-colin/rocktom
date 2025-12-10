@@ -22,6 +22,8 @@
             left: 0;
             top: 1px;
             transform: translateX(-50%);
+            user-select: none;
+            cursor: ew-resize;
 
             .NumberInput {
                 width: 100px;

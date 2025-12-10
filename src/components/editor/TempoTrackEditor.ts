@@ -18,13 +18,7 @@ export class TempoTrackEditor extends Component {
     }
 
     addEvent(ticks: number) {
-        console.log('adding event', ticks / Tempo.bars(1), this.track.events.length)
-
-        // Shall get last event index
         this.track.insert(ticks)
-
-        console.log('after insert', this.track.events.length)
-        
         this.changed()
     }
 

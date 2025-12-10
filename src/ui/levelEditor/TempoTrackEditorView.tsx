@@ -1,11 +1,14 @@
 import { useComponent } from "@niloc/ecs-react";
-import { useState, type CSSProperties, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { Time } from "../../components/Time";
 import { NumberInput } from "../input/NumberInput";
 import "./TempoTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
+import { Slider } from "../../utils/Slider";
+import type { TempoEvent } from "../../sound/song/TempoTrack";
+import type { Handler } from "../../utils/handlers/Handler";
 
 export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: Time }) {
     const { track } = useComponent(props.editor)
@@ -41,11 +44,13 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
             time={props.time}
         >
             {
-                track.events.map(event => <EventView
+                track.events.map((event, i) => <EventView
                     key={event.id}
                     id={event.id}
                     ticks={event.ticks}
                     time={event.time}
+                    nextEvent={track.events[i + 1] ?? null}
+                    previousEvent={track.events[i - 1] ?? null}
                     onTimeChange={time => {
                         props.editor.setEventTime(event.id, time)
                     }}
@@ -60,10 +65,20 @@ function EventView(props: {
     id: string,
     ticks: number,
     time: number,
+    previousEvent: TempoEvent | null,
+    nextEvent: TempoEvent | null,
     onTimeChange: (time: number) => void,
     onRemove: () => void
 }) {
     const [changingTime, setChangingTime] = useState(false)
+    const handler = useRef<Handler | null>(null)
+
+    useEffect(() => {
+        return () => {
+            handler.current?.destroy()
+            handler.current = null
+        }
+    }, [])
 
     function onStartChangingTime(e: MouseEvent<HTMLDivElement>) {
         e.stopPropagation()
@@ -74,6 +89,26 @@ function EventView(props: {
         e.preventDefault()
         e.stopPropagation()
         props.onRemove()
+    }
+
+    function onMouseDown(e: MouseEvent<HTMLDivElement>) {
+        e.stopPropagation()
+
+        handler.current?.destroy()
+
+        const slider = new Slider({
+            value: props.time,
+            step: 0.005,
+            event: e.nativeEvent,
+            min: props.previousEvent ? props.previousEvent.time + 0.01 : 0,
+            max: props.nextEvent ? props.nextEvent.time - 0.01 : Infinity,
+        })
+
+        slider.on('change', time => {
+            props.onTimeChange(time)
+        })
+
+        handler.current = slider
     }
 
     return <div
@@ -87,6 +122,7 @@ function EventView(props: {
             className="time"
             onDoubleClick={onStartChangingTime}
             onContextMenu={onRemove}
+            onMouseDown={onMouseDown}
         >
             {
                 changingTime ?
