@@ -1,21 +1,19 @@
-export async function generate(audioUrl: string) {
-    const canvas = document.createElement("canvas")
-    const ctx = canvas.getContext("2d")!
+import type { AudioData } from "../core/AudioData"
+import type { TempoTrack } from "../sound/song/TempoTrack"
 
-    const width = 16_000
-    const height = 32
+const canvas = document.createElement("canvas")
+const ctx = canvas.getContext("2d")!
 
-    const audioData = await fetch(audioUrl)
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => new Promise<Float32Array>(resolve => {
-            const audioContext = new AudioContext()
-            audioContext.decodeAudioData(arrayBuffer, audioBuffer => {
-                const rawData = audioBuffer.getChannelData(0) // Use the first channel
-                resolve(rawData)
-            })
-        }))
-
-    console.log(audioData)
+export async function generate(opts: {
+    audioData: AudioData,
+    width: number,
+    offset: number,
+    ratio: number,
+    audioStartSeconds: number,
+    tempoTrack: TempoTrack
+}) {
+    const width = opts.width
+    const height = 114
 
     canvas.width = width
     canvas.height = height
@@ -23,13 +21,37 @@ export async function generate(audioUrl: string) {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, width, height)
 
-    ctx.moveTo(0, height / 2)
-    ctx.beginPath()
+    const startTicks = -opts.offset
+    const endTicks = -opts.offset + width / opts.ratio
+
+    let startTime = Date.now()
+
     for (let i = 0; i < width; i += 1) {
-        const sample = audioData[Math.floor(i * audioData.length / width)]
-        const x = i
-        const y = Math.floor((1 - (sample + 1) / 2) * height)
-        ctx.lineTo(x, y)
+        const ticks = (endTicks - startTicks) * (i / width) + startTicks
+        const seconds = opts.tempoTrack.secondsFromTicks(ticks)
+        const audioSeconds = seconds - opts.audioStartSeconds
+        let y = height * 0.5
+        
+        if (audioSeconds >= 0 && audioSeconds <= opts.audioData.duration) {
+            // We are in the range of the audio
+            const audioT = audioSeconds / opts.audioData.duration
+            const sampleIndex = Math.floor(audioT * opts.audioData.array.length)
+            const sample = opts.audioData.array[sampleIndex]
+            y = Math.floor((1 - (sample + 1) / 2) * height)
+        }
+
+        if (i === 0) {
+            ctx.moveTo(i, y)
+        } else {
+            ctx.lineTo(i, y)
+        }
+
+        const now = Date.now()
+
+        if (now - startTime > 10) {
+            await new Promise(requestAnimationFrame)
+            startTime = Date.now()
+        }
     }
 
     ctx.strokeStyle = "white"

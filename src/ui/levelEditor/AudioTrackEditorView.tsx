@@ -1,6 +1,6 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { Duration } from "@niloc/utils";
-import { useContext, useState, type CSSProperties } from "react";
+import { Duration, Vec2 } from "@niloc/utils";
+import { useContext, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { AudioTrackEditor } from "../../components/editor/AudioTrackEditor";
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
@@ -13,18 +13,21 @@ import { NumberInput } from "../input/NumberInput";
 import { Select } from "../select/Select";
 import "./AudioTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
-import type { TempoTrack } from "../../sound/song/TempoTrack";
 import type { Time } from "../../components/Time";
 import { Toggle } from "../toggle/Toggle";
 import { Mixer } from "../../resources/Mixer";
+import { AudioWaveform } from "../../utils/AudioWaveform";
+import type { AudioWaveformRenderer } from "../../components/editor/AudioWaveformRenderer";
+import { ElementRenderer } from "../ElementRenderer";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
     tempoTrack: TempoTrackEditor,
     editor: AudioTrackEditor,
+    waveformRenderer: AudioWaveformRenderer,
     time: Time
 }) {
-    const { track, audioWaveform } = useComponent(props.editor)
+    const { track, audioData } = useComponent(props.editor)
     const popupManager = usePopupManager()
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
@@ -33,6 +36,8 @@ export function AudioTrackEditorView(props: {
     function onTypeChange(type: AudioType) {
         props.editor.setType(type)
     }
+
+    console.log('render audioEditorTrack')
 
     function onSetUrl() {
         if (track.payload.type === AudioType.Url)
@@ -88,11 +93,8 @@ export function AudioTrackEditorView(props: {
         <TrackEditorContent time={props.time}>
             {
                 track.payload.type === AudioType.Url || track.payload.type === AudioType.YouTube ?
-                    <AudioView
-                        time={track.time}
-                        duration={track.duration}
-                        tempo={props.tempoTrack.track}
-                        waveform={audioWaveform?.audioWaveform ?? null}
+                    <AudioView2
+                        waveform={props.waveformRenderer}
                     /> :
                     undefined
             }
@@ -101,14 +103,100 @@ export function AudioTrackEditorView(props: {
     </TrackEditorView>
 }
 
+function AudioView2(props: {
+    waveform: AudioWaveformRenderer,
+}) {
+    const ref = useRef<HTMLDivElement | null>(null)
+    const resizeObserver = useRef<ResizeObserver | null>(null)
+
+    useEffect(() => {
+        return () => {
+            resizeObserver.current?.disconnect()
+        }
+    }, [])
+
+    function onRef(element: HTMLDivElement | null) {
+        ref.current = element
+
+        resizeObserver.current?.disconnect()
+
+        if (element) {
+            props.waveform.setSize(Vec2.create(element.clientWidth, element.clientHeight))
+
+            if (!resizeObserver.current) {
+                resizeObserver.current = new ResizeObserver(() => {
+                    if (ref.current) {
+                        props.waveform.setSize(Vec2.create(ref.current.clientWidth, ref.current.clientHeight))
+                    }
+                })
+            }
+
+            resizeObserver.current.observe(element)
+        }
+    }
+
+    return <div
+        className="AudioView2"
+        ref={onRef}
+    >
+        <ElementRenderer element={props.waveform.canvas} />
+    </div>
+
+}
+
 function AudioView(props: {
     time: number,
     duration: number,
-    tempo: TempoTrack,
-    waveform: string | null
+    tempo: TempoTrackEditor,
+    audioData: string | null,
+    editor: AudioTrackEditor
 }) {
-    const ticks = props.tempo.ticksFromSeconds(props.time)
-    const duration = props.tempo.ticksFromSeconds(props.duration, ticks)
+    const { track: tempoTrack } = useComponent(props.tempo)
+
+    const ticks = tempoTrack.ticksFromSeconds(props.time)
+    const duration = tempoTrack.ticksFromSeconds(props.duration, ticks)
+
+    const segments = useMemo(() => {
+        const segments: {
+            ticks: number,
+            duration: number,
+            seconds: number,
+            durationSeconds: number
+        }[] = []
+
+        const startTicks = ticks
+        const startSeconds = props.time
+
+        let lastTicks = startTicks
+        let lastSeconds = startSeconds
+
+        for (let i = 0; i < tempoTrack.events.length; i++) {
+            const event = tempoTrack.events[i]
+            if (event.ticks > lastTicks) {
+                // must push segment at this point
+                segments.push({
+                    ticks: lastTicks - startTicks,
+                    duration: event.ticks - lastTicks,
+                    seconds: lastSeconds - startSeconds,
+                    durationSeconds: event.time - lastSeconds
+                })
+
+                lastTicks = event.ticks
+                lastSeconds = event.time
+            }
+        }
+
+        if (lastTicks - startTicks < duration) {
+            segments.push({
+                ticks: lastTicks - startTicks,
+                duration: duration - (lastTicks - startTicks),
+                seconds: lastSeconds - startSeconds,
+                durationSeconds: props.duration - (lastSeconds - startSeconds)
+            })
+        }
+
+        return segments
+    }, [tempoTrack.events, ticks, duration, props.time, props.duration])
 
     return <div
         className="AudioView"
@@ -118,8 +206,64 @@ function AudioView(props: {
         } as CSSProperties}
     >
         {
-            props.waveform !== null ?
-                <img src={props.waveform} /> :
+            segments.map(segment => <AudioSegmentView
+                key={segment.ticks}
+                seconds={segment.seconds}
+                durationSeconds={segment.durationSeconds}
+                audioDuration={props.duration}
+                ticks={segment.ticks}
+                duration={segment.duration}
+                editor={props.editor}
+                audioData={props.audioData}
+            />)
+        }
+    </div>
+}
+
+function AudioSegmentView(props: {
+    seconds: number,
+    durationSeconds: number,
+    audioData: string | null,
+    audioDuration: number,
+    ticks: number,
+    duration: number,
+    editor: AudioTrackEditor
+}) {
+    const [waveform, setWaveform] = useState<string | null>(null)
+
+    useEffect(() => {
+        setWaveform(null)
+
+        if (props.audioData === null)
+            return
+
+        let cancelled = false
+
+        console.log("getting waveform", props.seconds, props.seconds + props.durationSeconds)
+        props.editor.getAudioWaveform(props.seconds, props.seconds + props.durationSeconds)
+            .then(image => {
+                if (!cancelled)
+                    setWaveform(image)
+            })
+            .catch(e => {
+                console.error("Failed to generate audio waveform:", e)
+            })
+
+        return () => {
+            cancelled = true
+        }
+
+    }, [props.seconds, props.durationSeconds, props.audioData])
+
+    return <div className="AudioSegmentView"
+        style={{
+            "--ticks": props.ticks,
+            "--duration": props.duration,
+        } as CSSProperties}
+    >
+        {
+            waveform
+                ? <img src={waveform} /> :
                 undefined
         }
     </div>

@@ -15,6 +15,7 @@ import { Select } from "../select/Select";
 import "./PatternEditorView.scss";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
+import { EditableText } from "../editableText/EditableText";
 
 export function PatternEditorView(props: {
     editor: PatternEditor,
@@ -87,7 +88,10 @@ export function PatternEditorView(props: {
         onMouseDown={onMouseDown}
     >
         <div className="head">
-            {pattern.name}
+            <EditableText
+                value={pattern.name}
+                onChange={name => props.editor.setName(name)}
+            />
             <Select
                 value={string.index ?? -1}
                 onChange={index => props.editor.setString(props.editor.pattern.instrument.strings[index])}

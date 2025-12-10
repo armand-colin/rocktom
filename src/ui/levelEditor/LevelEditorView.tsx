@@ -1,5 +1,5 @@
 import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
 import { Input, InputManager } from "../../resources/InputManager";
@@ -15,12 +15,14 @@ import "./LevelEditorView.scss";
 import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
+import { StringInput } from "../input/StringInput";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const state = useResource(State)
     const { engine } = useContext(EngineContext)
     const inputManager = engine.getResource(InputManager)
     const windowManager = engine.getResource(WindowManager)
+    const { level } = useComponent(props.editor)
 
     useEffect(() => {
         function onPlay() {
@@ -49,12 +51,41 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
     return <div className="LevelEditorView">
         <div className="head">
             <Button onClick={() => state.editLevel(null)}>Back</Button>
-            {props.editor.level.name}
+            <LevelName
+                name={level.name}
+                onChange={name => props.editor.setName(name)}
+            />
             <Button onClick={() => props.editor.save()}>Save</Button>
             <PlayerControls player={props.editor.player} />
             <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
             <SongEditorView editor={props.editor} />
         </div>
+    </div>
+}
+
+function LevelName(props: { name: string, onChange: (name: string) => void }) {
+    const [editing, setEditing] = useState(false)
+    const [name, setName] = useState(props.name)
+
+    useEffect(() => {
+        setName(props.name)
+    }, [props.name])
+
+    return <div className="LevelName">
+        {
+            editing ?
+                <StringInput
+                    value={name}
+                    name="level-name"
+                    onChange={setName}
+                    autoFocus
+                    onBlur={() => {
+                        props.onChange(name)
+                        setEditing(false)
+                    }}
+                /> :
+                <p onDoubleClick={() => setEditing(true)}>{props.name}</p>
+        }
     </div>
 }
 
@@ -96,6 +127,7 @@ function SongEditorView(props: { editor: LevelEditor }) {
                 tempoTrack={props.editor.tempoTrack}
                 transform={props.editor.timeTransform}
                 editor={props.editor.audioTrack}
+                waveformRenderer={props.editor.audioWaveformRenderer}
             />
         </div>
         <div className="tempo">

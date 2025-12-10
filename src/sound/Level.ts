@@ -64,6 +64,19 @@ export class Level {
         this.focusTrack = opts.tracks?.focus
     }
 
+    clone(): Level {
+        return new Level({
+            author: this.author,
+            name: this.name + " (cloned)",
+            tracks: {
+                audio: this.audioTrack.clone(),
+                focus: this.focusTrack.clone(),
+                note: this.noteTrack.clone(),
+                tempo: this.tempoTrack.clone()
+            }
+        })
+    }
+
     get durationInTicks() {
         const lastNote = this.noteTrack.lastNote
         if (!lastNote)

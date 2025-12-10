@@ -1,0 +1,13 @@
+.StringInput {
+    background: var(--surface);
+    border-radius: 4px;
+    overflow: hidden;
+
+    input {
+        background: none;
+        width: auto;
+        padding: 4px 8px;
+        display: block;
+        min-width: 0;
+    }
+}

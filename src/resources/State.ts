@@ -38,6 +38,11 @@ export class State extends Resource {
         this.changed()
     }
 
+    cloneLevel(level: Level) {
+        const cloned = level.clone()
+        this.editLevel(cloned)
+    }
+
     setInstrument(instrument: LiveInstrument | null) {
         if (this._instrument)
             this._instrument.destroy()

@@ -45,7 +45,7 @@ export class TimeTransform extends Component {
     }
 
     getTicksAt(ticks: number) {
-        let targetTicks = ticks - this._offset - this._hardOffset
+        let targetTicks = ticks - this._offset + this._hardOffset
         targetTicks = this.magnetize(targetTicks)
         return targetTicks
     }

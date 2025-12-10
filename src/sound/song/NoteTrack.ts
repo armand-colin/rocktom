@@ -3,14 +3,14 @@ import { Instrument, type InstrumentType } from "../instrument/Instrument";
 import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Marker } from "./Marker";
-import { Pattern, TimedPattern, type SerializedPattern } from "./Pattern";
+import { Pattern, TimedPattern, type SerializedPattern, type SerializedTimedPattern } from "./Pattern";
 import type { TempoTrack } from "./TempoTrack";
 
 
 export type SerializedNoteTrack = {
     instrument: InstrumentType,
     patterns: SerializedPattern[],
-    timedPatterns: { id: string, patternId: string, ticks: number }[],
+    timedPatterns: SerializedTimedPattern[],
     markers: Marker[]
 }
 
@@ -23,15 +23,50 @@ export class NoteTrack {
 
     constructor(
         instrument: Instrument,
-        patterns: TimedPattern[],
-        markers: Marker[]
+        timedPatterns: TimedPattern[],
+        markers: Marker[],
+        patterns?: Map<string, Pattern>
     ) {
         this.instrument = instrument
-        this.timedPatterns = patterns
+        this.timedPatterns = timedPatterns
         this.markers = markers
 
-        for (const { pattern } of patterns)
+        if (patterns) {
+            for (const [id, pattern] of patterns)
+                this.patterns.set(id, pattern)
+        }
+
+        for (const { pattern } of timedPatterns)
             this.patterns.set(pattern.id, pattern)
+    }
+
+    clone(): NoteTrack {
+        const patterns = new Map<string, Pattern>()
+        const idMap = new Map<string, string>()
+
+        for (const pattern of this.patterns.values()) {
+            const newPattern = pattern.clone()
+            idMap.set(pattern.id, newPattern.id)
+            patterns.set(newPattern.id, pattern)
+        }
+
+        const timedPatterns = this.timedPatterns.map(tp => {
+            const patternId = idMap.get(tp.pattern.id)!
+            const pattern = patterns.get(patternId)!
+
+            return new TimedPattern({
+                time: tp.time,
+                pattern,
+                duration: tp.duration,
+            })
+        })
+
+        return new NoteTrack(
+            this.instrument,
+            timedPatterns,
+            this.markers.map(marker => ({ ...marker })),
+            patterns
+        )
     }
 
     get lastNote() {
@@ -83,11 +118,7 @@ export class NoteTrack {
             instrument: this.instrument.type,
             patterns: Array.from(this.patterns.values()).map(p => p.serialize()),
             markers: this.markers,
-            timedPatterns: this.timedPatterns.map(tp => ({
-                id: tp.id,
-                patternId: tp.pattern.id,
-                ticks: tp.time
-            }))
+            timedPatterns: this.timedPatterns.map(tp => tp.serialize())
         }
     }
 
@@ -98,17 +129,8 @@ export class NoteTrack {
             patternsMap.set(pattern.id, pattern)
         }
 
-        const timedPatterns: TimedPattern[] = data.timedPatterns.map(tpData => {
-            const pattern = patternsMap.get(tpData.patternId)
-            if (!pattern)
-                throw new Error(`Pattern with id ${tpData.patternId} not found`)
-
-            return new TimedPattern({
-                id: tpData.id,
-                time: tpData.ticks,
-                pattern: pattern
-            })
-        })
+        const timedPatterns = data.timedPatterns
+            .map(tpData => TimedPattern.deserialize(tpData, patternsMap))
 
         return new NoteTrack(
             Instrument.fromType(data.instrument),

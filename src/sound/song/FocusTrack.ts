@@ -23,6 +23,13 @@ export class FocusTrack {
         this.events = events
     }
 
+    clone(): FocusTrack {
+        return new FocusTrack(
+            this.initialFocus, 
+            this.events.map(e => ({ ...e}))
+        )
+    }
+
     getEventBetweenTicks(startTick: number, endTick: number): FocusEvent | null {
         if (this.events.length === 0)
             return null

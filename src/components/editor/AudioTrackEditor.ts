@@ -1,18 +1,12 @@
 import { Component, Engine } from "@niloc/ecs";
 import { AudioType, type AudioTrack, type AudioTrackPayload } from "../../sound/song/AudioTrack";
-import { AudioWaveform } from "../../utils/AudioWaveform";
-
-type Waveform = {
-    audioUrl: string,
-    audioWaveform: string | null
-}
+import { AudioData } from "../../core/AudioData";
 
 export class AudioTrackEditor extends Component {
 
     readonly track: AudioTrack
 
-    private _audioWaveform: Waveform | null = null
-
+    private _audioData: AudioData | null = null
 
     constructor(engine: Engine, track: AudioTrack) {
         super(engine)
@@ -22,25 +16,25 @@ export class AudioTrackEditor extends Component {
             track.payload.type === AudioType.Url
             && track.payload.url
         )
-            this._generateWaveform(track.payload.url)
+            this._generateAudioData(track.payload.url)
     }
 
-    get audioWaveform() {
-        return this._audioWaveform
+    get audioData() {
+        return this._audioData?.id ?? null
     }
 
-    private _generateWaveform(url: string) {
-        this._audioWaveform = {
-            audioUrl: url,
-            audioWaveform: null
-        }
+    private _generateAudioData(url: string) {
+        this._audioData = null
 
-        AudioWaveform.generate(url).then(dataUrl => {
-            if (this._audioWaveform && this._audioWaveform.audioUrl === url) {
-                this._audioWaveform.audioWaveform = dataUrl
-                this.changed()
-            }
-        })
+        AudioData.fetch(this.engine, url)
+            .then(data => {
+                if (this.track.payload.type === AudioType.Url && this.track.payload.url === url) {
+                    this._audioData = data
+                    console.log('got audio data')
+                    this.changed()
+                }
+            })
+            .catch(e => console.error('Error fetching audioData', e))
     }
 
     setType(type: AudioType) {
@@ -68,8 +62,7 @@ export class AudioTrackEditor extends Component {
         }
 
         this.track.payload = payload
-        this._audioWaveform = null
-
+        this._audioData = null
         this.changed()
     }
 
@@ -91,8 +84,8 @@ export class AudioTrackEditor extends Component {
             ...this.track.payload,
             url
         }
-        this._generateWaveform(url)
 
+        this._generateAudioData(url)
         this.changed()
     }
 

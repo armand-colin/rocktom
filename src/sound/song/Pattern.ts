@@ -63,15 +63,29 @@ export type SerializedPattern = {
 export class Pattern {
 
     readonly id: string
-    readonly name: string
     readonly notes: NoteEvent[]
     readonly instrument: Instrument
+    
+    name: string
 
-    constructor(opts: { name: string, instrument: Instrument, notes: NoteEvent[], id?: string }) {
+    constructor(opts: {
+        name: string,
+        instrument: Instrument,
+        notes: NoteEvent[],
+        id?: string
+    }) {
         this.id = opts.id ?? nanoid()
         this.name = opts.name
         this.notes = opts.notes
         this.instrument = opts.instrument
+    }
+
+    clone(): Pattern {
+        return new Pattern({
+            instrument: this.instrument,
+            name: this.name,
+            notes: this.notes.map(note => ({ ...note, id: nanoid() }))
+        })
     }
 
     get duration() {

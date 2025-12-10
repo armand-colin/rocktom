@@ -19,8 +19,7 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
         const rect = div.getBoundingClientRect()
         const mouseX = e.clientX - rect.left
         const tickOffset = mouseX / props.transform.ratio
-        const ticks = props.transform.magnetize(props.transform.offset + tickOffset)
-
+        const ticks = props.transform.magnetize(tickOffset - props.transform.offset)
         props.editor.addEvent(ticks)
     }
 

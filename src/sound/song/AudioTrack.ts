@@ -32,6 +32,10 @@ export class AudioTrack {
         this.duration = duration
     }
 
+    clone(): AudioTrack {
+        return new AudioTrack({ ...this.payload }, this.time, this.duration)
+    }
+
     serialize(): SerializedAudioTrack {
         return {
             payload: { ...this.payload },

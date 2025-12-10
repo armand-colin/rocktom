@@ -59,7 +59,8 @@ export function TimeTransformView(props: {
         const mouseX = e.clientX - rect.left
         const mouseTicks = mouseX / props.transform.ratio
         const ticks = props.transform.getTicksAt(mouseTicks)
-
+        console.log("seeking ticks", ticks)
+        
         props.player.seekTicks(ticks)
     }
 

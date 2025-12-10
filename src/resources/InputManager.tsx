@@ -43,6 +43,12 @@ class KeyboardKey extends Key {
                 ctrl = event.metaKey
 
             if (
+                event.target instanceof HTMLInputElement ||
+                event.target instanceof HTMLTextAreaElement
+            )
+                return
+
+            if (
                 event.code.toLowerCase() === this._keyCode &&
                 ctrl === this._ctrl &&
                 event.altKey === this._alt &&

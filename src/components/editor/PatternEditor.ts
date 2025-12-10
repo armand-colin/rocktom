@@ -31,6 +31,11 @@ export class PatternEditor extends Component {
         return this._string
     }
 
+    setName(name: string) {
+        this.pattern.name = name
+        this.changed()
+    }
+    
     setString(string: String) {
         this._string = string
         this.changed()

@@ -13,6 +13,7 @@ function formatSeconds(seconds: number) {
 export function LevelList(props: {
     onSelect: (level: Level) => void,
     onEdit: (level: Level) => void,
+    onClone: (level: Level) => void,
     onCreate: () => void
 }) {
     const { levels } = useResource(LevelStorage)
@@ -37,6 +38,12 @@ export function LevelList(props: {
                             props.onEdit(level)
                         }}>
                             Edit
+                        </Button>
+                        <Button onClick={e => {
+                            e.stopPropagation()
+                            props.onClone(level)
+                        }}>
+                            Clone
                         </Button>
                     </li>
                 ))

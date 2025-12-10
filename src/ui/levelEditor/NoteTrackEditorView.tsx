@@ -38,7 +38,7 @@ export function NoteTrackEditorView(props: {
         const rect = ref.current.getBoundingClientRect()
         const mouseX = e.clientX - rect.left
         const tickOffset = mouseX / props.transform.ratio
-        const ticks = props.transform.magnetize(props.transform.offset + tickOffset)
+        const ticks = props.transform.magnetize(tickOffset - props.transform.offset)
         props.editor.addTimedPattern(ticks)
     }
 

@@ -11,6 +11,7 @@ import { NoteTrackEditor } from "./NoteTrackEditor";
 import { PatternEditor } from "./PatternEditor";
 import { TempoTrackEditor } from "./TempoTrackEditor";
 import { TimeTransform } from "./TimeTransform";
+import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
 
 export class LevelEditor extends Component {
 
@@ -20,6 +21,7 @@ export class LevelEditor extends Component {
     readonly timeTransform: TimeTransform
     readonly player: EditorPlayer
     readonly noteTrack: NoteTrackEditor
+    readonly audioWaveformRenderer: AudioWaveformRenderer
 
     readonly virtualBass: VirtualBass
 
@@ -37,6 +39,12 @@ export class LevelEditor extends Component {
         this.player = engine.createComponent(EditorPlayer, level, this.virtualBass)
         this.noteTrack = engine.createComponent(NoteTrackEditor, level.noteTrack, this.virtualBass)
 
+        this.audioWaveformRenderer = engine.createComponent(AudioWaveformRenderer, {
+            tempoTrack: this.tempoTrack,
+            audioTrack: this.audioTrack,
+            transform: this.timeTransform
+        })
+
         this.audioTrack.onChange(() => {
             this.player.refreshAudioPlayer()
         })
@@ -47,6 +55,11 @@ export class LevelEditor extends Component {
 
     get pattern() {
         return this._pattern
+    }
+
+    setName(name: string) {
+        this.level.name = name
+        this.changed()
     }
 
     editPattern(pattern: TimedPattern | null) {

@@ -30,6 +30,13 @@ export class TempoTrack {
         this.events = events ?? []
     }
 
+    clone(): TempoTrack {
+        return new TempoTrack(
+            this.initialTempo,
+            this.events.map(e => ({...e}))
+        )
+    }
+
     static fromKeyframes(keyframes: { seconds: number, ticks: number }[]) {
         if (keyframes.length < 1)
             throw new Error("At least one keyframe is required to build a TempoTrack")
@@ -78,6 +85,10 @@ export class TempoTrack {
 
             lastEvent = event
         }
+
+        // TODO : proper handle
+        // Copying for react
+        this.events = [...this.events]
     }
 
     add(ticks: number, tempo: Tempo): this {
@@ -124,7 +135,6 @@ export class TempoTrack {
             time: this.secondsFromTicks(ticks),
             tempo: lastEvent.tempo,
         })
-
         return this
     }
 

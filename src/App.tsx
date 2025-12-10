@@ -48,6 +48,7 @@ function App() {
               onSelect={onSelectLevel}
               onCreate={onCreate}
               onEdit={level => state.editLevel(level)}
+              onClone={level => state.cloneLevel(level)}
             />
       }
 
