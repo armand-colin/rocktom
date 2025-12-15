@@ -36,5 +36,28 @@
                 display: inline-block;
             }
         }
+
+        .hint {
+            position: absolute;
+            left: 50%;
+            top: 26px;
+            transform: translateX(-50%);
+            user-select: none;
+            pointer-events: none;
+            font-size: 12px;
+            background: var(--surface);
+            opacity: 0;
+            pointer-events: none;
+            padding: 4px 8px;
+            white-space: nowrap;
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        &:hover .hint {
+            opacity: 1;
+            transition: opacity 0.2s;
+            transition-delay: 1s;
+        }
     }
 }

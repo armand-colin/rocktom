@@ -14,6 +14,7 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
     const { track } = useComponent(props.editor)
 
     function onInitialChange(bpm: number) {
+        console.log('Set inital tempo', bpm)
         props.editor.setInitial(bpm)
     }
 
@@ -49,6 +50,7 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                     id={event.id}
                     ticks={event.ticks}
                     time={event.time}
+                    bpm={event.tempo.bpm}
                     nextEvent={track.events[i + 1] ?? null}
                     previousEvent={track.events[i - 1] ?? null}
                     onTimeChange={time => {
@@ -65,6 +67,7 @@ function EventView(props: {
     id: string,
     ticks: number,
     time: number,
+    bpm: number,
     previousEvent: TempoEvent | null,
     nextEvent: TempoEvent | null,
     onTimeChange: (time: number) => void,
@@ -102,6 +105,7 @@ function EventView(props: {
             event: e.nativeEvent,
             min: props.previousEvent ? props.previousEvent.time + 0.01 : 0,
             max: props.nextEvent ? props.nextEvent.time - 0.01 : Infinity,
+            sensibility: 0.001
         })
 
         slider.on('change', time => {
@@ -137,6 +141,7 @@ function EventView(props: {
                     <span>{props.time.toFixed(2)}</span>
             }
         </div>
+        <div className="hint">{props.bpm.toFixed(2)} BPM</div>
         <div className="marker"></div>
     </div>
 }

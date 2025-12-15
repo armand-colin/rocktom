@@ -13,7 +13,7 @@ export class TempoTrackEditor extends Component {
 
     setInitial(bpm: number) {
         this.track.initialTempo = new Tempo(bpm)
-        this.track.refreshTempo()
+        this.track.refreshTime()
         this.changed()
     }
 

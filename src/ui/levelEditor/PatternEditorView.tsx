@@ -1,5 +1,5 @@
 import { useComponent } from "@niloc/ecs-react";
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import { Rules } from "../../3d/Rules";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { PatternEditor } from "../../components/editor/PatternEditor";
@@ -16,6 +16,8 @@ import "./PatternEditorView.scss";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import { EditableText } from "../editableText/EditableText";
+import type { NoteTransform } from "../../components/editor/NoteTransform";
+import { NoteMover } from "../../utils/handlers/NoteMover";
 
 export function PatternEditorView(props: {
     editor: PatternEditor,
@@ -108,7 +110,10 @@ export function PatternEditorView(props: {
                 "--max-index": maxNote.index,
                 "--index-range": maxNote.index - minNote.index,
             } as CSSProperties}
-            onWheel={e => props.editor.transform.handleWheel(e.nativeEvent, e.currentTarget)}
+            onWheel={e => {
+                props.editor.transform.handleWheel(e.nativeEvent, e.currentTarget);
+                props.editor.noteTransform.handleWheel(e.nativeEvent);
+            }}
             onContextMenu={e => {
                 e.preventDefault()
                 e.stopPropagation()
@@ -126,14 +131,16 @@ export function PatternEditorView(props: {
                     className="keyboard"
                     noPadding
                 >
-                    {
-                        notes.map(note => <KeyboardNoteView
-                            key={note.index}
-                            note={note}
-                            string={string}
-                            instrument={props.editor.virtualBass}
-                        />)
-                    }
+                    <NoteTransformView transform={props.editor.noteTransform}>
+                        {
+                            notes.map(note => <KeyboardNoteView
+                                key={note.index}
+                                note={note}
+                                string={string}
+                                instrument={props.editor.virtualBass}
+                            />)
+                        }
+                    </NoteTransformView>
                 </TrackEditorHead>
                 <TrackEditorContent
                     time={props.player.time}
@@ -142,27 +149,30 @@ export function PatternEditorView(props: {
                     onMouseDown={onNotesClick}
                 >
                     <TimeMarkersView transform={props.editor.transform} />
-                    {
-                        notes.map(note => <div
-                            className="shadow-note"
-                            key={note.index}
-                            style={{
-                                "--index": note.index,
-                            } as CSSProperties}
-                        />)
-                    }
-                    {
-                        pattern.notes.map(note => <NoteView
-                            key={note.id}
-                            id={note.id}
-                            string={note.string}
-                            fret={note.fret}
-                            time={note.time}
-                            duration={note.duration}
-                            editor={props.editor}
-                            selected={selection.includes(note)}
-                        />)
-                    }
+
+                    <NoteTransformView transform={props.editor.noteTransform}>
+                        {
+                            notes.map(note => <div
+                                className="shadow-note"
+                                key={note.index}
+                                style={{
+                                    "--index": note.index,
+                                } as CSSProperties}
+                            />)
+                        }
+                        {
+                            pattern.notes.map(note => <NoteView
+                                key={note.id}
+                                id={note.id}
+                                string={note.string}
+                                fret={note.fret}
+                                time={note.time}
+                                duration={note.duration}
+                                editor={props.editor}
+                                selected={selection.includes(note)}
+                            />)
+                        }
+                    </NoteTransformView>
                 </TrackEditorContent>
             </TrackEditorView>
         </div>
@@ -190,6 +200,7 @@ function KeyboardNoteView(props: { note: Note, string: String, instrument: Virtu
         style={{
             "--index": props.note.index,
             "--color": "#" + props.string.color.getHexString(),
+            "--contrast": "#" + props.string.outlineColor.getHexString(),
         } as CSSProperties}
 
         onMouseDown={play}
@@ -251,6 +262,7 @@ function NoteView(props: {
             e.preventDefault()
             e.stopPropagation()
 
+            props.editor.selectNote(props.id)
             const string = props.string
             const note = props.string.fret(props.fret)
 
@@ -269,16 +281,33 @@ function NoteView(props: {
             e.stopPropagation()
             handler.current?.destroy()
 
-            const mover = new TimeMover({
+            props.editor.selectNote(props.id)
+
+            const timeMover = new TimeMover({
                 event: e.nativeEvent,
                 startTicks: props.time,
                 transform: props.editor.transform,
                 minTicks: 0
             })
 
-            mover.events.on("change", time => props.editor.setNoteTime(props.id, time))
+            const noteMover = new NoteMover({
+                event: e.nativeEvent,
+                startNote: note,
+                transform: props.editor.noteTransform,
+                string: props.string
+            })
 
-            handler.current = mover
+            noteMover.events.on("change", note => props.editor.setNoteNote(props.id, note))
+            timeMover.events.on("change", time => props.editor.setNoteTime(props.id, time))
+
+            const newHandler: Handler = {
+                destroy() {
+                    noteMover.destroy()
+                    timeMover.destroy()
+                }
+            }
+
+            handler.current = newHandler
         }
     }
 
@@ -295,6 +324,7 @@ function NoteView(props: {
         data-selected={props.selected}
         style={{
             "--color": "#" + props.string.color.getHexString(),
+            "--contrast": "#" + props.string.outlineColor.getHexString(),
             "--index": note.index,
             "--ticks": props.time,
             "--duration": props.duration,
@@ -360,5 +390,19 @@ function TimeMarkersView(props: { transform: TimeTransform }) {
         ref={onRef}
     >
         {markers}
+    </div>
+}
+
+function NoteTransformView(props: { transform: NoteTransform, children?: ReactNode }) {
+    const { offset, ratio } = useComponent(props.transform)
+
+    return <div
+        className="NoteTransformView"
+        style={{
+            "--note-offset": offset,
+            "--note-ratio": ratio
+        } as CSSProperties}
+    >
+        {props.children}
     </div>
 }

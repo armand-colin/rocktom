@@ -61,6 +61,24 @@ export class TempoTrack {
         return track
     }
 
+
+    refreshTime() {
+        // First, sort all events by ticks, ascending
+        this.events.sort((a, b) => a.ticks - b.ticks)
+
+        let lastEvent: TempoEvent = {
+            id: nanoid(),
+            ticks: 0,
+            time: 0,
+            tempo: this.initialTempo
+        }
+
+        for (const event of this.events) {
+            event.time = lastEvent.time + lastEvent.tempo.secondsFromTicks(event.ticks - lastEvent.ticks)    
+            lastEvent = event
+        }
+    }
+    
     /*
     * Refreshes all the events "tempo" based on their time and ticks
     */

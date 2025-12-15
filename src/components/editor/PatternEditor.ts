@@ -6,11 +6,15 @@ import { Tempo } from "../../sound/Tempo";
 import { Selection } from "../Selection";
 import type { VirtualBass } from "../VirtualBass";
 import { TimeTransform } from "./TimeTransform";
+import { NoteTransform } from "./NoteTransform";
+import type { Note } from "../../sound/note/Note";
+import { Rules } from "../../3d/Rules";
 
 export class PatternEditor extends Component {
 
     readonly pattern: Pattern
     readonly transform: TimeTransform
+    readonly noteTransform: NoteTransform
     readonly virtualBass: VirtualBass
     readonly selection: Selection<NoteEvent>
 
@@ -23,6 +27,9 @@ export class PatternEditor extends Component {
         this.virtualBass = virtualBass
         this.transform = engine.createComponent(TimeTransform)
         this.transform.setHardOffset(pattern.time)
+        this.transform.setStep(Tempo.beats(1 / 4))
+
+        this.noteTransform = engine.createComponent(NoteTransform)
         this.selection = engine.createComponent<Selection<NoteEvent>, []>(Selection)
         this._string = this.pattern.instrument.strings[0]
     }
@@ -35,7 +42,7 @@ export class PatternEditor extends Component {
         this.pattern.name = name
         this.changed()
     }
-    
+
     setString(string: String) {
         this._string = string
         this.changed()
@@ -46,12 +53,23 @@ export class PatternEditor extends Component {
             this.changed()
     }
 
+    selectNote(id: string) {
+        const note = this.pattern.notes.find(n => n.id === id)
+        if (!note)
+            return
+
+        this._string = note.string
+        this._setDuration = note.duration
+        this.changed()
+    }
+
     setNoteDuration(id: string, duration: number) {
         const note = this.pattern.notes.find(n => n.id === id)
         if (!note)
             return
 
         note.duration = duration
+        this._string = note.string
         this._setDuration = note.duration
         this.changed()
     }
@@ -62,6 +80,21 @@ export class PatternEditor extends Component {
             return
 
         note.time = time
+        this._string = note.string
+        this.changed()
+    }
+
+    setNoteNote(id: string, note: Note) {
+        const noteEvent = this.pattern.notes.find(n => n.id === id)
+        if (!noteEvent)
+            return
+
+        const fret = note.index - noteEvent.string.note.index
+        if (fret < 0 || fret > Rules.maxFret)
+            return
+
+        noteEvent.fret = fret
+        this._string = noteEvent.string
         this.changed()
     }
 
@@ -83,13 +116,13 @@ export class PatternEditor extends Component {
         if (!note)
             return
 
-        console.log("Moving note", note.string.name, note.fret)
         const targetNote = note.string.fret(note.fret)
         const newFret = targetNote.index - string.note.index
-        console.log("To", string.name, newFret)
 
         note.string = string
         note.fret = newFret
+        this._string = string
+        this._setDuration = note.duration
         this.changed()
     }
 

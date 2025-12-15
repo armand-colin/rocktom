@@ -10,6 +10,7 @@ export class String {
     readonly note: Note
     readonly color: Color
     readonly highlightColor: Color
+    readonly outlineColor: Color
 
     constructor(
         index: number,
@@ -17,7 +18,8 @@ export class String {
         name: string,
         note: Note,
         color: Color,
-        highlightColor: Color
+        highlightColor: Color,
+        outlineColor: Color
     ) {
         this.index = index
         this.t = t
@@ -25,6 +27,7 @@ export class String {
         this.note = note
         this.color = color
         this.highlightColor = highlightColor
+        this.outlineColor = outlineColor
     }
 
     fret(fret: number): Note {

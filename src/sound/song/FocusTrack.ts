@@ -15,7 +15,7 @@ export type SerializedFocusTrack = {
 
 export class FocusTrack {
 
-    readonly initialFocus: Focus
+    initialFocus: Focus
     readonly events: FocusEvent[]
 
     constructor(initialFocus: Focus, events: FocusEvent[]) {

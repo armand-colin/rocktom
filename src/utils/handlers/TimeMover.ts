@@ -8,6 +8,7 @@ export class TimeMover implements Handler {
     private _startTicks: number
     private _transform: TimeTransform
     private _minTicks: number
+    private _maxTicks: number
 
     readonly events = new Emitter<{ change: number }>()
 
@@ -16,11 +17,13 @@ export class TimeMover implements Handler {
         startTicks: number,
         transform: TimeTransform,
         minTicks?: number,
+        maxTicks?: number
     }) {
         this._startX = opts.event.clientX
         this._startTicks = opts.startTicks
         this._transform = opts.transform
         this._minTicks = opts.minTicks ?? 0
+        this._maxTicks = opts.maxTicks ?? Infinity
 
         window.addEventListener("mousemove", this._onMouseMove)
         window.addEventListener("mouseup", this._onMouseUp)
@@ -31,6 +34,7 @@ export class TimeMover implements Handler {
         const deltaTicks = deltaX / this._transform.ratio
         let ticks = this._startTicks + deltaTicks
         ticks = Math.max(this._minTicks, ticks)
+        ticks = Math.min(this._maxTicks, ticks)
         ticks = this._transform.magnetize(ticks)
 
         this.events.emit('change', ticks)

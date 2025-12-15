@@ -1,0 +1,9 @@
+.FocusEditor {
+    display: flex;
+    gap: 4px;
+    background:var(--container);
+    width: 130px;
+    padding: 4px;
+    outline: 1px solid var(--outline);
+    border-radius: 4px;
+}

@@ -12,6 +12,8 @@ import { PatternEditor } from "./PatternEditor";
 import { TempoTrackEditor } from "./TempoTrackEditor";
 import { TimeTransform } from "./TimeTransform";
 import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
+import { FocusTrackEditor } from "./FocusTrackEditor";
+import { Tempo } from "../../sound/Tempo";
 
 export class LevelEditor extends Component {
 
@@ -21,6 +23,7 @@ export class LevelEditor extends Component {
     readonly timeTransform: TimeTransform
     readonly player: EditorPlayer
     readonly noteTrack: NoteTrackEditor
+    readonly focusTrack: FocusTrackEditor
     readonly audioWaveformRenderer: AudioWaveformRenderer
 
     readonly virtualBass: VirtualBass
@@ -33,8 +36,10 @@ export class LevelEditor extends Component {
         this.level = level
         this.tempoTrack = engine.createComponent(TempoTrackEditor, level.tempoTrack)
         this.timeTransform = engine.createComponent(TimeTransform)
+        this.timeTransform.setStep(Tempo.beats(1))
+        
         this.audioTrack = engine.createComponent(AudioTrackEditor, level.audioTrack)
-
+        this.focusTrack = engine.createComponent(FocusTrackEditor, level.focusTrack)
         this.virtualBass = engine.createComponent(VirtualBass)
         this.player = engine.createComponent(EditorPlayer, level, this.virtualBass)
         this.noteTrack = engine.createComponent(NoteTrackEditor, level.noteTrack, this.virtualBass)

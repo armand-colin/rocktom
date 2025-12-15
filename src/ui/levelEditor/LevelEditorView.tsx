@@ -16,6 +16,8 @@ import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
 import { StringInput } from "../input/StringInput";
+import { FocusTrackEditorView } from "./FocusTrackEditorView";
+import { MagnetizationView } from "./magnetizationView/MagnetizationView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const state = useResource(State)
@@ -114,6 +116,11 @@ function SongEditorView(props: { editor: LevelEditor }) {
         className="SongEditorView"
         onWheel={e => props.editor.timeTransform.handleWheel(e.nativeEvent, e.currentTarget)}
     >
+        <div className="head">
+            <MagnetizationView
+                transform={props.editor.timeTransform}
+            />
+        </div>
         <div className="time">
             <TimeTransformView
                 transform={props.editor.timeTransform}
@@ -143,6 +150,13 @@ function SongEditorView(props: { editor: LevelEditor }) {
                 time={props.editor.player.time}
                 transform={props.editor.timeTransform}
                 editor={props.editor.noteTrack}
+            />
+        </div>
+        <div className="focus">
+            <FocusTrackEditorView
+                time={props.editor.player.time}
+                transform={props.editor.timeTransform}
+                editor={props.editor.focusTrack}
             />
         </div>
     </div>

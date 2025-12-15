@@ -34,6 +34,7 @@
                 width: max(calc(var(--note-duration) / var(--duration) * 100%), 4px);
                 left: calc((var(--note-ticks) / var(--duration)) * 100%);
                 top: calc((var(--max-fret) - var(--note-fret)) / var(--fret-amplitude) * 100%);
+                outline: 1px solid var(--contrast);
             }
         }
 

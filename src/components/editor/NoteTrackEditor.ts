@@ -10,6 +10,8 @@ export class NoteTrackEditor extends Component {
     readonly virtualBass: VirtualBass
 
     private _pattern: Pattern | null
+    private _lastDuration: number = 0
+
     private _patterns: Pattern[] = []
 
     constructor(engine: Engine, track: NoteTrack, virtualBass: VirtualBass) {
@@ -49,6 +51,18 @@ export class NoteTrackEditor extends Component {
         return pattern
     }
 
+    selectTimedPattern(timedPattern: TimedPattern) {
+        this._pattern = timedPattern.pattern
+        this._lastDuration = timedPattern.duration
+        this.changed()
+    }
+
+    selectPattern(pattern: Pattern) {
+        this._pattern = pattern
+        this._lastDuration = 0
+        this.changed()
+    }
+    
     addTimedPattern(ticks: number) {
         if (!this._pattern)
             return
@@ -60,7 +74,7 @@ export class NoteTrackEditor extends Component {
         this.track.addTimedPattern(new TimedPattern({
             time: ticks,
             pattern: this._pattern,
-            duration
+            duration: this._lastDuration || duration,
         }))
 
         this.changed()
@@ -76,6 +90,8 @@ export class NoteTrackEditor extends Component {
             if (tp.id !== id)
                 continue
             tp.duration = duration
+            this._pattern = tp.pattern
+            this._lastDuration = duration
             this.changed()
             return
         }
@@ -86,6 +102,8 @@ export class NoteTrackEditor extends Component {
             if (tp.id !== id)
                 continue
             tp.time = time
+            this._pattern = tp.pattern
+            this._lastDuration = tp.duration
             this.changed()
             return
         }

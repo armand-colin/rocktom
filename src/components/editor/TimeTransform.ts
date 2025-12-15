@@ -14,7 +14,7 @@ export class TimeTransform extends Component {
     private _ratio: number = 1
     private _offset: number = 0
     private _hardOffset: number = 0
-    private _step: number | null = Tempo.beats(1 / 4)
+    private _step: number = Tempo.beats(1 / 4)
 
     constructor(engine: Engine) {
         super(engine)
@@ -32,8 +32,17 @@ export class TimeTransform extends Component {
         return this._hardOffset
     }
 
+    get step() {
+        return this._step
+    }
+
+    setStep(step: number) {
+        this._step = step
+        this.changed()
+    }
+
     magnetize(ticks: number) {
-        const step = this._step ?? 1
+        const step = this._step
 
         const min = ticks - (ticks % step)
         const max = min + step
@@ -48,6 +57,13 @@ export class TimeTransform extends Component {
         let targetTicks = ticks - this._offset + this._hardOffset
         targetTicks = this.magnetize(targetTicks)
         return targetTicks
+    }
+
+    getTicksForMouse(event: MouseEvent, container: HTMLElement) {
+        const rect = container.getBoundingClientRect()
+        const offsetX = event.clientX - rect.left
+        const ticks = offsetX / this.ratio
+        return this.getTicksAt(ticks)
     }
 
     *getMarkers(pixelWidth: number, minSpace: number = 150, maxSpace: number = 400): IterableIterator<TimeMarker> {

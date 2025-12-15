@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from "react"
 import "./StringInput.scss"
 
 type Props = {
@@ -9,6 +10,14 @@ type Props = {
 }
 
 export function StringInput(props: Props) {
+
+    function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+        if (e.key === "Escape" || e.key === "Enter") {
+            e.preventDefault()
+            e.currentTarget.blur()
+        }
+    }
+
     return <div className="StringInput">
         <input
             type="text"
@@ -17,6 +26,7 @@ export function StringInput(props: Props) {
             onBlur={props.onBlur}
             autoFocus={props.autoFocus}
             name={props.name}
+            onKeyDown={onKeyDown}
         />
     </div>
 }

@@ -93,7 +93,7 @@ function TimedPatternView(props: {
         if (note.fret < min)
             return note.fret
         return min
-    }, 0)
+    }, Infinity)
 
     const maxFret = props.pattern.notes.reduce((max, note) => {
         if (note.fret > max)
@@ -185,6 +185,7 @@ function TimedPatternView(props: {
                     "--note-ticks": note.time,
                     "--note-duration": note.duration,
                     "--note-fret": note.fret,
+                    "--contrast": "#" + note.string.outlineColor.getHexString(),
                     "--color": "#" + note.string.color.getHexString()
                 } as CSSProperties}
             />)}

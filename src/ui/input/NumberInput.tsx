@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent, type MouseEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent } from "react"
 import { Slider } from "../../utils/Slider"
 import { Icon } from "../icon/Icon"
 import "./NumberInput.scss"
@@ -9,6 +9,7 @@ type Props = {
     step?: number,
     min?: number,
     max?: number,
+    sensibility?: number,
     onChange: (value: number) => void,
     autoFocus?: boolean,
     onBlur?: () => void,
@@ -25,6 +26,13 @@ export function NumberInput(props: Props) {
             props.onChange(number)
     }
 
+    function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+        if (e.key === "Escape" || e.key === "Enter") {
+            e.preventDefault()
+            e.currentTarget.blur()
+        }
+    }
+
     function onMouseDown(e: MouseEvent) {
         e.preventDefault()
         const slider = new Slider({
@@ -33,6 +41,7 @@ export function NumberInput(props: Props) {
             step: props.step,
             min: props.min,
             max: props.max,
+            sensibility: props.sensibility,
         })
 
         if (sliderRef.current)
@@ -67,6 +76,7 @@ export function NumberInput(props: Props) {
             onChange={onChange}
             onBlur={props.onBlur}
             autoFocus={props.autoFocus}
+            onKeyDown={onKeyDown}
         />
         <div className="slider" onMouseDown={onMouseDown}>
             <Icon name="code" />
