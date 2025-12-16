@@ -1,5 +1,5 @@
-import { useComponent } from "@niloc/ecs-react";
-import { useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
+import { EngineContext, useComponent } from "@niloc/ecs-react";
+import { useContext, useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
 import type { NoteTrackEditor } from "../../components/editor/NoteTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { Time } from "../../components/Time";
@@ -12,6 +12,8 @@ import { Button } from "../button/Button";
 import { Select } from "../select/Select";
 import "./NoteTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
+import { Icon } from "../icon/Icon";
+import { ContextualMenu } from "../../resources/ContextualMenu";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
@@ -88,6 +90,7 @@ function TimedPatternView(props: {
     transform: TimeTransform
 }) {
     const handler = useRef<Handler | null>(null)
+    const { engine } = useContext(EngineContext)
 
     const minFret = props.pattern.notes.reduce((min, note) => {
         if (note.fret < min)
@@ -153,6 +156,26 @@ function TimedPatternView(props: {
         }
     }
 
+    function onContextualClick(e: MouseEvent) {
+        const contextualMenu = engine.getResource(ContextualMenu)
+        contextualMenu.open(e.nativeEvent, [
+            {
+                label: "Edit Pattern",
+                action: () => {
+                    props.onEdit()
+                },
+                icon: null
+            },
+            {
+                label: "Delete Pattern",
+                action: () => {
+                    props.editor.removeTimedPattern(props.id)
+                },
+                icon: "shift"
+            }
+        ])
+    }
+
     useEffect(() => {
         return () => {
             handler.current?.destroy()
@@ -175,7 +198,12 @@ function TimedPatternView(props: {
         onMouseDown={onMove}
     >
         <div className="head">
-            {props.pattern.name}
+            <p>
+                {props.pattern.name}
+            </p>
+            <div className="contextual" onClick={onContextualClick}>
+                <Icon name="code" />
+            </div>
         </div>
         <div className="notes">
             {props.pattern.notes.map(note => <div

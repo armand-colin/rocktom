@@ -12,6 +12,7 @@ import { LevelEditorView } from './ui/levelEditor/LevelEditorView'
 import { LevelList } from './ui/levelList/LevelList'
 import { PopupManagerView } from './ui/popup/PopupManagerView'
 import { WindowManagerView } from './ui/window/WindowManagerView'
+import { ContextualMenuView } from './ui/contextualMenuView/ContextualMenuView'
 
 function App() {
   const { engine } = useContext(EngineContext)
@@ -54,6 +55,7 @@ function App() {
 
       <WindowManagerView />
       <PopupManagerView />
+      <ContextualMenuView />
     </div>
   )
 }

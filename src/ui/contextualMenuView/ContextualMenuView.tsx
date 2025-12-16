@@ -13,6 +13,8 @@ export function ContextualMenuView() {
 		contextualMenu.close()
 	}
 
+	console.log(visible, position, items)
+	
 	return <div
 		className="ContextualMenuView"
 		data-visible={visible}

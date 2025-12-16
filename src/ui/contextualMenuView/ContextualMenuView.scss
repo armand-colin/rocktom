@@ -1,3 +1,6 @@
 .ContextualMenuView {
-    position: fixed;   
+    position: fixed;
+    left: calc(var(--x) * 1px);
+    top: calc(var(--y) * 1px);
+    background: var(--surface);
 }
