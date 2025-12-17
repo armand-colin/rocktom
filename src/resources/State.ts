@@ -1,8 +1,8 @@
 import { Engine, Resource } from "@niloc/ecs";
 import { LevelEditor } from "../components/editor/LevelEditor";
-import { Level } from "../sound/Level";
 import type { LiveInstrument } from "../components/LiveInstrument";
 import type { Playback } from "../components/Playback";
+import { Level } from "../sound/Level";
 
 export class State extends Resource {
 

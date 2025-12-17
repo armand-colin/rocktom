@@ -27,6 +27,7 @@ export class EditorPlayer extends Component {
         this.virtualBass = virtualBass
 
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
+
         this._audioPlayer = AudioPlayerFactory.create(
             engine,
             level.audioTrack,
@@ -110,6 +111,13 @@ export class EditorPlayer extends Component {
 
         if (this.playing)
             this._playAudio()
+    }
+
+    destroy() {
+        super.destroy()
+        this.pause()
+        this._audioPlayer.clear()
+        this.virtualBass.destroy()
     }
 
 

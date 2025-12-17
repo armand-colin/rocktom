@@ -9,15 +9,15 @@ import { WindowManager } from "../../resources/WindowManager";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button } from "../button/Button";
 import { Icon } from "../icon/Icon";
+import { StringInput } from "../input/StringInput";
 import { MixerView } from "../mixerView/MixerView";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
+import { FocusTrackEditorView } from "./FocusTrackEditorView";
 import "./LevelEditorView.scss";
+import { MagnetizationView } from "./magnetizationView/MagnetizationView";
 import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
-import { StringInput } from "../input/StringInput";
-import { FocusTrackEditorView } from "./FocusTrackEditorView";
-import { MagnetizationView } from "./magnetizationView/MagnetizationView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const state = useResource(State)
@@ -56,6 +56,10 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
             <LevelName
                 name={level.name}
                 onChange={name => props.editor.setName(name)}
+            />
+            <LevelName
+                name={level.author}
+                onChange={author => props.editor.setAuthor(author)}
             />
             <Button onClick={() => props.editor.save()}>Save</Button>
             <PlayerControls player={props.editor.player} />

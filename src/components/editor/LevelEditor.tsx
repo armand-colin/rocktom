@@ -3,17 +3,17 @@ import { LevelStorage } from "../../resources/LevelStorage";
 import { WindowManager, type Window } from "../../resources/WindowManager";
 import type { Level } from "../../sound/Level";
 import type { TimedPattern } from "../../sound/song/Pattern";
+import { Tempo } from "../../sound/Tempo";
 import { PatternEditorView } from "../../ui/levelEditor/PatternEditorView";
 import { VirtualBass } from "../VirtualBass";
 import { AudioTrackEditor } from "./AudioTrackEditor";
+import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
 import { EditorPlayer } from "./EditorPlayer";
+import { FocusTrackEditor } from "./FocusTrackEditor";
 import { NoteTrackEditor } from "./NoteTrackEditor";
 import { PatternEditor } from "./PatternEditor";
 import { TempoTrackEditor } from "./TempoTrackEditor";
 import { TimeTransform } from "./TimeTransform";
-import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
-import { FocusTrackEditor } from "./FocusTrackEditor";
-import { Tempo } from "../../sound/Tempo";
 
 export class LevelEditor extends Component {
 
@@ -37,7 +37,7 @@ export class LevelEditor extends Component {
         this.tempoTrack = engine.createComponent(TempoTrackEditor, level.tempoTrack)
         this.timeTransform = engine.createComponent(TimeTransform)
         this.timeTransform.setStep(Tempo.beats(1))
-        
+
         this.audioTrack = engine.createComponent(AudioTrackEditor, level.audioTrack)
         this.focusTrack = engine.createComponent(FocusTrackEditor, level.focusTrack)
         this.virtualBass = engine.createComponent(VirtualBass)
@@ -64,6 +64,11 @@ export class LevelEditor extends Component {
 
     setName(name: string) {
         this.level.name = name
+        this.changed()
+    }
+
+    setAuthor(author: string) {
+        this.level.author = author
         this.changed()
     }
 
