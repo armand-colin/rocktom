@@ -1,9 +1,11 @@
 import type { KeyboardEvent } from "react"
 import "./StringInput.scss"
+import type { FormField } from "../../form/FormSchema"
 
 type Props = {
     name: string,
     value?: string,
+    field?: FormField<string, any>,
     onChange?: (value: string) => void,
     autoFocus?: boolean,
     type?: 'text' | 'email',
@@ -12,7 +14,6 @@ type Props = {
 }
 
 export function StringInput(props: Props) {
-
     function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
         if (e.key === "Escape" || e.key === "Enter") {
             e.preventDefault()
@@ -27,7 +28,7 @@ export function StringInput(props: Props) {
             onChange={e => props.onChange?.(e.target.value)}
             onBlur={props.onBlur}
             autoFocus={props.autoFocus}
-            name={props.name}
+            name={props.field?.name ?? props.name}
             placeholder={props.placeholder}
             onKeyDown={onKeyDown}
         />

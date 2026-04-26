@@ -12,6 +12,7 @@ type SendMailParams = {
 
 @Injectable()
 export class MailerService {
+
   private readonly logger = new Logger(MailerService.name);
   private readonly mode: 'local' | 'smtp';
   private readonly defaultFrom: string;
@@ -63,4 +64,5 @@ export class MailerService {
       },
     });
   }
+  
 }

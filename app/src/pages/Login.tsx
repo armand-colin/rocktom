@@ -4,11 +4,12 @@ import { StringInput } from "../ui/input/StringInput"
 import { Button } from "../ui/button/Button"
 import { usePopupManager } from "../hooks/usePopupManager"
 import { Popup } from "../ui/popup/Popup"
-
-type Tokens = {
-    accessToken: string,
-    refreshToken: string,
-}
+import { AuthManager } from "../resources/AuthManager"
+import { StatusCodeError } from "../resources/fetch/StatusCodeError"
+import { Instance } from "../Instance"
+import { FormSchema, type FormResult } from "../form/FormSchema"
+import { useForm } from "../hooks/useForm"
+import { Form } from "../ui/form/Form"
 
 enum LoginStep {
     Email,
@@ -18,7 +19,7 @@ enum LoginStep {
 export function Login() {
     const [email, setEmail] = useState<string | null>(null)
     const [step, setStep] = useState<LoginStep>(LoginStep.Email)
-    
+
     const navigate = useNavigate()
 
     return <div>
@@ -33,110 +34,109 @@ export function Login() {
             /> :
                 step === LoginStep.Code ? <CodeForm
                     email={email!}
-                    onSuccess={(tokens) => {
-                        console.log(tokens)
-                        navigate('/')
+                    onSuccess={() => {
+
                     }}
                 /> : null
         }
     </div>
 }
 
+const EmailFormSchema = new FormSchema({
+    email: 'string'
+})
+
 function EmailForm(props: { email?: string, onSuccess: (email: string) => void }) {
-    const [email, setEmail] = useState<string>(props.email ?? '');
     const popupManager = usePopupManager()
+    const formHandler = useForm(EmailFormSchema)
 
-    async function onSubmit(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault()
-        const formData = new FormData(e.target as HTMLFormElement)
-        const email = formData.get("email") as string
+    async function onSubmit(e: FormResult<typeof EmailFormSchema>) {
+        const authManager = Instance.engine.getResource(AuthManager)
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/session/code`, {
-            method: 'POST',
-            body: JSON.stringify({ email }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
+        const result = await authManager.requestCode(e.json.email)
 
-        if (!response.ok) {
-            const error = await response.json()
-            const code = error.message
-
-            let message = 'Failed to ask for code'
-            switch (code) {
-                case 'user_not_found':
-                    message = 'User not found'
-                    break
-                default:
-                    message = 'Failed to ask for code'
-                    break
-            }
-            popupManager.add(close => <Popup title="Login failed" close={close}>
-                <p>{message}</p>
-            </Popup>)
+        if (result.ok) {
+            props.onSuccess(e.json.email)
             return
         }
 
-        props.onSuccess(email)
+        const error = result.error
+
+        let errorMessage = 'Failed to ask for code'
+
+        if (error instanceof StatusCodeError) {
+            const code = (await error.response.json()).message
+
+            switch (code) {
+                case 'user_not_found':
+                    errorMessage = 'User not found'
+                    break
+                default:
+                    errorMessage = 'Failed to ask for code'
+                    break
+            }
+        }
+
+        popupManager.add(close => <Popup title="Login failed" close={close}>
+            <p>{errorMessage}</p>
+        </Popup>)
     }
 
-    return <form onSubmit={onSubmit}>
+    return <Form handler={formHandler} onSubmit={onSubmit}>
         <StringInput
             name="email"
             type="email"
-            value={email}
-            onChange={setEmail}
         />
         <Button>Submit</Button>
 
         <a href='/register'>Register</a>
-    </form>
+    </Form>
 }
 
-function CodeForm(props: { email: string, onSuccess: (tokens: Tokens) => void }) {
+function CodeForm(props: { email: string, onSuccess: () => void }) {
     const [code, setCode] = useState<string>('');
     const popupManager = usePopupManager()
 
     async function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
+
         const formData = new FormData(e.target as HTMLFormElement)
         const code = formData.get("code") as string
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/session/login`, {
-            method: 'POST',
-            body: JSON.stringify({ email: props.email, code }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
+        const authManager = Instance.engine.getResource(AuthManager)
 
-        if (!response.ok) {
-            const error = await response.json()
-            const code = error.message
-            let message = 'Failed to login'
+        const result = await authManager.login(props.email, code)
 
-            switch (code) {
-                case 'invalid_code':
-                    message = 'Invalid code'
-                    break
-                default:
-                    message = 'Failed to login'
-                    break
-            }
-            
-            popupManager.add(close => <Popup 
-                title="Login failed"
-                close={close}
-            >
-                <p>{message}</p>
-            </Popup>)
+        if (result.ok) {
+            props.onSuccess()
             return
         }
 
-        const tokens = await response.json() as Tokens
+        const error = result.error
 
-        props.onSuccess(tokens)
+        let errorMessage = 'Failed to login'
+
+        if (error instanceof StatusCodeError) {
+            const code = (await error.response.json()).message
+
+            switch (code) {
+                case 'invalid_code':
+                    errorMessage = 'Invalid code'
+                    break
+                default:
+                    errorMessage = 'Failed to login'
+                    break
+            }
+
+            return
+        }
+
+        popupManager.add(close => <Popup
+            title="Login failed"
+            close={close}
+        >
+            <p>{errorMessage}</p>
+        </Popup>)
     }
 
     return <form onSubmit={onSubmit}>
