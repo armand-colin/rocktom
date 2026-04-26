@@ -2,6 +2,8 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { getEnv } from '../config/env';
 import { Logger } from '@nestjs/common';
 import { AppConfigService } from '../config/config.service';
+import { Document } from '../modules/document/document.entity';
+import { Level } from '../modules/level/level.entity';
 import { Session } from '../modules/session/session.entity';
 import { User } from '../modules/user/user.entity';
 
@@ -23,7 +25,9 @@ export namespace TypeOrmConfig {
       database: config.database.database,
       entities: [
         User,
-        Session
+        Session,
+        Document,
+        Level,
       ],
       synchronize: true,
     };
