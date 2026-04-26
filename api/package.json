@@ -5,7 +5,7 @@
   "main": "dist/main.cjs",
   "license": "MIT",
   "scripts": {
-    "dev": "vite-node src/main.ts",
+    "dev": "vite-node src/main.ts --watch",
     "build": "vite build",
     "start": "node dist/main.cjs"
   },

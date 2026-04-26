@@ -3,9 +3,11 @@ import "./StringInput.scss"
 
 type Props = {
     name: string,
-    value: string,
-    onChange: (value: string) => void,
+    value?: string,
+    onChange?: (value: string) => void,
     autoFocus?: boolean,
+    type?: 'text' | 'email',
+    placeholder?: string,
     onBlur?: () => void,
 }
 
@@ -20,12 +22,13 @@ export function StringInput(props: Props) {
 
     return <div className="StringInput">
         <input
-            type="text"
+            type={props.type ?? 'text'}
             value={props.value}
-            onChange={e => props.onChange(e.target.value)}
+            onChange={e => props.onChange?.(e.target.value)}
             onBlur={props.onBlur}
             autoFocus={props.autoFocus}
             name={props.name}
+            placeholder={props.placeholder}
             onKeyDown={onKeyDown}
         />
     </div>

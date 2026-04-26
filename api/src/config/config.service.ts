@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AppEnv } from './env.schema';
+import type { AppEnv } from './env.schema';
 
 @Injectable()
 export class AppConfigService {
@@ -8,6 +8,10 @@ export class AppConfigService {
 
   get port(): number {
     return this.env.PORT;
+  }
+
+  get corsOrigin(): string {
+    return this.env.CORS_ORIGIN;
   }
 
   get jwtSecret(): string {

@@ -41,8 +41,8 @@ export class SessionService {
         return tokens;
     }
 
-    async code(userId: string) {
-        const user = await this.userService.getUserById(userId);
+    async code(email: string) {
+        const user = await this.userService.getUserByEmail(email);
 
         // generate 6 digits code
         const code = Array.from({ length: 6 }, () => NUMERICS[Math.floor(Math.random() * NUMERICS.length)]).join('');

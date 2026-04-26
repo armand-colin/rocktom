@@ -1,6 +1,10 @@
 import type { FormEvent } from "react"
+import { useNavigate } from "react-router-dom"
+import { StringInput } from "../ui/input/StringInput"
+import { Button } from "../ui/button/Button"
 
 export function Register() {
+    const navigate = useNavigate()
 
     async function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -19,17 +23,20 @@ export function Register() {
             throw new Error('Failed to register user')
         }
 
-        const data = await response.json()
-        console.log(data)
+        // Shall route to login
+        navigate('/login')
     }
 
     return <div>
         <h1>Register</h1>
 
         <form onSubmit={onSubmit}>
-            <input type="email" placeholder="Email" />
-
-            <button>Register</button>
+            <StringInput
+                name="email"
+                type="email"
+                placeholder="Email"
+            />
+            <Button>Register</Button>
         </form>
     </div>
 }

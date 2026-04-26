@@ -2,7 +2,7 @@ import type { CSSProperties, MouseEvent, ReactNode } from "react"
 import './Button.scss'
 
 type Props = {
-    onClick: (e: MouseEvent<HTMLButtonElement>) => void
+    onClick?: (e: MouseEvent<HTMLButtonElement>) => void
     children: ReactNode,
     disabled?: boolean,
     className?: string,

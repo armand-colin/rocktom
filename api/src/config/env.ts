@@ -1,5 +1,6 @@
 import 'dotenv/config';
-import { AppEnv, parseEnv } from './env.schema';
+import { parseEnv } from './env.schema';
+import type { AppEnv } from './env.schema';
 
 let cachedEnv: AppEnv | null = null;
 
