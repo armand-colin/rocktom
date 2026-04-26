@@ -15,11 +15,14 @@
     "@niloc/utils": "^0.1.19",
     "@types/three": "^0.181.0",
     "@types/youtube-player": "^5.5.11",
+    "dotenv": "^17.4.2",
     "nanoid": "^5.1.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.14.2",
     "sass": "^1.93.2",
     "three": "^0.181.0",
+    "vite": "^8.0.10",
     "youtube-player": "^5.6.0"
   },
   "devDependencies": {
@@ -33,8 +36,7 @@
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.45.0",
-    "vite": "^7.1.7"
+    "typescript-eslint": "^8.45.0"
   },
   "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

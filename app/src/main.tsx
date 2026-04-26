@@ -1,6 +1,7 @@
 import { Engine } from '@niloc/ecs'
 import { EngineContext } from '@niloc/ecs-react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
 import { LiveInstrumentPreferences } from './resources/LiveInstrumentPreferences.ts'
@@ -18,6 +19,8 @@ engine.getResource(PlaybackPreferences).recover()
 
 createRoot(document.getElementById('root')!).render(
   <EngineContext.Provider value={{ engine }}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </EngineContext.Provider>
 )

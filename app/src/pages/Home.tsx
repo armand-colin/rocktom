@@ -1,20 +1,19 @@
 import { useContext } from 'react'
-import './App.css'
-import { Playback } from './components/Playback'
-import { PlaybackView } from './ui/PlaybackView'
-
 import { EngineContext, useResource } from '@niloc/ecs-react'
-import { SoundEngine } from './resources/SoundEngine'
-import { State } from './resources/State'
-import { Bass } from './sound/instrument/Instrument'
-import { Level } from './sound/Level'
-import { LevelEditorView } from './ui/levelEditor/LevelEditorView'
-import { LevelList } from './ui/levelList/LevelList'
-import { PopupManagerView } from './ui/popup/PopupManagerView'
-import { WindowManagerView } from './ui/window/WindowManagerView'
-import { ContextualMenuView } from './ui/contextualMenuView/ContextualMenuView'
+import { Playback } from '../components/Playback'
+import { SoundEngine } from '../resources/SoundEngine'
+import { State } from '../resources/State'
+import { Bass } from '../sound/instrument/Instrument'
+import { Level } from '../sound/Level'
+import { PlaybackView } from '../ui/PlaybackView'
+import { ContextualMenuView } from '../ui/contextualMenuView/ContextualMenuView'
+import { LevelEditorView } from '../ui/levelEditor/LevelEditorView'
+import { LevelList } from '../ui/levelList/LevelList'
+import { PopupManagerView } from '../ui/popup/PopupManagerView'
+import { WindowManagerView } from '../ui/window/WindowManagerView'
+import '../App.css'
 
-function App() {
+export function Home() {
   const { engine } = useContext(EngineContext)
   const state = useResource(State)
   const { editor, playback } = state
@@ -59,5 +58,3 @@ function App() {
     </div>
   )
 }
-
-export default App
