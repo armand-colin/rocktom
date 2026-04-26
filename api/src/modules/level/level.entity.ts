@@ -6,6 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   RelationId,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Document } from '../document/document.entity';
@@ -25,14 +26,11 @@ export class Level {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  updatedAt!: Date;
+
   @Column({ type: 'text' })
   name!: string;
-
-  @Column({ name: 'song_author', type: 'text' })
-  song_author!: string;
-
-  @Column({ name: 'song_name', type: 'text' })
-  song_name!: string;
 
   @RelationId((level: Level) => level.playback)
   playbackId!: string | null;
