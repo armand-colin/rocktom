@@ -12,8 +12,6 @@ export function ContextualMenuView() {
 		item.action()
 		contextualMenu.close()
 	}
-
-	console.log(visible, position, items)
 	
 	return <div
 		className="ContextualMenuView"

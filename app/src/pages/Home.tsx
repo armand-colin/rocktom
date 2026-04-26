@@ -53,8 +53,6 @@ export function Home() {
       }
 
       <WindowManagerView />
-      <PopupManagerView />
-      <ContextualMenuView />
     </div>
   )
 }

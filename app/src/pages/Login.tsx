@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { StringInput } from "../ui/input/StringInput"
 import { Button } from "../ui/button/Button"
+import { usePopupManager } from "../hooks/usePopupManager"
+import { Popup } from "../ui/popup/Popup"
 
 type Tokens = {
     accessToken: string,
@@ -16,7 +18,7 @@ enum LoginStep {
 export function Login() {
     const [email, setEmail] = useState<string | null>(null)
     const [step, setStep] = useState<LoginStep>(LoginStep.Email)
-
+    
     const navigate = useNavigate()
 
     return <div>
@@ -42,6 +44,7 @@ export function Login() {
 
 function EmailForm(props: { email?: string, onSuccess: (email: string) => void }) {
     const [email, setEmail] = useState<string>(props.email ?? '');
+    const popupManager = usePopupManager()
 
     async function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -57,7 +60,22 @@ function EmailForm(props: { email?: string, onSuccess: (email: string) => void }
         })
 
         if (!response.ok) {
-            throw new Error('Failed to ask for code')
+            const error = await response.json()
+            const code = error.message
+
+            let message = 'Failed to ask for code'
+            switch (code) {
+                case 'user_not_found':
+                    message = 'User not found'
+                    break
+                default:
+                    message = 'Failed to ask for code'
+                    break
+            }
+            popupManager.add(close => <Popup title="Login failed" close={close}>
+                <p>{message}</p>
+            </Popup>)
+            return
         }
 
         props.onSuccess(email)
@@ -71,11 +89,14 @@ function EmailForm(props: { email?: string, onSuccess: (email: string) => void }
             onChange={setEmail}
         />
         <Button>Submit</Button>
+
+        <a href='/register'>Register</a>
     </form>
 }
 
 function CodeForm(props: { email: string, onSuccess: (tokens: Tokens) => void }) {
     const [code, setCode] = useState<string>('');
+    const popupManager = usePopupManager()
 
     async function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -91,7 +112,26 @@ function CodeForm(props: { email: string, onSuccess: (tokens: Tokens) => void })
         })
 
         if (!response.ok) {
-            throw new Error('Failed to login')
+            const error = await response.json()
+            const code = error.message
+            let message = 'Failed to login'
+
+            switch (code) {
+                case 'invalid_code':
+                    message = 'Invalid code'
+                    break
+                default:
+                    message = 'Failed to login'
+                    break
+            }
+            
+            popupManager.add(close => <Popup 
+                title="Login failed"
+                close={close}
+            >
+                <p>{message}</p>
+            </Popup>)
+            return
         }
 
         const tokens = await response.json() as Tokens
