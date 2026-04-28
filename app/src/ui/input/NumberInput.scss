@@ -2,13 +2,12 @@
     background: var(--surface);
     border-radius: 4px;
     display: grid;
-    grid-template-columns: 1fr 26px;
+    grid-template-columns: 1fr 34px;
     overflow: hidden;
 
     input {
         background: none;
         width: auto;
-        padding: 4px 8px;
         display: block;
         min-width: 0;
         &::-webkit-inner-spin-button {
@@ -21,10 +20,30 @@
         background: var(--surface-hover);
         flex-shrink: 0;
         width: 26px;
-        height: 26px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: ew-resize;
+    }
+
+    &[data-size="m"] input {
+        padding: 8px 8px;
+    }
+
+    &[data-size="m"] .slider {
+        width: 34px;
+    }
+
+    &[data-size="s"] input {
+        padding: 4px 8px;
+    }
+
+    &[data-size="s"] {
+        grid-template-columns: 1fr 26px;
+    }
+
+    &[data-size="s"] .slider {
+        width: 26px;
+        height: 26px;
     }
 }

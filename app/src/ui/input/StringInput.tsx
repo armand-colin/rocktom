@@ -1,6 +1,7 @@
 import type { KeyboardEvent } from "react"
 import "./StringInput.scss"
 import type { FormField } from "../../form/FormField"
+import { UiSize } from "../UiSize"
 
 type Props = {
     name?: string,
@@ -9,6 +10,7 @@ type Props = {
     onChange?: (value: string) => void,
     autoFocus?: boolean,
     type?: 'text' | 'email',
+    size?: UiSize,
     placeholder?: string,
     onBlur?: () => void,
 }
@@ -21,7 +23,7 @@ export function StringInput(props: Props) {
         }
     }
 
-    return <div className="StringInput">
+    return <div className="StringInput" data-size={props.size ?? UiSize.M}>
         <input
             type={props.type ?? 'text'}
             value={props.value}

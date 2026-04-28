@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent } from "react"
 import { Slider } from "../../utils/Slider"
 import { Icon } from "../icon/Icon"
+import { UiSize } from "../UiSize"
 import "./NumberInput.scss"
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
     min?: number,
     max?: number,
     sensibility?: number,
+    size?: UiSize,
     onChange: (value: number) => void,
     autoFocus?: boolean,
     onBlur?: () => void,
@@ -65,7 +67,7 @@ export function NumberInput(props: Props) {
         setValue(props.value.toString())
     }, [props.value])
 
-    return <div className="NumberInput">
+    return <div className="NumberInput" data-size={props.size ?? UiSize.M}>
         <input
             type="number"
             name={props.name}

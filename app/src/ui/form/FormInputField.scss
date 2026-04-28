@@ -1,0 +1,18 @@
+.FormInputField {
+    display: grid;
+    gap: 3px;
+
+    .label {
+        color: var(--text-secondary);
+        font-size: 13px;
+        line-height: 1.2;
+    }
+
+    .control {
+        min-width: 0;
+    }
+
+    .error-slot {
+        min-height: 0;
+    }
+}

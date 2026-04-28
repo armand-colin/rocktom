@@ -32,20 +32,24 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
-
-export const Gallery: Story = {
-  render: () => (
-    <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-      {iconNames.map((name) => (
-        <div
-          key={name}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 90, gap: 6 }}
-        >
-          <Icon name={name} />
-          <span style={{ fontSize: 12 }}>{name}</span>
-        </div>
-      ))}
+export const Main: Story = {
+  render: (args) => (
+    <div style={{ display: "grid", gap: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 12 }}>Selected:</span>
+        <Icon {...args} />
+      </div>
+      <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        {iconNames.map((name) => (
+          <div
+            key={name}
+            style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 90, gap: 6 }}
+          >
+            <Icon name={name} />
+            <span style={{ fontSize: 12 }}>{name}</span>
+          </div>
+        ))}
+      </div>
     </div>
   ),
 };

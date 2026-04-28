@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { StringInput } from "./StringInput";
+import { UiSize } from "../UiSize";
 
 const meta = {
   title: "UI/Input/StringInput",
@@ -10,11 +11,16 @@ const meta = {
     value: "My value",
     placeholder: "Type here",
     type: "text",
+    size: UiSize.M,
   },
   argTypes: {
     type: {
       control: "radio",
       options: ["text", "email"],
+    },
+    size: {
+      control: "radio",
+      options: [UiSize.S, UiSize.M],
     },
   },
 } satisfies Meta<typeof StringInput>;
@@ -22,22 +28,30 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Main: Story = {
   render: (args) => {
-    const [value, setValue] = useState(args.value ?? "");
-    return <StringInput {...args} value={value} onChange={setValue} />;
-  },
-};
+    const [textValue, setTextValue] = useState("My value");
+    const [emailValue, setEmailValue] = useState("rock@example.com");
 
-export const Email: Story = {
-  args: {
-    type: "email",
-    name: "email",
-    value: "rock@example.com",
-    placeholder: "you@example.com",
-  },
-  render: (args) => {
-    const [value, setValue] = useState(args.value ?? "");
-    return <StringInput {...args} value={value} onChange={setValue} />;
+    return (
+      <div style={{ display: "grid", gap: 12, maxWidth: 360 }}>
+        <StringInput
+          {...args}
+          type="text"
+          name="title"
+          value={textValue}
+          placeholder="Type here"
+          onChange={setTextValue}
+        />
+        <StringInput
+          {...args}
+          type="email"
+          name="email"
+          value={emailValue}
+          placeholder="you@example.com"
+          onChange={setEmailValue}
+        />
+      </div>
+    );
   },
 };

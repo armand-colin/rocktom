@@ -6,8 +6,15 @@
     input {
         background: none;
         width: 100%;
-        padding: 4px 8px;
         display: block;
         min-width: 0;
+    }
+
+    &[data-size="m"] input {
+        padding: 8px 8px;
+    }
+
+    &[data-size="s"] input {
+        padding: 4px 8px;
     }
 }

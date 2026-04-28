@@ -1,7 +1,14 @@
 .Button {
-    padding: 8px 12px;
     border-radius: 4px;
     background: #2d2d2d;
+
+    &[data-size="m"] {
+        padding: 8px 12px;
+    }
+
+    &[data-size="s"] {
+        padding: 4px 12px;
+    }
     
     &:not(:disabled) {
         cursor: pointer;

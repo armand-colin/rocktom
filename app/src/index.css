@@ -1,3 +1,8 @@
+@import "tailwindcss";
+@source "./App.tsx";
+@source "./pages/**/*.tsx";
+@source not "./ui/**/*.tsx";
+
 @font-face {
     font-family: "Stack";
     src: url("./assets/fonts/StackSans.ttf");
