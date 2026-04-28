@@ -7,9 +7,11 @@ import { Popup } from "../ui/popup/Popup"
 import { AuthManager } from "../resources/AuthManager"
 import { StatusCodeError } from "../resources/fetch/StatusCodeError"
 import { Instance } from "../Instance"
-import { FormSchema, type FormResult } from "../form/FormSchema"
+import { FormSchema } from "../form/FormSchema"
 import { useForm } from "../hooks/useForm"
 import { Form } from "../ui/form/Form"
+import { FormField } from "../form/FormField"
+import type { FormHandler } from "../form/FormHandler"
 
 enum LoginStep {
     Email,
@@ -19,8 +21,6 @@ enum LoginStep {
 export function Login() {
     const [email, setEmail] = useState<string | null>(null)
     const [step, setStep] = useState<LoginStep>(LoginStep.Email)
-
-    const navigate = useNavigate()
 
     return <div>
         <h1>Login</h1>
@@ -43,14 +43,14 @@ export function Login() {
 }
 
 const EmailFormSchema = new FormSchema({
-    email: 'string'
+    email: FormField.email()
 })
 
 function EmailForm(props: { email?: string, onSuccess: (email: string) => void }) {
     const popupManager = usePopupManager()
     const formHandler = useForm(EmailFormSchema)
 
-    async function onSubmit(e: FormResult<typeof EmailFormSchema>) {
+    async function onSubmit(e: FormHandler.Result<typeof EmailFormSchema>) {
         const authManager = Instance.engine.getResource(AuthManager)
 
         const result = await authManager.requestCode(e.json.email)
@@ -84,8 +84,7 @@ function EmailForm(props: { email?: string, onSuccess: (email: string) => void }
 
     return <Form handler={formHandler} onSubmit={onSubmit}>
         <StringInput
-            name="email"
-            type="email"
+            field={formHandler.fields.email}
         />
         <Button>Submit</Button>
 
@@ -93,19 +92,19 @@ function EmailForm(props: { email?: string, onSuccess: (email: string) => void }
     </Form>
 }
 
+const CodeFormSchema = new FormSchema({
+    code: FormField.string().min(6).max(6)
+})
+
 function CodeForm(props: { email: string, onSuccess: () => void }) {
-    const [code, setCode] = useState<string>('');
     const popupManager = usePopupManager()
 
-    async function onSubmit(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault()
+    const formHandler = useForm(CodeFormSchema)
 
-        const formData = new FormData(e.target as HTMLFormElement)
-        const code = formData.get("code") as string
-
+    async function onSubmit(e: FormHandler.Result<typeof CodeFormSchema>) {
         const authManager = Instance.engine.getResource(AuthManager)
 
-        const result = await authManager.login(props.email, code)
+        const result = await authManager.login(props.email, e.json.code)
 
         if (result.ok) {
             props.onSuccess()
@@ -139,12 +138,11 @@ function CodeForm(props: { email: string, onSuccess: () => void }) {
         </Popup>)
     }
 
-    return <form onSubmit={onSubmit}>
+    return <Form handler={formHandler} onSubmit={onSubmit}>
         <StringInput
+            field={formHandler.fields.code}
             name="code"
-            value={code}
-            onChange={setCode}
         />
         <Button>Submit</Button>
-    </form>
+    </Form>
 }

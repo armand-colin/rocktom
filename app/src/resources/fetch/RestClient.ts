@@ -116,13 +116,12 @@ export class RestClient {
             return Result.error(new StatusCodeError(response))
         }
 
-        switch (response.headers.get('Content-Type')) {
-            case 'application/json':
-                return Result.ok(await response.json())
-            case 'text/plain':
-                return Result.ok(await response.text())
-            default:
-                return Result.ok(await response.text())
+        const contentType = response.headers.get('Content-Type')
+        
+        if (contentType?.startsWith('application/json')) {
+            return Result.ok(await response.json())
+        } else {
+            return Result.ok(await response.text())
         }
     }
 

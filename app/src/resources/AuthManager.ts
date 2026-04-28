@@ -67,11 +67,11 @@ export class AuthManager extends Resource {
             }
 
             this._session = this._parseTokens(response.value)
-
             this.changed()
 
             return Result.ok(undefined)
         } catch (error) {
+            console.error('login error', error)
             return Result.error(error)
         }
     }

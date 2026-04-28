@@ -1,9 +1,9 @@
 import type { KeyboardEvent } from "react"
 import "./StringInput.scss"
-import type { FormField } from "../../form/FormSchema"
+import type { FormField } from "../../form/FormField"
 
 type Props = {
-    name: string,
+    name?: string,
     value?: string,
     field?: FormField<string, any>,
     onChange?: (value: string) => void,
