@@ -31,7 +31,7 @@ export class RegisterUserDto {
     @IsString()
     @IsNotEmpty()
     @Validate(IsNotEmailConstraint)
-    name!: string;
+    username!: string;
 
 }
 

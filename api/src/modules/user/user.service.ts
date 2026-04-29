@@ -20,7 +20,7 @@ export class UserService {
     try {
       const user = await this.userRepository.create({
         email: body.email,
-        name: body.name,
+        name: body.username,
       });
 
       const createdUser = await this.userRepository.save(user);
