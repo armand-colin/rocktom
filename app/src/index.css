@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @source "./App.tsx";
 @source "./pages/**/*.tsx";
-@source not "./ui/**/*.tsx";
+@source "./ui/**/*.tsx";
 
 @font-face {
     font-family: "Stack";

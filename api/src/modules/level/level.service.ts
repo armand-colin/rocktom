@@ -19,6 +19,7 @@ export class LevelService {
             name: body.name,
             playbackId: null,
             serialized: '',
+            duration: 0,
         })
 
         return this.levelRepository.save(level);

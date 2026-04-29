@@ -1,3 +1,4 @@
+import * as React from "react";
 import type { Preview } from "@storybook/react-vite";
 import { EngineContext } from "@niloc/ecs-react";
 import { Instance } from "../src/Instance";

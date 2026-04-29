@@ -6,10 +6,8 @@ import { State } from '../resources/State'
 import { Bass } from '../sound/instrument/Instrument'
 import { Level } from '../sound/Level'
 import { PlaybackView } from '../ui/PlaybackView'
-import { ContextualMenuView } from '../ui/contextualMenuView/ContextualMenuView'
 import { LevelEditorView } from '../ui/levelEditor/LevelEditorView'
 import { LevelList } from '../ui/levelList/LevelList'
-import { PopupManagerView } from '../ui/popup/PopupManagerView'
 import { WindowManagerView } from '../ui/window/WindowManagerView'
 import '../App.css'
 
@@ -41,7 +39,9 @@ export function Home() {
     >
       {
         editor ?
-          <LevelEditorView editor={editor} /> :
+          <LevelEditorView
+            editor={editor}
+          /> :
           playback ?
             <PlaybackView playback={playback} /> :
             <LevelList

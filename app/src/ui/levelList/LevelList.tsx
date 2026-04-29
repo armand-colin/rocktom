@@ -59,8 +59,10 @@ export function LevelList(props: {
         <h1>Rocktom</h1>
         <h2>List of available songs</h2>
 
-        <Button onClick={props.onCreate}>Create</Button>
-        <Button onClick={onImport}>Import</Button>
+        <div className="flex gap-1">
+            <Button onClick={props.onCreate}>Create</Button>
+            <Button onClick={onImport}>Import</Button>
+        </div>
         <ul>
             {
                 levels.map((level) => (

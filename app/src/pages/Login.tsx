@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react"
-import { useNavigate } from "react-router-dom"
+import './Login.scss'
+import { useState } from "react"
 import { StringInput } from "../ui/input/StringInput"
 import { Button } from "../ui/button/Button"
 import { usePopupManager } from "../hooks/usePopupManager"
@@ -12,6 +12,7 @@ import { useForm } from "../hooks/useForm"
 import { Form } from "../ui/form/Form"
 import { FormField } from "../form/FormField"
 import type { FormHandler } from "../form/FormHandler"
+import { FormInputField } from '../ui/form/FormInputField'
 
 enum LoginStep {
     Email,
@@ -22,9 +23,9 @@ export function Login() {
     const [email, setEmail] = useState<string | null>(null)
     const [step, setStep] = useState<LoginStep>(LoginStep.Email)
 
-    return <div>
+    return <div className="Login">
+        <div>
         <h1>Login</h1>
-
         {
             step === LoginStep.Email ? <EmailForm
                 onSuccess={(email: string) => {
@@ -39,6 +40,7 @@ export function Login() {
                     }}
                 /> : null
         }
+        </div>
     </div>
 }
 
@@ -83,9 +85,12 @@ function EmailForm(props: { email?: string, onSuccess: (email: string) => void }
     }
 
     return <Form handler={formHandler} onSubmit={onSubmit}>
+        <FormInputField field={formHandler.fields.email} label="Email">
         <StringInput
             field={formHandler.fields.email}
+            placeholder="Email"
         />
+        </FormInputField>
         <Button>Submit</Button>
 
         <a href='/register'>Register</a>
@@ -139,10 +144,14 @@ function CodeForm(props: { email: string, onSuccess: () => void }) {
     }
 
     return <Form handler={formHandler} onSubmit={onSubmit}>
+        <p>Enter the code sent to your email</p>
+
         <StringInput
             field={formHandler.fields.code}
             name="code"
+            placeholder="XXXXXX"
         />
+
         <Button>Submit</Button>
     </Form>
 }
