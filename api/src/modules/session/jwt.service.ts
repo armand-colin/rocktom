@@ -72,4 +72,29 @@ export class JwtService {
         }
     }
 
+    async verifyRefreshToken(token: string): Promise<RefreshTokenPayload> {
+        try {
+            const decoded = jwt.verify(token, this._secret);
+
+            if (typeof decoded === 'string') {
+                throw new UnauthorizedException('invalid_session');
+            }
+
+            if (!decoded.hash || typeof decoded.hash !== 'string') {
+                throw new UnauthorizedException('invalid_session');
+            }
+
+            if (!decoded.sid || typeof decoded.sid !== 'string') {
+                throw new UnauthorizedException('invalid_session');
+            }
+
+            return {
+                hash: decoded.hash,
+                sessionId: decoded.sid,
+            };
+        } catch {
+            throw new UnauthorizedException('invalid_session');
+        }
+    }
+
 }

@@ -1,8 +1,9 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository, TypeORMError } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { TypeORMUtils } from '../../database/typeorm.utils';
+import { RegisterUserDto } from './user.dto';
 
 // 5 minutes
 const EMAIL_VALIDATION_CODE_EXPIRATION_MINUTES = 5;
@@ -15,10 +16,11 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) { }
 
-  async register(body: { email: string }) {
+  async register(body: RegisterUserDto) {
     try {
       const user = await this.userRepository.create({
         email: body.email,
+        name: body.name,
       });
 
       const createdUser = await this.userRepository.save(user);
@@ -26,6 +28,10 @@ export class UserService {
       return createdUser.id;
     } catch (error) {
       if (TypeORMUtils.isConflictError(error)) {
+        const detail = (error as { driverError?: { detail?: string } }).driverError?.detail ?? '';
+        if (detail.includes('(name)')) {
+          throw new ConflictException('name_already_exists');
+        }
         throw new ConflictException('email_already_exists');
       }
       throw error;
@@ -53,6 +59,21 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('user_not_found');
     }
+    return user;
+  }
+
+  async getUserByNameOrEmail(nameOrEmail: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: [
+        { name: nameOrEmail },
+        { email: nameOrEmail },
+      ],
+    });
+
+    if (!user) {
+      throw new NotFoundException('user_not_found');
+    }
+
     return user;
   }
 

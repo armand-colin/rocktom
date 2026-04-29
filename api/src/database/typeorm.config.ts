@@ -11,8 +11,6 @@ const env = getEnv();
 
 const logger = new Logger('TypeOrmConfig');
 
-logger.log(JSON.stringify(env, null, 2));
-
 export namespace TypeOrmConfig {
 
   export function fromConfig(config: AppConfigService): TypeOrmModuleOptions {
@@ -32,4 +30,5 @@ export namespace TypeOrmConfig {
       synchronize: true,
     };
   }
+
 }

@@ -22,10 +22,15 @@ export class SessionService {
     ) {}
 
     async login(body: {
-        email: string,
+        username: string,
         code: string
     }) {
-        const user = await this.userService.getUserByEmail(body.email);
+        const username = body.username.trim();
+        if (!username) {
+            throw new BadRequestException('missing_username');
+        }
+
+        const user = await this.userService.getUserByNameOrEmail(username);
 
         if (user.emailValidationCode !== body.code) {
             throw new BadRequestException('invalid_code');
@@ -41,8 +46,13 @@ export class SessionService {
         return tokens;
     }
 
-    async code(email: string) {
-        const user = await this.userService.getUserByEmail(email);
+    async code(username: string) {
+        const normalizedUsername = username.trim();
+        if (!normalizedUsername) {
+            throw new BadRequestException('missing_username');
+        }
+
+        const user = await this.userService.getUserByNameOrEmail(normalizedUsername);
 
         // generate 6 digits code
         const code = Array.from({ length: 6 }, () => NUMERICS[Math.floor(Math.random() * NUMERICS.length)]).join('');
@@ -54,6 +64,40 @@ export class SessionService {
             subject: 'Your Rocktom login code',
             text: `Your login code is: ${code}`,
         });
+    }
+
+    async refresh(refreshToken: string) {
+        const payload = await this.jwtService.verifyRefreshToken(refreshToken);
+
+        const session = await this.sessionRepository.findOne({
+            where: {
+                id: payload.sessionId,
+            },
+        });
+
+        if (!session) {
+            throw new UnauthorizedException('invalid_session');
+        }
+
+        if (session.revokedAt) {
+            throw new UnauthorizedException('invalid_session');
+        }
+
+        if (session.expiresAt.getTime() <= Date.now()) {
+            throw new UnauthorizedException('invalid_session');
+        }
+
+        if (session.refreshTokenHash !== payload.hash) {
+            throw new UnauthorizedException('invalid_session');
+        }
+
+        // Rotate the refresh token to prevent replay with stale tokens.
+        const newRefreshTokenHash = await crypto.randomUUID();
+        session.refreshTokenHash = newRefreshTokenHash;
+        await this.sessionRepository.save(session);
+
+        const user = await this.userService.getUserById(session.userId);
+        return this._createTokens(user, session.id, newRefreshTokenHash);
     }
 
     async getValidSessionForAccess(userId: string, sessionId: string): Promise<Session> {
@@ -104,4 +148,5 @@ export class SessionService {
         
         return this.sessionRepository.save(session);
     }
+
 }

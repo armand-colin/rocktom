@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from './jwt.service';
 import { SessionService } from './session.service';
 import { Session } from './session.entity';
+import { Authorization } from '../../common/authorization';
 
 type AuthenticatedRequest = {
     headers?: {
@@ -29,8 +30,10 @@ export class SessionGuard implements CanActivate {
             throw new UnauthorizedException('missing_authorization_header');
         }
 
-        const [scheme, token] = authorization.split(' ');
-        if (scheme !== 'Bearer' || !token) {
+        let token: string;
+        try {
+            token = Authorization.parseBearerToken(authorization);
+        } catch {
             throw new UnauthorizedException('invalid_authorization_header');
         }
 

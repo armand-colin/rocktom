@@ -1,0 +1,58 @@
+---
+description: App query pattern with Query + Entity files
+alwaysApply: true
+---
+
+# App Queries Pattern (Queries + Entity)
+
+When adding data-access queries in `app/src/queries`, use this structure:
+
+- Create one `*Entity.ts` file that exports only the entity type used by the app.
+- Create one `*Queries.ts` file that exports a `namespace <Domain>Queries`.
+- Keep one query concern per domain folder (for example `queries/level`).
+
+## Entity rules
+
+- Name the type `<Domain>Entity` (example: `LevelEntity`).
+- Include only fields returned by the API and needed by the app.
+- Keep it as a TypeScript `type` (no runtime logic).
+
+## Queries rules
+
+- Namespace name must be `<Domain>Queries` (example: `LevelQueries`).
+- Query methods should be explicit (`getAll`, `getById`, `create`, etc.).
+- Use app fetch resources (`Instance.engine.getResource(Fetch)`).
+- Use `apiAuth` for authenticated routes and `api` for public routes.
+- Type all responses with the matching `*Entity` type.
+
+## Imports and exports
+
+- Do not use `index.ts` barrels in `app/src/queries/*`.
+- Import directly from concrete files:
+  - `queries/<domain>/<Domain>Entity`
+  - `queries/<domain>/<Domain>Queries`
+
+## Example (level)
+
+```ts
+// queries/level/LevelEntity.ts
+export type LevelEntity = {
+  id: string;
+  name: string;
+  serialized: string;
+};
+```
+
+```ts
+// queries/level/LevelQueries.ts
+import { Instance } from "../../Instance";
+import { Fetch } from "../../resources/fetch/Fetch";
+import type { LevelEntity } from "./LevelEntity";
+
+export namespace LevelQueries {
+  export function getAll() {
+    const fetch = Instance.engine.getResource(Fetch);
+    return fetch.apiAuth.get<LevelEntity[]>("/level");
+  }
+}
+```

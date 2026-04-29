@@ -1,8 +1,7 @@
 import { Engine, Resource } from "@niloc/ecs";
-import { Fetch } from "./fetch/Fetch";
-import { Body } from "./fetch/RestClient";
 import { jwtDecode } from "jwt-decode";
 import { Result } from "@niloc/utils";
+import { SessionQueries } from "../queries/session/SessionQueries";
 
 type Session = {
     accessToken: string,
@@ -28,9 +27,8 @@ export class AuthManager extends Resource {
         super(engine)
     }
 
-    requestCode(email: string) {
-        const fetch = this.engine.getResource(Fetch)
-        return fetch.api.post('/session/code', Body.json({ email }))
+    requestCode(username: string) {
+        return SessionQueries.requestCode(username)
     }
 
     get isAuthenticated(): boolean {
@@ -57,10 +55,9 @@ export class AuthManager extends Resource {
         return null
     }
 
-    async login(email: string, code: string) {
-        const fetch = this.engine.getResource(Fetch)
+    async login(username: string, code: string) {
         try {
-            const response = await fetch.api.post<Tokens>('/session/login', Body.json({ email, code }))
+            const response = await SessionQueries.login(username, code)
 
             if (!response.ok) {
                 return Result.error(response.error)
@@ -96,12 +93,7 @@ export class AuthManager extends Resource {
             return this._refreshPromise
 
         this._refreshPromise = new Promise<Result<Tokens, Error>>(async (resolve) => {
-            const fetch = this.engine.getResource(Fetch)
-            const response = await fetch.api.post<Tokens>(
-                '/session/refresh',
-                undefined,
-                { 'Authorization': `Bearer ${refreshToken}` }
-            )
+            const response = await SessionQueries.refresh(refreshToken)
     
             if (response.ok) {
                 this._session = this._parseTokens(response.value)

@@ -13,4 +13,5 @@ export namespace TypeORMUtils {
         const { code } = _getCode(error);
         return code === '23505';
     }
+
 }

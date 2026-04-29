@@ -10,6 +10,9 @@ export class User {
     @Column({ unique: true, type: 'text' })
     email!: string;
 
+    @Column({ unique: true, type: 'text' })
+    name!: string;
+
     @Column({ name: 'email_validation_code', nullable: true, type: 'text' })
     emailValidationCode!: string | null;
 

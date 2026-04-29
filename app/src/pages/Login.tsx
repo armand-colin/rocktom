@@ -20,7 +20,7 @@ enum LoginStep {
 }
 
 export function Login() {
-    const [email, setEmail] = useState<string | null>(null)
+    const [username, setUsername] = useState<string | null>(null)
     const [step, setStep] = useState<LoginStep>(LoginStep.Email)
 
     return <div className="Login">
@@ -28,13 +28,13 @@ export function Login() {
         <h1>Login</h1>
         {
             step === LoginStep.Email ? <EmailForm
-                onSuccess={(email: string) => {
-                    setEmail(email)
+                onSuccess={(username: string) => {
+                    setUsername(username)
                     setStep(LoginStep.Code)
                 }}
             /> :
                 step === LoginStep.Code ? <CodeForm
-                    email={email!}
+                    username={username!}
                     onSuccess={() => {
 
                     }}
@@ -45,20 +45,20 @@ export function Login() {
 }
 
 const EmailFormSchema = new FormSchema({
-    email: FormField.email()
+    username: FormField.string().min(1)
 })
 
-function EmailForm(props: { email?: string, onSuccess: (email: string) => void }) {
+function EmailForm(props: { username?: string, onSuccess: (username: string) => void }) {
     const popupManager = usePopupManager()
     const formHandler = useForm(EmailFormSchema)
 
     async function onSubmit(e: FormHandler.Result<typeof EmailFormSchema>) {
         const authManager = Instance.engine.getResource(AuthManager)
 
-        const result = await authManager.requestCode(e.json.email)
+        const result = await authManager.requestCode(e.json.username)
 
         if (result.ok) {
-            props.onSuccess(e.json.email)
+            props.onSuccess(e.json.username)
             return
         }
 
@@ -85,10 +85,10 @@ function EmailForm(props: { email?: string, onSuccess: (email: string) => void }
     }
 
     return <Form handler={formHandler} onSubmit={onSubmit}>
-        <FormInputField field={formHandler.fields.email} label="Email">
+        <FormInputField field={formHandler.fields.username} label="Username or email">
         <StringInput
-            field={formHandler.fields.email}
-            placeholder="Email"
+            field={formHandler.fields.username}
+            placeholder="Username or email"
         />
         </FormInputField>
         <Button>Submit</Button>
@@ -101,7 +101,7 @@ const CodeFormSchema = new FormSchema({
     code: FormField.string().min(6).max(6)
 })
 
-function CodeForm(props: { email: string, onSuccess: () => void }) {
+function CodeForm(props: { username: string, onSuccess: () => void }) {
     const popupManager = usePopupManager()
 
     const formHandler = useForm(CodeFormSchema)
@@ -109,7 +109,7 @@ function CodeForm(props: { email: string, onSuccess: () => void }) {
     async function onSubmit(e: FormHandler.Result<typeof CodeFormSchema>) {
         const authManager = Instance.engine.getResource(AuthManager)
 
-        const result = await authManager.login(props.email, e.json.code)
+        const result = await authManager.login(props.username, e.json.code)
 
         if (result.ok) {
             props.onSuccess()
