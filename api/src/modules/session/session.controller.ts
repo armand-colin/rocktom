@@ -1,7 +1,8 @@
-import { Body, Controller, Headers, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Headers, Post, Req, Request, Res, Response, UnauthorizedException } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { CodeDto, LoginDto } from './session.dto';
 import { Authorization } from '../../common/authorization';
+import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 
 const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
 
@@ -11,8 +12,13 @@ export class SessionController {
     constructor(protected readonly sessionService: SessionService) {}
 
     @Post('login')
-    login(@Body() body: LoginDto) {
-        return this.sessionService.login(body);
+    async login(
+        @Body() body: LoginDto,
+        @Res({ passthrough: true }) response: ExpressResponse,
+    ) {
+        const tokens = await this.sessionService.login(body);
+        this._setCookie(response, tokens.refreshToken);
+        await response.send(tokens);
     }
 
     @Post('code')
@@ -21,52 +27,39 @@ export class SessionController {
     }
 
     @Post('refresh')
-    refresh(
+    async refresh(
+        @Res({ passthrough: true }) response: ExpressResponse,
+        @Req() request: ExpressRequest,
         @Headers('authorization') authorization?: string,
-        @Headers('cookie') cookieHeader?: string,
     ) {
-        const refreshToken = this._extractRefreshToken(authorization, cookieHeader);
-        return this.sessionService.refresh(refreshToken);
+        const refreshCookie = request.cookies?.[REFRESH_TOKEN_COOKIE_NAME];
+        const refreshToken = this._extractRefreshToken(authorization, refreshCookie);
+
+        const tokens = await this.sessionService.refresh(refreshToken);
+
+        this._setCookie(response, tokens.refreshToken);
+
+        await response.send(tokens);
     }
 
-    private _extractRefreshToken(authorization?: string, cookieHeader?: string): string {
+    private _extractRefreshToken(authorization?: string, refreshCookie?: string): string {
         if (authorization) {
             return Authorization.parseBearerToken(authorization);
         }
 
-        const refreshToken = this._parseCookie(cookieHeader, REFRESH_TOKEN_COOKIE_NAME);
-
-        if (!refreshToken) {
+        if (!refreshCookie) {
             throw new UnauthorizedException('missing_refresh_token');
         }
 
-        return refreshToken;
+        return refreshCookie;
     }
 
-    private _parseCookie(cookieHeader: string | undefined, name: string): string | null {
-        if (!cookieHeader) {
-            return null;
-        }
-
-        const cookies = cookieHeader.split(';');
-        for (const cookie of cookies) {
-            const [rawName, ...rawValueParts] = cookie.trim().split('=');
-            if (!rawName || rawValueParts.length === 0) {
-                continue;
-            }
-
-            if (rawName !== name) {
-                continue;
-            }
-
-            const rawValue = rawValueParts.join('=');
-            try {
-                return decodeURIComponent(rawValue);
-            } catch {
-                return rawValue;
-            }
-        }
-
-        return null;
+    private _setCookie(response: ExpressResponse, refreshToken: string) {
+        response.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+            httpOnly: true,
+            secure: false, // TODO: Change to true in production
+            sameSite: 'lax',
+        });
     }
+
 }

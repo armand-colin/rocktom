@@ -5,21 +5,24 @@ import type { SessionTokensEntity } from "./SessionEntity";
 
 export namespace SessionQueries {
 
-    const fetch = Instance.engine.getResource(Fetch);
-
     export function requestCode(username: string) {
+        const fetch = Instance.engine.getResource(Fetch)
         return fetch.api.post('/session/code', Body.json({ username }));
     }
 
     export function login(username: string, code: string) {
+        const fetch = Instance.engine.getResource(Fetch)
         return fetch.api.post<SessionTokensEntity>('/session/login', Body.json({ username, code }));
     }
 
-    export function refresh(refreshToken: string) {
+    export function refresh(refreshToken?: string) {
+        const fetch = Instance.engine.getResource(Fetch)
         return fetch.api.post<SessionTokensEntity>(
             '/session/refresh',
             undefined,
-            { 'Authorization': `Bearer ${refreshToken}` }
+            refreshToken ?
+                { 'Authorization': `Bearer ${refreshToken}` } :
+                undefined
         );
     }
 

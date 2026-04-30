@@ -21,7 +21,7 @@ const baseEnvSchema = z.object({
     .enum(['true', 'false'])
     .transform((value) => value === 'true')
     .optional()
-    .default('false'),
+    .default(false),
 });
 
 export const envSchema = baseEnvSchema.superRefine((env, context) => {

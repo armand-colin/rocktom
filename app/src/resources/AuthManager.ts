@@ -2,13 +2,8 @@ import { Engine, Resource } from "@niloc/ecs";
 import { jwtDecode } from "jwt-decode";
 import { Result } from "@niloc/utils";
 import { SessionQueries } from "../queries/session/SessionQueries";
+import { AuthStore, type Session } from "./AuthStore";
 
-type Session = {
-    accessToken: string,
-    refreshToken: string,
-    userId: string,
-    expiresAt: Date
-}
 
 type Tokens = {
     accessToken: string,
@@ -20,11 +15,12 @@ const TOKEN_EXPIRATION_MARGIN = 1000 * 30
 
 export class AuthManager extends Resource {
 
-    private _session: Session | null = null
+    private _store: AuthStore
     private _refreshPromise: Promise<Result<Tokens, Error>> | null = null
 
     constructor(engine: Engine) {
         super(engine)
+        this._store = engine.getResource(AuthStore)
     }
 
     requestCode(username: string) {
@@ -32,17 +28,17 @@ export class AuthManager extends Resource {
     }
 
     get isAuthenticated(): boolean {
-        return !!this._session
+        return this._store.isAuthenticated
     }
 
     async getAccessToken(): Promise<string | null> {
-        if (this._session && this._session.expiresAt > new Date(Date.now() + TOKEN_EXPIRATION_MARGIN)) {
-            return this._session.accessToken;
+        if (this._store.session && this._store.session.expiresAt > new Date(Date.now() + TOKEN_EXPIRATION_MARGIN)) {
+            return this._store.session.accessToken;
         }
 
-        if (this._session) {
+        if (this._store.session) {
             // Else must refresh
-            const result = await this._refresh(this._session.refreshToken)
+            const result = await this._refresh(this._store.session.refreshToken)
 
             if (result.ok) {
                 return result.value.accessToken
@@ -63,7 +59,8 @@ export class AuthManager extends Resource {
                 return Result.error(response.error)
             }
 
-            this._session = this._parseTokens(response.value)
+            const session = this._parseTokens(response.value)
+            this._store.setSession(session)
             this.changed()
 
             return Result.ok(undefined)
@@ -88,7 +85,11 @@ export class AuthManager extends Resource {
         }
     }
 
-    private async _refresh(refreshToken: string): Promise<Result<Tokens, Error>> {
+    restore() {
+        return this._refresh()
+    }
+
+    private async _refresh(refreshToken?: string): Promise<Result<Tokens, Error>> {
         if (this._refreshPromise)
             return this._refreshPromise
 
@@ -96,7 +97,9 @@ export class AuthManager extends Resource {
             const response = await SessionQueries.refresh(refreshToken)
     
             if (response.ok) {
-                this._session = this._parseTokens(response.value)
+                const session = this._parseTokens(response.value)
+                this._store.setSession(session)
+                this.changed()
                 resolve(Result.ok(response.value))
             } else {
                 resolve(Result.error(response.error))

@@ -48,7 +48,7 @@ export class LevelController {
         @CurrentSession() session: Session,
         @UploadedFile() file: Express.Multer.File
     ) {
-        return this.levelService.uploadPlayback(id, session.userId, file);
+        // return this.levelService.uploadPlayback(id, session.userId, file);
     }
 
 }

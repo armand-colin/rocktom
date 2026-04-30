@@ -107,6 +107,7 @@ export class RestClient {
                 method,
                 headers,
                 body: body ? body.data : undefined,
+                credentials: 'include',
             })
         } catch (error) {
             return Result.error(error as Error)
@@ -120,9 +121,9 @@ export class RestClient {
         
         if (contentType?.startsWith('application/json')) {
             return Result.ok(await response.json())
-        } else {
-            return Result.ok(await response.text())
         }
+
+        return Result.ok(await response.text())
     }
 
 }
