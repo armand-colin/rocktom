@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { CurrentSession } from "../session/current-session.decorator";
 import { Session } from "../session/session.entity";
 import { SessionGuard } from "../session/session.guard";

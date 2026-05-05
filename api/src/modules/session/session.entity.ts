@@ -10,12 +10,12 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 
-@Entity()
+@Entity("session")
 export class Session {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @RelationId((session: Session) => session.user)
+  @Column({ name: 'user_id', type: 'uuid' })
   userId!: string;
 
   @ManyToOne(() => User, (user) => user.sessions, { onDelete: 'CASCADE' })

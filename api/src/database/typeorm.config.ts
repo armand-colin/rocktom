@@ -1,15 +1,10 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { getEnv } from '../config/env';
-import { Logger } from '@nestjs/common';
 import { AppConfigService } from '../config/config.service';
 import { Document } from '../modules/document/document.entity';
 import { Level } from '../modules/level/level.entity';
 import { Session } from '../modules/session/session.entity';
 import { User } from '../modules/user/user.entity';
-
-const env = getEnv();
-
-const logger = new Logger('TypeOrmConfig');
+import { InitialSchema1746480000000 } from './migrations/1746480000000-initial-schema';
 
 export namespace TypeOrmConfig {
 
@@ -27,7 +22,9 @@ export namespace TypeOrmConfig {
         Document,
         Level,
       ],
-      synchronize: true,
+      migrations: [InitialSchema1746480000000],
+      synchronize: false,
+      migrationsRun: true,
     };
   }
 

@@ -32,6 +32,9 @@ export class LevelService {
             order: {
                 createdAt: 'DESC',
             },
+            relations: {
+                playback: true,
+            },
         });
     }
 
@@ -40,6 +43,9 @@ export class LevelService {
             where: {
                 id,
                 userId: requestingUserId,
+            },
+            relations: {
+                playback: true,
             },
         });
     }

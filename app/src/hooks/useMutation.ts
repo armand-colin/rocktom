@@ -24,6 +24,7 @@ export function useMutation<T, Args extends any[]>(mutation: (...args: Args) => 
             try {
                 const result = await mutation(...args)
                 if (!disposedRef.current) {
+                    console.log("result", result)
                     setData(result)
                 }
             } catch (e: unknown) {

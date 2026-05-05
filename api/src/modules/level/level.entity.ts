@@ -11,12 +11,12 @@ import {
 import { User } from '../user/user.entity';
 import { Document } from '../document/document.entity';
 
-@Entity()
+@Entity("level")
 export class Level {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @RelationId((level: Level) => level.user)
+  @Column({ name: 'user_id', type: 'uuid' })
   userId!: string;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: false })
