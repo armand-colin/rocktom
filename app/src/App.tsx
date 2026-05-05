@@ -6,6 +6,7 @@ import { PopupManagerView } from './ui/popup/PopupManagerView'
 import { ContextualMenuView } from './ui/contextualMenuView/ContextualMenuView'
 import { useResource } from '@niloc/ecs-react'
 import { AuthManager } from './resources/AuthManager'
+import { LevelPage } from './pages/LevelPage'
 
 function App() {
   const authManager = useResource(AuthManager)
@@ -17,6 +18,7 @@ function App() {
       {
         isAuthenticated ?
           <>
+            <Route path="/app/level/:id" element={<LevelPage />} />
             <Route path="/app" element={<Home />} />
             <Route path="*" element={<Navigate to="/app" replace />} />
           </> :
