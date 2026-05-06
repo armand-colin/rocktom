@@ -1,6 +1,18 @@
 .Button {
     border-radius: 4px;
     background: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid transparent;
+
+    &[data-theme="default"] {
+        background: #2d2d2d;
+        border-color: #2d2d2d;
+    }
+
+    &[data-theme="danger"] {
+        background: #a41919;
+        border-color: #a41919;
+    }
 
     &[data-size="m"] {
         padding: 8px 12px;

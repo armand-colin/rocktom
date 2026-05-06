@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button } from "./Button";
+import { Button, ButtonTheme } from "./Button";
 import { UiSize } from "../UiSize";
 
 const meta = {
@@ -9,11 +9,16 @@ const meta = {
     children: "Click me",
     disabled: false,
     size: UiSize.M,
+    theme: ButtonTheme.Default,
   },
   argTypes: {
     size: {
       control: "radio",
       options: [UiSize.S, UiSize.M],
+    },
+    theme: {
+      control: "radio",
+      options: [ButtonTheme.Default, ButtonTheme.Danger],
     },
   },
 } satisfies Meta<typeof Button>;
