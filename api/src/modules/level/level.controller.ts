@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { CreateLevelDto } from "./level.dto";
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { CreateLevelDto, UpdateLevelDto } from "./level.dto";
 import { LevelService } from "./level.service";
 import { SessionGuard } from "../session/session.guard";
 import { CurrentSession } from "../session/current-session.decorator";
@@ -49,6 +49,16 @@ export class LevelController {
         @UploadedFile() file: Express.Multer.File
     ) {
         // return this.levelService.uploadPlayback(id, session.userId, file);
+    }
+
+    @UseGuards(SessionGuard)
+    @Put(':id')
+    update(
+        @Param('id') id: string, 
+        @Body() body: UpdateLevelDto, 
+        @CurrentSession() session: Session
+    ) {
+        return this.levelService.update(id, session.userId, body);
     }
 
 }

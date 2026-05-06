@@ -63,7 +63,7 @@ export function HomePage() {
               levels={levels.value}
               onSelect={onSelectLevel}
               onCreate={onCreate}
-              onEdit={level => { /* TODO */ }}
+              onEdit={onEdit}
             /> :
             null
       }

@@ -9,7 +9,7 @@ import { Form } from "../ui/form/Form"
 import type { FormHandler } from "../form/FormHandler"
 import { FormInputField } from "../ui/form/FormInputField"
 import { usePopupManager } from "../hooks/usePopupManager"
-import { Popup } from "../ui/popup/Popup"
+import { IconPopup } from "../ui/iconPopup/IconPopup"
 import { StatusCodeError } from "../resources/fetch/StatusCodeError"
 import { UserQueries } from "../queries/user/UserQueries"
 
@@ -47,9 +47,12 @@ export function Register() {
             }
         }
 
-        popupManager.add(close => <Popup title="Register failed" close={close}>
-            <p>{errorMessage}</p>
-        </Popup>)
+        popupManager.add(close => <IconPopup
+            title="Register failed"
+            icon="close"
+            text={errorMessage}
+            close={close}
+        />)
     }
 
     return <div className="Login">

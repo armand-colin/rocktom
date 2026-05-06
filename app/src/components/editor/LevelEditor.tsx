@@ -67,11 +67,6 @@ export class LevelEditor extends Component {
         this.changed()
     }
 
-    setAuthor(author: string) {
-        this.level.author = author
-        this.changed()
-    }
-
     editPattern(pattern: TimedPattern | null) {
         this._pattern?.destroy()
         this._pattern = null
@@ -120,11 +115,6 @@ export class LevelEditor extends Component {
 
     private _onWheel = (event: WheelEvent) => {
         event.preventDefault()
-    }
-
-    save() {
-        const storage = this.engine.getResource(LevelStorage)
-        storage.save(this.level)
     }
 
     destroy() {

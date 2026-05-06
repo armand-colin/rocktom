@@ -18,6 +18,9 @@ import { MagnetizationView } from "./magnetizationView/MagnetizationView";
 import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
+import { LevelQueries } from "../../queries/level/LevelQueries";
+import { useMutation } from "../../hooks/useMutation";
+import { useNavigate } from "react-router-dom";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const state = useResource(State)
@@ -25,6 +28,8 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
     const inputManager = engine.getResource(InputManager)
     const windowManager = engine.getResource(WindowManager)
     const { level } = useComponent(props.editor)
+    const { mutate: updateLevel } = useMutation(LevelQueries.update)
+    const navigate = useNavigate()
 
     useEffect(() => {
         function onPlay() {
@@ -50,18 +55,25 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
         )
     }
 
+    function onSave() {
+        updateLevel(level.id, {
+            name: level.name,
+            serialized: JSON.stringify(level.serializeTracks())
+        })
+    }
+
+    function onBack() {
+        navigate("/app")
+    }
+
     return <div className="LevelEditorView">
         <div className="head">
-            <Button onClick={() => state.editLevel(null)}>Back</Button>
+            <Button onClick={onBack}>Back</Button>
             <LevelName
                 name={level.name}
                 onChange={name => props.editor.setName(name)}
             />
-            <LevelName
-                name={level.author}
-                onChange={author => props.editor.setAuthor(author)}
-            />
-            <Button onClick={() => props.editor.save()}>Save</Button>
+            <Button onClick={onSave}>Save</Button>
             <PlayerControls player={props.editor.player} />
             <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
             <SongEditorView editor={props.editor} />

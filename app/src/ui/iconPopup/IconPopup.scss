@@ -1,0 +1,36 @@
+.IconPopup {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 280px;
+
+    >.icon-wrapper {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        >.Icon {
+            font-size: 20px;
+        }
+    }
+
+    >.content {
+        display: grid;
+        gap: 12px;
+
+        >p {
+            margin: 0;
+        }
+
+        >.actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+    }
+}

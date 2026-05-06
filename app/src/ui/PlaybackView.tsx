@@ -15,6 +15,7 @@ import { PlaybackProgressView } from "./PlaybackProgressView";
 import { State } from "../resources/State";
 import type { Time } from "../components/Time";
 import { Mixer } from "../resources/Mixer";
+import { useNavigate } from "react-router-dom";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -63,6 +64,7 @@ function PlaybackControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const state = engine.getResource(State)
     const mixer = engine.getResource(Mixer)
+    const navigate = useNavigate()
     
     const { playing } = useComponent(props.playback)
     const { enabled: metronomeEnabled, volume: metronomeVolume } = useComponent(mixer.metronome)
@@ -70,7 +72,6 @@ function PlaybackControls(props: { playback: Playback }) {
     return (
         <div className="PlaybackControls">
             <h1>{props.playback.level.name}</h1>
-            <h2>by {props.playback.level.author}</h2>
 
             <div className="buttons">
                 <PlayButton playback={props.playback} />
@@ -120,7 +121,7 @@ function PlaybackControls(props: { playback: Playback }) {
 
             <button
                 className="BackButton"
-                onClick={() => state.setPlayback(null)}
+                onClick={() => navigate("/app")}
             >
                 <Icon name="arrow_back" /> Back to level selection
             </button>

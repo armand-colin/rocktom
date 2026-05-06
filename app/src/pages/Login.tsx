@@ -3,7 +3,7 @@ import { useState } from "react"
 import { StringInput } from "../ui/input/StringInput"
 import { Button } from "../ui/button/Button"
 import { usePopupManager } from "../hooks/usePopupManager"
-import { Popup } from "../ui/popup/Popup"
+import { IconPopup } from "../ui/iconPopup/IconPopup"
 import { AuthManager } from "../resources/AuthManager"
 import { StatusCodeError } from "../resources/fetch/StatusCodeError"
 import { Instance } from "../Instance"
@@ -79,9 +79,12 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
             }
         }
 
-        popupManager.add(close => <Popup title="Login failed" close={close}>
-            <p>{errorMessage}</p>
-        </Popup>)
+        popupManager.add(close => <IconPopup
+            title="Login failed"
+            icon="close"
+            text={errorMessage}
+            close={close}
+        />)
     }
 
     return <Form handler={formHandler} onSubmit={onSubmit}>
@@ -135,12 +138,12 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             return
         }
 
-        popupManager.add(close => <Popup
+        popupManager.add(close => <IconPopup
             title="Login failed"
+            icon="close"
+            text={errorMessage}
             close={close}
-        >
-            <p>{errorMessage}</p>
-        </Popup>)
+        />)
     }
 
     return <Form handler={formHandler} onSubmit={onSubmit}>

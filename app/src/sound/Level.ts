@@ -35,20 +35,20 @@ export class Level {
     readonly tempoTrack: TempoTrack
     readonly focusTrack: FocusTrack
 
-    static create(instrument: Instrument) {
-        return new Level({
-            name: "New Level",
-            tracks: {
-                note: new NoteTrack(instrument, [], []),
-                audio: new AudioTrack({ type: AudioType.None }, 0, 0),
-                tempo: new TempoTrack(new Tempo(120)),
-                focus: new FocusTrack(Focus.default(), [])
-            }
-        })
-    }
+    // static create(id:nstrument: Instrument) {
+    //     return new Level({
+    //         name: "New Level",
+    //         tracks: {
+    //             note: new NoteTrack(instrument, [], []),
+    //             audio: new AudioTrack({ type: AudioType.None }, 0, 0),
+    //             tempo: new TempoTrack(new Tempo(120)),
+    //             focus: new FocusTrack(Focus.default(), [])
+    //         }
+    //     })
+    // }
 
     constructor(opts: {
-        id?: string,
+        id: string,
         name: string,
         tracks: {
             note: NoteTrack,
@@ -57,25 +57,13 @@ export class Level {
             focus: FocusTrack
         }
     }) {
-        this.id = opts?.id ?? nanoid()
+        this.id = opts.id
         this.name = opts.name
 
         this.noteTrack = opts.tracks?.note
         this.audioTrack = opts.tracks?.audio
         this.tempoTrack = opts.tracks?.tempo
         this.focusTrack = opts.tracks?.focus
-    }
-
-    clone(): Level {
-        return new Level({
-            name: this.name + " (cloned)",
-            tracks: {
-                audio: this.audioTrack.clone(),
-                focus: this.focusTrack.clone(),
-                note: this.noteTrack.clone(),
-                tempo: this.tempoTrack.clone()
-            }
-        })
     }
 
     get durationInTicks() {

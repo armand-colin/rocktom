@@ -2,6 +2,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Level } from "./level.entity";
 import { Repository } from "typeorm";
 import { NotFoundException } from "@nestjs/common";
+import { UpdateLevelDto } from "./level.dto";
 
 export class LevelService {
 
@@ -65,6 +66,15 @@ export class LevelService {
             id,
             userId: requestingUserId,
         });
+    }
+
+    async update(id: string, requestingUserId: string, body: UpdateLevelDto): Promise<Level> {
+        const level = await this.getById(id, requestingUserId);
+
+        level.name = body.name;
+        level.serialized = body.serialized;
+
+        return this.levelRepository.save(level);
     }
 
 }
