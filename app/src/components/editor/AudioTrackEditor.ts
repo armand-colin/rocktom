@@ -1,10 +1,14 @@
 import { Component, Engine } from "@niloc/ecs";
 import { AudioType, type AudioTrack, type AudioTrackPayload } from "../../sound/song/AudioTrack";
 import { AudioData } from "../../core/AudioData";
+import type { DocumentEntity } from "../../queries/document/DocumentEntity";
+import { DocumentQueries } from "../../queries/document/DocumentQueries";
 
 export class AudioTrackEditor extends Component {
 
     readonly track: AudioTrack
+
+    private _playback: DocumentEntity | null = null
 
     private _audioData: AudioData | null = null
 
@@ -12,15 +16,40 @@ export class AudioTrackEditor extends Component {
         super(engine)
         this.track = track
 
-        if (
-            track.payload.type === AudioType.Url
-            && track.payload.url
-        )
-            this._generateAudioData(track.payload.url)
+        if (track.playbackId) {
+            this._onTrackChange()
+        }
     }
 
     get audioData() {
         return this._audioData?.id ?? null
+    }
+
+    private _onTrackChange = () => {
+        const playbackId = this.track.playbackId
+        if (this._playback && this._playback.id === playbackId) {
+            return
+        }
+
+        if (!playbackId) {
+            this._playback = null
+            this._audioData = null
+            this.changed()
+            return
+        }
+
+        DocumentQueries.get(playbackId)
+            .then(result => {
+                if (!result.ok) {
+                    // TODO: handle error
+                    return
+                }
+
+                this._playback = result.value
+                this.changed()
+
+                this._generateAudioData()
+            })
     }
 
     private _generateAudioData(url: string) {

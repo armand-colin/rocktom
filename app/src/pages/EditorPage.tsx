@@ -11,7 +11,6 @@ import { NoteTrack } from "../sound/song/NoteTrack"
 import { Bass } from "../sound/instrument/Instrument"
 import { Tempo } from "../sound/Tempo"
 import { AudioTrack } from "../sound/song/AudioTrack"
-import { AudioType } from "../sound/song/AudioTrack"
 import { TempoTrack } from "../sound/song/TempoTrack"
 import { FocusTrack } from "../sound/song/FocusTrack"
 import { Focus } from "../sound/song/Focus"
@@ -56,7 +55,7 @@ function EditorView(props: { level: LevelEntity }) {
                     name: props.level.name,
                     tracks: {
                         note: new NoteTrack(new Bass(), [], []),
-                        audio: new AudioTrack({ type: AudioType.None }, 0, 0),
+                        audio: new AudioTrack({ time: 0, playbackId: null }),
                         tempo: new TempoTrack(new Tempo(120)),
                         focus: new FocusTrack(Focus.default(), [])
                     }

@@ -1,22 +1,8 @@
-import { nanoid } from "nanoid";
-import type { Instrument } from "./instrument/Instrument";
-import { AudioTrack, AudioType, type SerializedAudioTrack } from "./song/AudioTrack";
-import { Focus } from "./song/Focus";
+import { AudioTrack, type SerializedAudioTrack } from "./song/AudioTrack";
 import { FocusTrack, type SerializedFocusTrack } from "./song/FocusTrack";
 import { NoteTrack, type SerializedNoteTrack } from "./song/NoteTrack";
 import { TempoTrack, type SerializedTempoTrack } from "./song/TempoTrack";
-import { Tempo } from "./Tempo";
 
-type SerializedLevel = {
-    id: string,
-    name: string,
-    tracks: {
-        note: SerializedNoteTrack,
-        audio: SerializedAudioTrack,
-        tempo: SerializedTempoTrack,
-        focus: SerializedFocusTrack
-    }
-}
 
 type SerializedTracks = {
     note: SerializedNoteTrack,
@@ -34,18 +20,6 @@ export class Level {
     readonly audioTrack: AudioTrack
     readonly tempoTrack: TempoTrack
     readonly focusTrack: FocusTrack
-
-    // static create(id:nstrument: Instrument) {
-    //     return new Level({
-    //         name: "New Level",
-    //         tracks: {
-    //             note: new NoteTrack(instrument, [], []),
-    //             audio: new AudioTrack({ type: AudioType.None }, 0, 0),
-    //             tempo: new TempoTrack(new Tempo(120)),
-    //             focus: new FocusTrack(Focus.default(), [])
-    //         }
-    //     })
-    // }
 
     constructor(opts: {
         id: string,
