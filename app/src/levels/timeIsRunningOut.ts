@@ -1,7 +1,7 @@
 import audioUrl from "../assets/songs/TimeIsRunningOut.wav";
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
-import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
+import { AudioTrack } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
@@ -286,12 +286,11 @@ export function timeIsRunningOut(): Level {
     const level = new Level({
         id: "muse-time-is-running-out",
         name: "Time is Running Out",
-        author: "Muse",
         tracks: {
             audio: new AudioTrack({
-                type: AudioType.Url,
-                url: audioUrl
-            }, 1.52, 4 * 60 + 1),
+                playbackId: null,
+                time: 1.52
+            }),
             note: track.build(),
             tempo: tempoTrack,
             focus: focusTrack.build()

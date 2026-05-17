@@ -38,7 +38,7 @@ export class LevelEditor extends Component {
         this.timeTransform = engine.createComponent(TimeTransform)
         this.timeTransform.setStep(Tempo.beats(1))
 
-        this.audioTrack = engine.createComponent(AudioTrackEditor, level.audioTrack)
+        this.audioTrack = engine.createComponent(AudioTrackEditor, level.id, level.audioTrack)
         this.focusTrack = engine.createComponent(FocusTrackEditor, level.focusTrack)
         this.virtualBass = engine.createComponent(VirtualBass)
         this.player = engine.createComponent(EditorPlayer, level, this.virtualBass)

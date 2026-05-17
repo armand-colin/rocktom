@@ -5,12 +5,10 @@ import type { AudioTrackEditor } from "../../components/editor/AudioTrackEditor"
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import { usePopupManager } from "../../hooks/usePopupManager";
-import { AudioType } from "../../sound/song/AudioTrack";
 import { UrlAudio } from "../../utils/UrlAudio";
 import { YouTubeAudio } from "../../utils/YouTubeAudio";
 import { Button } from "../button/Button";
 import { NumberInput } from "../input/NumberInput";
-import { Select } from "../select/Select";
 import "./AudioTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import type { Time } from "../../components/Time";
@@ -18,6 +16,8 @@ import { Toggle } from "../toggle/Toggle";
 import { Mixer } from "../../resources/Mixer";
 import type { AudioWaveformRenderer } from "../../components/editor/AudioWaveformRenderer";
 import { ElementRenderer } from "../ElementRenderer";
+import { SelectDocumentPopup } from "../selectDocumentPopup/SelectDocumentPopup";
+import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
@@ -32,29 +32,15 @@ export function AudioTrackEditorView(props: {
     const mixer = engine.getResource(Mixer)
     const { enabled } = useComponent(mixer.audio)
 
-    function onTypeChange(type: AudioType) {
-        props.editor.setType(type)
-    }
+    function onChoosePlayback() {
+        function onSelect(document: DocumentEntity) {
+            props.editor.setPlayback(document)
+        }
 
-    function onSetUrl() {
-        if (track.payload.type === AudioType.Url)
-            popupManager.add(close => <UrlPopup
-                close={close}
-                onValidate={data => {
-                    props.editor.setDuration(data.duration)
-                    props.editor.setUrl(data.url)
-                    close()
-                }}
-            />)
-        if (track.payload.type === AudioType.YouTube)
-            popupManager.add(close => <YouTubePopup
-                close={close}
-                onValidate={data => {
-                    props.editor.setDuration(data.duration)
-                    props.editor.setYouTubeVideoId(data.youtubeVideoId)
-                    close()
-                }}
-            />)
+        popupManager.add(close => <SelectDocumentPopup
+            close={close}
+            onSelect={onSelect}
+        />)
     }
 
     return <TrackEditorView
@@ -62,39 +48,20 @@ export function AudioTrackEditorView(props: {
         transform={props.transform}
     >
         <TrackEditorHead>
-            <Select
-                options={[
-                    { value: AudioType.None, label: "None" },
-                    { value: AudioType.Url, label: "URL" },
-                    { value: AudioType.YouTube, label: "YouTube" },
-                ]}
-                value={track.payload.type}
-                onChange={onTypeChange}
+            <NumberInput
+                name="time"
+                value={track.time}
+                onChange={time => props.editor.setTime(time)}
+                step={0.01}
             />
-            {
-                track.payload.type === AudioType.None ?
-                    undefined :
-                    <>
-                        <NumberInput
-                            name="time"
-                            value={track.time}
-                            onChange={time => props.editor.setTime(time)}
-                            step={0.01}
-                        />
-                        <Button onClick={onSetUrl}>Set url</Button>
-                    </>
-            }
+            <Button onClick={onChoosePlayback}>Choose playback</Button>
             <Toggle value={enabled} onChange={enabled => mixer.audio.setEnabled(enabled)} />
         </TrackEditorHead>
 
         <TrackEditorContent time={props.time}>
-            {
-                track.payload.type === AudioType.Url || track.payload.type === AudioType.YouTube ?
-                    <AudioView
-                        waveform={props.waveformRenderer}
-                    /> :
-                    undefined
-            }
+            <AudioView
+                waveform={props.waveformRenderer}
+            />
         </TrackEditorContent>
 
     </TrackEditorView>

@@ -8,17 +8,21 @@ export enum ButtonTheme {
 }
 
 type Props = {
-    onClick?: (e: MouseEvent<HTMLButtonElement>) => void
+    onClick?: (e: MouseEvent<HTMLElement>) => void
     children: ReactNode,
     disabled?: boolean,
     size?: UiSize,
     theme?: ButtonTheme,
     className?: string,
     style?: CSSProperties,
+    primitive?: 'button' | 'label',
+    htmlFor?: string,
 }
 
 export function Button(props: Props) {
-    return <button
+    const Primitive = props.primitive === 'label' ? 'label' : 'button'
+
+    return <Primitive
         className={
             "Button" +
             (props.className ? " " + props.className : "")
@@ -28,7 +32,8 @@ export function Button(props: Props) {
         onClick={props.onClick}
         disabled={props.disabled}
         style={props.style}
+        htmlFor={props.htmlFor}
     >
         {props.children}
-    </button>
+    </Primitive>
 }

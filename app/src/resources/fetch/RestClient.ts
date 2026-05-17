@@ -38,13 +38,33 @@ export namespace Body {
         }
     }
 
-    export function multipart(data: FormData): Body {
+    function createFormData(data: Record<string, FormDataEntryValue>): FormData {
+        const formData = new FormData()
+
+        for (const key in data) {
+            formData.append(key, data[key])
+        }
+
+        return formData
+    }
+
+    export function multipart(data: FormData | Record<string, FormDataEntryValue>): Body {
+        let formData;
+        if (data instanceof FormData) {
+            formData = data
+        } else {
+            formData = new FormData()
+            for (const key in data) {
+                formData.append(key, data[key])
+            }
+        }
+
         return {
             type: 'multipart',
-            data,
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+            data: data instanceof FormData ?
+                data :
+                createFormData(data),
+            headers: {}
         }
     }
 
@@ -118,10 +138,12 @@ export class RestClient {
         }
 
         const contentType = response.headers.get('Content-Type')
-        
+
         if (contentType?.startsWith('application/json')) {
             return Result.ok(await response.json())
         }
+
+        console.log('type', contentType);
 
         return Result.ok(await response.text())
     }

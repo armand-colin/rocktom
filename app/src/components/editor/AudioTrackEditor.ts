@@ -1,20 +1,22 @@
 import { Component, Engine } from "@niloc/ecs";
-import { AudioType, type AudioTrack, type AudioTrackPayload } from "../../sound/song/AudioTrack";
+import { type AudioTrack } from "../../sound/song/AudioTrack";
 import { AudioData } from "../../core/AudioData";
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { DocumentQueries } from "../../queries/document/DocumentQueries";
+import { LevelQueries } from "../../queries/level/LevelQueries";
 
 export class AudioTrackEditor extends Component {
 
     readonly track: AudioTrack
+    readonly levelId: string
 
     private _playback: DocumentEntity | null = null
-
     private _audioData: AudioData | null = null
 
-    constructor(engine: Engine, track: AudioTrack) {
+    constructor(engine: Engine, levelId: string, track: AudioTrack) {
         super(engine)
         this.track = track
+        this.levelId = levelId
 
         if (track.playbackId) {
             this._onTrackChange()
@@ -52,80 +54,37 @@ export class AudioTrackEditor extends Component {
             })
     }
 
-    private _generateAudioData(url: string) {
-        this._audioData = null
+    async setPlayback(playback: DocumentEntity | null) {
+        // Bind playback to level
 
-        AudioData.fetch(this.engine, url)
+        const result = await LevelQueries.setPlayback(this.levelId, playback?.id ?? null)
+
+        if (!result.ok) {
+            // TODO: handle error
+            return
+        }
+
+        this._playback = playback
+        this._generateAudioData()
+        this.changed()
+    }
+
+    private _generateAudioData() {
+        this._audioData = null
+        if (!this._playback) {
+            return
+        }
+
+        AudioData.fetch(this.engine, this._playback.id)
             .then(data => {
-                if (this.track.payload.type === AudioType.Url && this.track.payload.url === url) {
-                    this._audioData = data
-                    console.log('got audio data')
-                    this.changed()
-                }
+                this._audioData = data
+                this.changed()
             })
             .catch(e => console.error('Error fetching audioData', e))
     }
 
-    setType(type: AudioType) {
-        let payload: AudioTrackPayload
-
-        switch (type) {
-            case AudioType.None: {
-                payload = { type: AudioType.None }
-                break
-            }
-            case AudioType.Url: {
-                payload = {
-                    type: AudioType.Url,
-                    url: ""
-                }
-                break
-            }
-            case AudioType.YouTube: {
-                payload = {
-                    type: AudioType.YouTube,
-                    youtubeVideoId: "",
-                }
-                break
-            }
-        }
-
-        this.track.payload = payload
-        this._audioData = null
-        this.changed()
-    }
-
     setTime(time: number) {
         this.track.time = time
-        this.changed()
-    }
-
-    setDuration(duration: number) {
-        this.track.duration = duration
-        this.changed()
-    }
-
-    setUrl(url: string) {
-        if (this.track.payload.type !== AudioType.Url)
-            return
-
-        this.track.payload = {
-            ...this.track.payload,
-            url
-        }
-
-        this._generateAudioData(url)
-        this.changed()
-    }
-
-    setYouTubeVideoId(id: string) {
-        if (this.track.payload.type !== AudioType.YouTube)
-            return
-
-        this.track.payload = {
-            ...this.track.payload,
-            youtubeVideoId: id
-        }
         this.changed()
     }
 

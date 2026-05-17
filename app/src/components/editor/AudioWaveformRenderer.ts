@@ -5,7 +5,6 @@ import type { Coroutine, Vec2 } from "@niloc/utils";
 import { AudioData } from "../../core/AudioData";
 import type { TimeTransform } from "./TimeTransform";
 import { Schedules } from "../../Schedules";
-import { AudioType } from "../../sound/song/AudioTrack";
 
 export class AudioWaveformRenderer extends Component {
 
@@ -59,27 +58,28 @@ export class AudioWaveformRenderer extends Component {
             this._renderCoroutine = null
         }
 
-        const url = this._audioTrack.track.payload.type === AudioType.Url ?
-            this._audioTrack.track.payload.url :
-            null
+        // TODO
+        // const url = this._audioTrack.track.payload.type === AudioType.Url ?
+        //     this._audioTrack.track.payload.url :
+        //     null
 
-        if (this._url !== url) {
-            this._audioData = null
-            this._url = url
+        // if (this._url !== url) {
+        //     this._audioData = null
+        //     this._url = url
 
-            if (url) {
-                AudioData.fetch(this.engine, url)
-                    .then(data => {
-                        if (this._url === url) {
-                            this._audioData = data
-                            this._onChange()
-                        }
-                    })
-            }
-        }
+        //     if (url) {
+        //         AudioData.fetch(this.engine, url)
+        //             .then(data => {
+        //                 if (this._url === url) {
+        //                     this._audioData = data
+        //                     this._onChange()
+        //                 }
+        //             })
+        //     }
+        // }
 
-        if (this._audioData)
-            this._renderCoroutine = this.engine.scheduler.add(this._render(this._audioData))
+        // if (this._audioData)
+        //     this._renderCoroutine = this.engine.scheduler.add(this._render(this._audioData))
     }
 
     private *_render(audioData: AudioData) {

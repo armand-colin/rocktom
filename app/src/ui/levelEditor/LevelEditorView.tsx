@@ -1,10 +1,9 @@
-import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
+import { EngineContext, useComponent } from "@niloc/ecs-react";
 import { useContext, useEffect, useState } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
 import { Input, InputManager } from "../../resources/InputManager";
 import { Mixer } from "../../resources/Mixer";
-import { State } from "../../resources/State";
 import { WindowManager } from "../../resources/WindowManager";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button } from "../button/Button";
@@ -23,7 +22,6 @@ import { useMutation } from "../../hooks/useMutation";
 import { useNavigate } from "react-router-dom";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
-    const state = useResource(State)
     const { engine } = useContext(EngineContext)
     const inputManager = engine.getResource(InputManager)
     const windowManager = engine.getResource(WindowManager)

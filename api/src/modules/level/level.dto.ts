@@ -16,3 +16,9 @@ export class UpdateLevelDto {
     @IsNotEmpty()
     serialized!: string;
 }
+
+export class SetPlaybackDto {
+    @IsString()
+    @IsNotEmpty()
+    playbackId!: string | null;
+}

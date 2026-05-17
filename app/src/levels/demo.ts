@@ -1,6 +1,6 @@
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
-import { AudioTrack, AudioType } from "../sound/song/AudioTrack";
+import { AudioTrack } from "../sound/song/AudioTrack";
 import { FocusTrackBuilder } from "../sound/song/FocusTrack";
 import { NoteTrackBuilder } from "../sound/song/NoteTrack";
 import { PatternBuilder } from "../sound/song/Pattern";
@@ -49,12 +49,11 @@ export function demo(): Level {
     const level = new Level({
         id: "demo",
         name: "Demo",
-        author: "Rocktom",
         tracks: {
             audio: new AudioTrack({
-                type: AudioType.YouTube,
-                youtubeVideoId: "JIniBJm2F7A"
-            }, 2.3, 125),
+                playbackId: null,
+                time: 2.3
+            }),
             note: track.build(),
             tempo: tempoTrack,
             focus: focus.build()

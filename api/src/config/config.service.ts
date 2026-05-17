@@ -40,4 +40,10 @@ export class AppConfigService {
     };
   }
 
+  get storage() {
+    return {
+      path: this.env.STORAGE_PATH,
+    };
+  }
+
 }

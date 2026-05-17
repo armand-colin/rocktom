@@ -5,7 +5,7 @@
   "main": "dist/main.cjs",
   "license": "MIT",
   "scripts": {
-    "dev": "vite-node src/main.ts --watch",
+    "dev": "vite-node --config vite.config.ts --watch src/main.ts",
     "build": "vite build",
     "start": "node dist/main.cjs",
     "migration:run": "vite-node src/database/migrate.ts",
@@ -24,6 +24,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
     "handlebars": "^4.7.9",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.6",

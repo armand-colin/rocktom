@@ -5,7 +5,7 @@ import type { LevelEntity } from "./LevelEntity";
 
 type UpdateLevel = {
     name: string,
-    serialized: string
+    serialized: string,
 }
 
 export namespace LevelQueries {
@@ -28,6 +28,11 @@ export namespace LevelQueries {
     export function update(id: string, level: UpdateLevel) {
         const fetch = Instance.engine.getResource(Fetch);
         return fetch.apiAuth.put<LevelEntity>(`/level/${id}`, Body.json(level));
+    }
+
+    export function setPlayback(id: string, playbackId: string | null) {
+        const fetch = Instance.engine.getResource(Fetch);
+        return fetch.apiAuth.put<LevelEntity>(`/level/${id}/playback`, Body.json({ playbackId }));
     }
 
 }

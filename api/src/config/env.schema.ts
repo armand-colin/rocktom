@@ -22,6 +22,7 @@ const baseEnvSchema = z.object({
     .transform((value) => value === 'true')
     .optional()
     .default(false),
+  STORAGE_PATH: z.string().min(1),
 });
 
 export const envSchema = baseEnvSchema.superRefine((env, context) => {

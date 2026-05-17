@@ -40,15 +40,13 @@ export class LevelController {
         return this.levelService.delete(id, session.userId);
     }
 
-    @UseGuards(SessionGuard)
-    @UseInterceptors(FileInterceptor('file'))
     @Post(':id/playback')
-    uploadPlayback(
+    setPlayback(
         @Param('id') id: string, 
-        @CurrentSession() session: Session,
-        @UploadedFile() file: Express.Multer.File
+        @Body() body: { playbackId: string | null }, 
+        @CurrentSession() session: Session
     ) {
-        // return this.levelService.uploadPlayback(id, session.userId, file);
+        return this.levelService.setPlayback(id, session.userId, body);
     }
 
     @UseGuards(SessionGuard)
