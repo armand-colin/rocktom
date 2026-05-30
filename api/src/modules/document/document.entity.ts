@@ -32,8 +32,5 @@ export class Document {
 
   @Column({ type: 'integer' })
   size!: number;
-
-  @Column({ type: 'integer', nullable: true })
-  duration!: number | null;
 }
 

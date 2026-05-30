@@ -143,7 +143,9 @@ export class RestClient {
             return Result.ok(await response.json())
         }
 
-        console.log('type', contentType);
+        if (contentType === "application/octet-stream") {
+            return Result.ok(await response.arrayBuffer())
+        }
 
         return Result.ok(await response.text())
     }

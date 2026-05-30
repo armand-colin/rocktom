@@ -30,9 +30,4 @@ export namespace LevelQueries {
         return fetch.apiAuth.put<LevelEntity>(`/level/${id}`, Body.json(level));
     }
 
-    export function setPlayback(id: string, playbackId: string | null) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.put<LevelEntity>(`/level/${id}/playback`, Body.json({ playbackId }));
-    }
-
 }

@@ -1,12 +1,10 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { Duration, Vec2 } from "@niloc/utils";
-import { useContext, useEffect, useRef, useState } from "react";
+import { Vec2 } from "@niloc/utils";
+import { useContext, useEffect, useRef } from "react";
 import type { AudioTrackEditor } from "../../components/editor/AudioTrackEditor";
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import { usePopupManager } from "../../hooks/usePopupManager";
-import { UrlAudio } from "../../utils/UrlAudio";
-import { YouTubeAudio } from "../../utils/YouTubeAudio";
 import { Button } from "../button/Button";
 import { NumberInput } from "../input/NumberInput";
 import "./AudioTrackEditorView.scss";
@@ -106,63 +104,4 @@ function AudioView(props: {
         <ElementRenderer element={props.waveform.canvas} />
     </div>
 
-}
-
-function UrlPopup(props: {
-    close: () => void,
-    onValidate: (data: { url: string, duration: number }) => void
-}) {
-    const [url, setUrl] = useState("")
-
-    function onValidate() {
-        UrlAudio.getDuration(url)
-            .then(duration => {
-                props.onValidate({ url, duration: Duration.seconds(duration) })
-            })
-            .catch(e => {
-                console.error(e)
-            })
-    }
-
-    return <div>
-        <h2>Set Audio URL</h2>
-        <input
-            type="text"
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-            placeholder="Audio URL"
-        />
-        <Button onClick={onValidate}>Validate</Button>
-        <Button onClick={props.close}>Cancel</Button>
-    </div>
-}
-
-function YouTubePopup(props: {
-    close: () => void,
-    onValidate: (data: { youtubeVideoId: string, duration: number }) => void
-}) {
-    const { engine } = useContext(EngineContext)
-    const [youtubeVideoId, setYouTubeVideoId] = useState("")
-
-    function onValidate() {
-        YouTubeAudio.getDuration(engine, youtubeVideoId)
-            .then(duration => {
-                props.onValidate({ youtubeVideoId, duration: Duration.seconds(duration) })
-            })
-            .catch(e => {
-                console.error(e)
-            })
-    }
-
-    return <div>
-        <h2>Set YouTube Video ID</h2>
-        <input
-            type="text"
-            value={youtubeVideoId}
-            onChange={e => setYouTubeVideoId(e.target.value)}
-            placeholder="YouTube Video ID"
-        />
-        <Button onClick={onValidate}>Validate</Button>
-        <Button onClick={props.close}>Cancel</Button>
-    </div>
 }

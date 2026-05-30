@@ -35,4 +35,13 @@ export class DocumentController {
         return this.documentService.upload(file, session.userId);
     }
 
+    @Get(':id/download')
+    @UseGuards(SessionGuard)
+    download(
+        @Param('id') id: string,
+        @CurrentSession() session: Session
+    ) {
+        return this.documentService.download(id, session.userId);
+    }
+
 }

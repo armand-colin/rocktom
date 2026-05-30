@@ -3,7 +3,7 @@ import { type AudioTrack } from "../../sound/song/AudioTrack";
 import { AudioData } from "../../core/AudioData";
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { DocumentQueries } from "../../queries/document/DocumentQueries";
-import { LevelQueries } from "../../queries/level/LevelQueries";
+import type { AudioWaveformRenderer } from "./AudioWaveformRenderer";
 
 export class AudioTrackEditor extends Component {
 
@@ -12,6 +12,8 @@ export class AudioTrackEditor extends Component {
 
     private _playback: DocumentEntity | null = null
     private _audioData: AudioData | null = null
+    
+    readonly audioWaveformRenderer: AudioWaveformRenderer
 
     constructor(engine: Engine, levelId: string, track: AudioTrack) {
         super(engine)
@@ -19,6 +21,7 @@ export class AudioTrackEditor extends Component {
         this.levelId = levelId
 
         if (track.playbackId) {
+            console.log('setting track change')
             this._onTrackChange()
         }
     }
@@ -28,7 +31,10 @@ export class AudioTrackEditor extends Component {
     }
 
     private _onTrackChange = () => {
+        console.log('on track change', this.track.playbackId)
+
         const playbackId = this.track.playbackId
+
         if (this._playback && this._playback.id === playbackId) {
             return
         }
@@ -40,6 +46,8 @@ export class AudioTrackEditor extends Component {
             return
         }
 
+        console.log('getting playback', playbackId) 
+    
         DocumentQueries.get(playbackId)
             .then(result => {
                 if (!result.ok) {
@@ -47,36 +55,32 @@ export class AudioTrackEditor extends Component {
                     return
                 }
 
+                console.log('got playback', result.value)
+
                 this._playback = result.value
                 this.changed()
-
                 this._generateAudioData()
             })
     }
 
     async setPlayback(playback: DocumentEntity | null) {
         // Bind playback to level
-
-        const result = await LevelQueries.setPlayback(this.levelId, playback?.id ?? null)
-
-        if (!result.ok) {
-            // TODO: handle error
-            return
-        }
-
         this._playback = playback
+        this.track.playbackId = playback?.id ?? null
         this._generateAudioData()
         this.changed()
     }
 
     private _generateAudioData() {
         this._audioData = null
+
         if (!this._playback) {
             return
         }
 
         AudioData.fetch(this.engine, this._playback.id)
             .then(data => {
+                console.log('fetched audioData', data)
                 this._audioData = data
                 this.changed()
             })

@@ -5,22 +5,23 @@ import type { Coroutine, Vec2 } from "@niloc/utils";
 import { AudioData } from "../../core/AudioData";
 import type { TimeTransform } from "./TimeTransform";
 import { Schedules } from "../../Schedules";
+import type { TempoTrack } from "../../sound/song/TempoTrack";
+import type { AudioTrack } from "../../sound/song/AudioTrack";
 
 export class AudioWaveformRenderer extends Component {
 
     private _canvas: HTMLCanvasElement
     private _context: CanvasRenderingContext2D
-    private _tempoTrack: TempoTrackEditor
-    private _audioTrack: AudioTrackEditor
+    private _tempoTrack: TempoTrack
+    private _audioTrack: AudioTrack
     private _size: Vec2
     private _renderCoroutine: Coroutine | null = null
-    private _url: string | null = null
     private _audioData: AudioData | null = null
     private _transform: TimeTransform
 
     constructor(engine: Engine, opts: {
-        tempoTrack: TempoTrackEditor,
-        audioTrack: AudioTrackEditor,
+        tempoTrack: TempoTrack,
+        audioTrack: AudioTrack,
         transform: TimeTransform
     }) {
         super(engine)
@@ -43,6 +44,11 @@ export class AudioWaveformRenderer extends Component {
         this._onChange()
     }
 
+    setAudioData(audioData: AudioData | null) {
+        this._audioData = audioData
+        this._onChange()
+    }
+
     get canvas() {
         return this._canvas
     }
@@ -58,28 +64,8 @@ export class AudioWaveformRenderer extends Component {
             this._renderCoroutine = null
         }
 
-        // TODO
-        // const url = this._audioTrack.track.payload.type === AudioType.Url ?
-        //     this._audioTrack.track.payload.url :
-        //     null
-
-        // if (this._url !== url) {
-        //     this._audioData = null
-        //     this._url = url
-
-        //     if (url) {
-        //         AudioData.fetch(this.engine, url)
-        //             .then(data => {
-        //                 if (this._url === url) {
-        //                     this._audioData = data
-        //                     this._onChange()
-        //                 }
-        //             })
-        //     }
-        // }
-
-        // if (this._audioData)
-        //     this._renderCoroutine = this.engine.scheduler.add(this._render(this._audioData))
+        if (this._audioData)
+            this._renderCoroutine = this.engine.scheduler.add(this._render(this._audioData))
     }
 
     private *_render(audioData: AudioData) {

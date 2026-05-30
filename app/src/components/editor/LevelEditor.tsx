@@ -1,5 +1,4 @@
 import { Component, Engine } from "@niloc/ecs";
-import { LevelStorage } from "../../resources/LevelStorage";
 import { WindowManager, type Window } from "../../resources/WindowManager";
 import type { Level } from "../../sound/Level";
 import type { TimedPattern } from "../../sound/song/Pattern";

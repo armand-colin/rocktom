@@ -5,11 +5,9 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Document } from '../document/document.entity';
 
 @Entity("level")
 export class Level {
@@ -31,13 +29,6 @@ export class Level {
 
   @Column({ type: 'text' })
   name!: string;
-
-  @RelationId((level: Level) => level.playback)
-  playbackId!: string | null;
-
-  @ManyToOne(() => Document, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: 'playback_id' })
-  playback!: Document | null;
 
   @Column({ type: 'text' })
   serialized!: string;

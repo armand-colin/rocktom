@@ -1,12 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, IsNull, Or, Repository } from 'typeorm';
 import { Document } from './document.entity';
 import { AppConfigService } from '../../config/config.service';
 import path from 'path';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings.js';
-import { writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { uuid } from '../../utils/uuid';
+import { createReadStream } from 'fs';
 
 @Injectable()
 export class DocumentService {
@@ -16,7 +17,7 @@ export class DocumentService {
   constructor(
     @InjectRepository(Document)
     private readonly documentRepository: Repository<Document>,
-    private readonly config: AppConfigService,
+    config: AppConfigService,
   ) {
     this.directory = config.storage.path;
   }
@@ -33,7 +34,6 @@ export class DocumentService {
       filename: body.filename,
       extension: body.extension,
       size: body.size,
-      duration: body.duration ?? null,
     });
 
     return this.documentRepository.save(document);
@@ -80,6 +80,13 @@ export class DocumentService {
     });
 
     return await this.documentRepository.save(document);
+  }
+
+  async download(id: string, requestingUserId: string): Promise<StreamableFile> {
+    const document = await this.getById(id, requestingUserId);
+    const filePath = path.join(this.directory, document.id);
+    const file = await createReadStream(filePath);
+    return new StreamableFile(file);
   }
 
 }

@@ -2,7 +2,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Level } from "./level.entity";
 import { Repository } from "typeorm";
 import { NotFoundException } from "@nestjs/common";
-import { SetPlaybackDto, UpdateLevelDto } from "./level.dto";
+import { UpdateLevelDto } from "./level.dto";
 
 export class LevelService {
 
@@ -18,7 +18,6 @@ export class LevelService {
         const level = this.levelRepository.create({
             userId: body.userId,
             name: body.name,
-            playbackId: null,
             serialized: '',
         })
 
@@ -33,9 +32,6 @@ export class LevelService {
             order: {
                 createdAt: 'DESC',
             },
-            relations: {
-                playback: true,
-            },
         });
     }
 
@@ -44,9 +40,6 @@ export class LevelService {
             where: {
                 id,
                 userId: requestingUserId,
-            },
-            relations: {
-                playback: true,
             },
         });
     }
@@ -74,12 +67,6 @@ export class LevelService {
         level.name = body.name;
         level.serialized = body.serialized;
 
-        return this.levelRepository.save(level);
-    }
-
-    async setPlayback(id: string, requestingUserId: string, body: SetPlaybackDto): Promise<Level> {
-        const level = await this.getById(id, requestingUserId);
-        level.playbackId = body.playbackId;
         return this.levelRepository.save(level);
     }
 
