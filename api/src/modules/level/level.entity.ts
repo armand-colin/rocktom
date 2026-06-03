@@ -32,4 +32,7 @@ export class Level {
 
   @Column({ type: 'text' })
   serialized!: string;
+
+  @Column({ name: 'duration', type: 'integer' })
+  duration!: number;
 }

@@ -12,7 +12,6 @@ import { Input, InputManager } from "../resources/InputManager";
 import { Toggle } from "./toggle/Toggle";
 import { Tempo } from "../sound/Tempo";
 import { PlaybackProgressView } from "./PlaybackProgressView";
-import { State } from "../resources/State";
 import type { Time } from "../components/Time";
 import { Mixer } from "../resources/Mixer";
 import { useNavigate } from "react-router-dom";
@@ -62,7 +61,6 @@ export function PlaybackView(props: { playback: Playback }) {
 
 function PlaybackControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
-    const state = engine.getResource(State)
     const mixer = engine.getResource(Mixer)
     const navigate = useNavigate()
     

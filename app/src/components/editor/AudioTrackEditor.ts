@@ -3,7 +3,6 @@ import { type AudioTrack } from "../../sound/song/AudioTrack";
 import { AudioData } from "../../core/AudioData";
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { DocumentQueries } from "../../queries/document/DocumentQueries";
-import type { AudioWaveformRenderer } from "./AudioWaveformRenderer";
 
 export class AudioTrackEditor extends Component {
 
@@ -12,8 +11,6 @@ export class AudioTrackEditor extends Component {
 
     private _playback: DocumentEntity | null = null
     private _audioData: AudioData | null = null
-    
-    readonly audioWaveformRenderer: AudioWaveformRenderer
 
     constructor(engine: Engine, levelId: string, track: AudioTrack) {
         super(engine)
@@ -21,18 +18,15 @@ export class AudioTrackEditor extends Component {
         this.levelId = levelId
 
         if (track.playbackId) {
-            console.log('setting track change')
             this._onTrackChange()
         }
     }
 
-    get audioData() {
-        return this._audioData?.id ?? null
+    get loadedAudioData() {
+        return this._audioData
     }
 
     private _onTrackChange = () => {
-        console.log('on track change', this.track.playbackId)
-
         const playbackId = this.track.playbackId
 
         if (this._playback && this._playback.id === playbackId) {
@@ -46,16 +40,12 @@ export class AudioTrackEditor extends Component {
             return
         }
 
-        console.log('getting playback', playbackId) 
-    
         DocumentQueries.get(playbackId)
             .then(result => {
                 if (!result.ok) {
                     // TODO: handle error
                     return
                 }
-
-                console.log('got playback', result.value)
 
                 this._playback = result.value
                 this.changed()
@@ -80,7 +70,6 @@ export class AudioTrackEditor extends Component {
 
         AudioData.fetch(this.engine, this._playback.id)
             .then(data => {
-                console.log('fetched audioData', data)
                 this._audioData = data
                 this.changed()
             })

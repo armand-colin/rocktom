@@ -1,4 +1,3 @@
-import audioUrl from "../assets/songs/TimeIsRunningOut.wav";
 import { Bass } from "../sound/instrument/Instrument";
 import { Level } from "../sound/Level";
 import { AudioTrack } from "../sound/song/AudioTrack";

@@ -1,8 +1,14 @@
+import { nanoid } from "nanoid";
 import { AudioTrack, type SerializedAudioTrack } from "./song/AudioTrack";
 import { FocusTrack, type SerializedFocusTrack } from "./song/FocusTrack";
 import { NoteTrack, type SerializedNoteTrack } from "./song/NoteTrack";
 import { TempoTrack, type SerializedTempoTrack } from "./song/TempoTrack";
 
+type SerializedLevel = {
+    id: string,
+    name: string,
+    tracks: SerializedTracks
+}
 
 type SerializedTracks = {
     note: SerializedNoteTrack,
@@ -50,6 +56,35 @@ export class Level {
 
     get durationInSeconds(): number {
         return this.tempoTrack.secondsFromTicks(this.durationInTicks)
+    }
+
+    clone(): Level {
+        return new Level({
+            id: nanoid(),
+            name: this.name + " (cloned)",
+            tracks: {
+                audio: this.audioTrack.clone(),
+                focus: this.focusTrack.clone(),
+                note: this.noteTrack.clone(),
+                tempo: this.tempoTrack.clone()
+            }
+        })
+    }
+
+    serialize(): SerializedLevel {
+        return {
+            id: this.id,
+            name: this.name,
+            tracks: this.serializeTracks()
+        }
+    }
+
+    static deserialize(data: SerializedLevel): Level {
+        return new Level({
+            id: data.id,
+            name: data.name,
+            tracks: Level.deserializeTracks(data.tracks)
+        })
     }
 
     serializeTracks(): SerializedTracks {

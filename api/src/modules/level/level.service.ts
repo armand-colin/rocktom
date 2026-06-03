@@ -66,6 +66,7 @@ export class LevelService {
 
         level.name = body.name;
         level.serialized = body.serialized;
+        level.duration = body.duration;
 
         return this.levelRepository.save(level);
     }

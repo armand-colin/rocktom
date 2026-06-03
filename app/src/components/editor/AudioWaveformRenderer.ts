@@ -1,27 +1,24 @@
 import { Component, Engine } from "@niloc/ecs";
-import type { TempoTrackEditor } from "./TempoTrackEditor";
-import type { AudioTrackEditor } from "./AudioTrackEditor";
 import type { Coroutine, Vec2 } from "@niloc/utils";
 import { AudioData } from "../../core/AudioData";
 import type { TimeTransform } from "./TimeTransform";
 import { Schedules } from "../../Schedules";
-import type { TempoTrack } from "../../sound/song/TempoTrack";
-import type { AudioTrack } from "../../sound/song/AudioTrack";
+import type { TempoTrackEditor } from "./TempoTrackEditor";
+import type { AudioTrackEditor } from "./AudioTrackEditor";
 
 export class AudioWaveformRenderer extends Component {
 
     private _canvas: HTMLCanvasElement
     private _context: CanvasRenderingContext2D
-    private _tempoTrack: TempoTrack
-    private _audioTrack: AudioTrack
+    private _tempoTrack: TempoTrackEditor
+    private _audioTrack: AudioTrackEditor
     private _size: Vec2
     private _renderCoroutine: Coroutine | null = null
-    private _audioData: AudioData | null = null
     private _transform: TimeTransform
 
     constructor(engine: Engine, opts: {
-        tempoTrack: TempoTrack,
-        audioTrack: AudioTrack,
+        tempoTrack: TempoTrackEditor,
+        audioTrack: AudioTrackEditor,
         transform: TimeTransform
     }) {
         super(engine)
@@ -44,11 +41,6 @@ export class AudioWaveformRenderer extends Component {
         this._onChange()
     }
 
-    setAudioData(audioData: AudioData | null) {
-        this._audioData = audioData
-        this._onChange()
-    }
-
     get canvas() {
         return this._canvas
     }
@@ -64,8 +56,9 @@ export class AudioWaveformRenderer extends Component {
             this._renderCoroutine = null
         }
 
-        if (this._audioData)
-            this._renderCoroutine = this.engine.scheduler.add(this._render(this._audioData))
+        const audioData = this._audioTrack.loadedAudioData
+        if (audioData)
+            this._renderCoroutine = this.engine.scheduler.add(this._render(audioData))
     }
 
     private *_render(audioData: AudioData) {

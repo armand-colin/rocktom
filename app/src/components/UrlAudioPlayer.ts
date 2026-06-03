@@ -9,7 +9,7 @@ export class UrlAudioPlayer extends Component implements AudioPlayer {
 
     private _audio: HTMLAudioElement
     private _node: AudioElementSoundNode
-    private _scheduledPlay: number | null = null
+    private _scheduledPlay: ReturnType<typeof setTimeout> | null = null
     private _loaded = false
 
     readonly events = new Emitter<{ loaded: void }>()

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, MaxLength, Min, MinLength } from "class-validator";
 
 export class CreateLevelDto {
     @IsString()
@@ -15,4 +15,9 @@ export class UpdateLevelDto {
     @IsString()
     @IsNotEmpty()
     serialized!: string;
+
+    @IsNumber()
+    @Min(0)
+    @IsNotEmpty()
+    duration!: number;
 }

@@ -27,6 +27,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Main: Story = {
+  args: {
+    onChange: () => {},
+  },
   render: (args) => {
     const [bpmValue, setBpmValue] = useState(120);
     const [gainValue, setGainValue] = useState(0.5);

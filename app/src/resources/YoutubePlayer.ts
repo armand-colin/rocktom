@@ -20,7 +20,7 @@ export class YoutubePlayer extends Resource implements AudioPlayer {
     private _time: number = 0
     // private _volume: number = 1
     private _lagEstimate: Duration = Duration.fromSeconds(0)
-    private _scheduledPlay: number | null = null
+    private _scheduledPlay: ReturnType<typeof setTimeout> | null = null
 
     private _state: YouTubePlayerState = YouTubePlayerState.UNSTARTED
 

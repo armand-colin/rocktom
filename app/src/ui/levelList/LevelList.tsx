@@ -21,7 +21,7 @@ export function LevelList(props: {
                     onClick={() => props.onSelect(level)}
                 >
                     <p>{level.name}</p>
-                    <small>{formatSeconds(level.playback?.duration ?? 0)}</small>
+                    <small>{formatSeconds(level.duration)}</small>
 
                     <Button onClick={(e) => {
                         e.stopPropagation()
