@@ -41,7 +41,7 @@ services:
     volumes:
       - ${API_STORAGE_PATH:?API_STORAGE_PATH is required}:/api/storage
     ports:
-      - "3001:3000"
+      - "${API_PORT:?API_PORT is required}:3000"
     depends_on:
       database:
         condition: service_healthy
@@ -55,7 +55,7 @@ services:
     container_name: rocktom-app
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "${APP_PORT:?APP_PORT is required}:80"
     depends_on:
       - api
 
