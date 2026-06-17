@@ -143,7 +143,10 @@ export class RestClient {
             return Result.ok(await response.json())
         }
 
-        if (contentType === "application/octet-stream") {
+        if (
+            contentType === "application/octet-stream" ||
+            contentType?.startsWith('audio/')
+        ) {
             return Result.ok(await response.arrayBuffer())
         }
 

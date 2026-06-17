@@ -56,7 +56,8 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
     function onSave() {
         updateLevel(level.id, {
             name: level.name,
-            serialized: JSON.stringify(level.serializeTracks())
+            serialized: JSON.stringify(level.serializeTracks()),
+            duration: level.durationInSeconds
         })
     }
 

@@ -86,7 +86,23 @@ export class DocumentService {
     const document = await this.getById(id, requestingUserId);
     const filePath = path.join(this.directory, document.id);
     const file = await createReadStream(filePath);
-    return new StreamableFile(file);
+    return new StreamableFile(file, {
+      disposition: `inline; filename="${document.filename}"`,
+      type: mimeTypeFromExtension(document.extension),
+    });
   }
 
+}
+
+function mimeTypeFromExtension(extension: string): string {
+  const mimeTypes: Record<string, string> = {
+    '.mp3': 'audio/mpeg',
+    '.wav': 'audio/wav',
+    '.ogg': 'audio/ogg',
+    '.m4a': 'audio/mp4',
+    '.aac': 'audio/aac',
+    '.webm': 'audio/webm',
+  };
+
+  return mimeTypes[extension.toLowerCase()] ?? 'application/octet-stream';
 }

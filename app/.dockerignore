@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-ssr
+.env
+.env.*
+!.env.template
+.git
+.gitignore
+.storybook

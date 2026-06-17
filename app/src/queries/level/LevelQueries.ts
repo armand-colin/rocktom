@@ -6,6 +6,7 @@ import type { LevelEntity } from "./LevelEntity";
 type UpdateLevel = {
     name: string,
     serialized: string,
+    duration: number,
 }
 
 export namespace LevelQueries {
