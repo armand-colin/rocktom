@@ -5,6 +5,7 @@ import type { Result } from "@niloc/utils";
 
 export class DocumentManager extends Resource {
 
+    // TODO: add "lifetime" on files, to discard them after a certain time
     private _files: PartialRecord<string, ArrayBuffer> = {}
     private _fileRequests: PartialRecord<string, Promise<Result<ArrayBuffer, Error>>> = {}
 
