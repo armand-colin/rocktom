@@ -1,0 +1,59 @@
+.ToastManagerView {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    pointer-events: none;
+    z-index: 1000;
+
+    .Toast {
+        pointer-events: auto;
+        animation: toast-in 0.2s ease;
+
+        &[data-state="closing"] {
+            animation: toast-out 0.3s ease forwards;
+        }
+
+        .ToastContent {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            background: var(--container);
+            border: 1px solid var(--outline);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            min-width: 240px;
+            max-width: 360px;
+            font: var(--font-m);
+
+            > .body {
+                flex: 1;
+            }
+        }
+    }
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toast-out {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+}

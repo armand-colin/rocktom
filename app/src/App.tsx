@@ -3,6 +3,7 @@ import { HomePage } from './pages/HomePage'
 import { Register } from './pages/Register'
 import { Login } from './pages/Login'
 import { PopupManagerView } from './ui/popup/PopupManagerView'
+import { ToastManagerView } from './ui/toast/ToastManagerView'
 import { ContextualMenuView } from './ui/contextualMenuView/ContextualMenuView'
 import { useResource } from '@niloc/ecs-react'
 import { AuthManager } from './resources/AuthManager'
@@ -35,6 +36,7 @@ function App() {
 
     <WindowManagerView />
     <PopupManagerView />
+    <ToastManagerView />
     <ContextualMenuView />
   </>
 }
