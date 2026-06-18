@@ -2,6 +2,7 @@ import type { Engine } from "@niloc/ecs"
 import { SoundEngine } from "../resources/SoundEngine"
 import { nanoid } from "nanoid"
 import { DocumentQueries } from "../queries/document/DocumentQueries"
+import { DocumentManager } from "../resources/DocumentManager"
 
 export type AudioData = {
     id: string,
@@ -10,7 +11,7 @@ export type AudioData = {
 }
 
 function fetch(engine: Engine, documentId: string): Promise<AudioData> {
-    return DocumentQueries.download(documentId)
+    return engine.getResource(DocumentManager).download(documentId)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to download audio data')

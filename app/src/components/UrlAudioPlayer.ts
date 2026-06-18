@@ -5,6 +5,7 @@ import { SoundEngine } from "../resources/SoundEngine";
 import { Duration, Emitter } from "@niloc/utils";
 import { Mixer } from "../resources/Mixer";
 import { DocumentQueries } from "../queries/document/DocumentQueries";
+import { DocumentManager } from "../resources/DocumentManager";
 
 const MIME_TYPES: Record<string, string> = {
     '.mp3': 'audio/mpeg',
@@ -47,7 +48,7 @@ export class UrlAudioPlayer extends Component implements AudioPlayer {
     private async _load(trackId: string) {
         const [documentResult, downloadResult] = await Promise.all([
             DocumentQueries.get(trackId),
-            DocumentQueries.download(trackId),
+            this.engine.getResource(DocumentManager).download(trackId)
         ])
 
         if (!downloadResult.ok) {

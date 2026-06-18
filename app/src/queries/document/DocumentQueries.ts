@@ -1,4 +1,4 @@
-import type { Result } from "@niloc/utils";
+import { Result } from "@niloc/utils";
 import { Instance } from "../../Instance";
 import { Fetch } from "../../resources/fetch/Fetch";
 import type { DocumentEntity } from "./DocumentEntity";

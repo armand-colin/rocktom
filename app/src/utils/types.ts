@@ -1,0 +1,1 @@
+export type PartialRecord<S extends string, T> = Partial<Record<S, T>>
