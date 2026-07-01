@@ -10,6 +10,7 @@ export interface AudioPlayer {
     setSpeed(speed: number): void
     setVolume(volume: number): void
     clear(): void
+    load(): Promise<void>
 
 }
 
@@ -23,6 +24,7 @@ function mock(timeFunction: () => number): AudioPlayer {
         setSpeed: () => { },
         setVolume: () => { },
         clear: () => { },
+        load: () => Promise.resolve(),
     }
 }
 

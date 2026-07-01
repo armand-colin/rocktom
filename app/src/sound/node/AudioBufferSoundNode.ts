@@ -4,6 +4,9 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
 
     private _buffer: AudioBuffer
 
+    private _startTime: number = 0
+    private _offset: number = 0
+
     constructor(audioContext: AudioContext, buffer: AudioBuffer) {
         super(audioContext)
         this._buffer = buffer
@@ -16,8 +19,15 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         return source
     }
 
-    play(time?: number) {
-        this.node.start(time)
+    setPlaybackRate(rate: number) {
+        this.node.playbackRate.value = rate
+    }
+
+    getTime(): number {
+        return this.audioContext.currentTime - his.node.currentTime + this._offset
+    }
+    play(time?: number, offset?: number) {
+        this.node.start(time, offset)
     }
 
     pause() {
@@ -27,4 +37,5 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
     rebuild(): void {
         this.node = this.build()
     }
+
 }
