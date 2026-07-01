@@ -7,6 +7,7 @@ type UpdateLevel = {
     name: string,
     serialized: string,
     duration: number,
+    playbackId: string | null,
 }
 
 export namespace LevelQueries {

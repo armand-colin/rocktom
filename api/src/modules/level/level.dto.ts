@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, MaxLength, Min, MinLength } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, MaxLength, Min, MinLength, ValidateIf, } from "class-validator";
 
 export class CreateLevelDto {
     @IsString()
@@ -6,6 +6,7 @@ export class CreateLevelDto {
     @MaxLength(100)
     name!: string;
 }
+
 export class UpdateLevelDto {
     @IsString()
     @MinLength(1)
@@ -20,4 +21,8 @@ export class UpdateLevelDto {
     @Min(0)
     @IsNotEmpty()
     duration!: number;
+
+    @IsString()
+    @ValidateIf((_, value) => value !== null)
+    playbackId!: string | null;
 }

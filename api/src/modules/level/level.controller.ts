@@ -39,6 +39,18 @@ export class LevelController {
     }
 
     @UseGuards(SessionGuard)
+    @Post(':id/share')
+    share(@Param('id') id: string, @CurrentSession() session: Session) {
+        return this.levelService.share(id, session.userId);
+    }
+
+    @Post(':id/accept-share')
+    @UseGuards(SessionGuard)
+    acceptShare(@Param('id') id: string, @CurrentSession() session: Session) {
+        return this.levelService.acceptShare(id, session.userId);
+    }
+
+    @UseGuards(SessionGuard)
     @Put(':id')
     update(
         @Param('id') id: string, 

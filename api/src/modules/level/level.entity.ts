@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Document } from '../document/document.entity';
 
 @Entity("level")
 export class Level {
@@ -35,4 +36,14 @@ export class Level {
 
   @Column({ name: 'duration', type: 'integer' })
   duration!: number;
+
+  @Column({ name: 'playback_id', type: 'uuid', nullable: true })
+  playbackId!: string | null;
+
+  @ManyToOne(() => Document, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn({ name: 'playback_id' })
+  playback!: Document | null;
+
+  @Column({ name: 'share_code', type: 'text', nullable: true, select: false })
+  shareCode!: string | null;
 }

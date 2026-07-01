@@ -4,8 +4,9 @@ import { Document } from '../modules/document/document.entity';
 import { Level } from '../modules/level/level.entity';
 import { Session } from '../modules/session/session.entity';
 import { User } from '../modules/user/user.entity';
-import { InitialSchema1746480000000 } from './migrations/1746480000000-initial-schema';
+import { InitialSchema as InitialSchema } from './migrations/20260101-initial-schema';
 import { AddDuration } from './migrations/20260603-add-duration';
+import { AddPlaybackAndShare } from './migrations/20260618-add-playback-and-share';
 
 export namespace TypeOrmConfig {
 
@@ -23,7 +24,7 @@ export namespace TypeOrmConfig {
         Document,
         Level,
       ],
-      migrations: [InitialSchema1746480000000, AddDuration],
+      migrations: [InitialSchema, AddDuration, AddPlaybackAndShare],
       synchronize: false,
       migrationsRun: true,
     };

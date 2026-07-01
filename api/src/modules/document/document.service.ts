@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, IsNull, Or, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Document } from './document.entity';
 import { AppConfigService } from '../../config/config.service';
 import path from 'path';
-import { UUID } from 'typeorm/driver/mongodb/bson.typings.js';
-import { readFile, writeFile } from 'fs/promises';
+import {  writeFile } from 'fs/promises';
 import { uuid } from '../../utils/uuid';
 import { createReadStream } from 'fs';
 
