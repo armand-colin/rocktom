@@ -43,7 +43,4 @@ export class Level {
   @ManyToOne(() => Document, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'playback_id' })
   playback!: Document | null;
-
-  @Column({ name: 'share_code', type: 'text', nullable: true, select: false })
-  shareCode!: string | null;
 }

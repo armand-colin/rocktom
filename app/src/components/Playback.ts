@@ -59,6 +59,9 @@ export class Playback extends Component {
         this._audioPlayerVolume = preferences.audioVolume
         this._audioPlayer.setVolume(this._audioPlayerVolume)
         this._audioPlayer.load()
+            .then(() => {
+                this.changed()
+            })
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
