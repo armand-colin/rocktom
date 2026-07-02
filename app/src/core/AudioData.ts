@@ -1,13 +1,13 @@
 import type { Engine } from "@niloc/ecs"
 import { SoundEngine } from "../resources/SoundEngine"
 import { nanoid } from "nanoid"
-import { DocumentQueries } from "../queries/document/DocumentQueries"
 import { DocumentManager } from "../resources/DocumentManager"
 
 export type AudioData = {
     id: string,
     duration: number,
-    array: Float32Array
+    array: Float32Array,
+    audioBuffer: AudioBuffer
 }
 
 function fetch(engine: Engine, documentId: string): Promise<AudioData> {
@@ -17,7 +17,10 @@ function fetch(engine: Engine, documentId: string): Promise<AudioData> {
                 throw new Error('Failed to download audio data')
             }
             const buffer = response.value
-            return buffer
+            const cloned = new ArrayBuffer(buffer.byteLength);
+            new Uint8Array(cloned).set(new Uint8Array(buffer));
+
+            return cloned
         })
         .then(buffer => engine.getResource(SoundEngine).createAudioBuffer(buffer))
         .then(audioBuffer => {
@@ -27,7 +30,8 @@ function fetch(engine: Engine, documentId: string): Promise<AudioData> {
             return {
                 id: nanoid(),
                 duration,
-                array
+                array,
+                audioBuffer,
             }
         })
 }

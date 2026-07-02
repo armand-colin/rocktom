@@ -54,6 +54,7 @@ export class MailerService {
   private _createSmtpTransporter() {
     const smtpConfig = this.config.mailer;
 
+    console.log(smtpConfig)
     return nodemailer.createTransport({
       host: smtpConfig.host!,
       port: smtpConfig.port!,

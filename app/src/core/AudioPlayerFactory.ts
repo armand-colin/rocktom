@@ -1,7 +1,7 @@
 import type { Engine } from "@niloc/ecs";
-import { UrlAudioPlayer } from "../components/UrlAudioPlayer";
 import { type AudioTrack } from "../sound/song/AudioTrack";
 import { AudioPlayer } from "./AudioPlayer";
+import { AudioBufferPlayer } from "../components/AudioBufferPlayer";
 
 function create(engine: Engine, track: AudioTrack, timeFunction: () => number, onLoad: () => void): AudioPlayer {
     if (track.playbackId === null) {
@@ -9,7 +9,7 @@ function create(engine: Engine, track: AudioTrack, timeFunction: () => number, o
         return AudioPlayer.mock(timeFunction)
     }
 
-    const urlPlayer = engine.createComponent(UrlAudioPlayer, track.playbackId)
+    const urlPlayer = engine.createComponent(AudioBufferPlayer, track.playbackId)
     if (urlPlayer.loaded)
         onLoad()
     else

@@ -40,9 +40,13 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         this._seek = time
 
         if (this._playing) {
-            this.node.stop()
-            this.node = this.build()
-            this.node.start(undefined, time)
+            this.node.stop();
+            this._playing = false;
+
+            this.rebuild()
+            this.refreshConnections()
+
+            this.play()
         }
     }
 
@@ -64,6 +68,9 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         this._seek = this.getTime()
         this._playing = false
         this.node.stop()
+
+        this.rebuild()
+        this.refreshConnections()
     }
 
     rebuild(): void {

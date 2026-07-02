@@ -23,11 +23,13 @@ export class UrlAudioPlayer extends Component implements AudioPlayer {
     private _scheduledPlay: ReturnType<typeof setTimeout> | null = null
     private _objectUrl: string | null = null
     private _loaded = false
+    private _trackId: string
 
     readonly events = new Emitter<{ loaded: void }>()
 
     constructor(engine: Engine, trackId: string) {
         super(engine)
+        this._trackId = trackId
         this._audio = new Audio()
         const soundEngine = engine.getResource(SoundEngine)
         this._node = soundEngine.createAudioElementNode(this._audio)
@@ -40,15 +42,18 @@ export class UrlAudioPlayer extends Component implements AudioPlayer {
             this.events.emit('loaded')
         })
 
-        this._load(trackId)
-
         Object.assign(window, { urlPlayer: this })
     }
 
-    private async _load(trackId: string) {
+    isLoading(): boolean {
+        return !this._loaded
+    }
+
+
+    async load() {
         const [documentResult, downloadResult] = await Promise.all([
-            DocumentQueries.get(trackId),
-            this.engine.getResource(DocumentManager).download(trackId)
+            DocumentQueries.get(this._trackId),
+            this.engine.getResource(DocumentManager).download(this._trackId)
         ])
 
         if (!downloadResult.ok) {

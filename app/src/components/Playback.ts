@@ -58,10 +58,10 @@ export class Playback extends Component {
 
         this._audioPlayerVolume = preferences.audioVolume
         this._audioPlayer.setVolume(this._audioPlayerVolume)
+        this._audioPlayer.load()
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
-
 
         this._renderer = engine.getResource(Renderer)
 
@@ -86,7 +86,7 @@ export class Playback extends Component {
     }
 
     get loading() {
-        return this._loading
+        return this._loading || this._audioPlayer.isLoading()
     }
 
     get playing() {

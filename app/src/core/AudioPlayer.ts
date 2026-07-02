@@ -11,6 +11,7 @@ export interface AudioPlayer {
     setVolume(volume: number): void
     clear(): void
     load(): Promise<void>
+    isLoading(): boolean
 
 }
 
@@ -25,6 +26,7 @@ function mock(timeFunction: () => number): AudioPlayer {
         setVolume: () => { },
         clear: () => { },
         load: () => Promise.resolve(),
+        isLoading: () => false,
     }
 }
 
