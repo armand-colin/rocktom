@@ -4,7 +4,6 @@ import { Result } from "@niloc/utils";
 import { SessionQueries } from "../queries/session/SessionQueries";
 import { AuthStore, type Session } from "./AuthStore";
 
-
 type Tokens = {
     accessToken: string,
     refreshToken: string
@@ -68,6 +67,11 @@ export class AuthManager extends Resource {
             console.error('login error', error)
             return Result.error(error)
         }
+    }
+
+    async logout() {
+        this._store.setSession(null)
+        this.changed()
     }
 
     private _parseTokens(tokens: Tokens): Session {

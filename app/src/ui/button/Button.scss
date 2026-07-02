@@ -3,30 +3,46 @@
     background: #2d2d2d;
     color: #ffffff;
     border: 1px solid transparent;
+    display: flex;
 
     &[data-theme="default"] {
-        background: #2d2d2d;
-        border-color: #2d2d2d;
+        background: var(--surface);
+        border-color: var(--surface);
+        color: var(--surface-text);
+        --hover-background: var(--surface-hover);
+        --active-background: var(--surface-active);
     }
 
     &[data-theme="danger"] {
-        background: #a41919;
-        border-color: #a41919;
+        background: var(--danger);
+        border-color: var(--danger);
+        color: var(--danger-text);
+        --hover-background: var(--danger-hover);
+        --active-background: var(--danger-active);
     }
 
     &[data-size="m"] {
         padding: 8px 12px;
+        gap: var(--spacing-s);
     }
 
     &[data-size="s"] {
         padding: 4px 12px;
+        gap: var(--spacing-xs);
     }
     
     &:not(:disabled) {
         cursor: pointer;
+
+        &:hover {
+            background: var(--hover-background);
+        }
+        &:active {
+            background: var(--active-background);
+        }
     }
 
     &:disabled {
         opacity: 0.5;
-    }    
+    }
 }

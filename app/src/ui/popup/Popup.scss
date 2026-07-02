@@ -1,12 +1,8 @@
-.Popup {
-    >.head {
-        background: var(--surface);
-        padding: 8px 16px;
-        border-radius: 8px 8px 0 0;
-    }
-    >.body {
-        background: var(--container);
-        padding: 16px;
-        border-radius: 8px;
-    }
+.PopupBaseContainer {
+    background: var(--container);
+    border-radius: var(--radius-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding: var(--spacing-l);
 }

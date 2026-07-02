@@ -30,7 +30,11 @@ export function SelectDocumentPopup(props: Props) {
         uploadDocument(file)
     }
 
-    return <Popup title="Select Document" close={props.close}>
+    return <Popup.BaseContainer>
+        <Popup.BaseTitle 
+            title="Select document"
+            close={props.close}
+        />
         <div>
             <FileInput
                 hidden
@@ -56,7 +60,7 @@ export function SelectDocumentPopup(props: Props) {
                     <>Loading...</>
             }
         </div>
-    </Popup>
+    </Popup.BaseContainer>
 
 }
 

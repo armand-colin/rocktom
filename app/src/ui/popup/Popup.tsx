@@ -1,15 +1,17 @@
 import type { ReactNode } from "react";
 import { Button } from "../button/Button";
+import "./Popup.scss";
+import { cn } from "../utils/cn";
 
-type Props = {
-    close?: () => void,
-    title: string,
-    children: ReactNode,
-}
+export namespace Popup {
+    export function BaseContainer(props: { children?: ReactNode, className?: string }) {
+        return <div className={cn("PopupBaseContainer", props.className)}>
+            {props.children}
+        </div>
+    }
 
-export function Popup(props: Props) {
-    return <div className="Popup">
-        <div className="head">
+    export function BaseTitle(props: { title: string, close?: () => void }) {
+        return <div className="PopupBaseTitle">
             <h2>{props.title}</h2>
             {
                 props.close ?
@@ -17,8 +19,5 @@ export function Popup(props: Props) {
                     null
             }
         </div>
-        <div className="body">
-            {props.children}
-        </div>
-    </div>
+    }
 }

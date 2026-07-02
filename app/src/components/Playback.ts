@@ -51,14 +51,13 @@ export class Playback extends Component {
             level.audioTrack,
             () => this.time.seconds,
             () => {
-                this._loading = false
-                this.changed()
+                this._loading = false;
+                this.changed();
             }
         )
 
         this._audioPlayerVolume = preferences.audioVolume
         this._audioPlayer.setVolume(this._audioPlayerVolume)
-        this._audioPlayer.load()
 
         this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
@@ -86,7 +85,7 @@ export class Playback extends Component {
     }
 
     get loading() {
-        return this._loading || this._audioPlayer.isLoading()
+        return this._loading 
     }
 
     get playing() {
@@ -176,7 +175,7 @@ export class Playback extends Component {
     }
 
     private _update(deltaTime: number) {
-        if (this.level.audioTrack.time <= this.time.seconds) {
+        if (this.level.audioTrack.time >= this.time.seconds) {
             // Try to compensate for audio latency
             const audioDeltaTime = this.time.seconds - this._audioPlayer.getTime() - this.level.audioTrack.time
             deltaTime -= audioDeltaTime / 24

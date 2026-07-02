@@ -20,14 +20,17 @@ import { TimeTransformView } from "./timeTransform/TimeTransformView";
 import { LevelQueries } from "../../queries/level/LevelQueries";
 import { useMutation } from "../../hooks/useMutation";
 import { useNavigate } from "react-router-dom";
+import { useToastManager } from "../../hooks/useToastManager";
+import { Toast } from "../toast/Toast";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const { engine } = useContext(EngineContext)
     const inputManager = engine.getResource(InputManager)
     const windowManager = engine.getResource(WindowManager)
     const { level } = useComponent(props.editor)
-    const { mutate: updateLevel } = useMutation(LevelQueries.update)
+    const { mutate: updateLevel, isLoading: isUpdating } = useMutation(LevelQueries.update)
     const navigate = useNavigate()
+    const toastManager = useToastManager()
 
     useEffect(() => {
         function onPlay() {
@@ -59,6 +62,13 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
             serialized: JSON.stringify(level.serializeTracks()),
             duration: level.durationInSeconds,
             playbackId: level.audioTrack.playbackId
+        }).then(() => {
+            console.log('adding toast');
+            
+            toastManager.add(close => <Toast.Simple 
+                message="Level saved successfully"
+                close={close}
+            />, 2000)
         })
     }
 
@@ -73,7 +83,10 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
                 name={level.name}
                 onChange={name => props.editor.setName(name)}
             />
-            <Button onClick={onSave}>Save</Button>
+            <Button onClick={onSave} disabled={isUpdating}>
+                Save
+                {isUpdating && <Icon name="progress_activity" />}
+            </Button>
             <PlayerControls player={props.editor.player} />
             <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
             <SongEditorView editor={props.editor} />
