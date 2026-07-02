@@ -4,8 +4,10 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
 
     private _buffer: AudioBuffer
 
-    private _startTime: number = 0
-    private _offset: number = 0
+    private _playbackRate: number = 1
+    private _playing = false
+    private _playTime: number = 0
+    private _seek = 0
 
     constructor(audioContext: AudioContext, buffer: AudioBuffer) {
         super(audioContext)
@@ -16,6 +18,7 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
     protected build(): AudioBufferSourceNode {
         const source = this.audioContext.createBufferSource()
         source.buffer = this._buffer
+        source.playbackRate.value = this._playbackRate
         return source
     }
 
@@ -24,13 +27,42 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
     }
 
     getTime(): number {
-        return this.audioContext.currentTime - his.node.currentTime + this._offset
+        if (this._playing) {
+            const deltaTime = this.audioContext.currentTime - this._playTime;
+            const advanced = deltaTime * this._playbackRate
+            return this._seek + advanced
+        } else {
+            return this._seek
+        }
     }
-    play(time?: number, offset?: number) {
-        this.node.start(time, offset)
+
+    seek(time: number) {
+        this._seek = time
+
+        if (this._playing) {
+            this.node.stop()
+            this.node = this.build()
+            this.node.start(undefined, time)
+        }
+    }
+
+    play() {
+        if (this._playing) {
+            return;
+        }
+
+        this._playing = true
+        this._playTime = this.audioContext.currentTime
+        this.node.start(undefined, this._seek);
     }
 
     pause() {
+        if (!this._playing) {
+            return;
+        }
+
+        this._seek = this.getTime()
+        this._playing = false
         this.node.stop()
     }
 

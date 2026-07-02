@@ -28,11 +28,8 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
     private _audioBuffer: AudioBuffer | null = null
     private _audioNode: AudioBufferSoundNode | null = null
     private _trackId: string
-
     private _speed: number = 1
-    private _volume: number = 1
     private _seekTime: number = 0
-    private _playing = false
 
     readonly events = new Emitter<{ loaded: void }>()
 
@@ -92,12 +89,10 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
     }
 
     play(): void {
-        this._playing = true;
-        this._createAudioNode();
+        this._audioNode?.play();
     }
 
     pause(): void {
-        this._playing = false;
         this._audioNode?.pause();
     }
 
