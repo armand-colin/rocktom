@@ -7,9 +7,18 @@ import type { LevelEntity } from "../queries/level/LevelEntity"
 import { Playback } from "../components/Playback"
 import { Level } from "../sound/Level"
 import { Instance } from "../Instance"
+import { NoteTrack } from "../sound/song/NoteTrack"
+import { Bass } from "../sound/instrument/Instrument"
+import { Tempo } from "../sound/Tempo"
+import { TempoTrack } from "../sound/song/TempoTrack"
+import { AudioTrack } from "../sound/song/AudioTrack"
+import { FocusTrack } from "../sound/song/FocusTrack"
+import { Focus } from "../sound/song/Focus"
+import { LoadingScreen } from "../ui/loadingScreen/LoadingScreen"
 
 export function LevelPage() {
     const { id } = useParams()
+
     const { data, isLoading, error, mutate: getLevel } = useMutation(LevelQueries.getById)
 
     useEffect(() => {
@@ -23,9 +32,9 @@ export function LevelPage() {
     if (!id) {
         return <Navigate to="/app" />
     }
-    
+
     if (isLoading) {
-        return <div>Loading...</div>
+        return null;
     }
 
     if (error) {
@@ -40,9 +49,24 @@ export function LevelPage() {
         return <p>Erreur</p>
     }
 
-    return <LevelView 
-        level={data.value}
-    />
+
+    return <LoadingScreen>
+        {
+            !id ?
+                null :
+                isLoading ?
+                    null :
+                    error ?
+                        <p>Error: {(error as Error).message}</p> :
+                        !data ?
+                            <p>Pas de niveau trouvé</p> :
+                            !data.ok ?
+                                <p>Erreur</p> :
+                                <LevelView
+                                    level={data.value}
+                                />
+        }
+    </LoadingScreen>
 }
 
 function LevelView(props: { level: LevelEntity }) {
@@ -50,13 +74,28 @@ function LevelView(props: { level: LevelEntity }) {
 
     useEffect(() => {
         try {
-            const json = JSON.parse(props.level.serialized)
-            const deserialized = Level.deserializeTracks(json)
-            const level = new Level({
-                id: props.level.id,
-                name: props.level.name,
-                tracks: deserialized
-            })
+            let level;
+            if (props.level.serialized === "" || props.level.serialized === "{}") {
+                level = new Level({
+                    id: props.level.id,
+                    name: props.level.name,
+                    tracks: {
+                        note: new NoteTrack(new Bass(), [], []),
+                        audio: new AudioTrack({ time: 0, playbackId: null }),
+                        tempo: new TempoTrack(new Tempo(120)),
+                        focus: new FocusTrack(Focus.default(), [])
+                    }
+                })
+            } else {
+                const json = JSON.parse(props.level.serialized)
+                const deserialized = Level.deserializeTracks(json)
+                level = new Level({
+                    id: props.level.id,
+                    name: props.level.name,
+                    tracks: deserialized
+                })
+            }
+
             const playback = new Playback(Instance.engine, level)
             setPlayback(playback)
         } catch (error) {
@@ -77,7 +116,7 @@ function LevelView(props: { level: LevelEntity }) {
         return <div>Loading...</div>
     }
 
-    return <PlaybackView 
+    return <PlaybackView
         playback={playback}
     />
 }
