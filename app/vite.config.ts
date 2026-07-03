@@ -5,8 +5,6 @@ import { config } from 'dotenv'
 
 config({ path: '.env' })
 
-console.log(process.env.VITE_PORT)
-
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],

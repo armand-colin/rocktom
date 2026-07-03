@@ -14,7 +14,6 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
     const { track } = useComponent(props.editor)
 
     function onInitialChange(bpm: number) {
-        console.log('Set inital tempo', bpm)
         props.editor.setInitial(bpm)
     }
 

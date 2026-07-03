@@ -16,14 +16,14 @@
     --font-s: 400 12px/16px "Stack";
 
     --font-h1: 700 32px/40px "Stack";
-    --font-h2: 700 24px/24px "Stack";
-    --font-h3: 600 20px/28px "Stack";
+    --font-h2: 700 24px/28px "Stack";
+    --font-h3: 600 20px/24px "Stack";
     --font-h4: 600 16px/24px "Stack";
 
     --background: black;
     --text: rgb(239, 239, 239);
 
-    --container: #232323;
+    --container: #1f1f1f;
     --container-hover: #373737;
 
     --surface: #333333;

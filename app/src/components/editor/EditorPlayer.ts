@@ -100,7 +100,6 @@ export class EditorPlayer extends Component {
     }
 
     refreshAudioPlayer() {
-        console.log("refreshing audio player", this.id)
         this._audioPlayer.clear()
         this._audioPlayer = AudioPlayerFactory.create(
             this.engine,
@@ -119,7 +118,6 @@ export class EditorPlayer extends Component {
     }
 
     destroy() {
-        console.log("destroying editor", this.id)
         super.destroy()
         this.pause()
         this._audioPlayer.clear()
@@ -140,8 +138,6 @@ export class EditorPlayer extends Component {
         while (true) {
             const now = Date.now() / 1000
             let deltaTime = now - lastUpdate
-
-            console.log("update", this.level.audioTrack.time, this.time.seconds);
 
             if (this.level.audioTrack.time <= this.time.seconds) {
                 // Try to compensate for audio latency

@@ -21,8 +21,6 @@ export function SelectDocumentPopup(props: Props) {
     }, [])
 
     function onFileSelected(file: File | null) {
-        console.log('file', file)
-        
         if (!file) {
             return
         }

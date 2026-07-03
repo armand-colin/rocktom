@@ -70,8 +70,11 @@ export class AuthManager extends Resource {
     }
 
     async logout() {
-        this._store.setSession(null)
-        this.changed()
+        SessionQueries.logout()
+            .finally(() => {
+                this._store.setSession(null)
+                this.changed()
+            })
     }
 
     private _parseTokens(tokens: Tokens): Session {
@@ -99,7 +102,7 @@ export class AuthManager extends Resource {
 
         this._refreshPromise = new Promise<Result<Tokens, Error>>(async (resolve) => {
             const response = await SessionQueries.refresh(refreshToken)
-    
+
             if (response.ok) {
                 const session = this._parseTokens(response.value)
                 this._store.setSession(session)

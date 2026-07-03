@@ -13,6 +13,7 @@ import { Form } from "../ui/form/Form"
 import { FormField } from "../form/FormField"
 import type { FormHandler } from "../form/FormHandler"
 import { FormInputField } from '../ui/form/FormInputField'
+import { Spinner } from '../ui/spinner/Spinner'
 
 enum LoginStep {
     Email,
@@ -25,21 +26,21 @@ export function Login() {
 
     return <div className="Login">
         <div>
-        <h1>Login</h1>
-        {
-            step === LoginStep.Email ? <EmailForm
-                onSuccess={(username: string) => {
-                    setUsername(username)
-                    setStep(LoginStep.Code)
-                }}
-            /> :
-                step === LoginStep.Code ? <CodeForm
-                    username={username!}
-                    onSuccess={() => {
-
+            <h1>Login</h1>
+            {
+                step === LoginStep.Email ? <EmailForm
+                    onSuccess={(username: string) => {
+                        setUsername(username)
+                        setStep(LoginStep.Code)
                     }}
-                /> : null
-        }
+                /> :
+                    step === LoginStep.Code ? <CodeForm
+                        username={username!}
+                        onSuccess={() => {
+
+                        }}
+                    /> : null
+            }
         </div>
     </div>
 }
@@ -89,12 +90,15 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
 
     return <Form handler={formHandler} onSubmit={onSubmit}>
         <FormInputField field={formHandler.fields.username} label="Username or email">
-        <StringInput
-            field={formHandler.fields.username}
-            placeholder="Username or email"
-        />
+            <StringInput
+                field={formHandler.fields.username}
+                placeholder="Username or email"
+            />
         </FormInputField>
-        <Button>Submit</Button>
+
+        <Button disabled={formHandler.loading}>
+            {formHandler.loading ? <Spinner /> : 'Submit'}
+        </Button>
 
         <a href='/register'>Register</a>
     </Form>
@@ -106,7 +110,6 @@ const CodeFormSchema = new FormSchema({
 
 function CodeForm(props: { username: string, onSuccess: () => void }) {
     const popupManager = usePopupManager()
-
     const formHandler = useForm(CodeFormSchema)
 
     async function onSubmit(e: FormHandler.Result<typeof CodeFormSchema>) {
@@ -155,6 +158,8 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             placeholder="XXXXXX"
         />
 
-        <Button>Submit</Button>
+        <Button disabled={formHandler.loading}>
+            {formHandler.loading ? <Spinner /> : 'Submit'}
+        </Button>
     </Form>
 }

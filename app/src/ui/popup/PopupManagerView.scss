@@ -1,6 +1,7 @@
 .PopupManagerView {
     position: fixed;
     pointer-events: none;
+    z-index: 5;
 
     .Popup {
         pointer-events: auto;

@@ -6,3 +6,13 @@
     gap: var(--spacing-l);
     padding: var(--spacing-l);
 }
+
+.PopupBaseTitle {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+
+    >.Button {
+        flex-shrink: 0;
+    }
+}

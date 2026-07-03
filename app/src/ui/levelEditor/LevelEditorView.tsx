@@ -63,8 +63,6 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
             duration: level.durationInSeconds,
             playbackId: level.audioTrack.playbackId
         }).then(() => {
-            console.log('adding toast');
-            
             toastManager.add(close => <Toast.Simple 
                 message="Level saved successfully"
                 close={close}
