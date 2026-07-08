@@ -7,14 +7,24 @@
     font-family: "Icons";
     font-weight: normal;
     font-style: normal;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    overflow: hidden;
     font-size: 1lh;
     line-height: 1;
     text-transform: none;
+    white-space: nowrap;
     speak: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-variation-settings: "FILL" 100;
+
+    &:not([data-loaded]) {
+        color: transparent;
+    }
 
     @keyframes progress-activity {
         from {

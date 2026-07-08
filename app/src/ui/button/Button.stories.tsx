@@ -18,7 +18,7 @@ const meta = {
     },
     theme: {
       control: "radio",
-      options: [ButtonTheme.Default, ButtonTheme.Danger],
+      options: [ButtonTheme.Default, ButtonTheme.Primary, ButtonTheme.Danger],
     },
   },
 } satisfies Meta<typeof Button>;

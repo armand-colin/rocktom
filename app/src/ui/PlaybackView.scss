@@ -30,9 +30,12 @@
         left: 0;
         top: 0;
         color: white;
+
         h1 {
             font-size: 2rem;
+            margin-bottom: 12px;
         }
+
         h2 {
             font-size: 1.2rem;
             opacity: 0.5;
@@ -85,6 +88,24 @@
             }
         }
 
+        .PlaybackTimeView {
+            display: grid;
+            gap: 4px;
+            margin-top: 12px;
+            font-variant-numeric: tabular-nums;
+
+            .field {
+                display: flex;
+                gap: 8px;
+                align-items: baseline;
+
+                .label {
+                    opacity: 0.5;
+                    min-width: 48px;
+                }
+            }
+        }
+
         .PlaybackSpeedButton {
             padding: 8px;
             border-radius: 4px;
@@ -132,6 +153,7 @@
 
         .BackButton {
             padding: 0;
+            margin-bottom: 12px;
             opacity: 0.5;
             background: transparent;
             cursor: pointer;

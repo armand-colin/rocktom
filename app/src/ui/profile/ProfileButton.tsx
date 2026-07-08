@@ -1,16 +1,15 @@
-import { useResource } from "@niloc/ecs-react";
+import { usePopupManager } from "../../hooks/usePopupManager";
 import { Button } from "../button/Button";
-import { AuthStore } from "../../resources/AuthStore";
-import { Instance } from "../../Instance";
-import { AuthManager } from "../../resources/AuthManager";
+import { ProfilePopup } from "./ProfilePopup";
 
 export function ProfileButton() {
-    const { session } =useResource(AuthStore)
+    const popupManager = usePopupManager()
 
-    return <Button onClick={( )=> {
-        Instance.engine.getResource(AuthManager).logout()
-    }}>
-        {session?.userId}
-        Log out
+    function onClick() {
+        popupManager.add(close => <ProfilePopup close={close} />)
+    }
+
+    return <Button onClick={onClick}>
+        Profile
     </Button>
 }

@@ -4,6 +4,7 @@ import { UiSize } from "../UiSize"
 
 export enum ButtonTheme {
     Default = "default",
+    Primary = "primary",
     Danger = "danger",
 }
 

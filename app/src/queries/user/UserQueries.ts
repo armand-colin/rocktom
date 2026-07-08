@@ -15,4 +15,8 @@ export namespace UserQueries {
         return fetch.api.post<UserEntity>('/user/login', Body.json({ email }));
     }
 
+    export function me() {
+        return fetch.apiAuth.get<UserEntity>('/user/me');
+    }
+
 }

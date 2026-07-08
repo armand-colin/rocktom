@@ -1,0 +1,39 @@
+.HomePage {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+    height: 100%;
+    margin: 0 auto;
+    padding-block: clamp(var(--spacing-m), 2.5vw, var(--spacing-2xl));
+    padding-inline: clamp(var(--spacing-m), 5vw, var(--spacing-3xl));
+    overflow: hidden;
+
+    &-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-l);
+        margin-bottom: var(--spacing-l);
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    &-title {
+        font: var(--font-h1);
+        color: var(--text);
+    }
+
+    &-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-m);
+        flex-shrink: 0;
+    }
+
+    &-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+}

@@ -1,6 +1,32 @@
 .ContextualMenuView {
     position: fixed;
-    left: calc(var(--x) * 1px);
-    top: calc(var(--y) * 1px);
-    background: var(--surface);
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+
+    &[data-visible="false"] {
+        display: none;
+    }
+
+    &[data-visible="true"] {
+        pointer-events: auto;
+    }
+
+    .backdrop {
+        position: absolute;
+        inset: 0;
+    }
+
+    .menu {
+        position: fixed;
+        left: calc(var(--x) * 1px);
+        top: calc(var(--y) * 1px);
+        min-width: 200px;
+        padding: var(--spacing-s);
+        background: var(--surface);
+
+        .item {
+            cursor: pointer;
+        }
+    }
 }

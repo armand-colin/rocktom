@@ -1,4 +1,4 @@
-import { Engine, Resource } from "@niloc/ecs";
+import { Resource } from "@niloc/ecs";
 import { Vec2 } from "@niloc/utils";
 import type { IconName } from "../ui/icon/Icon";
 
@@ -13,14 +13,6 @@ export class ContextualMenu extends Resource {
     private _visible = false
     private _position: Vec2 = Vec2.create(0, 0)
     private _items: ContextualMenuItem[] = []
-
-    constructor(engine: Engine) {
-        super(engine)
-        
-        window.addEventListener("click", () => {
-            this.close()
-        })
-    }
 
     get visible() {
         return this._visible

@@ -58,6 +58,9 @@
     --spacing-s: 8px;
     --spacing-m: 12px;
     --spacing-l: 18px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 80px;
 }
 
 body {

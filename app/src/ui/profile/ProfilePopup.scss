@@ -1,0 +1,31 @@
+.ProfilePopup {
+    min-width: 280px;
+
+    >.content {
+        display: grid;
+        gap: var(--spacing-m);
+
+        >.field {
+            display: grid;
+            gap: var(--spacing-xs);
+
+            >.label {
+                color: var(--text-secondary, #888);
+                font-size: 0.875rem;
+            }
+
+            >.value {
+                word-break: break-word;
+            }
+        }
+
+        >.actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+
+    >p {
+        margin: 0;
+    }
+}

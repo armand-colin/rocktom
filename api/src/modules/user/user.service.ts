@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { TypeORMUtils } from '../../database/typeorm.utils';
 import { RegisterUserDto } from './user.dto';
+import { AppConfigService } from '../../config/config.service';
+import { hashToken, verifyToken } from '../../utils/token-hash';
 
 // 5 minutes
 const EMAIL_VALIDATION_CODE_EXPIRATION_MINUTES = 5;
@@ -14,6 +16,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly config: AppConfigService,
   ) { }
 
   async register(body: RegisterUserDto) {
@@ -78,9 +81,21 @@ export class UserService {
   }
 
   async setEmailValidationCode(user: User, code: string) {
-    user.emailValidationCode = code;
+    user.emailValidationCode = hashToken(code, this.config.jwtSecret);
     user.emailValidationCodeExpiresAt = new Date(Date.now() + EMAIL_VALIDATION_CODE_EXPIRATION_MINUTES * 60 * 1000);
     await this.userRepository.save(user);
+  }
+
+  isEmailValidationCodeValid(user: User, code: string): boolean {
+    if (!user.emailValidationCode) {
+      return false;
+    }
+
+    if (!user.emailValidationCodeExpiresAt || user.emailValidationCodeExpiresAt.getTime() <= Date.now()) {
+      return false;
+    }
+
+    return verifyToken(code, user.emailValidationCode, this.config.jwtSecret);
   }
 
 }

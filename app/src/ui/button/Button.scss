@@ -15,6 +15,14 @@
         --active-background: var(--surface-active);
     }
 
+    &[data-theme="primary"] {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-text);
+        --hover-background: var(--primary-hover);
+        --active-background: var(--primary-active);
+    }
+
     &[data-theme="danger"] {
         background: var(--danger);
         border-color: var(--danger);

@@ -32,7 +32,7 @@ export class SessionService {
 
         const user = await this.userService.getUserByNameOrEmail(username);
 
-        if (user.emailValidationCode !== body.code) {
+        if (!this.userService.isEmailValidationCodeValid(user, body.code)) {
             throw new BadRequestException('invalid_code');
         }
 

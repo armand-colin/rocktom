@@ -7,6 +7,7 @@ import { OS } from "../utils/OS";
 export enum Input {
     Play,
     Reset,
+    Save,
 }
 
 abstract class Key extends Emitter<{ trigger: void }> {
@@ -114,6 +115,12 @@ export class InputManager extends Resource {
             keyCode: "KeyR",
             ctrl: true,
             label: "R"
+        }))
+
+        this._bind(Input.Save, new KeyboardKey({
+            keyCode: "KeyS",
+            ctrl: true,
+            label: "S"
         }))
     }
 

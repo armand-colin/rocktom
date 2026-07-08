@@ -13,6 +13,9 @@ const iconNames: IconName[] = [
   "close",
   "acute",
   "instant_mix",
+  "play_arrow",
+  "edit",
+  "more_vert",
 ];
 
 const meta = {

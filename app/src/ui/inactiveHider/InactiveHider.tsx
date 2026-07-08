@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import "./InactiveHider.scss"
 
 type Props = {
     children?: React.ReactNode
@@ -21,7 +22,7 @@ export function InactiveHider(props: Props) {
         }
 
         const update = () => {
-            setHidden(hidden);
+            setHidden(() => false);
 
             if (hideTimeout.current) {
                 clearTimeout(hideTimeout.current)

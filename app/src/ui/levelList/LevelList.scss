@@ -1,32 +1,60 @@
 .LevelList {
-    padding: 24px;
-    > h1 {
-        font-size: 2rem;
-    }
-    > h2 {
-        font-size: 1.3rem;
-        opacity: 0.5;
-        margin-bottom: 24px;
-    }
-    > ul {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 8px;
-        list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--spacing-m);
+    list-style: none;
+    padding: var(--spacing-m) 0;
+    margin: 0;
 
-        li {
-            cursor: pointer;
-            border-radius: 8px;
-            padding: 12px;
-            background: #252525;
+    li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-l);
+        border-radius: var(--radius-s);
+        padding: var(--spacing-m) var(--spacing-l);
+        background: var(--container);
+    }
 
-            > p {
-                color: white;
-                font-size: 1.1rem;
-            }
-            > small {
-                color: gray;
-            }
+    &-info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        min-width: 0;
+    }
+
+    &-name {
+        color: var(--text);
+        font: var(--font-h4);
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &-duration {
+        display: inline-flex;
+        align-items: baseline;
+        gap: var(--spacing-xs);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &-durationLabel {
+        color: var(--outline);
+    }
+
+    &-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-s);
+        flex-shrink: 0;
+    }
+
+    &-playButton {
+        padding: 12px;
+
+        .Icon {
+            font-size: 24px;
         }
     }
 }

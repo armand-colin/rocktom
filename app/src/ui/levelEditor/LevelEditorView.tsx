@@ -1,5 +1,5 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
 import { Input, InputManager } from "../../resources/InputManager";
@@ -49,25 +49,36 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
         }
     }, [])
 
-    function showMixer() {
-        windowManager.add(
-            { name: "Mixer", id: "mixer" },
-            () => <MixerView />
-        )
-    }
+    const onSave = useCallback(() => {
+        if (isUpdating)
+            return
 
-    function onSave() {
         updateLevel(level.id, {
             name: level.name,
             serialized: JSON.stringify(level.serializeTracks()),
             duration: level.durationInSeconds,
             playbackId: level.audioTrack.playbackId
         }).then(() => {
-            toastManager.add(close => <Toast.Simple 
+            toastManager.add(close => <Toast.Simple
                 message="Level saved successfully"
                 close={close}
             />, 2000)
         })
+    }, [level, isUpdating, updateLevel, toastManager])
+
+    useEffect(() => {
+        inputManager.register(Input.Save, onSave)
+
+        return () => {
+            inputManager.unregister(Input.Save, onSave)
+        }
+    }, [inputManager, onSave])
+
+    function showMixer() {
+        windowManager.add(
+            { name: "Mixer", id: "mixer" },
+            () => <MixerView />
+        )
     }
 
     function onBack() {
