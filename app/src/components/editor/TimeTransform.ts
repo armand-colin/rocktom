@@ -9,6 +9,28 @@ export type TimeMarker = {
     type: "bar" | "beat" | "other"
 }
 
+function getMarkerName(ticks: number, step: number): string {
+    const barTicks = Tempo.bars(1)
+    const bar = Math.trunc(ticks / barTicks)
+
+    if (step >= barTicks) {
+        return bar.toString()
+    }
+
+    const posInBar = ticks - bar * barTicks
+    const primaryStep = barTicks / 4
+
+    if (step >= primaryStep) {
+        const sub = Math.trunc(posInBar / step) + 1
+        return `${bar}.${sub}`
+    }
+
+    const sub1 = Math.trunc(posInBar / primaryStep) + 1
+    const posInPrimary = posInBar - (sub1 - 1) * primaryStep
+    const sub2 = Math.trunc(posInPrimary / step) + 1
+    return `${bar}.${sub1}.${sub2}`
+}
+
 export class TimeTransform extends Component {
 
     private _ratio: number = 1
@@ -86,7 +108,7 @@ export class TimeTransform extends Component {
         while (i < end) {
             yield {
                 ticks: i,
-                name: Math.trunc(i / Tempo.bars(1)).toString(),
+                name: getMarkerName(i, step),
                 type: i % Tempo.bars(1) === 0 ? "bar" : i % Tempo.beats(1) === 0 ? "beat" : "other"
             }
 
