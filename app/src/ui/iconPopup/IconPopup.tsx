@@ -18,32 +18,28 @@ type Props = {
 }
 
 export function IconPopup(props: Props) {
-    return <Popup
-        title={props.title ?? "Information"}
-        close={props.close}
-    >
-        <div className="IconPopup">
-            <div className="icon-wrapper">
-                <Icon name={props.icon} />
-            </div>
-            <div className="content">
-                <p>{props.text}</p>
-                {
-                    props.buttons && props.buttons.length > 0 ?
-                        <div className="actions">
-                            {
-                                props.buttons.map(button => <Button
-                                    key={button.label}
-                                    onClick={button.onClick}
-                                    disabled={button.disabled}
-                                >
-                                    {button.label}
-                                </Button>)
-                            }
-                        </div> :
-                        null
-                }
-            </div>
+    return <Popup.BaseContainer className="IconPopup">
+        <Popup.BaseTitle title={props.title ?? "Information"} close={props.close} />
+        <div className="icon-wrapper">
+            <Icon name={props.icon} />
         </div>
-    </Popup>
+        <div className="content">
+            <p>{props.text}</p>
+            {
+                props.buttons && props.buttons.length > 0 ?
+                    <div className="actions">
+                        {
+                            props.buttons.map(button => <Button
+                                key={button.label}
+                                onClick={button.onClick}
+                                disabled={button.disabled}
+                            >
+                                {button.label}
+                            </Button>)
+                        }
+                    </div> :
+                    null
+            }
+        </div>
+    </Popup.BaseContainer>
 }

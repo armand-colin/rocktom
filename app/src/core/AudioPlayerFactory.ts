@@ -10,12 +10,10 @@ function create(engine: Engine, track: AudioTrack, timeFunction: () => number, o
     }
 
     const urlPlayer = engine.createComponent(AudioBufferPlayer, track.playbackId)
-    if (urlPlayer.loaded)
+
+    urlPlayer.load().then(() => {
         onLoad()
-    else
-        urlPlayer.events.on('loaded', () => {
-            onLoad()
-        })
+    })
 
     return urlPlayer
 }

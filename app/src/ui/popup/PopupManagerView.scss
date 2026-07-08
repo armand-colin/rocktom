@@ -1,6 +1,7 @@
 .PopupManagerView {
     position: fixed;
     pointer-events: none;
+    z-index: 5;
 
     .Popup {
         pointer-events: auto;
@@ -18,16 +19,34 @@
             from {
                 opacity: 1;
             }
+
             to {
                 opacity: 0;
             }
         }
 
+        @keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
         &[data-state="closing"] {
             animation: fadeout 0.2s ease forwards;
+            pointer-events: none;
+        }
+
+        &[data-state="open"] {
+            animation: fadein 0.2s ease forwards;
         }
 
         >.body {
+            pointer-events: auto;
         }
+
     }
 }

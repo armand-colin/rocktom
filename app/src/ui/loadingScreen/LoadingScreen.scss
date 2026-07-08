@@ -1,0 +1,27 @@
+.LoadingScreen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-m);
+    background: var(--container);
+
+    @keyframes fadeout {
+        from {
+            opacity: 1;
+        }
+        50% {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
+    }
+
+    &[data-state="loaded"] {
+        pointer-events: none;
+        animation: fadeout 1s forwards;
+    }
+}

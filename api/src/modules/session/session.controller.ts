@@ -21,6 +21,14 @@ export class SessionController {
         await response.send(tokens);
     }
 
+    @Post('logout')
+    async logout(
+        @Res({ passthrough: true }) response: ExpressResponse,
+    ) {
+        response.clearCookie(REFRESH_TOKEN_COOKIE_NAME);
+        await response.send({ message: 'Logged out successfully' });
+    }
+
     @Post('code')
     code(@Body() body: CodeDto) {
         return this.sessionService.code(body.username);

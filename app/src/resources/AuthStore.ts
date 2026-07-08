@@ -19,7 +19,7 @@ export class AuthStore extends Resource {
         return this._session
     }
 
-    setSession(session: Session) {
+    setSession(session: Session | null) {
         this._session = session
         this.changed()
     }

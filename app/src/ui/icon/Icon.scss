@@ -15,4 +15,17 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-variation-settings: "FILL" 100;
+
+    @keyframes progress-activity {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    &[data-icon="progress_activity"] {
+        animation: progress-activity 1s linear infinite;
+    }
 }

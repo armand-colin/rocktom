@@ -9,6 +9,7 @@ import { Button } from '../ui/button/Button'
 import { Instance } from '../Instance'
 import { PopupManager } from '../resources/PopupManager'
 import { CreateLevelPopup } from '../ui/createLevelPopup/CreateLevelPopup'
+import { ProfileButton } from '../ui/profile/ProfileButton'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, data: levels, mutate: getAllLevels } = useMutation(LevelQueries.getAll)
@@ -40,6 +41,7 @@ export function HomePage() {
       onContextMenu={e => e.preventDefault()}
     >
       <h1>Levels</h1>
+      <ProfileButton />
       <Button
         onClick={onCreate}
       >

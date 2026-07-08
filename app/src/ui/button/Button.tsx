@@ -17,10 +17,13 @@ type Props = {
     style?: CSSProperties,
     primitive?: 'button' | 'label',
     htmlFor?: string,
+    shape?: 'rectangle' | 'square',
+    type?: 'button' | 'submit';
 }
 
 export function Button(props: Props) {
     const Primitive = props.primitive === 'label' ? 'label' : 'button'
+    const shape = props.shape ?? 'rectangle';
 
     return <Primitive
         className={
@@ -29,10 +32,12 @@ export function Button(props: Props) {
         }
         data-size={props.size ?? UiSize.M}
         data-theme={props.theme ?? ButtonTheme.Default}
+        data-shape={shape}
         onClick={props.onClick}
         disabled={props.disabled}
         style={props.style}
         htmlFor={props.htmlFor}
+        type={props.type}
     >
         {props.children}
     </Primitive>

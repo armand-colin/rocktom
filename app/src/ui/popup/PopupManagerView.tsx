@@ -12,17 +12,22 @@ export function PopupManagerView() {
                 content={popup.content}
                 state={popup.state}
                 key={popup.id}
+                close={popup.close}
             />)
         }
     </div>
 }
 
-function Popup(props: { state: "open" | "closing", content: ReactNode }) {
+function Popup(props: { state: "open" | "closing", content: ReactNode, close: () => void }) {
     return <div
         className="Popup"
         data-state={props.state}
+        onClick={props.close}
     >
-        <div className="body">
+        <div
+            className="body"
+            onClick={(e) => e.stopPropagation()}
+        >
             {props.content}
         </div>
     </div>

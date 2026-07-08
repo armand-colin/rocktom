@@ -10,13 +10,19 @@ export type IconName =
     "code" |
     "arrow_drop_down" |
     "close" |
-    "acute" | 
-    "instant_mix"
+    "acute" |
+    "instant_mix" |
+    "progress_activity"
 
 type Props = {
     name: IconName
 }
 
 export function Icon(props: Props) {
-    return <i className="Icon">{props.name}</i>
+    return <i 
+        className="Icon"
+        data-icon={props.name}
+    >
+        {props.name}
+    </i>
 }

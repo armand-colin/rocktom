@@ -15,6 +15,11 @@ export namespace SessionQueries {
         return fetch.api.post<SessionTokensEntity>('/session/login', Body.json({ username, code }));
     }
 
+    export function logout() {
+        const fetch = Instance.engine.getResource(Fetch)
+        return fetch.api.post('/session/logout');
+    }
+
     export function refresh(refreshToken?: string) {
         const fetch = Instance.engine.getResource(Fetch)
         return fetch.api.post<SessionTokensEntity>(

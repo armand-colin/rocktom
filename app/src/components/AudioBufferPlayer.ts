@@ -35,7 +35,6 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
     }
 
     async load(): Promise<void> {
-        console.log("loading buffer player", this.id)
         const audioData = await AudioData.fetch(this.engine, this._trackId)
         
         this._audioBuffer = audioData.audioBuffer
@@ -46,7 +45,6 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
         this._audioNode.connect(this._node);
         
         this._loaded = true
-        console.log("buffer player loaded", this.id)
     }
 
     get loaded() {
@@ -54,7 +52,6 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
     }
 
     play(): void {
-        console.log('playing bufferplayer', this._audioNode)
         this._audioNode?.play();
     }
 
@@ -80,7 +77,6 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
 
     schedulePlay(playAfter: Duration): void {
         this.clearScheduledPlay()
-        console.log('schedule play bufferplayer', Duration.seconds(playAfter))
 
         this._scheduledPlay = setTimeout(() => {
             this.play()
@@ -95,8 +91,6 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
     }
 
     clear(): void {
-        console.log("buffer player cleared", this.id)
-        
         this.pause()
         
         if (this._audioNode) {

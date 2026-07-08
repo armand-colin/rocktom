@@ -7,6 +7,7 @@ function formatSeconds(seconds: number) {
     const secs = (seconds % 60) | 0
     return `${minutes}:${secs.toString().padStart(2, '0')}`
 }
+
 export function LevelList(props: {
     levels: LevelEntity[],
     onSelect: (level: LevelEntity) => void,

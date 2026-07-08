@@ -46,8 +46,6 @@ export class LevelStorage extends Resource {
             }
         }
 
-        console.log(this._levels)
-
         this.changed()
     }
 

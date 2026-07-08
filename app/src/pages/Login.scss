@@ -5,10 +5,13 @@
     align-items: center;
     justify-content: center;
 
-    > div {
+    >div {
         background: var(--container);
-        padding: 24px;
-        border-radius: 8px;
+        padding: var(--spacing-l);
+        border-radius: var(--radius-m);
+        width: 100%;
+        max-width: 300px;
+
         >h1 {
             margin-bottom: 24px;
         }
@@ -17,5 +20,9 @@
     .Form {
         display: grid;
         gap: 12px;
+
+        >a {
+            text-decoration: underline;
+        }
     }
 }

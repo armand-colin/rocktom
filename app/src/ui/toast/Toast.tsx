@@ -1,20 +1,11 @@
-import type { ReactNode } from "react";
-import { Button } from "../button/Button";
+import "./Toast.scss"
 
-type Props = {
-    close?: () => void,
-    children: ReactNode,
-}
+export namespace Toast {
 
-export function Toast(props: Props) {
-    return <div className="ToastContent">
-        <div className="body">
-            {props.children}
+    export function Simple(props: { message: string, close?: () => void }) {
+        return <div className="ToastSimple">
+            <p>{props.message}</p>
         </div>
-        {
-            props.close ?
-                <Button onClick={props.close} data-size="s">Close</Button> :
-                null
-        }
-    </div>
+    }
+
 }

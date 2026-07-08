@@ -9,6 +9,7 @@ import { Form } from "../form/Form";
 import { FormInputField } from "../form/FormInputField";
 import { StringInput } from "../input/StringInput";
 import { Popup } from "../popup/Popup";
+import { Spinner } from "../spinner/Spinner";
 
 type Props = {
     onSuccess: (level: LevelEntity) => void,
@@ -32,15 +33,19 @@ export function CreateLevelPopup(props: Props) {
         }
     }
 
-    return <Popup
-        title="Create Level"
-        close={props.close}
-    >
+    return <Popup.BaseContainer>
+        <Popup.BaseTitle title="Create Level" close={props.close} />
         <Form handler={handler} onSubmit={onSubmit}>
             <FormInputField field={handler.fields.name} label="Name">
                 <StringInput field={handler.fields.name} placeholder="Level Name" />
             </FormInputField>
-            <Button>Create</Button>
+            <Button>
+                {
+                    handler.loading ?
+                        <Spinner /> :
+                        'Create'
+                }
+            </Button>
         </Form>
-    </Popup>
+    </Popup.BaseContainer>
 }

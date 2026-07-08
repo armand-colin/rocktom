@@ -5,6 +5,7 @@ import { Popup } from "../popup/Popup";
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { Button } from "../button/Button";
 import { FileInput } from "../input/FileInput";
+import './SelectDocumentPopup.scss'
 
 export interface Props {
     close: () => void,
@@ -21,16 +22,19 @@ export function SelectDocumentPopup(props: Props) {
     }, [])
 
     function onFileSelected(file: File | null) {
-        console.log('file', file)
-        
         if (!file) {
             return
         }
 
         uploadDocument(file)
+            .then(() => getAllDocuments())
     }
 
-    return <Popup title="Select Document" close={props.close}>
+    return <Popup.BaseContainer className="SelectDocumentPopup">
+        <Popup.BaseTitle 
+            title="Select document"
+            close={props.close}
+        />
         <div>
             <FileInput
                 hidden
@@ -49,14 +53,17 @@ export function SelectDocumentPopup(props: Props) {
                                 key={document.id}
                                 document={document}
                                 selected={props.selected === document.id}
-                                onClick={() => props.onSelect(document)}
+                                onClick={() => {
+                                    props.onSelect(document)
+                                    props.close()
+                                }}
                             />)}
                         </ul> :
                         <></> :
                     <>Loading...</>
             }
         </div>
-    </Popup>
+    </Popup.BaseContainer>
 
 }
 
@@ -71,7 +78,6 @@ function DocumentItem(props: {
         onClick={props.onClick}
     >
         <span>{props.document.filename}</span>
-        <span>{props.document.extension}</span>
         <span>{props.document.size}</span>
         <span>{props.document.duration}</span>
     </li>

@@ -4,7 +4,6 @@ import { Result } from "@niloc/utils";
 import { SessionQueries } from "../queries/session/SessionQueries";
 import { AuthStore, type Session } from "./AuthStore";
 
-
 type Tokens = {
     accessToken: string,
     refreshToken: string
@@ -70,6 +69,14 @@ export class AuthManager extends Resource {
         }
     }
 
+    async logout() {
+        SessionQueries.logout()
+            .finally(() => {
+                this._store.setSession(null)
+                this.changed()
+            })
+    }
+
     private _parseTokens(tokens: Tokens): Session {
         const payload = jwtDecode(tokens.accessToken)
 
@@ -95,7 +102,7 @@ export class AuthManager extends Resource {
 
         this._refreshPromise = new Promise<Result<Tokens, Error>>(async (resolve) => {
             const response = await SessionQueries.refresh(refreshToken)
-    
+
             if (response.ok) {
                 const session = this._parseTokens(response.value)
                 this._store.setSession(session)
