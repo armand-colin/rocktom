@@ -16,6 +16,7 @@ import type { AudioWaveformRenderer } from "../../components/editor/AudioWavefor
 import { ElementRenderer } from "../ElementRenderer";
 import { SelectDocumentPopup } from "../selectDocumentPopup/SelectDocumentPopup";
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
+import { useThrottle } from "../../hooks/useThrottle";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
@@ -70,15 +71,11 @@ function AudioView(props: {
 }) {
     const ref = useRef<HTMLDivElement | null>(null)
     const resizeObserver = useRef<ResizeObserver | null>(null)
-    const resizeTimeout = useRef<number | null>(null)
+    const resizeThrottle = useThrottle(100)
 
     useEffect(() => {
         return () => {
             resizeObserver.current?.disconnect()
-            if (resizeTimeout.current) {
-                clearTimeout(resizeTimeout.current)
-                resizeTimeout.current = null
-            }
         }
     }, [])
 
@@ -92,18 +89,12 @@ function AudioView(props: {
 
             if (!resizeObserver.current) {
                 resizeObserver.current = new ResizeObserver(() => {
-                    if (resizeTimeout.current) {
-                        clearTimeout(resizeTimeout.current)
-                    }
-
-                    // Throttling resize to avoid performance issues
-                    resizeTimeout.current = setTimeout(() => {
-                        if (ref.current) {
-                            props.waveform.setSize(Vec2.create(ref.current.clientWidth, ref.current.clientHeight))
-                        }
+                    resizeThrottle.call(() => {
+                        if (!ref.current)
+                            return;
                         
-                        resizeTimeout.current = null
-                    }, 100, undefined);
+                        props.waveform.setSize(Vec2.create(ref.current.clientWidth, ref.current.clientHeight))
+                    })
                 })
             }
 
