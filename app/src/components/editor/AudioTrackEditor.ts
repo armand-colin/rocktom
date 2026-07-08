@@ -29,6 +29,11 @@ export class AudioTrackEditor extends Component {
     private _onTrackChange = () => {
         const playbackId = this.track.playbackId
 
+        console.log('on track change', {
+            playbackId,
+            playback: { ...this._playback },
+        })
+        
         if (this._playback && this._playback.id === playbackId) {
             return
         }
