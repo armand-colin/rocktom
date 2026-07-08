@@ -1,5 +1,10 @@
 .FocusTrackEditorView {
 
+    .TrackEditorHead {
+        .FocusEditor {
+            width: 100%;
+        }
+    }
     .FocusEventView {
         position: absolute;
         left: calc((var(--time) + var(--offset)) * var(--ratio) * 1px);

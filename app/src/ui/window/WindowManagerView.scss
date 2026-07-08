@@ -15,6 +15,7 @@
         outline: 1px solid var(--outline);
         display: grid;
         grid-template-rows: 0fr 1fr;
+        z-index: 20;
 
         > .head {
             display: grid;

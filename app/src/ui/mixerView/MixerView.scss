@@ -1,3 +1,20 @@
 .MixerView {
-    
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    >.channels {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+
+        .ChannelView {
+            display: grid;
+            grid-template-columns: 0fr 80px 1fr;
+            gap: 12px;
+            align-items: center;
+        }
+    }
+
 }

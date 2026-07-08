@@ -40,7 +40,7 @@
                 background: var(--surface);
                 border-radius: 4px;
                 display: inline-block;
-                cursor-pointer: none;
+                pointer-events: none;
             }
         }
 

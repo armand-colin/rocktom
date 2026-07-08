@@ -141,6 +141,7 @@ function EventView(props: {
             onDoubleClick={onStartChangingTime}
             onContextMenu={onRemove}
             onMouseDown={onMouseDown}
+            draggable={false}
         >
             {
                 changingTime ?

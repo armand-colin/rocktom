@@ -10,10 +10,13 @@ export function MixerView() {
 	const mixer = engine.getResource(Mixer)
 
 	return <div className="MixerView">
-		<ChannelView channel={mixer.master} />
-		<ChannelView channel={mixer.audio} />
-		<ChannelView channel={mixer.feedback} />
-		<ChannelView channel={mixer.metronome} />
+		<h2>Mixer</h2>
+		<div className="channels">
+			<ChannelView channel={mixer.master} />
+			<ChannelView channel={mixer.audio} />
+			<ChannelView channel={mixer.feedback} />
+			<ChannelView channel={mixer.metronome} />
+		</div>
 	</div>
 }
 
@@ -25,9 +28,9 @@ function ChannelView(props: { channel: MixerChannel }) {
 
 		<p>{props.channel.name}</p>
 
-		<Slider 
-			value={volume} 
-			min={0} 
+		<Slider
+			value={volume}
+			min={0}
 			max={props.channel.maxVolume}
 			onChange={v => props.channel.setVolume(v)}
 		/>

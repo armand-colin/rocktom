@@ -1,5 +1,6 @@
 .FocusEditor {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);;
     gap: 4px;
     background:var(--container);
     width: 130px;
