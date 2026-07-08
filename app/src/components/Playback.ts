@@ -15,6 +15,7 @@ import { PlaybackNote } from "./PlaybackNote";
 import { Time } from "./Time";
 import { SoundEngine } from "../resources/SoundEngine";
 import { Schedules } from "../Schedules";
+import { DeltaTime } from "./DeltaTime";
 
 export class Playback extends Component {
 
@@ -36,6 +37,8 @@ export class Playback extends Component {
     private _audioPlayerVolume: number = 1.0
     private _audioPlayer: AudioPlayer
 
+    readonly deltaTime: DeltaTime
+
     constructor(
         engine: Engine,
         readonly level: Level,
@@ -43,6 +46,7 @@ export class Playback extends Component {
         super(engine)
 
         this.time = engine.createComponent(Time, level.tempoTrack.getTempoAt(0))
+        this.deltaTime = engine.createComponent(DeltaTime)
 
         const preferences = engine.getResource(PlaybackPreferences)
         this._soundEngine = engine.getResource(SoundEngine)
@@ -178,6 +182,7 @@ export class Playback extends Component {
         if (this.level.audioTrack.time >= this.time.seconds) {
             // Try to compensate for audio latency
             const audioDeltaTime = this.time.seconds - this._audioPlayer.getTime() - this.level.audioTrack.time
+            this.deltaTime.setDeltaTime(audioDeltaTime)
             deltaTime -= audioDeltaTime / 24
         }
 

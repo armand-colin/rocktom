@@ -16,6 +16,7 @@ import type { Time } from "../components/Time";
 import { Mixer } from "../resources/Mixer";
 import { useNavigate } from "react-router-dom";
 import { InactiveHider } from "./inactiveHider/InactiveHider";
+import type { DeltaTime } from "../components/DeltaTime";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -115,11 +116,17 @@ function PlaybackControls(props: { playback: Playback }) {
                 </div>
 
                 <div className="time">
+                    <DeltaTimeView deltaTime={props.playback.deltaTime} />
                     <PlaybackTimeView time={props.playback.time} />
                 </div>
             </InactiveHider>
         </div>
     );
+}
+
+function DeltaTimeView(props: { deltaTime: DeltaTime }) {
+    const { deltaTime } = useComponent(props.deltaTime)
+    return <p>delta : {(deltaTime * 1000) | 0}ms</p>
 }
 
 function floatsEqual(a: number, b: number, epsilon = 0.0001) {
