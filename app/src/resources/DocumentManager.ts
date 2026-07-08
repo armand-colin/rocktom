@@ -1,7 +1,7 @@
 import { Engine, Resource } from "@niloc/ecs";
 import type { PartialRecord } from "../utils/types";
 import { DocumentQueries } from "../queries/document/DocumentQueries";
-import type { Result } from "@niloc/utils";
+import { Result } from "@niloc/utils";
 
 export class DocumentManager extends Resource {
 
@@ -14,6 +14,10 @@ export class DocumentManager extends Resource {
     }
 
     download(documentId: string): Promise<Result<ArrayBuffer, Error>> {
+        if (this._files[documentId]) {
+            return Promise.resolve(Result.ok(this._files[documentId]))
+        }
+        
         if (this._fileRequests[documentId]) {
             return this._fileRequests[documentId]
         }
