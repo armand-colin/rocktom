@@ -70,10 +70,15 @@ function AudioView(props: {
 }) {
     const ref = useRef<HTMLDivElement | null>(null)
     const resizeObserver = useRef<ResizeObserver | null>(null)
+    const resizeTimeout = useRef<number | null>(null)
 
     useEffect(() => {
         return () => {
             resizeObserver.current?.disconnect()
+            if (resizeTimeout.current) {
+                clearTimeout(resizeTimeout.current)
+                resizeTimeout.current = null
+            }
         }
     }, [])
 
@@ -87,9 +92,18 @@ function AudioView(props: {
 
             if (!resizeObserver.current) {
                 resizeObserver.current = new ResizeObserver(() => {
-                    if (ref.current) {
-                        props.waveform.setSize(Vec2.create(ref.current.clientWidth, ref.current.clientHeight))
+                    if (resizeTimeout.current) {
+                        clearTimeout(resizeTimeout.current)
                     }
+
+                    // Throttling resize to avoid performance issues
+                    resizeTimeout.current = setTimeout(() => {
+                        if (ref.current) {
+                            props.waveform.setSize(Vec2.create(ref.current.clientWidth, ref.current.clientHeight))
+                        }
+                        
+                        resizeTimeout.current = null
+                    }, 100, undefined);
                 })
             }
 
