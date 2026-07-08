@@ -62,7 +62,6 @@ export function AudioTrackEditorView(props: {
                 waveform={props.waveformRenderer}
             />
         </TrackEditorContent>
-
     </TrackEditorView>
 }
 

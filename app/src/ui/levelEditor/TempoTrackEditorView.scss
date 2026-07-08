@@ -1,8 +1,14 @@
 .TempoTrackEditorView {
     height: 52px;
 
+    .TrackEditorHead {
+        display: flex;
+        gap: 8px;
+    }
+
     .NumberInput {
-        width: 100%;
+        flex: 1;
+        min-width: 0;
     }
 
     .EventView {

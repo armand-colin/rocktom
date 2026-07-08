@@ -17,6 +17,15 @@ export class TempoTrackEditor extends Component {
         this.changed()
     }
 
+    setLastEventBpm(bpm: number) {
+        const lastEvent = this.track.events.at(-1)
+        if (!lastEvent)
+            return
+
+        lastEvent.tempo = new Tempo(bpm)
+        this.changed()
+    }
+
     addEvent(ticks: number) {
         this.track.insert(ticks)
         this.changed()

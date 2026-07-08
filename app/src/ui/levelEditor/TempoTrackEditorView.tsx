@@ -17,6 +17,12 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
         props.editor.setInitial(bpm)
     }
 
+    function onLastEventBpmChange(bpm: number) {
+        props.editor.setLastEventBpm(bpm)
+    }
+
+    const lastEvent = track.events.at(-1)
+
     function onDoubleClick(e: MouseEvent) {
         const div = e.currentTarget
         const rect = div.getBoundingClientRect()
@@ -37,6 +43,15 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                 step={1}
                 onChange={onInitialChange}
             />
+            {
+                lastEvent &&
+                <NumberInput
+                    name="lastEventBpm"
+                    value={lastEvent.tempo.bpm}
+                    step={1}
+                    onChange={onLastEventBpmChange}
+                />
+            }
         </TrackEditorHead>
 
         <TrackEditorContent
