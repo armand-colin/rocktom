@@ -139,7 +139,7 @@ export class EditorPlayer extends Component {
             const now = Date.now() / 1000
             let deltaTime = now - lastUpdate
 
-            if (this.level.audioTrack.time <= this.time.seconds) {
+            if (this.level.audioTrack.time >= this.time.seconds) {
                 // Try to compensate for audio latency
                 const audioDeltaTime = this.time.seconds - this._audioPlayer.getTime() - this.level.audioTrack.time
                 deltaTime -= audioDeltaTime / 24
