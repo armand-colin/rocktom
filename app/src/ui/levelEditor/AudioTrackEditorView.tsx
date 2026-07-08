@@ -71,7 +71,7 @@ function AudioView(props: {
 }) {
     const ref = useRef<HTMLDivElement | null>(null)
     const resizeObserver = useRef<ResizeObserver | null>(null)
-    const resizeThrottle = useThrottle(100)
+    const resizeThrottle = useThrottle(500)
 
     useEffect(() => {
         return () => {
@@ -92,7 +92,8 @@ function AudioView(props: {
                     resizeThrottle.call(() => {
                         if (!ref.current)
                             return;
-                        
+
+                        console.log('resize', Date.now())
                         props.waveform.setSize(Vec2.create(ref.current.clientWidth, ref.current.clientHeight))
                     })
                 })
