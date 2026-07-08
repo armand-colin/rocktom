@@ -15,6 +15,7 @@ import { PlaybackProgressView } from "./PlaybackProgressView";
 import type { Time } from "../components/Time";
 import { Mixer } from "../resources/Mixer";
 import { useNavigate } from "react-router-dom";
+import { InactiveHider } from "./inactiveHider/InactiveHider";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -63,7 +64,7 @@ function PlaybackControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
     const navigate = useNavigate()
-    
+
     const { playing } = useComponent(props.playback)
     const { enabled: metronomeEnabled, volume: metronomeVolume } = useComponent(mixer.metronome)
 
@@ -76,46 +77,40 @@ function PlaybackControls(props: { playback: Playback }) {
                 <ResetButton playback={props.playback} />
             </div>
 
-            {
-                !playing ?
-                    <>
+            <InactiveHider enabled={playing}>
+                <YoutubeVolumeSlider playback={props.playback} />
 
-                        <YoutubeVolumeSlider playback={props.playback} />
+                <div className="speed">
+                    <p>Playback speed</p>
 
-                        <div className="speed">
-                            <p>Playback speed</p>
+                    <div className="container">
+                        <PlaybackSpeedButton playback={props.playback} value={1.0} />
+                        <PlaybackSpeedButton playback={props.playback} value={0.9} />
+                        <PlaybackSpeedButton playback={props.playback} value={0.8} />
+                        <PlaybackSpeedButton playback={props.playback} value={0.7} />
+                    </div>
+                </div>
 
-                            <div className="container">
-                                <PlaybackSpeedButton playback={props.playback} value={1.0} />
-                                <PlaybackSpeedButton playback={props.playback} value={0.9} />
-                                <PlaybackSpeedButton playback={props.playback} value={0.8} />
-                                <PlaybackSpeedButton playback={props.playback} value={0.7} />
-                            </div>
-                        </div>
+                <div className="metronome">
+                    <label>
+                        Metronome <Toggle
+                            value={metronomeEnabled}
+                            onChange={v => mixer.metronome.setEnabled(v)}
+                        />
+                    </label>
+                    <Slider
+                        min={0}
+                        max={1}
+                        value={metronomeVolume}
+                        onChange={v => mixer.metronome.setVolume(v)}
+                        disabled={!metronomeEnabled}
+                    />
+                </div>
 
-                        <div className="metronome">
-                            <label>
-                                Metronome <Toggle
-                                    value={metronomeEnabled}
-                                    onChange={v => mixer.metronome.setEnabled(v)}
-                                />
-                            </label>
-                            <Slider
-                                min={0}
-                                max={1}
-                                value={metronomeVolume}
-                                onChange={v => mixer.metronome.setVolume(v)}
-                                disabled={!metronomeEnabled}
-                            />
-                        </div>
-
-                        <div className="time">
-                            <PlaybackTimeView time={props.playback.time} />
-                        </div>
-
-                    </> :
-                    undefined
-            }
+                <div className="time">
+                    <PlaybackTimeView time={props.playback.time} />
+                </div>
+            </InactiveHider>
 
             <button
                 className="BackButton"
@@ -181,13 +176,13 @@ function YoutubeVolumeSlider(props: { playback: Playback }) {
             min={0}
             max={1}
             value={audioVolume}
-            onChange={v => { props.playback.audioVolume  = v }}
+            onChange={v => { props.playback.audioVolume = v }}
         />
     </div>
 }
 
 function PlaybackTimeView(props: { time: Time }) {
-    const time  = useComponent(props.time)
+    const time = useComponent(props.time)
 
     const minutes = (time.seconds / 60) | 0
     const milliseconds = ((time.seconds * 1000) % 1000) | 0
