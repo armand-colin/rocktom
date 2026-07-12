@@ -4,7 +4,7 @@ import { OS } from "../../utils/OS";
 export class NoteTransform extends Component {
 
     private _offset: number = 0
-    private _ratio: number = 1
+    private _ratio: number = 26
 
     constructor(engine: Engine) {
         super(engine)
@@ -38,7 +38,7 @@ export class NoteTransform extends Component {
         const delta = event.deltaY
 
         let offset = this.offset
-        offset = offset + delta / 26 / this.ratio
+        offset = offset + delta / this.ratio
 
         this._offset = offset
         this.changed()
