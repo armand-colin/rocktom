@@ -54,6 +54,7 @@ export class EditorPlayer extends Component {
             return
 
         this._updateCoroutine = this.startCoroutine(this._update())
+        this._metronome.sync(this.time.seconds, 1)
 
         this._playAudio()
         this.changed()
@@ -87,16 +88,22 @@ export class EditorPlayer extends Component {
             if (this.playing)
                 this._playAudio()
         }
+
+        if (this.playing)
+            this._metronome.sync(seconds, 1)
     }
 
     reset() {
         this.time.set(0, 0, this.level.tempoTrack.getTempoAt(0))
         this._audioPlayer.seek(0)
         this._audioPlayer.pause()
+        this._metronome.reset()
 
-        if (this._updateCoroutine !== null)
+        if (this._updateCoroutine !== null) {
+            this._metronome.sync(0, 1)
             // Scheduling play
             this._playAudio()
+        }
     }
 
     refreshAudioPlayer() {

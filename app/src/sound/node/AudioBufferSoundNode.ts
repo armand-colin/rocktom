@@ -60,6 +60,16 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         this.node.start(undefined, this._seek);
     }
 
+    playAt(when: number): AudioBufferSourceNode {
+        const source = this.audioContext.createBufferSource()
+        source.buffer = this._buffer
+        source.playbackRate.value = this._playbackRate
+        this.connectToOutputs(source)
+        source.onended = () => source.disconnect()
+        source.start(Math.max(when, this.audioContext.currentTime))
+        return source
+    }
+
     pause() {
         if (!this._playing) {
             return;

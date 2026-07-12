@@ -33,6 +33,13 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
         }
     }
 
+    protected connectToOutputs(source: AudioNode) {
+        for (const node of this._connections) {
+            if (node.node)
+                source.connect(node.node)
+        }
+    }
+
     setAudioContext(audioContext: AudioContext) {
         this.audioContext = audioContext
     }

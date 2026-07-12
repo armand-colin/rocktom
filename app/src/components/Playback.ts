@@ -117,6 +117,8 @@ export class Playback extends Component {
     set speed(value: number) {
         this._speed = value
         this._audioPlayer.setSpeed(value)
+        if (this.playing)
+            this._metronome.sync(this.time.seconds, value)
         this.changed()
     }
 
@@ -136,6 +138,7 @@ export class Playback extends Component {
             return
 
         this._playingCoroutine = this.startCoroutine(this._play())
+        this._metronome.sync(this.time.seconds, this._speed)
 
         if (this.time.seconds >= this.level.audioTrack.time)
             this._audioPlayer.play()
@@ -162,6 +165,8 @@ export class Playback extends Component {
         const audioSeekTime = Math.max(0, this.time.seconds - this.level.audioTrack.time)
         this._audioPlayer.seek(audioSeekTime)
         this._playingNotes.update(ticks)
+        if (this.playing)
+            this._metronome.sync(seconds, this._speed)
         this.changed()
     }
 
@@ -228,6 +233,8 @@ export class Playback extends Component {
         this._rig.update(0)
         this._playingNotes.update(0)
         this._metronome.reset()
+        if (this.playing)
+            this._metronome.sync(0, this._speed)
 
         this._updateWindow()
 

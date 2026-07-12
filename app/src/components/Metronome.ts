@@ -3,67 +3,119 @@ import { Tempo } from "../sound/Tempo";
 import sound from "../assets/sounds/metronome-click.mp3"
 import { SoundEngine } from "../resources/SoundEngine";
 import type { TempoTrack } from "../sound/song/TempoTrack";
-import type { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode";
+import type { AudioBufferSoundNode } from "../sound/node/AudioBufferSoundNode";
 import { Mixer } from "../resources/Mixer";
 
 export class Metronome extends Component {
 
-    // Offset from the audio sample
-    static offsetSeconds = 0.04
+    static lookAheadSeconds = 0.5
 
     private _tempoTrack: TempoTrack
     private _soundEngine: SoundEngine
-
-    private _audio: HTMLAudioElement
-    private _node: AudioElementSoundNode
+    private _node: AudioBufferSoundNode | null = null
+    private _scheduledSources: AudioBufferSourceNode[] = []
+    private _lastScheduledBeat = -1
+    private _songAnchor = 0
+    private _audioAnchor = 0
+    private _speed = 1
 
     constructor(engine: Engine, tempoTrack: TempoTrack) {
         super(engine)
         this._tempoTrack = tempoTrack
-
-        this._audio = new Audio(sound)
         this._soundEngine = this.engine.getResource(SoundEngine)
 
-        this._node = this._soundEngine.createAudioElementNode(this._audio)
-        const mixer = this.engine.getResource(Mixer)
-        mixer.metronome.connect(this._node)
+        fetch(sound)
+            .then(response => response.arrayBuffer())
+            .then(buffer => this._soundEngine.createAudioBuffer(buffer))
+            .then(audioBuffer => {
+                this._node = this._soundEngine.createAudioBufferNode(audioBuffer)
+                const mixer = this.engine.getResource(Mixer)
+                mixer.metronome.connect(this._node)
+            })
+    }
+
+    sync(songSeconds: number, speed: number) {
+        this._cancelScheduled()
+        this._songAnchor = songSeconds
+        this._audioAnchor = this._soundEngine.currentTime
+        this._speed = speed
+        this._lastScheduledBeat = -1
     }
 
     update(ticks: number, speed: number) {
-        // Shall schedule next click
-        const nextClick = ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
+        if (!this._node)
+            return
 
-        // convert in time
-        const nextTickTime = this._tempoTrack.secondsFromTicks(nextClick)
-        const currentTime = this._tempoTrack.secondsFromTicks(ticks)
+        if (speed !== this._speed)
+            this.sync(this._tempoTrack.secondsFromTicks(ticks), speed)
 
-        const deltaTime = (nextTickTime - currentTime) / speed
+        const currentSeconds = this._tempoTrack.secondsFromTicks(ticks)
+        const lookAheadEnd = currentSeconds + Metronome.lookAheadSeconds
+        const maxBeatTick = this._tempoTrack.ticksFromSeconds(lookAheadEnd)
+        const minAudioTime = this._soundEngine.currentTime
 
-        if (deltaTime <= Metronome.offsetSeconds) {
-            // Play immediately
-            this._click()
+        let beatTick = this._lastScheduledBeat >= 0
+            ? this._lastScheduledBeat + Tempo.PPQ
+            : ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
+
+        while (beatTick <= maxBeatTick) {
+            const beatSeconds = this._tempoTrack.secondsFromTicks(beatTick)
+            const audioWhen = this._audioAnchor + (beatSeconds - this._songAnchor) / this._speed
+
+            if (audioWhen >= minAudioTime) {
+                this._scheduleClick(audioWhen)
+                this._lastScheduledBeat = beatTick
+            } else if (beatSeconds >= currentSeconds - Metronome.lookAheadSeconds) {
+                this._scheduleClick(minAudioTime)
+                this._lastScheduledBeat = beatTick
+            }
+
+            beatTick += Tempo.PPQ
         }
     }
 
     reset() {
-        this._audio.pause()
-        this._audio.currentTime = 0
+        this._cancelScheduled()
+        this._lastScheduledBeat = -1
+        this._songAnchor = 0
+        this._audioAnchor = this._soundEngine.currentTime
+        this._speed = 1
     }
 
     click() {
-        this._click()
-    }
+        if (!this._node)
+            return
 
-    private _click() {
-        // Play click sound
-        this._audio.currentTime = 0
-        this._audio.play()
-        
+        this._scheduleClick(this._soundEngine.currentTime)
     }
 
     destroy(): void {
         super.destroy()
-        this._node.disconnect()
-        this._audio.pause()
+        this._cancelScheduled()
+        this._node?.disconnect()
     }
+
+    private _scheduleClick(when: number) {
+        const source = this._node!.playAt(when)
+        this._scheduledSources.push(source)
+        source.onended = () => {
+            source.disconnect()
+            const index = this._scheduledSources.indexOf(source)
+            if (index !== -1)
+                this._scheduledSources.splice(index, 1)
+        }
+    }
+
+    private _cancelScheduled() {
+        for (const source of this._scheduledSources) {
+            try {
+                source.stop()
+            } catch {
+                // already stopped
+            }
+            source.disconnect()
+        }
+        this._scheduledSources = []
+    }
+
 }
