@@ -1,4 +1,6 @@
 import { Component, Engine } from "@niloc/ecs";
+import { nanoid } from "nanoid";
+import type { Marker } from "../../sound/song/Marker";
 import type { NoteTrack } from "../../sound/song/NoteTrack";
 import { Pattern, TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
@@ -107,6 +109,62 @@ export class NoteTrackEditor extends Component {
             this.changed()
             return
         }
+    }
+
+    addMarker(ticks: number) {
+        const marker: Marker = {
+            id: nanoid(),
+            time: ticks,
+            name: "New marker"
+        }
+
+        this.track.markers.push(marker)
+        this._sortMarkers()
+        this.changed()
+    }
+
+    setMarkerTime(id: string, time: number) {
+        if (time < 0)
+            return
+
+        const index = this.track.markers.findIndex(marker => marker.id === id)
+        if (index === -1)
+            return
+
+        const prevMarker = index > 0 ? this.track.markers[index - 1] : null
+        const nextMarker = index < this.track.markers.length - 1 ? this.track.markers[index + 1] : null
+
+        if (prevMarker && time <= prevMarker.time)
+            return
+
+        if (nextMarker && time >= nextMarker.time)
+            return
+
+        this.track.markers[index].time = time
+        this._sortMarkers()
+        this.changed()
+    }
+
+    setMarkerName(id: string, name: string) {
+        const marker = this.track.markers.find(marker => marker.id === id)
+        if (!marker)
+            return
+
+        marker.name = name
+        this.changed()
+    }
+
+    removeMarker(id: string) {
+        const index = this.track.markers.findIndex(marker => marker.id === id)
+        if (index === -1)
+            return
+
+        this.track.markers.splice(index, 1)
+        this.changed()
+    }
+
+    private _sortMarkers() {
+        this.track.markers.sort((a, b) => a.time - b.time)
     }
 
 }

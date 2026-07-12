@@ -14,6 +14,7 @@ import { AudioTrackEditorView } from "./AudioTrackEditorView";
 import { FocusTrackEditorView } from "./FocusTrackEditorView";
 import "./LevelEditorView.scss";
 import { MagnetizationView } from "./magnetizationView/MagnetizationView";
+import { MarkerEditorView } from "./MarkerEditorView";
 import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
@@ -180,6 +181,13 @@ function SongEditorView(props: { editor: LevelEditor }) {
                 time={props.editor.player.time}
                 transform={props.editor.timeTransform}
                 editor={props.editor.tempoTrack}
+            />
+        </div>
+        <div className="markers">
+            <MarkerEditorView
+                time={props.editor.player.time}
+                transform={props.editor.timeTransform}
+                editor={props.editor.noteTrack}
             />
         </div>
         <div className="note">

@@ -31,6 +31,7 @@
     --surface-active: #292929;
     --surface-text: #f3f6ff;
 
+    --outline-0: #595959;
     --outline: #818181;
 
     --marker-bar: #000000;
@@ -61,6 +62,9 @@
     --spacing-xl: 32px;
     --spacing-2xl: 48px;
     --spacing-3xl: 80px;
+
+    --shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-m: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);  
 }
 
 body {
