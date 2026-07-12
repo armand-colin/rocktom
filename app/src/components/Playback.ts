@@ -15,6 +15,7 @@ import { PlaybackNote } from "./PlaybackNote";
 import { Time } from "./Time";
 import { Schedules } from "../Schedules";
 import { DeltaTime } from "./DeltaTime";
+import type { Object3D } from "three";
 
 export class Playback extends Component {
 
@@ -30,6 +31,7 @@ export class Playback extends Component {
     private _renderer: Renderer
     private _loading = true
 
+    private _neck: Object3D
     private _window: NoteWindow
 
     private _audioPlayerVolume: number = 1.0
@@ -66,8 +68,8 @@ export class Playback extends Component {
         this._renderer = engine.getResource(Renderer)
 
         const instrument = new Bass()
-        const neck = NeckMesh.create(instrument)
-        this._renderer.add(neck)
+        this._neck = NeckMesh.create(instrument)
+        this._renderer.add(this._neck)
 
         this._playingNotes = new PlayingNotes3D(this.level.tempoTrack)
         this._renderer.add(this._playingNotes)
@@ -253,6 +255,7 @@ export class Playback extends Component {
         this._rig.destroy()
         this._metronome.destroy()
         this._renderer.remove(this._playingNotes)
+        this._renderer.remove(this._neck)
     }
 
 }

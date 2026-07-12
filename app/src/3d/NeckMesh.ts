@@ -33,10 +33,13 @@ function createTextMesh(fret: number) {
 
 function create(instrument: Instrument) {
     const neck = new Object3D()
+    neck.name = "Neck"
 
     for (const string of instrument.strings) {
         const material = getMaterial(string)
         const stringMesh = new Mesh(stringGeometry, material)
+        stringMesh.name = "String " + string.name
+        
         neck.add(stringMesh)
         // Centered y
         stringMesh.position.y = Rules.getStringY(instrument, string)
