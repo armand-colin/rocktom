@@ -4,7 +4,7 @@ import type { Playback } from "../components/Playback";
 import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
 import "./PlaybackView.scss";
-import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
+// import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
 import { Slider } from "./slider/Slider";
 import { Icon } from "./icon/Icon";
 import { InputIcon } from "./inputIcon/InputIcon";
