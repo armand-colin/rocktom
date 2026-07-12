@@ -138,7 +138,7 @@ function MarkerView(props: {
                 onChange={name => props.editor.setMarkerName(props.id, name)}
             />
             <div className="contextual" onClick={onContextualClick}>
-                <Icon name="code" />
+                <Icon name="more_vert" />
             </div>
         </div>
     </div>
