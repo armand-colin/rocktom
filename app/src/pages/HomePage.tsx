@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { LevelList } from '../ui/levelList/LevelList'
-import '../App.css'
 import { LevelQueries } from '../queries/level/LevelQueries'
 import { useMutation } from '../hooks/useMutation'
 import { useNavigate } from 'react-router-dom'
@@ -38,7 +37,7 @@ export function HomePage() {
 
   return (
     <div
-      className="HomePage App"
+      className="HomePage"
       onContextMenu={e => e.preventDefault()}
     >
       <header className="HomePage-header">

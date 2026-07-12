@@ -10,6 +10,7 @@ import { AuthManager } from './resources/AuthManager'
 import { LevelPage } from './pages/LevelPage'
 import { WindowManagerView } from './ui/window/WindowManagerView'
 import { EditorPage } from './pages/EditorPage'
+import "./App.css"
 
 function App() {
   const authManager = useResource(AuthManager)
