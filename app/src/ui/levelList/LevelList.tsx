@@ -4,13 +4,24 @@ import { Button, ButtonTheme } from "../button/Button";
 import { Icon } from "../icon/Icon";
 import { UiSize } from "../UiSize";
 import { ContextualMenu } from "../../resources/ContextualMenu";
-import "./LevelList.scss";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
+import { Download } from "../../utils/download";
+import "./LevelList.scss";
 
 function formatSeconds(seconds: number) {
     const minutes = (seconds / 60) | 0
     const secs = (seconds % 60) | 0
     return `${minutes}:${secs.toString().padStart(2, '0')}`
+}
+
+function sanitizeFilename(name: string) {
+    return name.replace(/[^\w.-]+/g, "_").replace(/^_+|_+$/g, "") || "level"
+}
+
+function exportLevelTracks(level: LevelEntity) {
+    const serialized = level.serialized === "" ? "{}" : level.serialized
+    const content = JSON.stringify(JSON.parse(serialized), null, 2)
+    Download.textFile(`${sanitizeFilename(level.name)}.json`, content)
 }
 
 export function LevelList(props: {
@@ -27,6 +38,11 @@ export function LevelList(props: {
                 label: "Edit",
                 icon: "edit",
                 action: () => props.onEdit(level),
+            },
+            {
+                label: "Export JSON",
+                icon: "code",
+                action: () => exportLevelTracks(level),
             },
         ])
     }

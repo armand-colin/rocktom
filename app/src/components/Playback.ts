@@ -13,7 +13,6 @@ import { CameraRig } from "./CameraRig";
 import { Metronome } from "./Metronome";
 import { PlaybackNote } from "./PlaybackNote";
 import { Time } from "./Time";
-import { SoundEngine } from "../resources/SoundEngine";
 import { Schedules } from "../Schedules";
 import { DeltaTime } from "./DeltaTime";
 
@@ -24,7 +23,6 @@ export class Playback extends Component {
     private _notes: PlaybackNote[] = []
     private _playingNotes: PlayingNotes3D
 
-    private _soundEngine: SoundEngine
     private _rig: CameraRig
     private _metronome: Metronome
     private _speed = 1.0
@@ -49,7 +47,6 @@ export class Playback extends Component {
         this.deltaTime = engine.createComponent(DeltaTime)
 
         const preferences = engine.getResource(PlaybackPreferences)
-        this._soundEngine = engine.getResource(SoundEngine)
         this._audioPlayer = AudioPlayerFactory.create(
             engine,
             level.audioTrack,
@@ -169,21 +166,22 @@ export class Playback extends Component {
     }
 
     private *_play() {
-        let lastUpdate = this._soundEngine.currentTime
+        let lastUpdate = Date.now() / 1000
         while (true) {
-            const deltaTime = this._soundEngine.currentTime - lastUpdate
+            const now = Date.now() / 1000
+            const deltaTime = now - lastUpdate
             this._update(deltaTime)
-            lastUpdate = this._soundEngine.currentTime
+            lastUpdate = now
             yield Schedules.Frame
         }
     }
 
     private _update(deltaTime: number) {
-        if (this.level.audioTrack.time >= this.time.seconds) {
+        if (this.level.audioTrack.time <= this.time.seconds) {
             // Try to compensate for audio latency
             const audioDeltaTime = this.time.seconds - this._audioPlayer.getTime() - this.level.audioTrack.time
             this.deltaTime.setDeltaTime(audioDeltaTime)
-            deltaTime -= audioDeltaTime / 24
+            deltaTime -= audioDeltaTime / 6
         }
 
         deltaTime = deltaTime * this._speed
