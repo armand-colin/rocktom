@@ -186,7 +186,7 @@ export class Playback extends Component {
             // Try to compensate for audio latency
             const audioDeltaTime = this.time.seconds - this._audioPlayer.getTime() - this.level.audioTrack.time
             this.deltaTime.setDeltaTime(audioDeltaTime)
-            deltaTime -= audioDeltaTime / 6
+            deltaTime -= audioDeltaTime / 24
         }
 
         deltaTime = deltaTime * this._speed

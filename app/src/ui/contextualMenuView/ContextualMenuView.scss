@@ -22,11 +22,31 @@
         left: calc(var(--x) * 1px);
         top: calc(var(--y) * 1px);
         min-width: 200px;
-        padding: var(--spacing-s);
+        padding: var(--spacing-xs);
         background: var(--surface);
+        border-radius: var(--radius-s);
 
         .item {
             cursor: pointer;
+            display: flex;
+            gap: var(--spacing-s);
+            padding: var(--spacing-s);
+            border-radius:var(--radius-xs);
+
+            &:hover {
+                background: var(--surface-hover);
+            }
+
+            &:active {
+                background: var(--surface-active);
+            }
+        }
+
+        .separator {
+            height: 1px;
+            background: var(--outline);
+            margin: var(--spacing-xs) 0;
+            width: 100%;
         }
     }
 }

@@ -3,10 +3,11 @@ import type { MouseEvent } from "react";
 import { Button, ButtonTheme } from "../button/Button";
 import { Icon } from "../icon/Icon";
 import { UiSize } from "../UiSize";
-import { ContextualMenu } from "../../resources/ContextualMenu";
+import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
 import { Download } from "../../utils/download";
 import "./LevelList.scss";
+import { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
 
 function formatSeconds(seconds: number) {
     const minutes = (seconds / 60) | 0
@@ -34,16 +35,16 @@ export function LevelList(props: {
 
     function openLevelMenu(e: MouseEvent, level: LevelEntity) {
         contextualMenu.open(e.nativeEvent, [
-            {
+            ContextualMenuItem.action({
                 label: "Edit",
                 icon: "edit",
                 action: () => props.onEdit(level),
-            },
-            {
+            }),
+            ContextualMenuItem.action({
                 label: "Export JSON",
                 icon: "code",
                 action: () => exportLevelTracks(level),
-            },
+            }),
         ])
     }
 
@@ -65,10 +66,9 @@ export function LevelList(props: {
                     <div className="LevelList-actions">
                         <Button
                             size={UiSize.S}
-                            onClick={() => props.onEdit(level)}
+                            onClick={(e) => openLevelMenu(e, level)}
                         >
-                            <Icon name="edit" />
-                            Edit
+                            <Icon name="more_vert" />
                         </Button>
                         <Button
                             className="LevelList-playButton"

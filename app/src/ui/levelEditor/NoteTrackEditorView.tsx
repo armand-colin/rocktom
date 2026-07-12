@@ -13,7 +13,8 @@ import { Select } from "../select/Select";
 import "./NoteTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import { Icon } from "../icon/Icon";
-import { ContextualMenu } from "../../resources/ContextualMenu";
+import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
+import { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
@@ -159,20 +160,19 @@ function TimedPatternView(props: {
     function onContextualClick(e: MouseEvent) {
         const contextualMenu = engine.getResource(ContextualMenu)
         contextualMenu.open(e.nativeEvent, [
-            {
+            ContextualMenuItem.action({
                 label: "Edit Pattern",
                 action: () => {
                     props.onEdit()
                 },
-                icon: null
-            },
-            {
+            }),
+            ContextualMenuItem.action({
                 label: "Delete Pattern",
+                icon: "shift",
                 action: () => {
                     props.editor.removeTimedPattern(props.id)
                 },
-                icon: "shift"
-            }
+            })
         ])
     }
 

@@ -1,80 +1,79 @@
 import { useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Instance } from "../../Instance";
-import { ContextualMenu, type ContextualMenuItem } from "../../resources/ContextualMenu";
+import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
 import { Button } from "../button/Button";
 import { ContextualMenuView } from "./ContextualMenuView";
+import { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
 
 const noop = () => {};
 
 const singleItemWithIcon: ContextualMenuItem[] = [
-  {
+  ContextualMenuItem.action({
     label: "Edit",
     icon: "edit",
     action: noop,
-  },
+  })
 ];
 
 const multipleItemsWithIcons: ContextualMenuItem[] = [
-  {
+  ContextualMenuItem.action({
     label: "Play",
     icon: "play_arrow",
     action: noop,
-  },
-  {
+  }),
+  ContextualMenuItem.action({
     label: "Edit",
     icon: "edit",
     action: noop,
-  },
-  {
+  }),
+  ContextualMenuItem.separator(),
+  ContextualMenuItem.action({
     label: "Duplicate",
     icon: "code",
     action: noop,
-  },
-  {
+  }),
+  ContextualMenuItem.action({
     label: "Delete",
     icon: "close",
     action: noop,
-  },
+  }),
 ];
 
 const textOnlyItems: ContextualMenuItem[] = [
-  {
+  ContextualMenuItem.action({
     label: "Edit Pattern",
-    icon: null,
     action: noop,
-  },
-  {
+  }),
+  ContextualMenuItem.action({
     label: "Delete Pattern",
-    icon: null,
     action: noop,
-  },
+  }),
 ];
 
 const mixedItems: ContextualMenuItem[] = [
-  {
+  ContextualMenuItem.action({
     label: "Edit Pattern",
-    icon: null,
     action: noop,
-  },
-  {
+  }),
+  ContextualMenuItem.action({
     label: "Delete Pattern",
     icon: "shift",
     action: noop,
-  },
+  }),
 ];
 
 const longLabelItems: ContextualMenuItem[] = [
-  {
+  ContextualMenuItem.action({
     label: "Export level as MIDI file",
     icon: "code",
     action: noop,
-  },
-  {
+  }),
+  ContextualMenuItem.action({
     label: "Copy shareable link to clipboard",
     icon: "home",
     action: noop,
-  },
+  }),
 ];
 
 function openMenuAt(x: number, y: number, items: ContextualMenuItem[]) {
