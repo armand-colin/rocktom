@@ -39,7 +39,7 @@ function create(instrument: Instrument) {
         const material = getMaterial(string)
         const stringMesh = new Mesh(stringGeometry, material)
         stringMesh.name = "String " + string.name
-        
+
         neck.add(stringMesh)
         // Centered y
         stringMesh.position.y = Rules.getStringY(instrument, string)
@@ -51,6 +51,7 @@ function create(instrument: Instrument) {
 
     for (let i = 0; i <= Rules.maxFret; i++) {
         const fretMesh = new Mesh(fretGeometry, fretMaterial)
+        fretMesh.name = "Fret " + (i + 1)
         neck.add(fretMesh)
         fretMesh.position.x = Rules.getX(i + 0.5)
         fretMesh.position.y = 0
@@ -60,6 +61,7 @@ function create(instrument: Instrument) {
     // Shall create vertical frets
     for (let i = 0; i <= Rules.maxFret; i++) {
         const verticalStringMesh = new Mesh(verticalStringGeometry, verticalStringMaterial)
+        verticalStringMesh.name = "Vertical fret hint " + (i + 1)
         neck.add(verticalStringMesh)
         verticalStringMesh.position.x = Rules.getX(i + 0.5)
         verticalStringMesh.position.y = Rules.getY(1)

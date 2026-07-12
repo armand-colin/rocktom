@@ -38,7 +38,6 @@ export class FretMesh extends Mesh {
         if (fret < 0 || fret > Rules.maxFret)
             throw new Error(`Fret ${fret} is out of bounds`)
 
-
         let geometry = this._geometries[fret]
 
         if (!geometry) {
@@ -46,11 +45,12 @@ export class FretMesh extends Mesh {
             this._geometries[fret] = geometry
         }
 
-        return new FretMesh(geometry, this.createMaterial())
+        return new FretMesh(geometry, this.createMaterial(), fret)
     }
 
-    constructor(geometry: PlaneGeometry, material: MeshBasicMaterial) {
+    constructor(geometry: PlaneGeometry, material: MeshBasicMaterial, fret: number) {
         super(geometry, material)
+        this.name = "Fret " + fret
     }
 
 }
