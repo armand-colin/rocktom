@@ -5,8 +5,6 @@ import type { Handler } from "./Handler";
 import { Rules } from "../../3d/Rules";
 import type { String } from "../../sound/instrument/String";
 
-const NOTE_HEIGHT = 26
-
 export class NoteMover implements Handler {
 
     readonly events = new Emitter<{ change: Note }>()
@@ -37,7 +35,7 @@ export class NoteMover implements Handler {
         e.preventDefault()
 
         const deltaY = e.clientY - this._startY
-        const noteDelta = -deltaY / (NOTE_HEIGHT * this._transform.ratio)
+        const noteDelta = -deltaY / this._transform.ratio
         let newNoteIndex = Math.round(this._startNote.index + noteDelta)
         newNoteIndex = Math.max(this._minNote.index, Math.min(this._maxNote.index, newNoteIndex))
         const newNote = Note.fromIndex(newNoteIndex)

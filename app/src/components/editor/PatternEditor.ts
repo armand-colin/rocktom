@@ -49,8 +49,10 @@ export class PatternEditor extends Component {
     }
 
     removeNote(noteId: string) {
-        if (this.pattern.remove(noteId))
+        if (this.pattern.remove(noteId)) {
+            this.selection.removeById(noteId)
             this.changed()
+        }
     }
 
     selectNote(id: string) {
@@ -60,6 +62,7 @@ export class PatternEditor extends Component {
 
         this._string = note.string
         this._setDuration = note.duration
+        this.selection.set([note])
         this.changed()
     }
 

@@ -16,9 +16,17 @@ export class Selection<T extends { id: string }> extends Component {
         this.changed()
     }
 
+    set(selection: T[]) {
+        this._elements = selection;
+        this.changed();
+    }
 
     remove(element: T) {
-        const index = this._elements.findIndex(e => e.id === element.id)
+        this.removeById(element.id)
+    }
+
+    removeById(elementId: string) {
+        const index = this._elements.findIndex(e => e.id === elementId)
         if (index === -1)
             return
 
