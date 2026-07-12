@@ -67,13 +67,15 @@ export function PatternEditorView(props: {
         const mouseX = e.clientX - rect.left
         const mouseY = e.clientY - rect.top
         const ticks = props.editor.transform.magnetize(mouseX / props.editor.transform.ratio - props.editor.transform.offset)
-        const noteIndex = (mouseY / props.editor.noteTransform.ratio - props.editor.noteTransform.offset)
+        const rawNoteIndex = (mouseY / props.editor.noteTransform.ratio) + props.editor.noteTransform.offset
+        const noteIndex = maxNote.index - Math.round(rawNoteIndex)
         const note = Note.fromIndex(noteIndex)
 
         console.log('clicking on note', {
             mouseY,
             ratio: props.editor.noteTransform.ratio,
             offset: props.editor.noteTransform.offset,
+            rawRoteIndex: rawNoteIndex,
             index: noteIndex, 
             note: note,
             maxNote,
