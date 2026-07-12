@@ -35,7 +35,8 @@ export class String {
     }
 
     canPlay(note: Note): boolean {
-        return note.index >= this.note.index && this.note.index - note.index <= Rules.maxFret
+        return note.index >= this.note.index && 
+            (note.index - this.note.index) <= Rules.maxFret
     }
 
 }
