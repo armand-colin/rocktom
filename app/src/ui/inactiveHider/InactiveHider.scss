@@ -1,7 +1,8 @@
 .InactiveHider {
     transition: opacity 0.3s ease-in-out;
-    
-    &[data-hidden="true"] {
+
+    &[data-state="hiding"],
+    &[data-state="hidden"] {
         opacity: 0;
         cursor: hidden;
     }

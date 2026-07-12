@@ -52,7 +52,7 @@ export class WindowManager extends Resource {
         const id = nanoid()
         const close = () => this._close(id)
         const content = render(close)
-
+        
         const window: Window = {
             id,
             position: { x: 100, y: 100 },

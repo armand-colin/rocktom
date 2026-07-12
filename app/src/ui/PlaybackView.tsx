@@ -52,12 +52,12 @@ export function PlaybackView(props: { playback: Playback }) {
         </div>
 
         <PlaybackControls playback={props.playback} />
-        {
-            playing ?
-                undefined :
-                <PlaybackProgressView playback={props.playback} />
-        }
-        <LiveInstrumentView />
+
+        <InactiveHider enabled={playing} timeout={3000}>
+            <PlaybackProgressView playback={props.playback} />
+        </InactiveHider>
+
+        {/* <LiveInstrumentView /> */}
     </div>
 }
 

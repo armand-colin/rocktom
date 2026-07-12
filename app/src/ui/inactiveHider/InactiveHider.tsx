@@ -7,9 +7,15 @@ type Props = {
     enabled?: boolean,
 }
 
+enum State {
+    Shown = "shown",
+    Hiding = "hiding",
+    Hidden = "hidden",
+}
+
 export function InactiveHider(props: Props) {
     const hideTimeout = useRef<number | null>(null)
-    const [hidden, setHidden] = useState(false)
+    const [state, setState] = useState(State.Shown)
 
     useEffect(() => {
         if (!props.enabled) {
@@ -17,12 +23,12 @@ export function InactiveHider(props: Props) {
                 clearTimeout(hideTimeout.current)
                 hideTimeout.current = null
             }
-            setHidden(false)
+            setState(State.Shown)
             return;
         }
 
         const update = () => {
-            setHidden(() => false);
+            setState(State.Shown);
 
             if (hideTimeout.current) {
                 clearTimeout(hideTimeout.current)
@@ -31,7 +37,11 @@ export function InactiveHider(props: Props) {
 
             hideTimeout.current = setTimeout(() => {
                 hideTimeout.current = null;
-                setHidden(true);
+                setState(State.Hiding);
+
+                hideTimeout.current = setTimeout(() => {
+                    setState(State.Hidden);
+                }, 1000, undefined);
             }, props.timeout, undefined)
         }
 
@@ -48,8 +58,8 @@ export function InactiveHider(props: Props) {
 
     return <div
         className="InactiveHider"
-        data-hidden={hidden}
+        data-state={state}
     >
-        {props.children}
+        {state !== State.Hidden && props.children}
     </div>
 }

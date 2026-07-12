@@ -68,21 +68,35 @@ export function PatternEditorView(props: {
         const mouseY = e.clientY - rect.top
         const ticks = props.editor.transform.magnetize(mouseX / props.editor.transform.ratio - props.editor.transform.offset)
         const noteIndex = Math.round(((1 - (mouseY / rect.height)) * (maxNote.index - minNote.index - 1)) + minNote.index)
-        const fret = noteIndex - string.note.index
+        const note = Note.fromIndex(noteIndex)
 
-        if (fret < 0 || fret > Rules.maxFret) {
-            // Find closest string that matches
+        console.log('clicking on note', {
+            index: noteIndex, 
+            note: note,
+            maxNote,
+            minNote,
+        })
+
+        if (!string.canPlay(note)) {
+            // Find first string that matches
             const strings = props.editor.pattern.instrument.strings
-            for (const s of strings) {
-                const f = noteIndex - s.note.index
-                if (f >= 0 && f <= Rules.maxFret) {
-                    props.editor.addNote(s, f, ticks)
+            for (const string of strings) {
+                if (string.canPlay(note)) {
+                    props.editor.addNote(
+                        string, 
+                        note.index - string.note.index, 
+                        ticks
+                    )
                     return
                 }
             }
+        } else {
+            props.editor.addNote(
+                string, 
+                note.index - string.note.index, 
+                ticks
+            )
         }
-
-        props.editor.addNote(string, fret, ticks)
     }
 
     return <div

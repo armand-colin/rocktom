@@ -36,6 +36,7 @@
 
         .notes {
             position: relative;
+            overflow: clip;
 
             .note {
                 position: absolute;
