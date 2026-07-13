@@ -112,6 +112,8 @@ export class PatternEditor extends Component {
 
         this.pattern.add(note)
         this.changed()
+
+        return note;
     }
 
     setNoteString(id: string, string: String) {

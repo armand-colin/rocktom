@@ -89,7 +89,8 @@
             }
 
             &[data-selected="true"] {
-                outline: 2px solid var(--outline);
+                outline: 3px solid var(--outline);
+                outline-offset: 2px;
             }
 
             .resizer {
@@ -103,8 +104,8 @@
 
             > p {
                 overflow: hidden;
-
                 color: var(--contrast);
+                pointer-events: none;
             }
 
             .fret-hint {

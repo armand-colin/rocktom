@@ -18,6 +18,10 @@ import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEdi
 import { EditableText } from "../editableText/EditableText";
 import type { NoteTransform } from "../../components/editor/NoteTransform";
 import { NoteMover } from "../../utils/handlers/NoteMover";
+import { Button } from "../button/Button";
+import { PopupManager } from "../../resources/PopupManager";
+import { SplitPopup } from "./split/SplitPopup";
+import { Instance } from "../../Instance";
 
 export function PatternEditorView(props: {
     editor: PatternEditor,
@@ -104,6 +108,20 @@ export function PatternEditorView(props: {
         }
     }
 
+    function onSplit() {
+        const selection = props.editor.selection.elements
+        if (selection.length !== 1)
+            return
+
+        const note = selection[0]
+
+        Instance.engine.getResource(PopupManager).add(close => <SplitPopup 
+            close={close} 
+            editor={props.editor} 
+            note={note}
+        />)
+    }
+
     return <div
         className="PatternEditorView"
         onMouseDown={onMouseDown}
@@ -121,6 +139,7 @@ export function PatternEditorView(props: {
                     value: string.index
                 }))}
             />
+            <Button onClick={onSplit}>Split</Button>
         </div>
         <div
             className="body"
