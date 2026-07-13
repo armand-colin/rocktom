@@ -75,17 +75,6 @@ export function PatternEditorView(props: {
         const noteIndex = maxNote.index - Math.ceil(rawNoteIndex)
         const note = Note.fromIndex(noteIndex)
 
-        console.log('clicking on note', {
-            mouseY,
-            ratio: props.editor.noteTransform.ratio,
-            offset: props.editor.noteTransform.offset,
-            rawRoteIndex: rawNoteIndex,
-            index: noteIndex, 
-            note: note,
-            maxNote,
-            minNote,
-        })
-
         if (!string.canPlay(note)) {
             // Find first string that matches
             const strings = props.editor.pattern.instrument.strings

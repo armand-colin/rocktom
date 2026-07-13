@@ -4,9 +4,16 @@ import { Popup } from "../../popup/Popup";
 import { NumberInput } from "../../input/NumberInput";
 import { Button } from "../../button/Button";
 import type { NoteEvent } from "../../../sound/song/NoteEvent";
+import { Toggle } from "../../toggle/Toggle";
+import { FormInputField } from "../../form/FormInputField";
 
-export function SplitPopup(props: { close: () => void, editor: PatternEditor, note: NoteEvent }) {
+export function SplitPopup(props: {
+    close: () => void,
+    editor: PatternEditor,
+    note: NoteEvent
+}) {
     const [count, setCount] = useState(1)
+    const [durationToZero, setDurationToZero] = useState(false)
 
     function onConfirm() {
         if (count === 1) {
@@ -40,13 +47,24 @@ export function SplitPopup(props: { close: () => void, editor: PatternEditor, no
 
     return <Popup.BaseContainer>
         <Popup.BaseTitle title="Split Note" />
-        <NumberInput
-            name="count"
-            onChange={setCount}
-            value={count}
-            min={1}
-            step={1}
-        />
+        
+        <FormInputField label="Subdivisions count">
+            <NumberInput
+                name="count"
+                onChange={setCount}
+                value={count}
+                min={1}
+                step={1}
+            />
+        </FormInputField>
+
+        <FormInputField label="Set duration to zero">
+            <Toggle
+                onChange={setDurationToZero}
+                value={durationToZero}
+            />
+        </FormInputField>
+
         <Button onClick={onConfirm}>
             Confirm
         </Button>
