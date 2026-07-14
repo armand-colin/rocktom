@@ -6,7 +6,6 @@ import { Session } from '../modules/session/session.entity';
 import { User } from '../modules/user/user.entity';
 import { InitialSchema as InitialSchema } from './migrations/20260101-initial-schema';
 import { AddDuration } from './migrations/20260603-add-duration';
-import { AddPlaybackAndShare } from './migrations/20260618-add-playback-and-share';
 
 export namespace TypeOrmConfig {
 
@@ -24,7 +23,7 @@ export namespace TypeOrmConfig {
         Document,
         Level,
       ],
-      migrations: [InitialSchema, AddDuration, AddPlaybackAndShare],
+      migrations: [InitialSchema, AddDuration],
       synchronize: false,
       migrationsRun: true,
     };
