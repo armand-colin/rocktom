@@ -14,6 +14,7 @@ type Props = {
     disabled?: boolean,
     size?: UiSize,
     theme?: ButtonTheme,
+    variant?: "default" | "ghost",
     className?: string,
     style?: CSSProperties,
     primitive?: 'button' | 'label',
@@ -34,6 +35,7 @@ export function Button(props: Props) {
         data-size={props.size ?? UiSize.M}
         data-theme={props.theme ?? ButtonTheme.Default}
         data-shape={shape}
+        data-variant={props.variant ?? "default"}
         onClick={props.onClick}
         disabled={props.disabled}
         style={props.style}

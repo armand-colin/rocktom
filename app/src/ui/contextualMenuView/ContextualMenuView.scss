@@ -8,6 +8,15 @@
         display: none;
     }
 
+    @keyframes showAnimation {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        } 100% {
+            transform: scale(1);
+        }
+    }
+
     &[data-visible="true"] {
         pointer-events: auto;
     }
@@ -15,6 +24,10 @@
     .backdrop {
         position: absolute;
         inset: 0;
+    }
+
+    &[data-visible="true"] .menu {
+        animation: showAnimation 0.16s cubic-bezier(.38,.21,.21,.98);
     }
 
     .menu {
@@ -34,6 +47,10 @@
             gap: var(--spacing-s);
             padding: var(--spacing-s);
             border-radius:var(--radius-xs);
+
+            &[data-theme="danger"] {
+                color: var(--danger-outline);
+            }
 
             &:hover {
                 background: var(--surface-hover);

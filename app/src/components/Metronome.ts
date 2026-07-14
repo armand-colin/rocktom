@@ -74,6 +74,10 @@ export class Metronome extends Component {
         }
     }
 
+    pause() {
+        this._cancelScheduled()
+    }
+    
     reset() {
         this._cancelScheduled()
         this._lastScheduledBeat = -1

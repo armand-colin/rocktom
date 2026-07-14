@@ -4,6 +4,7 @@ import type { IconName } from "../../ui/icon/Icon";
 export type ContextualMenuItem = {
     type: 'action',
     icon?: IconName,
+    theme?: "danger",
     label: string,
     action: () => void,
 } | {
@@ -17,6 +18,7 @@ export namespace ContextualMenuItem {
 
     export function action(options: {
         icon?: IconName,
+        theme?: "danger",
         label: string,
         action: () => void,
     }): ContextualMenuItem {
@@ -24,6 +26,7 @@ export namespace ContextualMenuItem {
             type: 'action',
             icon: options.icon,
             label: options.label,
+            theme: options.theme,
             action: options.action,
         }
     }

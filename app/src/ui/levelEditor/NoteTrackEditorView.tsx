@@ -162,13 +162,15 @@ function TimedPatternView(props: {
         contextualMenu.open(e.nativeEvent, [
             ContextualMenuItem.action({
                 label: "Edit Pattern",
+                icon: "edit",
                 action: () => {
                     props.onEdit()
                 },
             }),
             ContextualMenuItem.action({
                 label: "Delete Pattern",
-                icon: "shift",
+                icon: "delete",
+                theme: "danger",
                 action: () => {
                     props.editor.removeTimedPattern(props.id)
                 },
@@ -201,9 +203,10 @@ function TimedPatternView(props: {
             <p>
                 {props.pattern.name}
             </p>
-            <div className="contextual" onClick={onContextualClick}>
-                <Icon name="code" />
-            </div>
+
+            <Button variant="ghost" onClick={onContextualClick}>
+                <Icon name="more_vert" />
+            </Button>
         </div>
         <div className="notes">
             {props.pattern.notes.map(note => <div

@@ -4,6 +4,7 @@ import { LevelQueries } from '../queries/level/LevelQueries'
 import { useMutation } from '../hooks/useMutation'
 import { useNavigate } from 'react-router-dom'
 import type { LevelEntity } from '../queries/level/LevelEntity'
+import type { ImportedLevelTracks } from '../utils/levelImport'
 import { Button, ButtonTheme } from '../ui/button/Button'
 import { Instance } from '../Instance'
 import { PopupManager } from '../resources/PopupManager'
@@ -35,6 +36,21 @@ export function HomePage() {
     navigate('/editor/level/' + level.id)
   }
 
+  async function onImport(level: LevelEntity, imported: ImportedLevelTracks) {
+    const result = await LevelQueries.update(level.id, {
+      name: level.name,
+      serialized: imported.serialized,
+      duration: imported.duration,
+      playbackId: imported.playbackId,
+    })
+
+    if (!result.ok) {
+      throw result.error
+    }
+
+    getAllLevels()
+  }
+
   return (
     <div
       className="HomePage"
@@ -62,6 +78,7 @@ export function HomePage() {
               onSelect={onSelectLevel}
               onCreate={onCreate}
               onEdit={onEdit}
+              onImport={onImport}
             /> :
             null
       }

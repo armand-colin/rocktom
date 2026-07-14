@@ -1,22 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Icon, type IconName } from "./Icon";
+import { Icon, icons } from "./Icon";
 
-const iconNames: IconName[] = [
-  "home",
-  "volume_up",
-  "volume_off",
-  "space_bar",
-  "shift",
-  "arrow_back",
-  "code",
-  "arrow_drop_down",
-  "close",
-  "acute",
-  "instant_mix",
-  "play_arrow",
-  "edit",
-  "more_vert",
-];
 
 const meta = {
   title: "UI/Icon",
@@ -27,7 +11,7 @@ const meta = {
   argTypes: {
     name: {
       control: "select",
-      options: iconNames,
+      options: icons,
     },
   },
 } satisfies Meta<typeof Icon>;
@@ -43,7 +27,7 @@ export const Main: Story = {
         <Icon {...args} />
       </div>
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        {iconNames.map((name) => (
+        {icons.map((name) => (
           <div
             key={name}
             style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: 90, gap: 6 }}

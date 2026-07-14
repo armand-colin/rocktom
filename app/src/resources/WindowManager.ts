@@ -14,6 +14,52 @@ export type Window = {
     events: Emitter<{ closed: void }>
 }
 
+export type WindowPosition = {
+    type: "fixed",
+    position: Vec2,
+} | {
+    type: "centered",
+}
+
+export namespace WindowPosition {
+    export function fixed(position: Vec2): WindowPosition {
+        return {
+            type: "fixed",
+            position,
+        }
+    }
+
+    export function centered(): WindowPosition {
+        return { type: "centered" }
+    }
+}
+
+export type WindowSize = {
+    type: "fixed",
+    size: Vec2,
+} | {
+    type: "relative",
+    percentage: Vec2,
+}
+
+export namespace WindowSize {
+    export function fixed(size: Vec2): WindowSize {
+        return {
+            type: "fixed",
+            size,
+        }
+    }
+
+    export function relative(percentage: number | Vec2): WindowSize {
+        return {
+            type: "relative",
+            percentage: typeof percentage === "number" ? 
+                Vec2.create(percentage, percentage) : 
+                percentage,
+        }
+    }
+}
+
 export class WindowManager extends Resource {
 
     private _windows: Window[] = []
@@ -42,6 +88,8 @@ export class WindowManager extends Resource {
         opts: {
             name: string,
             id?: string,
+            position?: WindowPosition,
+            size?: WindowSize
         },
         render: (close: () => void) => ReactNode
     ): Window {
@@ -52,11 +100,26 @@ export class WindowManager extends Resource {
         const id = nanoid()
         const close = () => this._close(id)
         const content = render(close)
-        
+
+        const position = opts.position ?? WindowPosition.centered()
+        const size = opts.size ?? WindowSize.relative(0.5)
+
+        const realSize = size.type === "fixed" ?
+            size.size :
+            size.type === "relative" ?
+            Vec2.create(this._windowSize.x * size.percentage.x, this._windowSize.y * size.percentage.y) :
+            Vec2.create(0, 0);
+
+        const realPosition = position.type === "fixed" ? 
+            position.position :
+            position.type === "centered" ?
+            Vec2.create(this._windowSize.x / 2 - realSize.x / 2, this._windowSize.y / 2 - realSize.y / 2) :
+            Vec2.create(0, 0);
+
         const window: Window = {
             id,
-            position: { x: 100, y: 100 },
-            size: { x: 400, y: 300 },
+            position: realPosition,
+            size: realSize,
             close,
             content,
             name: opts.name,

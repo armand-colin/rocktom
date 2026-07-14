@@ -224,6 +224,7 @@ export class Playback extends Component {
         this._playingCoroutine = null
 
         this._audioPlayer.pause()
+        this._metronome.pause()
         this.changed()
     }
 

@@ -31,7 +31,7 @@
         --active-background: var(--danger-active);
     }
 
-    &[data-size="m"] {
+    &[data-size="m"]:not([data-variant="ghost"]) {
         padding: 8px;
         gap: var(--spacing-s);
         font: var(--font-m);
@@ -42,7 +42,7 @@
         }
     }
     
-    &[data-size="s"] {
+    &[data-size="s"]:not([data-variant="ghost"]) {
         padding: 3px;
         gap: var(--spacing-xs);
         font: var(--font-s);
@@ -51,6 +51,13 @@
             padding-left: 6px;
             padding-right: 6px;
         }
+    }
+
+    &[data-variant="ghost"] {
+        background: transparent;
+        border-color: transparent;
+        --hover-background: transparent;
+        --active-background: transparent;
     }
 
     &:not(:disabled) {

@@ -29,7 +29,7 @@ export function ContextualMenuView() {
 			} as CSSProperties}
 			onMouseDown={onMenuMouseDown}
 		>
-			{items.map((item, index) => <Item 
+			{items.map((item, index) => <Item
 				close={() => contextualMenu.close()}
 				item={item}
 				key={index}
@@ -54,7 +54,11 @@ function Item(props: { item: ContextualMenuItem, close: () => void }) {
 		}
 	}
 
-	return <div className="item" onClick={onClick}>
+	return <div
+		className="item"
+		onClick={onClick}
+		data-theme={props.item.theme ?? "default"}
+	>
 		{
 			props.item.icon ?
 				<Icon name={props.item.icon} /> :

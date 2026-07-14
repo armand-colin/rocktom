@@ -24,22 +24,29 @@ function getIconsFontSnapshot() {
     return iconsFontLoaded;
 }
 
-export type IconName =
-    "home" |
-    "volume_up" |
-    "volume_off" |
-    "space_bar" |
-    "shift" |
-    "arrow_back" |
-    "code" |
-    "arrow_drop_down" |
-    "close" |
-    "acute" |
-    "instant_mix" |
-    "progress_activity" |
-    "play_arrow" |
-    "edit" |
-    "more_vert"
+export const icons = [
+    "home",
+    "volume_up",
+    "volume_off",
+    "space_bar",
+    "shift",
+    "arrow_back",
+    "code",
+    "arrow_drop_down",
+    "arrow_downward",
+    "download",
+    "close",
+    "acute",
+    "instant_mix",
+    "progress_activity",
+    "play_arrow",
+    "edit",
+    "more_vert",
+    "check_circle",
+    "delete"
+] as const;
+
+export type IconName = typeof icons[number];
 
 type Props = {
     name: IconName
@@ -52,7 +59,7 @@ export function Icon(props: Props) {
         () => false,
     );
 
-    return <i 
+    return <i
         className="Icon"
         data-icon={props.name}
         data-loaded={loaded || undefined}
