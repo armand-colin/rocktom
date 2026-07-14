@@ -111,6 +111,32 @@ export class NoteTrackEditor extends Component {
         }
     }
 
+    setTimedPatternStartTime(id: string, leftEdgeTicks: number) {
+        for (const tp of this.track.timedPatterns) {
+            if (tp.id !== id)
+                continue
+
+            const visualLeft = tp.time + tp.offset
+            const delta = leftEdgeTicks - visualLeft
+
+            if (delta >= 0) {
+                tp.offset += delta
+                tp.duration = Math.max(0, tp.duration - delta)
+            } else {
+                const extend = -delta
+                const offsetReduction = Math.min(tp.offset, extend)
+                tp.offset -= offsetReduction
+                tp.time = Math.max(0, tp.time - (extend - offsetReduction))
+                tp.duration += extend
+            }
+
+            this._pattern = tp.pattern
+            this._lastDuration = tp.duration
+            this.changed()
+            return
+        }
+    }
+
     addMarker(ticks: number) {
         const marker: Marker = {
             id: nanoid(),

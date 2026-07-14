@@ -50,7 +50,16 @@
             }
         }
 
-        .resizer {
+        .resizer-left {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -2px;
+            width: 4px;
+            cursor: ew-resize;
+        }
+
+        .resizer-right {
             position: absolute;
             top: 0;
             bottom: 0;
