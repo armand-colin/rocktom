@@ -85,11 +85,15 @@ export class NoteTrack {
     }
 
     *notes() {
-        for (const { time, pattern } of this.timedPatterns) {
+        for (const { time, pattern, offset } of this.timedPatterns) {
             for (const note of pattern.notes) {
+                if (note.time < offset || note.time > offset + pattern.duration) {
+                    continue
+                }
+
                 yield {
                     ...note,
-                    time: note.time + time
+                    time: note.time + time - offset,
                 }
             }
         }

@@ -7,7 +7,8 @@ export type SerializedTimedPattern = {
     id: string,
     time: number,
     patternId: string,
-    duration: number
+    duration: number,
+    offset: number
 }
 
 export class TimedPattern {
@@ -16,17 +17,20 @@ export class TimedPattern {
     time: number
     pattern: Pattern
     duration: number
+    offset: number
 
     constructor(opts: {
         id?: string,
         time: number,
         pattern: Pattern,
+        offset?: number,
         duration?: number
     }) {
         this.id = opts.id ?? nanoid()
         this.time = opts.time
         this.pattern = opts.pattern
         this.duration = opts.duration ?? this.pattern.duration
+        this.offset = opts.offset ?? 0
     }
 
     serialize(): SerializedTimedPattern {
@@ -34,7 +38,8 @@ export class TimedPattern {
             id: this.id,
             time: this.time,
             patternId: this.pattern.id,
-            duration: this.duration
+            duration: this.duration,
+            offset: this.offset,
         }
     }
 
@@ -47,7 +52,8 @@ export class TimedPattern {
             id: data.id,
             time: data.time,
             pattern: pattern,
-            duration: data.duration
+            duration: data.duration,
+            offset: data.offset ?? 0
         })
     }
 
