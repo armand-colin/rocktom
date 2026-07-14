@@ -39,7 +39,7 @@ services:
       MAILER_USER: ${API_MAILER_USER:-}
       MAILER_PASS: ${API_MAILER_PASS:-}
       MAILER_SECURE: ${API_MAILER_SECURE:-false}
-      STORAGE_PATH: /app/storage
+      STORAGE_PATH: /api/storage
     volumes:
       - ${API_STORAGE_PATH:?API_STORAGE_PATH is required}:/api/storage
     ports:
