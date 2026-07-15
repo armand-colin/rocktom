@@ -1,8 +1,7 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
-import { Input, InputManager } from "../../resources/InputManager";
 import { Mixer } from "../../resources/Mixer";
 import { WindowManager } from "../../resources/WindowManager";
 import type { TimedPattern } from "../../sound/song/Pattern";
@@ -23,34 +22,36 @@ import { useMutation } from "../../hooks/useMutation";
 import { useNavigate } from "react-router-dom";
 import { useToastManager } from "../../hooks/useToastManager";
 import { Toast } from "../toast/Toast";
+import { useShortcut } from "../../hooks/useShortcut";
+import { Shortcuts } from "../../resources/shortcut/Shortcuts";
+import { ShortcutView } from "../shortcut/ShortcutView";
 
 export function LevelEditorView(props: { editor: LevelEditor }) {
     const { engine } = useContext(EngineContext)
-    const inputManager = engine.getResource(InputManager)
     const windowManager = engine.getResource(WindowManager)
     const { level } = useComponent(props.editor)
     const { mutate: updateLevel, isLoading: isUpdating } = useMutation(LevelQueries.update)
     const navigate = useNavigate()
     const toastManager = useToastManager()
 
-    useEffect(() => {
-        function onPlay() {
-            if (props.editor.player.playing) {
-                props.editor.player.pause()
-                props.editor.player.seekToPreviousState()
-            } else {
-                props.editor.player.play()
-            }
+    useShortcut(Shortcuts.Play, onPlay)
+    useShortcut(Shortcuts.Save, onSave)
+    useShortcut(Shortcuts.Reset, onReset)
+
+    function onPlay() {
+        if (props.editor.player.playing) {
+            props.editor.player.pause()
+            props.editor.player.seekToPreviousState()
+        } else {
+            props.editor.player.play()
         }
+    }
 
-        inputManager.register(Input.Play, onPlay)
+    function onReset() {
+        props.editor.player.reset()
+    }
 
-        return () => {
-            inputManager.unregister(Input.Play, onPlay)
-        }
-    }, [])
-
-    const onSave = useCallback(() => {
+    function onSave() {
         if (isUpdating)
             return
 
@@ -65,15 +66,7 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
                 close={close}
             />, 2000)
         })
-    }, [level, isUpdating, updateLevel, toastManager])
-
-    useEffect(() => {
-        inputManager.register(Input.Save, onSave)
-
-        return () => {
-            inputManager.unregister(Input.Save, onSave)
-        }
-    }, [inputManager, onSave])
+    }
 
     function showMixer() {
         windowManager.add(
@@ -95,7 +88,11 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
             />
             <Button onClick={onSave} disabled={isUpdating}>
                 Save
-                {isUpdating && <Icon name="progress_activity" />}
+                {
+                    isUpdating ?
+                        <Icon name="progress_activity" /> :
+                        <ShortcutView shortcut={Shortcuts.Save} />
+                }
             </Button>
             <PlayerControls player={props.editor.player} />
             <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
@@ -135,11 +132,27 @@ function PlayerControls(props: { player: EditorPlayer }) {
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
     const { enabled } = useComponent(mixer.metronome)
+    const { playing } = useComponent(props.player)
 
+    function onPlayPause() {
+        if (playing) {
+            props.player.pause()
+            props.player.seekToPreviousState()
+        } else {
+            props.player.play()
+        }
+    }
     return <div className="PlayerControls">
-        <Button onClick={() => props.player.play()}>Play</Button>
-        <Button onClick={() => props.player.pause()}>Pause</Button>
-        <Button onClick={() => props.player.reset()}>Reset</Button>
+        <Button onClick={onPlayPause}>
+            {playing ? 'Pause' : 'Play'}
+            <ShortcutView shortcut={Shortcuts.Play} />
+        </Button>
+
+        <Button onClick={() => props.player.reset()}>
+            Reset
+            <ShortcutView shortcut={Shortcuts.Reset} />
+        </Button>
+
         <Button data-active={enabled} onClick={() => mixer.metronome.toggleEnabled()}><Icon name="acute" /></Button>
     </div>
 }

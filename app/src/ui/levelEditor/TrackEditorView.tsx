@@ -43,6 +43,7 @@ type ContentProps = {
     className?: string
     onDoubleClick?: (e: MouseEvent) => void,
     onMouseDown?: (e: MouseEvent) => void,
+    onClick?: (e: MouseEvent) => void,
 }
 
 export const TrackEditorContent = forwardRef<HTMLDivElement, ContentProps>((props, ref) => {
@@ -55,6 +56,7 @@ export const TrackEditorContent = forwardRef<HTMLDivElement, ContentProps>((prop
         id={props.id}
         onDoubleClick={props.onDoubleClick}
         onMouseDown={props.onMouseDown}
+        onClick={props.onClick}
     >
         <PlayHead ticks={ticks} />
         {props.children}

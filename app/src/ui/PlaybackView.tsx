@@ -1,5 +1,5 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import type { Playback } from "../components/Playback";
 import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
@@ -7,8 +7,6 @@ import "./PlaybackView.scss";
 // import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
 import { Slider } from "./slider/Slider";
 import { Icon } from "./icon/Icon";
-import { InputIcon } from "./inputIcon/InputIcon";
-import { Input, InputManager } from "../resources/InputManager";
 import { Toggle } from "./toggle/Toggle";
 import { Tempo } from "../sound/Tempo";
 import { PlaybackProgressView } from "./PlaybackProgressView";
@@ -17,34 +15,29 @@ import { Mixer } from "../resources/Mixer";
 import { useNavigate } from "react-router-dom";
 import { InactiveHider } from "./inactiveHider/InactiveHider";
 import type { DeltaTime } from "../components/DeltaTime";
+import { useShortcut } from "../hooks/useShortcut";
+import { ShortcutView } from "./shortcut/ShortcutView";
+import { Shortcuts } from "../resources/shortcut/Shortcuts";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const renderer = engine.getResource(Renderer)
-    const inputManager = engine.getResource(InputManager)
 
     const { playing } = useComponent(props.playback)
 
-    useEffect(() => {
-        function onPlay() {
-            if (props.playback.playing)
-                props.playback.pause()
-            else
-                props.playback.play()
-        }
+    useShortcut(Shortcuts.Play, onPlay)
+    useShortcut(Shortcuts.Reset, onReset)
 
-        function onReset() {
-            props.playback.reset()
-        }
+    function onPlay() {
+        if (props.playback.playing)
+            props.playback.pause()
+        else
+            props.playback.play()
+    }
 
-        inputManager.register(Input.Play, onPlay)
-        inputManager.register(Input.Reset, onReset)
-
-        return () => {
-            inputManager.unregister(Input.Play, onPlay)
-            inputManager.unregister(Input.Reset, onReset)
-        }
-    }, [])
+    function onReset() {
+        props.playback.reset()
+    }
 
     return <div className="PlaybackView">
         <div className="canvas">
@@ -116,17 +109,14 @@ function PlaybackControls(props: { playback: Playback }) {
                 </div>
 
                 <div className="time">
-                    <DeltaTimeView deltaTime={props.playback.deltaTime} />
-                    <PlaybackTimeView time={props.playback.time} />
+                    <PlaybackTimeView
+                        time={props.playback.time}
+                        deltaTime={props.playback.deltaTime} 
+                    />
                 </div>
             </InactiveHider>
         </div>
     );
-}
-
-function DeltaTimeView(props: { deltaTime: DeltaTime }) {
-    const { deltaTime } = useComponent(props.deltaTime)
-    return <p>delta : {(deltaTime * 1000) | 0}ms</p>
 }
 
 function floatsEqual(a: number, b: number, epsilon = 0.0001) {
@@ -160,7 +150,7 @@ function PlayButton(props: { playback: Playback }) {
         onClick={onClick}
         disabled={loading}
     >
-        {playing ? "PAUSE" : "PLAY"} <InputIcon input={Input.Play} />
+        {playing ? "PAUSE" : "PLAY"} <ShortcutView shortcut={Shortcuts.Play} />
     </button>
 }
 
@@ -169,7 +159,7 @@ function ResetButton(props: { playback: Playback }) {
         className="ResetButton"
         onClick={() => props.playback.reset()}
     >
-        RESET <InputIcon input={Input.Reset} />
+        RESET <ShortcutView shortcut={Shortcuts.Reset} />
     </button>
 }
 
@@ -196,8 +186,9 @@ function formatPlaybackTime(seconds: number): string {
     return `${minutes.toString().padStart(2, '0')}:${wholeSeconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`
 }
 
-function PlaybackTimeView(props: { time: Time }) {
+function PlaybackTimeView(props: { time: Time, deltaTime: DeltaTime }) {
     const time = useComponent(props.time)
+    const { deltaTime } = useComponent(props.deltaTime)
 
     const bars = (time.ticks / Tempo.bars(1)) | 0
     const beatInBar = (time.ticks % Tempo.bars(1)) / Tempo.PPQ
@@ -213,11 +204,15 @@ function PlaybackTimeView(props: { time: Time }) {
         </div>
         <div className="field">
             <span className="label">Tempo</span>
-            <span className="value">{time.tempo.bpm} BPM</span>
+            <span className="value">{time.tempo.bpm.toFixed(1)} BPM</span>
         </div>
         <div className="field">
             <span className="label">Bar</span>
             <span className="value">{bars} : {beatInBar.toFixed(1)}</span>
+        </div>
+        <div className="field">
+            <span className="label">Delta</span>
+            <span className="value">{(deltaTime * 1000) | 0}ms</span>
         </div>
     </div>
 }

@@ -24,6 +24,9 @@ import { SplitPopup } from "./split/SplitPopup";
 import { Instance } from "../../Instance";
 import type { NoteEvent } from "../../sound/song/NoteEvent";
 import { NoteEventPopup } from "./noteEvent/NoteEventPopup";
+import { useShortcut } from "../../hooks/useShortcut";
+import { ShortcutView } from "../shortcut/ShortcutView";
+import { Shortcuts } from "../../resources/shortcut/Shortcuts";
 
 export function PatternEditorView(props: {
     editor: PatternEditor,
@@ -31,6 +34,8 @@ export function PatternEditorView(props: {
 }) {
     const { pattern, string } = useComponent(props.editor)
     const { elements: selection } = useComponent(props.editor.selection)
+
+    useShortcut(Shortcuts.Editor.Split, onSplit)
 
     const notesRef = useRef<HTMLDivElement | null>(null)
     const minNote = pattern.instrument.lowestString.fret(0)
@@ -77,26 +82,35 @@ export function PatternEditorView(props: {
         const noteIndex = maxNote.index - Math.ceil(rawNoteIndex)
         const note = Note.fromIndex(noteIndex)
 
+        let noteEvent: NoteEvent | null = null
         if (!string.canPlay(note)) {
             // Find first string that matches
             const strings = props.editor.pattern.instrument.strings
             for (const string of strings) {
                 if (string.canPlay(note)) {
-                    props.editor.addNote(
-                        string, 
-                        note.index - string.note.index, 
+                    noteEvent = props.editor.addNote(
+                        string,
+                        note.index - string.note.index,
                         ticks
                     )
                     return
                 }
             }
         } else {
-            props.editor.addNote(
-                string, 
-                note.index - string.note.index, 
+            noteEvent = props.editor.addNote(
+                string,
+                note.index - string.note.index,
                 ticks
             )
         }
+
+        if (noteEvent) {
+            props.editor.selectNote(noteEvent.id)
+        }
+    }
+
+    function onNotesMouseDown(e: MouseEvent) {
+        console.log(e)
     }
 
     function onSplit() {
@@ -104,9 +118,9 @@ export function PatternEditorView(props: {
         if (selection.length !== 1)
             return
 
-        Instance.engine.getResource(PopupManager).add(close => <SplitPopup 
-            close={close} 
-            editor={props.editor} 
+        Instance.engine.getResource(PopupManager).add(close => <SplitPopup
+            close={close}
+            editor={props.editor}
             notes={selection}
         />)
     }
@@ -128,7 +142,10 @@ export function PatternEditorView(props: {
                     value: string.index
                 }))}
             />
-            <Button onClick={onSplit}>Split</Button>
+            <Button onClick={onSplit}>
+                Split
+                <ShortcutView shortcut={Shortcuts.Editor.Split} />
+            </Button>
         </div>
         <div
             className="body"
@@ -173,7 +190,8 @@ export function PatternEditorView(props: {
                     time={props.player.time}
                     className="notes"
                     ref={notesRef}
-                    onMouseDown={onNotesClick}
+                    onClick={onNotesClick}
+                    onMouseDown={onNotesMouseDown}
                 >
                     <TimeMarkersView transform={props.editor.transform} />
 
@@ -343,7 +361,7 @@ function NoteView(props: {
     function onDoubleClick(e: MouseEvent) {
         e.preventDefault()
         e.stopPropagation()
-        
+
         Instance.engine.getResource(PopupManager).add(close => <NoteEventPopup
             note={props.note}
             onUpdate={() => {

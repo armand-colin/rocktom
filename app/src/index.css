@@ -124,3 +124,39 @@ strong {
     border: none;
     outline: none;
 }
+
+.flex {
+    display: flex;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.gap-xs {
+    gap: var(--spacing-xs);
+}
+
+.gap-s {
+    gap: var(--spacing-s);
+}
+
+.gap-m {
+    gap: var(--spacing-m);
+}
+
+.p-xs {
+    padding: var(--spacing-xs);
+}
+
+.p-s {
+    padding: var(--spacing-s);
+}
+
+.p-m {
+    padding: var(--spacing-m);
+}
+
+.p-l {
+    padding: var(--spacing-l);
+}

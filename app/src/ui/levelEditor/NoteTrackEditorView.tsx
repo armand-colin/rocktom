@@ -27,8 +27,9 @@ export function NoteTrackEditorView(props: {
 
     function onSelectPattern(patternId: string) {
         const selectedPattern = patterns.find(p => p.id === patternId)
-        if (selectedPattern)
+        if (selectedPattern) {
             props.editor.setPattern(selectedPattern)
+        }
     }
 
     function onMouseDown(e: MouseEvent) {

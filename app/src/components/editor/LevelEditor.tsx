@@ -1,5 +1,5 @@
 import { Component, Engine } from "@niloc/ecs";
-import { WindowManager, type Window } from "../../resources/WindowManager";
+import { WindowManager, WindowPosition, WindowSize, type Window } from "../../resources/WindowManager";
 import type { Level } from "../../sound/Level";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
@@ -78,8 +78,15 @@ export class LevelEditor extends Component {
 
             if (!this._patternWindow) {
                 const window = windowManager.add(
-                    { name: "Pattern editor" },
-                    () => <PatternEditorView editor={editor} player={this.player} />
+                    { 
+                        name: "Pattern editor",
+                        size: WindowSize.relative(0.8),
+                        position: WindowPosition.centered(),
+                    },
+                    () => <PatternEditorView
+                        editor={editor}
+                        player={this.player}
+                    />,
                 )
 
                 window.events.on('closed', () => {

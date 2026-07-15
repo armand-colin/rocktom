@@ -1,0 +1,18 @@
+.ShortcutView {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    align-items: center;
+    border-radius: var(--radius-xs);
+    background-color: var(--surface);
+
+    >span {
+        font-size: 12px;
+        line-height: 12px;
+
+        .Icon {
+            vertical-align: middle;
+        }
+    }
+}
