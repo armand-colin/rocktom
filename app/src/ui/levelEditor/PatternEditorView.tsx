@@ -22,6 +22,8 @@ import { Button } from "../button/Button";
 import { PopupManager } from "../../resources/PopupManager";
 import { SplitPopup } from "./split/SplitPopup";
 import { Instance } from "../../Instance";
+import type { NoteEvent } from "../../sound/song/NoteEvent";
+import { NoteEventPopup } from "./noteEvent/NoteEventPopup";
 
 export function PatternEditorView(props: {
     editor: PatternEditor,
@@ -102,12 +104,10 @@ export function PatternEditorView(props: {
         if (selection.length !== 1)
             return
 
-        const note = selection[0]
-
         Instance.engine.getResource(PopupManager).add(close => <SplitPopup 
             close={close} 
             editor={props.editor} 
-            note={note}
+            notes={selection}
         />)
     }
 
@@ -196,6 +196,7 @@ export function PatternEditorView(props: {
                                 time={note.time}
                                 duration={note.duration}
                                 editor={props.editor}
+                                note={note}
                                 selected={selection.includes(note)}
                             />)
                         }
@@ -240,6 +241,7 @@ function KeyboardNoteView(props: { note: Note, string: String, instrument: Virtu
 }
 
 function NoteView(props: {
+    note: NoteEvent,
     id: string,
     string: String,
     fret: number,
@@ -338,6 +340,16 @@ function NoteView(props: {
         }
     }
 
+    function onDoubleClick(e: MouseEvent) {
+        Instance.engine.getResource(PopupManager).add(close => <NoteEventPopup
+            note={props.note}
+            onUpdate={() => {
+                // TODO: in case of render-changing updates, want to update printing
+            }}
+            close={close}
+        />)
+    }
+
     useEffect(() => {
         return () => {
             handler.current?.destroy()
@@ -359,6 +371,7 @@ function NoteView(props: {
         onContextMenu={onContextMenu}
         onMouseEnter={onEnter}
         onMouseDown={onMouseDown}
+        onDoubleClick={onDoubleClick}
     >
         <p>{note.name}{note.octave}</p>
         <div className="fret-hint">{props.fret}</div>

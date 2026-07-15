@@ -110,6 +110,33 @@ export class OptionalFieldDescriptor<F extends FormDataEntryValue, T> extends Fo
 
 }
 
+export class NumberFieldDescriptor extends FormFieldDescriptor<string, number> {
+
+    parse(value: FormDataEntryValue | null): Result<number, ParseError> {
+        // Try parsing
+        if (typeof value !== 'string') {
+            return Result.error(new TypeParseError())
+        }
+
+        if (value === null) {
+            return Result.error(new NullParseError())
+        }
+
+        let number: number
+        try {
+            number = parseFloat(value)
+            if (isNaN(number)) {
+                return Result.error(new ValueParseError())
+            }
+        } catch (error) {
+            return Result.error(new ValueParseError())
+        }
+
+        return Result.ok(number)
+    }
+
+}
+
 export type FileFieldOptions = {
     
 }
@@ -169,6 +196,10 @@ export namespace FormField {
 
     export function file() {
         return new FileFieldDescriptor()
+    }
+
+    export function number() {
+        return new NumberFieldDescriptor()
     }
 
     export namespace Descriptor {
