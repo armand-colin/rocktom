@@ -341,6 +341,9 @@ function NoteView(props: {
     }
 
     function onDoubleClick(e: MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+        
         Instance.engine.getResource(PopupManager).add(close => <NoteEventPopup
             note={props.note}
             onUpdate={() => {
