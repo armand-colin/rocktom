@@ -1,0 +1,11 @@
+.SelectionWindowView {
+    position: absolute;
+    left: calc(var(--start-x) * 1px);
+    top: calc(var(--start-y) * 1px);
+    width: calc((var(--end-x) - var(--start-x)) * 1px);
+    height: calc((var(--end-y) - var(--start-y)) * 1px);
+    background-color: rgba(0, 0, 0, 0.5);
+    outline: 1px solid white;
+    pointer-events: none;
+    z-index: 1000;
+}

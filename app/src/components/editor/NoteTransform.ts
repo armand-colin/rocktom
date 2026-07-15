@@ -1,13 +1,18 @@
 import { Component, Engine } from "@niloc/ecs";
 import { OS } from "../../utils/OS";
+import type { Instrument } from "../../sound/instrument/Instrument";
+import { Rules } from "../../3d/Rules";
+import { Note } from "../../sound/note/Note";
 
 export class NoteTransform extends Component {
 
     private _offset: number = 0
     private _ratio: number = 26
-
-    constructor(engine: Engine) {
+    private _instrument: Instrument
+    
+    constructor(engine: Engine, instrument: Instrument) {
         super(engine)
+        this._instrument = instrument
     }
 
     get offset() {
@@ -32,6 +37,19 @@ export class NoteTransform extends Component {
         if (!OS.isCtrl(event)) {
             this._handlePan(event)
         }
+    }
+
+    getNoteForMouse(event: MouseEvent, container: HTMLElement): Note {
+        const rect = container.getBoundingClientRect()
+        const offsetY = event.clientY - rect.top
+        return this.getNoteForOffset(offsetY)
+    }
+
+    getNoteForOffset(offset: number): Note {
+        const maxNote = this._instrument.highestString.fret(Rules.maxFret)
+        const rawNoteIndex = (offset / this.ratio) + this.offset
+        const noteIndex = maxNote.index - Math.ceil(rawNoteIndex)
+        return Note.fromIndex(noteIndex)
     }
 
     private _handlePan(event: WheelEvent) {

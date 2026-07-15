@@ -27,12 +27,13 @@ import { NoteEventPopup } from "./noteEvent/NoteEventPopup";
 import { useShortcut } from "../../hooks/useShortcut";
 import { ShortcutView } from "../shortcut/ShortcutView";
 import { Shortcuts } from "../../resources/shortcut/Shortcuts";
+import { SelectionWindowView } from "./SelectionWindowView";
 
 export function PatternEditorView(props: {
     editor: PatternEditor,
     player: EditorPlayer
 }) {
-    const { pattern, string } = useComponent(props.editor)
+    const { pattern, string, selectionWindow } = useComponent(props.editor)
     const { elements: selection } = useComponent(props.editor.selection)
 
     useShortcut(Shortcuts.Editor.Split, onSplit)
@@ -67,10 +68,9 @@ export function PatternEditorView(props: {
     }, [minNote, maxNote])
 
     function onNotesClick(e: MouseEvent) {
-        if (!notesRef.current)
-            return
+        console.log('onclick', notesRef.current, e.buttons, MouseButtons.Left);
 
-        if (e.buttons !== MouseButtons.Left)
+        if (!notesRef.current)
             return
 
         // Shall find ticks and note
@@ -78,9 +78,7 @@ export function PatternEditorView(props: {
         const mouseX = e.clientX - rect.left
         const mouseY = e.clientY - rect.top
         const ticks = props.editor.transform.magnetize(mouseX / props.editor.transform.ratio - props.editor.transform.offset)
-        const rawNoteIndex = (mouseY / props.editor.noteTransform.ratio) + props.editor.noteTransform.offset
-        const noteIndex = maxNote.index - Math.ceil(rawNoteIndex)
-        const note = Note.fromIndex(noteIndex)
+        const note = props.editor.noteTransform.getNoteForOffset(mouseY)
 
         let noteEvent: NoteEvent | null = null
         if (!string.canPlay(note)) {
@@ -110,7 +108,13 @@ export function PatternEditorView(props: {
     }
 
     function onNotesMouseDown(e: MouseEvent) {
-        console.log(e)
+        if (!notesRef.current)
+            return
+
+        props.editor.startSelectionWindow(
+            e.nativeEvent, 
+            notesRef.current!
+        )
     }
 
     function onSplit() {
@@ -217,6 +221,11 @@ export function PatternEditorView(props: {
                                 note={note}
                                 selected={selection.includes(note)}
                             />)
+                        }
+                        {
+                            selectionWindow && <SelectionWindowView
+                                selectionWindow={selectionWindow}
+                            />
                         }
                     </NoteTransformView>
                 </TrackEditorContent>

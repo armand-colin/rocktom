@@ -86,16 +86,18 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
                 name={level.name}
                 onChange={name => props.editor.setName(name)}
             />
-            <Button onClick={onSave} disabled={isUpdating}>
-                Save
-                {
-                    isUpdating ?
-                        <Icon name="progress_activity" /> :
-                        <ShortcutView shortcut={Shortcuts.Save} />
-                }
-            </Button>
-            <PlayerControls player={props.editor.player} />
-            <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
+            <div className="flex gap-m">
+                <Button onClick={onSave} disabled={isUpdating}>
+                    Save
+                    {
+                        isUpdating ?
+                            <Icon name="progress_activity" /> :
+                            <ShortcutView shortcut={Shortcuts.Save} />
+                    }
+                </Button>
+                <PlayerControls player={props.editor.player} />
+                <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
+            </div>
             <SongEditorView editor={props.editor} />
         </div>
     </div>
@@ -142,7 +144,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
             props.player.play()
         }
     }
-    return <div className="PlayerControls">
+    return <div className="PlayerControls flex gap-m">
         <Button onClick={onPlayPause}>
             {playing ? 'Pause' : 'Play'}
             <ShortcutView shortcut={Shortcuts.Play} />

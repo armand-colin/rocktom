@@ -81,11 +81,15 @@ export class TimeTransform extends Component {
         return targetTicks
     }
 
+    getTicksForOffset(x: number) {
+        const ticks = x / this.ratio
+        return this.getTicksAt(ticks)
+    }
+
     getTicksForMouse(event: MouseEvent, container: HTMLElement) {
         const rect = container.getBoundingClientRect()
         const offsetX = event.clientX - rect.left
-        const ticks = offsetX / this.ratio
-        return this.getTicksAt(ticks)
+        return this.getTicksForOffset(offsetX)
     }
 
     *getMarkers(pixelWidth: number, minSpace: number = 150, maxSpace: number = 400): IterableIterator<TimeMarker> {

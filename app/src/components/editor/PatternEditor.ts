@@ -9,6 +9,7 @@ import { TimeTransform } from "./TimeTransform";
 import { NoteTransform } from "./NoteTransform";
 import type { Note } from "../../sound/note/Note";
 import { Rules } from "../../3d/Rules";
+import { SelectionWindow } from "./SelectionWindow";
 
 export class PatternEditor extends Component {
 
@@ -17,6 +18,8 @@ export class PatternEditor extends Component {
     readonly noteTransform: NoteTransform
     readonly virtualBass: VirtualBass
     readonly selection: Selection<NoteEvent>
+
+    private _selectionWindow: SelectionWindow | null = null
 
     private _string: String
     private _setDuration: number = Tempo.beats(1)
@@ -29,13 +32,17 @@ export class PatternEditor extends Component {
         this.transform.setHardOffset(pattern.time)
         this.transform.setStep(Tempo.beats(1 / 4))
 
-        this.noteTransform = engine.createComponent(NoteTransform)
+        this.noteTransform = engine.createComponent(NoteTransform, this.pattern.instrument)
         this.selection = engine.createComponent<Selection<NoteEvent>, []>(Selection)
         this._string = this.pattern.instrument.strings[0]
     }
 
     get string() {
         return this._string
+    }
+
+    get selectionWindow() {
+        return this._selectionWindow
     }
 
     setName(name: string) {
@@ -128,6 +135,33 @@ export class PatternEditor extends Component {
         note.fret = newFret
         this._string = string
         this._setDuration = note.duration
+        this.changed()
+    }
+
+    startSelectionWindow(e: MouseEvent, container: HTMLElement) {
+        if (this._selectionWindow)
+            return
+
+        const selectionWindow = new SelectionWindow(this.engine, {
+            notes: this.pattern.notes,
+            event: e,
+            container: container,
+            timeTransform: this.transform,
+            noteTransform: this.noteTransform,
+            selection: this.selection
+        })
+
+        this._selectionWindow = selectionWindow
+
+        selectionWindow.events.on('end', () => {
+            if (this._selectionWindow !== selectionWindow)
+                return
+
+            selectionWindow.destroy()
+            this._selectionWindow = null;
+            this.changed();
+        })
+
         this.changed()
     }
 
