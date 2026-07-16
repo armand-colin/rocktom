@@ -154,12 +154,16 @@ export class PatternEditor extends Component {
         this._selectionWindow = selectionWindow
 
         selectionWindow.events.on('end', () => {
-            if (this._selectionWindow !== selectionWindow)
-                return
+            // Adding timeout to know if we're still selecting (and avoid click events)
+            setTimeout(() => {
+                if (this._selectionWindow !== selectionWindow)
+                    return
 
-            selectionWindow.destroy()
-            this._selectionWindow = null;
-            this.changed();
+                selectionWindow.destroy()
+                this._selectionWindow = null;
+
+                this.changed();
+            }, 50)
         })
 
         this.changed()

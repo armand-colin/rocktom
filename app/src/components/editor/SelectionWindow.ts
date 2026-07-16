@@ -1,9 +1,11 @@
 import { Component, type Engine } from "@niloc/ecs";
-import { Emitter, type Vec2 } from "@niloc/utils";
+import { Emitter, Vec2 } from "@niloc/utils";
 import type { NoteEvent } from "../../sound/song/NoteEvent";
 import type { NoteTransform } from "./NoteTransform";
 import type { TimeTransform } from "./TimeTransform";
 import type { Selection } from "../Selection";
+
+const SQ_DISTANCE_BEFORE_ENABLING = 100;
 
 export class SelectionWindow extends Component {
 
@@ -17,6 +19,7 @@ export class SelectionWindow extends Component {
     private _noteTransform: NoteTransform
     private _selection: Selection<NoteEvent>
     private _container: HTMLElement
+    private _enabled = false
 
     constructor(engine: Engine, options: {
         notes: NoteEvent[],
@@ -52,6 +55,10 @@ export class SelectionWindow extends Component {
         return this._end
     }
 
+    get enabled() {
+        return this._enabled
+    }
+
     setEnd(end: Vec2) {
         this._end = end
         this._update()
@@ -75,30 +82,37 @@ export class SelectionWindow extends Component {
     }
 
     private _update() {
-        const startTicks = this._timeTransform.getTicksForOffset(this.start.x)
-        const endTicks = this._timeTransform.getTicksForOffset(this._end.x)
+        if (!this._enabled) {
+            // Check if enabled
+            const sqDistance = Vec2.dot(this.start, this.end)
+            if (sqDistance < SQ_DISTANCE_BEFORE_ENABLING) 
+                return
+
+            this._enabled = true
+        }
+
+        const startTicks = this._timeTransform.getTicksForOffset(this.start.x) - this._timeTransform.hardOffset
+        const endTicks = this._timeTransform.getTicksForOffset(this._end.x) - this._timeTransform.hardOffset
         const startNote = this._noteTransform.getNoteForOffset(this.start.y)
         const endNote = this._noteTransform.getNoteForOffset(this._end.y)
 
-        console.log({
-            startTicks,
-            endTicks,
-            startNote,
-            endNote,
-        })
-        
+        const minTicks = Math.min(startTicks, endTicks)
+        const maxTicks = Math.max(startTicks, endTicks)
+        const minNoteIndex = Math.min(startNote.index, endNote.index)
+        const maxNoteIndex = Math.max(startNote.index, endNote.index)
+
         const notes = []
         for (const note of this._notes) {
             // Check if note is within the selection
-            if (note.time > endTicks || note.time < startTicks)
+            if (note.time > maxTicks || note.time + note.duration < minTicks)
                 continue
 
             // Check if note is within the note range
             const noteIndex = note.string.note.index + note.fret
 
             if (
-                noteIndex < startNote.index || 
-                noteIndex > endNote.index
+                noteIndex < minNoteIndex ||
+                noteIndex > maxNoteIndex
             )
                 continue
 

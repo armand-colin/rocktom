@@ -92,7 +92,6 @@ function AudioView(props: {
                         if (!ref.current)
                             return;
 
-                        console.log('resize', Date.now())
                         props.waveform.setSize(Vec2.create(ref.current.clientWidth, ref.current.clientHeight))
                     })
                 })

@@ -68,9 +68,7 @@ export function PatternEditorView(props: {
     }, [minNote, maxNote])
 
     function onNotesClick(e: MouseEvent) {
-        console.log('onclick', notesRef.current, e.buttons, MouseButtons.Left);
-
-        if (!notesRef.current)
+        if (!notesRef.current || props.editor.selectionWindow?.enabled)
             return
 
         // Shall find ticks and note
@@ -112,7 +110,7 @@ export function PatternEditorView(props: {
             return
 
         props.editor.startSelectionWindow(
-            e.nativeEvent, 
+            e.nativeEvent,
             notesRef.current!
         )
     }
@@ -380,6 +378,10 @@ function NoteView(props: {
         />)
     }
 
+    function onClick(e: MouseEvent) {
+        e.stopPropagation()
+    }
+
     useEffect(() => {
         return () => {
             handler.current?.destroy()
@@ -402,6 +404,7 @@ function NoteView(props: {
         onMouseEnter={onEnter}
         onMouseDown={onMouseDown}
         onDoubleClick={onDoubleClick}
+        onClick={onClick}
     >
         <p>{note.name}{note.octave}</p>
         <div className="fret-hint">{props.fret}</div>

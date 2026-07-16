@@ -21,14 +21,6 @@ export class ShortcutManager extends Resource {
 
             let prevented = false
 
-            console.log([...this._bindings.values()].map(b => b.shortcut), {
-                code: event.code,
-                ctrl: event.ctrlKey,
-                meta: event.metaKey,
-                alt: event.altKey,
-                shift: event.shiftKey,
-            })
-
             for (const { shortcut, action } of this._bindings.values()) {
                 if (
                     event.target instanceof HTMLInputElement ||
@@ -46,8 +38,6 @@ export class ShortcutManager extends Resource {
                         prevented = true
                         event.preventDefault()
                     }
-
-                    console.log('Matched', shortcut)
 
                     action.publish()
                 }

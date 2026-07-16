@@ -5,13 +5,18 @@ import type { SelectionWindow } from "../../components/editor/SelectionWindow";
 
 export function SelectionWindowView(props: { selectionWindow: SelectionWindow }) {
     const { start, end } = useComponent(props.selectionWindow)
+    const minX = Math.min(start.x, end.x)
+    const maxX = Math.max(start.x, end.x)
+    const minY = Math.min(start.y, end.y)
+    const maxY = Math.max(start.y, end.y)
 
-    return <div 
-    className="SelectionWindowView"
-    style={{
-        '--start-x': start.x,
-        '--start-y': start.y,
-        '--end-x': end.x,
-        '--end-y': end.y,
-    } as CSSProperties} />
+    return <div
+        className="SelectionWindowView"
+        style={{
+            '--start-x': minX,
+            '--start-y': minY,
+            '--end-x': maxX,
+            '--end-y': maxY,
+        } as CSSProperties} 
+    />
 }
