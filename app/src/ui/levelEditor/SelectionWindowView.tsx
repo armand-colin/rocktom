@@ -4,7 +4,7 @@ import "./SelectionWindowView.scss"
 import type { SelectionWindow } from "../../components/editor/SelectionWindow";
 
 export function SelectionWindowView(props: { selectionWindow: SelectionWindow }) {
-    const { start, end } = useComponent(props.selectionWindow)
+    const { start, end, enabled } = useComponent(props.selectionWindow)
     const minX = Math.min(start.x, end.x)
     const maxX = Math.max(start.x, end.x)
     const minY = Math.min(start.y, end.y)
@@ -12,6 +12,7 @@ export function SelectionWindowView(props: { selectionWindow: SelectionWindow })
 
     return <div
         className="SelectionWindowView"
+        data-enabled={!!enabled}
         style={{
             '--start-x': minX,
             '--start-y': minY,
