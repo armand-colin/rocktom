@@ -21,6 +21,10 @@ export class Selection<T extends { id: string }> extends Component {
         this.changed();
     }
 
+    has(element: T) {
+        return this._elements.some(e => e.id === element.id)
+    }
+    
     remove(element: T) {
         this.removeById(element.id)
     }

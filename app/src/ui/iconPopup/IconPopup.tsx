@@ -19,10 +19,11 @@ type Props = {
 
 export function IconPopup(props: Props) {
     return <Popup.BaseContainer className="IconPopup">
-        <Popup.BaseTitle title={props.title ?? "Information"} close={props.close} />
-        <div className="icon-wrapper">
-            <Icon name={props.icon} />
-        </div>
+        <Popup.BaseTitle
+            title={props.title ?? "Information"}
+            close={props.close}
+        />
+        
         <div className="content">
             <p>{props.text}</p>
             {

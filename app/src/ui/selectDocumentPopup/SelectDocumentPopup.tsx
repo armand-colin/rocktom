@@ -6,6 +6,10 @@ import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { Button } from "../button/Button";
 import { FileInput } from "../input/FileInput";
 import './SelectDocumentPopup.scss'
+import { Icon } from "../icon/Icon";
+import { PopupManager } from "../../resources/PopupManager";
+import { ConfirmPopup } from "../popup/confirmPopup/ConfirmPopup";
+import { Instance } from "../../Instance";
 
 export interface Props {
     close: () => void,
@@ -30,8 +34,20 @@ export function SelectDocumentPopup(props: Props) {
             .then(() => getAllDocuments())
     }
 
+    function onDeleteDocument(document: DocumentEntity) {
+        
+    }
+
+    function onAskDeleteDocument(document: DocumentEntity) {
+        Instance.engine.getResource(PopupManager).add(close => <ConfirmPopup
+            close={close}
+            text="Are you sure you want to delete this document?"
+            onConfirm={() => onAskDeleteDocument(document)}
+        />)
+    }
+
     return <Popup.BaseContainer className="SelectDocumentPopup">
-        <Popup.BaseTitle 
+        <Popup.BaseTitle
             title="Select document"
             close={props.close}
         />
@@ -57,6 +73,7 @@ export function SelectDocumentPopup(props: Props) {
                                     props.onSelect(document)
                                     props.close()
                                 }}
+                                onDelete={() => onAskDeleteDocument(document)}
                             />)}
                         </ul> :
                         <></> :
@@ -70,7 +87,8 @@ export function SelectDocumentPopup(props: Props) {
 function DocumentItem(props: {
     document: DocumentEntity,
     selected: boolean,
-    onClick: () => void
+    onClick: () => void,
+    onDelete: () => void
 }) {
     return <li
         className="DocumentItem"
@@ -78,7 +96,9 @@ function DocumentItem(props: {
         onClick={props.onClick}
     >
         <span>{props.document.filename}</span>
-        <span>{props.document.size}</span>
         <span>{props.document.duration}</span>
+        <Button shape="square" onClick={props.onDelete}>
+            <Icon name="delete" />
+        </Button>
     </li>
 }

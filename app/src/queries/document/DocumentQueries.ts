@@ -26,4 +26,8 @@ export namespace DocumentQueries {
         return fetch.apiAuth.get<ArrayBuffer>('/document/' + documentId + '/download')
     }
 
+    export function remove(documentId: string): Promise<Result<void, Error>> {
+        const fetch = Instance.engine.getResource(Fetch)
+        return fetch.apiAuth.delete<void>('/document/' + documentId)
+    }
 }

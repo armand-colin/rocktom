@@ -1,47 +1,58 @@
 .Button {
     border-radius: 4px;
-    background: #2d2d2d;
-    color: #ffffff;
-    border: 1px solid transparent;
     display: flex;
     justify-content: center;
     position: relative;
 
+    --background: transparent;
+    --hover-background: transparent;
+    --active-background: transparent;
+    --color: transparent;
+
+    background: var(--background);
+    color: var(--color);
+
     &[data-theme="default"] {
-        background: var(--surface);
-        border-color: var(--surface);
-        color: var(--surface-text);
-        --hover-background: var(--surface-hover);
-        --active-background: var(--surface-active);
+        --background: var(--color-grey-500);
+        --hover-background: var(--color-grey-400);
+        --active-background: var(--color-grey-600);
+        --color: var(--color-grey-50);
     }
 
     &[data-theme="primary"] {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: var(--primary-text);
-        --hover-background: var(--primary-hover);
-        --active-background: var(--primary-active);
+        --background: var(--color-blue-500);
+        --hover-background: var(--color-blue-400);
+        --active-background: var(--color-blue-600);
+        --color: var(--color-blue-50);
     }
 
     &[data-theme="danger"] {
-        background: var(--danger);
-        border-color: var(--danger);
-        color: var(--danger-text);
-        --hover-background: var(--danger-hover);
-        --active-background: var(--danger-active);
+        --background: var(--color-red-500);
+        --hover-background: var(--color-red-400);
+        --active-background: var(--color-red-600);
+        --color: var(--color-red-50);
+    }
+
+    &[data-size="m"] {
+        font-size: var(--text-bmd);
+        line-height: var(--leading-bmd);
+    }
+
+    &[data-size="s"] {
+        font-size: var(--text-bsm);
+        line-height: var(--leading-bsm);
     }
 
     &[data-size="m"]:not([data-variant="ghost"]) {
         padding: 8px;
         gap: var(--spacing-s);
-        font: var(--font-m);
 
         &[data-shape="rectangle"] {
             padding-left: 12px;
             padding-right: 12px;
         }
     }
-    
+
     &[data-size="s"]:not([data-variant="ghost"]) {
         padding: 3px;
         gap: var(--spacing-xs);
@@ -66,9 +77,11 @@
         &:hover {
             background: var(--hover-background);
         }
+
         &:active {
             background: var(--active-background);
         }
+
         &:focus-visible {
             &::before {
                 position: absolute;

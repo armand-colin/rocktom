@@ -35,7 +35,7 @@
         left: calc(var(--x) * 1px);
         top: calc(var(--y) * 1px);
         min-width: 200px;
-        padding: var(--spacing-xs);
+        padding: var(--spacing-1);
         background: var(--surface);
         border-radius: var(--radius-s);
         outline: 1px solid var(--outline-0);
@@ -44,8 +44,8 @@
         .item {
             cursor: pointer;
             display: flex;
-            gap: var(--spacing-s);
-            padding: var(--spacing-s);
+            gap: var(--spacing-2);
+            padding: var(--spacing-2);
             border-radius:var(--radius-xs);
 
             &[data-theme="danger"] {
@@ -64,7 +64,7 @@
         .separator {
             height: 1px;
             background: var(--outline);
-            margin: var(--spacing-xs) 0;
+            margin: var(--spacing-2) 0;
             width: 100%;
         }
     }

@@ -3,15 +3,18 @@
     border-radius: var(--radius-m);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-l);
-    padding: var(--spacing-l);
+    gap: var(--spacing-7);
+    padding: var(--spacing-7);
 }
 
 .PopupBaseTitle {
     display: flex;
     justify-content: space-between;
-    gap: var(--spacing-m);
+    gap: var(--spacing-3);
 
+    >h3 {
+        font:var(--font-heading-md);
+    }
     >.Button {
         flex-shrink: 0;
     }

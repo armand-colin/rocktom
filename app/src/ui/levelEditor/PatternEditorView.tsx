@@ -7,7 +7,7 @@ import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { VirtualBass } from "../../components/VirtualBass";
 import type { String } from "../../sound/instrument/String";
 import { Note } from "../../sound/note/Note";
-import type { Handler } from "../../utils/handlers/Handler";
+import { Handler } from "../../utils/handlers/Handler";
 import { TimeMover } from "../../utils/handlers/TimeMover";
 import { TimeResizer } from "../../utils/handlers/TimeResizer";
 import { MouseButtons } from "../../utils/MouseButtons";
@@ -299,13 +299,38 @@ function NoteView(props: {
         if (e.buttons === MouseButtons.Left) {
             handler.current?.destroy()
 
+            if (props.editor.selection.elements.length === 0)
+                return;
+
+            const maxDurationNote = props.editor.selection.elements.reduce<NoteEvent | null>((max, note) => {
+                if (!max || note.duration > max.duration)
+                    return note
+                return max
+            }, null)
+
+            if (!maxDurationNote)
+                return;
+
+            const deltas: Record<string, number> = {}
+            for (const note of props.editor.selection.elements) {
+                deltas[note.id] = note.duration - maxDurationNote.duration
+            }
+
             const resizer = new TimeResizer({
                 event: e.nativeEvent,
-                duration: props.duration,
+                duration: maxDurationNote.duration,
                 transform: props.editor.transform,
             })
 
-            resizer.events.on("changed", duration => props.editor.setNoteDuration(props.id, duration))
+            resizer.events.on("changed", duration => {
+                for (const note of props.editor.selection.elements) {
+                    const delta = deltas[note.id]
+                    if (delta === undefined)
+                        continue;
+
+                    props.editor.setNoteDuration(note.id, Math.max(duration + delta, 0))
+                }
+            })
 
             handler.current = resizer
         }
@@ -335,33 +360,61 @@ function NoteView(props: {
             e.stopPropagation()
             handler.current?.destroy()
 
-            props.editor.selectNote(props.id)
-
-            const timeMover = new TimeMover({
-                event: e.nativeEvent,
-                startTicks: props.time,
-                transform: props.editor.transform,
-                minTicks: 0
-            })
-
-            const noteMover = new NoteMover({
-                event: e.nativeEvent,
-                startNote: note,
-                transform: props.editor.noteTransform,
-                string: props.string
-            })
-
-            noteMover.events.on("change", note => props.editor.setNoteNote(props.id, note))
-            timeMover.events.on("change", time => props.editor.setNoteTime(props.id, time))
-
-            const newHandler: Handler = {
-                destroy() {
-                    noteMover.destroy()
-                    timeMover.destroy()
+            if (e.shiftKey) {
+                props.editor.selection.add(props.note)
+            } else {
+                if (!props.editor.selection.has(props.note)) {
+                    props.editor.selection.set([props.note])
                 }
             }
 
-            handler.current = newHandler
+            const minTimeNote = props.editor.selection.elements.reduce<NoteEvent | null>((min, note) => {
+                if (!min || note.time < min.time)
+                    return note
+                return min
+            }, null)
+
+            if (!minTimeNote) {
+                return;
+            }
+
+            const baseTime = minTimeNote.time
+            const deltas: Record<string, number> = {}
+
+            for (const note of props.editor.selection.elements) {
+                deltas[note.id] = note.time - baseTime
+            }
+
+            const handlers: Handler[] = []
+            if (props.editor.selection.elements.length === 1) {
+                // We can add note mover
+                const noteMover = new NoteMover({
+                    event: e.nativeEvent,
+                    startNote: note,
+                    transform: props.editor.noteTransform,
+                    string: props.string
+                })
+                noteMover.events.on("change", note => props.editor.setNoteNote(props.id, note))
+                handlers.push(noteMover)
+            }
+
+            const timeMover = new TimeMover({
+                event: e.nativeEvent,
+                startTicks: minTimeNote.time,
+                transform: props.editor.transform,
+                minTicks: 0
+            })
+            timeMover.events.on('change', time => {
+                for (const note of props.editor.selection.elements) {
+                    const delta = deltas[note.id]
+                    if (delta === undefined)
+                        continue;
+                    props.editor.setNoteTime(note.id, time + delta)
+                }
+            })
+            handlers.push(timeMover)
+
+            handler.current = Handler.compose(handlers)
         }
     }
 

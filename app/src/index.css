@@ -1,76 +1,157 @@
 @import "tailwindcss";
-@source "./App.tsx";
-@source "./pages/**/*.tsx";
-@source "./ui/**/*.tsx";
+
+@source "./**/*.{js,ts,jsx,tsx,scss}";
 
 @font-face {
-    font-family: "Stack";
+    font-family: "Lexend";
     src: url("./assets/fonts/StackSans.ttf");
 }
 
-:root {
-    /* weight? size/height name */
+@theme {
+    --color-grey-50: #F5F5F5;
+    --color-grey-100: #C3C3C3;
+    --color-grey-200: #929292;
+    --color-grey-300: #6A6A6A;
+    --color-grey-400: #4C4C4C;
+    --color-grey-500: #383838;
+    --color-grey-600: #2D2D2D;
+    --color-grey-700: #222222;
+    --color-grey-800: #161616;
+    --color-grey-900: #060606;
 
-    --font-m: 400 14px/18px "Stack";
-    --font-m-bold: 600 14px/18px "Stack";
-    --font-s: 400 12px/16px "Stack";
+    --color-blue-50: #F0EDFF;
+    --color-blue-100: #E1DCFF;
+    --color-blue-200: #BCB0FF;
+    --color-blue-300: #9A88FF;
+    --color-blue-400: #7C65FF;
+    --color-blue-500: #6A50FF;
+    --color-blue-600: #5540CC;
+    --color-blue-700: #403099;
+    --color-blue-800: #2A2066;
+    --color-blue-900: #151033;
 
-    --font-h1: 700 32px/40px "Stack";
-    --font-h2: 700 24px/28px "Stack";
-    --font-h3: 600 20px/24px "Stack";
-    --font-h4: 600 16px/24px "Stack";
+    --font-lexend: "Lexend", Arial;
 
-    --background: black;
-    --text: rgb(239, 239, 239);
+    --text-bsm: 12px;
+    --leading-bsm: 16px;
+    --text-bmd: 16px;
+    --leading-bmd: 20px;
+    --text-blg: 18px;
+    --leading-blg: 22px;
 
-    --container: #1f1f1f;
-    --container-hover: #373737;
+    --text-hmd: 20px;
+    --leading-hmd: 24px;
+    --text-hlg: 24px;
+    --leading-hlg: 30px;
+    --text-hxl: 30px;
+    --leading-hxl: 34px;
 
-    --surface: #333333;
-    --surface-hover: #404040;
-    --surface-active: #292929;
-    --surface-text: #f3f6ff;
+    --color-background: black;
+    --color-text: rgb(239, 239, 239);
 
-    --outline-0: #595959;
-    --outline: #818181;
+    --color-container: #1f1f1f;
+    --color-container-hover: #373737;
 
-    --marker-bar: #000000;
-    --marker-beat: #2c2c2c;
-    --marker: #474747;
+    --color-surface: #333333;
+    --color-surface-hover: #404040;
+    --color-surface-active: #292929;
+    --color-surface-text: #f3f6ff;
 
-    --primary: #1e52ef;
-    --primary-hover: #3161f1;
-    --primary-active: #406ffa;
-    --primary-outline: #6d8af1;
-    --primary-text: #f3f6ff;
+    --color-outline-0: #595959;
+    --color-outline: #818181;
 
-    --danger: #a41919;
-    --danger-hover: #b32020;
-    --danger-active: #c22727;
-    --danger-outline: #d12e2e;
-    --danger-text: #f3f6ff;
+    --color-marker-bar: #000000;
+    --color-marker-beat: #2c2c2c;
+    --color-marker: #474747;
 
-    --radius-xs: 4px;
-    --radius-s: 8px;
-    --radius-m: 12px;
-    --radius-l: 18px;
+    --color-primary: #1e52ef;
+    --color-primary-hover: #3161f1;
+    --color-primary-active: #406ffa;
+    --color-primary-outline: #6d8af1;
+    --color-primary-text: #f3f6ff;
 
-    --spacing-xs: 4px;
-    --spacing-s: 8px;
-    --spacing-m: 12px;
-    --spacing-l: 18px;
-    --spacing-xl: 32px;
-    --spacing-2xl: 48px;
-    --spacing-3xl: 80px;
+    --color-danger: #a41919;
+    --color-danger-hover: #b32020;
+    --color-danger-active: #c22727;
+    --color-danger-outline: #d12e2e;
+    --color-danger-text: #f3f6ff;
+
+    --spacing-1: 4px;
+    --spacing-2: 6px;
+    --spacing-3: 8px;
+    --spacing-4: 10px;
+    --spacing-5: 14px;
+    --spacing-6: 16px;
+    --spacing-7: 20px;
+
+    --radius-xs: 2px;
+    --radius-s: 4px;
+    --radius-m: 8px;
 
     --shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-m: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);  
+    --shadow-m: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@utility text-body-sm {
+    font-size: var(--text-bsm);
+    line-height: var(--leading-bsm);
+}
+
+@utility text-body-md {
+    font-size: var(--text-bmd);
+    line-height: var(--leading-bmd);
+}
+
+@utility text-body-lg {
+    font-size: var(--text-blg);
+    line-height: var(--leading-blg);
+}
+
+:root {
+    /* Short aliases so existing SCSS can keep using var(--primary), etc. */
+    --background: var(--color-background);
+    --text: var(--color-text);
+
+    --container: var(--color-container);
+    --container-hover: var(--color-container-hover);
+
+    --surface: var(--color-surface);
+    --surface-hover: var(--color-surface-hover);
+    --surface-active: var(--color-surface-active);
+    --surface-text: var(--color-surface-text);
+
+    --outline-0: var(--color-outline-0);
+    --outline: var(--color-outline);
+
+    --marker-bar: var(--color-marker-bar);
+    --marker-beat: var(--color-marker-beat);
+    --marker: var(--color-marker);
+
+    --primary: var(--color-primary);
+    --primary-hover: var(--color-primary-hover);
+    --primary-active: var(--color-primary-active);
+    --primary-outline: var(--color-primary-outline);
+    --primary-text: var(--color-primary-text);
+
+    --danger: var(--color-danger);
+    --danger-hover: var(--color-danger-hover);
+    --danger-active: var(--color-danger-active);
+    --danger-outline: var(--color-danger-outline);
+    --danger-text: var(--color-danger-text);
+
+    --font-body-sm: 400 var(--text-bsm)/var(--leading-bsm) var(--font-lexend);
+    --font-body-md: 400 var(--text-bmd)/var(--leading-bmd) var(--font-lexend);
+    --font-body-lg: 400 var(--text-blg)/var(--leading-blg) var(--font-lexend);
+    
+    --font-heading-md: 600 var(--text-hmd)/var(--leading-hmd) var(--font-lexend);
+    --font-heading-lg: 600 var(--text-hlg)/var(--leading-hlg) var(--font-lexend);
+    --font-heading-xl: 600 var(--text-hxl)/var(--leading-hxl) var(--font-lexend);
 }
 
 body {
-    font: var(--font-m);
     background: var(--background);
     color: var(--text);
+    font: var(--font-body-md);
 }
 
 body,
@@ -123,40 +204,5 @@ strong {
     font-family: inherit;
     border: none;
     outline: none;
-}
-
-.flex {
-    display: flex;
-}
-
-.flex-row {
-    flex-direction: row;
-}
-
-.gap-xs {
-    gap: var(--spacing-xs);
-}
-
-.gap-s {
-    gap: var(--spacing-s);
-}
-
-.gap-m {
-    gap: var(--spacing-m);
-}
-
-.p-xs {
-    padding: var(--spacing-xs);
-}
-
-.p-s {
-    padding: var(--spacing-s);
-}
-
-.p-m {
-    padding: var(--spacing-m);
-}
-
-.p-l {
-    padding: var(--spacing-l);
+    font-family: var(--font-lexend);
 }
