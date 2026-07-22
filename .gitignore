@@ -1,2 +1,4 @@
 .data
 .env.prod
+.env.local
+.env
