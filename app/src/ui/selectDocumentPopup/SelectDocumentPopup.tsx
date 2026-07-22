@@ -40,7 +40,7 @@ export function SelectDocumentPopup(props: Props) {
     async function onDeleteDocument(document: DocumentEntity) {
         await deleteDocument(document.id)
             .then(() => getAllDocuments())
-            .catch(error => {
+            .catch(() => {
                 // TODO: do something
             })
     }

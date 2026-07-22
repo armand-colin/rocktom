@@ -9,7 +9,6 @@ import { TimeMover } from "../../utils/handlers/TimeMover";
 import { TimeResizer } from "../../utils/handlers/TimeResizer";
 import { MouseButtons } from "../../utils/MouseButtons";
 import { Button, ButtonTheme } from "../button/Button";
-import { Select } from "../select/Select";
 import "./NoteTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import { Icon } from "../icon/Icon";

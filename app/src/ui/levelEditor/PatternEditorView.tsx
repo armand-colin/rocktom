@@ -11,7 +11,6 @@ import { Handler } from "../../utils/handlers/Handler";
 import { TimeMover } from "../../utils/handlers/TimeMover";
 import { TimeResizer } from "../../utils/handlers/TimeResizer";
 import { MouseButtons } from "../../utils/MouseButtons";
-import { Select } from "../select/Select";
 import "./PatternEditorView.scss";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";

@@ -1,4 +1,4 @@
-import { Icon, type IconName } from "../icon/Icon";
+import { type IconName } from "../icon/Icon";
 import { Button } from "../button/Button";
 import { Popup } from "../popup/Popup";
 import "./IconPopup.scss";

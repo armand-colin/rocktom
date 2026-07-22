@@ -28,13 +28,13 @@ export const Default = () => {
     return <div className="grid gap-2">
         <Dropdown<Dropdown.Option>
             options={simpleOptions}
-            value={simpleValue}
+            value={simpleValue?.value ?? null}
             onChange={setSimpleValue}
             placeholder="Select an option"
         />
         <Dropdown<Dropdown.Option>
             options={simpleOptions}
-            value={simpleValue}
+            value={simpleValue?.value ?? null}
             onChange={setSimpleValue}
             placeholder="Select an option"
             size={UiSize.S}
