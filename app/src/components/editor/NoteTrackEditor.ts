@@ -1,4 +1,4 @@
-import { Component, Engine } from "@niloc/ecs";
+    import { Component, Engine } from "@niloc/ecs";
 import { nanoid } from "nanoid";
 import type { Marker } from "../../sound/song/Marker";
 import type { NoteTrack } from "../../sound/song/NoteTrack";
@@ -38,9 +38,9 @@ export class NoteTrackEditor extends Component {
         this.changed()
     }
 
-    createPattern(): Pattern {
+    createPattern(name?:string): Pattern {
         const pattern = new Pattern({
-            name: "New Pattern",
+            name: name || "New Pattern",
             instrument: this.track.instrument,
             notes: [],
         })

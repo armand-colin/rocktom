@@ -7,6 +7,7 @@ import { Button, ButtonTheme } from "../button/Button";
 import { Popup } from "../popup/Popup";
 import { Spinner } from "../spinner/Spinner";
 import "./ProfilePopup.scss";
+import { FormInputField } from "../form/FormInputField";
 
 type Props = {
     close: () => void,
@@ -25,21 +26,25 @@ export function ProfilePopup(props: Props) {
     }
 
     return <Popup.BaseContainer className="ProfilePopup">
-        <Popup.BaseTitle title="Profile" close={props.close} />
+        <Popup.BaseTitle
+            title="Profile"
+            close={props.close}
+        />
         {
             isLoading ?
-                <Spinner /> :
+                <div className="flex justify-center items-center p-5">
+                    <Spinner />
+                </div> :
                 user?.ok ?
-                    <div className="content">
-                        <div className="field">
-                            <span className="label">Username</span>
-                            <span className="value">{user.value.name}</span>
-                        </div>
-                        <div className="field">
-                            <span className="label">Email</span>
-                            <span className="value">{user.value.email}</span>
-                        </div>
-                        <div className="actions">
+                    <div className="grid gap-4">
+                        <FormInputField label="Username">
+                            <span>{user.value.name}</span>
+                        </FormInputField>
+                        <FormInputField label="Email">
+                            <span>{user.value.email}</span>
+                        </FormInputField>
+
+                        <div className="flex justify-end">
                             <Button theme={ButtonTheme.Danger} onClick={onLogout}>
                                 Log out
                             </Button>

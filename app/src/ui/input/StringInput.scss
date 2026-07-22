@@ -11,10 +11,10 @@
     }
 
     &[data-size="m"] input {
-        padding: 8px 8px;
+        padding: var(--spacing-3) var(--spacing-4);
     }
 
     &[data-size="s"] input {
-        padding: 4px 8px;
+        padding: var(--spacing-1) var(--spacing-2);
     }
 }

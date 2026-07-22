@@ -1,16 +1,4 @@
 .TempoTrackEditorView {
-    height: 52px;
-
-    .TrackEditorHead {
-        display: flex;
-        gap: 8px;
-    }
-
-    .NumberInput {
-        flex: 1;
-        min-width: 0;
-    }
-
     .EventView {
         position: absolute;
         left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);

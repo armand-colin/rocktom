@@ -10,6 +10,7 @@ import "./FocusTrackEditorView.scss"
 import { MouseButtons } from "../../utils/MouseButtons";
 import { TimeMover } from "../../utils/handlers/TimeMover";
 import type { Handler } from "../../utils/handlers/Handler";
+import { FormInputField } from "../form/FormInputField";
 
 export function FocusTrackEditorView(props: {
     editor: FocusTrackEditor,
@@ -31,12 +32,15 @@ export function FocusTrackEditorView(props: {
         transform={props.transform}
         className="FocusTrackEditorView"
     >
-        <TrackEditorHead>
-            <p>Focus</p>
-            <FocusEditor
-                value={track.initialFocus}
-                onChange={value => props.editor.setInitialFocus(value)}
-            />
+        <TrackEditorHead
+            title="Focus track"
+        >
+            <FormInputField label="Initial focus">
+                <FocusEditor
+                    value={track.initialFocus}
+                    onChange={value => props.editor.setInitialFocus(value)}
+                />
+            </FormInputField>
         </TrackEditorHead>
         <TrackEditorContent
             time={props.time}

@@ -17,6 +17,9 @@ import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
 import { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
 import { FormInputField } from "../form/FormInputField";
 import { Dropdown } from "../dropdown/Dropdown";
+import { PopupManager } from "../../resources/PopupManager";
+import { Instance } from "../../Instance";
+import { PromptPopup } from "../popup/promptPopup/PromptPopup";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
@@ -48,11 +51,25 @@ export function NoteTrackEditorView(props: {
         props.editor.addTimedPattern(ticks)
     }
 
+    function onCreatePattern() {
+        Instance.engine.getResource(PopupManager).add(close => <PromptPopup
+            close={close}
+            text="Pattern name"
+            placeholder="New Pattern"
+            onConfirm={name => {
+                props.editor.createPattern(name)
+            }}
+        />)
+    }
+
     return <TrackEditorView
         className="NoteTrackEditorView"
         transform={props.transform}
     >
-        <TrackEditorHead className="grid gap-2 w-full">
+        <TrackEditorHead
+            title="Note track"
+            contentClassName="grid gap-2 w-full"
+        >
             <FormInputField label="Instrument">
                 {track.instrument.name}
             </FormInputField>
@@ -76,7 +93,7 @@ export function NoteTrackEditorView(props: {
                 />
                 <Button
                     shape="square"
-                    onClick={() => props.editor.createPattern()}
+                    onClick={onCreatePattern}
                     theme={ButtonTheme.Primary}
                 >
                     <Icon name="add" />

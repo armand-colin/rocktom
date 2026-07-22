@@ -47,15 +47,19 @@ export function AudioTrackEditorView(props: {
         className="AudioTrackEditorView"
         transform={props.transform}
     >
-        <TrackEditorHead>
-            <NumberInput
-                name="time"
-                value={track.time}
-                onChange={time => props.editor.setTime(time)}
-                step={0.01}
-            />
+        <TrackEditorHead
+            title="Audio track"
+        >
+            <FormInputField label="Start audio time (seconds)">
+                <NumberInput
+                    name="time"
+                    value={track.time}
+                    onChange={time => props.editor.setTime(time)}
+                    step={0.01}
+                />
+            </FormInputField>
             <Button onClick={onChoosePlayback}>Choose playback</Button>
-            
+
             <FormInputField label="Enabled">
                 <Toggle
                     value={enabled}

@@ -9,6 +9,7 @@ import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEdi
 import { Slider } from "../../utils/Slider";
 import type { TempoEvent } from "../../sound/song/TempoTrack";
 import type { Handler } from "../../utils/handlers/Handler";
+import { FormInputField } from "../form/FormInputField";
 
 export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: Time }) {
     const { track } = useComponent(props.editor)
@@ -36,13 +37,18 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
         className="TempoTrackEditorView"
         transform={props.transform}
     >
-        <TrackEditorHead>
-            <NumberInput
-                name="initialBpm"
-                value={track.initialTempo.bpm}
-                step={1}
-                onChange={onInitialChange}
-            />
+        <TrackEditorHead
+            title="Tempo track"
+        >
+            <FormInputField label="Initial BPM">
+                <NumberInput
+                    name="initialBpm"
+                    value={track.initialTempo.bpm}
+                    step={1}
+                    onChange={onInitialChange}
+                />
+            </FormInputField>
+            
             {
                 lastEvent &&
                 <NumberInput

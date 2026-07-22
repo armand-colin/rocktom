@@ -3,17 +3,35 @@
     grid-template-columns: 300px 1fr;
     outline: 1px solid var(--outline);
 
-    > .TrackEditorHead {
+    >.TrackEditorHead {
         grid-column: 1;
         border-right: 1px solid var(--outline);
-        padding: 8px;
+        display: grid;
+
+        >.content {
+            padding: 8px;
+            display: grid;
+            gap: var(--spacing-2);
+        }
 
         &[data-no-padding="true"] {
-            padding: 0;
+            >.content {
+                padding: 0;
+            }
+        }
+
+        >.title {
+            padding: var(--spacing-1) var(--spacing-2);
+            font: var(--font-body-sm);
+            background:var(--color-grey-500);
+            width: min-content;
+            white-space: nowrap;
+            border-radius: 0 0 var(--radius-xs) 0;
+            height: min-content;
         }
     }
 
-    > .TrackEditorContent {
+    >.TrackEditorContent {
         grid-column: 2;
         position: relative;
         overflow: hidden;

@@ -26,8 +26,9 @@ export function TrackEditorView(props: {
 }
 
 export function TrackEditorHead(props: {
-    children: ReactNode,
+    children?: ReactNode,
     className?: string,
+    contentClassName?: string,
     noPadding?: boolean,
     title?: string
 }) {
@@ -40,7 +41,9 @@ export function TrackEditorHead(props: {
         {
             props.title && <div className="title">{props.title}</div>
         }
-        {props.children}
+        <div className={`content ${props.contentClassName ?? ""}`}>
+            {props.children}
+        </div>
     </div>
 }
 

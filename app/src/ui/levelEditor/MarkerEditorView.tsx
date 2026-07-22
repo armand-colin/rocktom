@@ -33,9 +33,9 @@ export function MarkerEditorView(props: {
         className="MarkerEditorView"
         transform={props.transform}
     >
-        <TrackEditorHead>
-            <p>Markers</p>
-        </TrackEditorHead>
+        <TrackEditorHead
+            title="Marker track"
+        />
         <TrackEditorContent
             time={props.time}
             ref={ref}
