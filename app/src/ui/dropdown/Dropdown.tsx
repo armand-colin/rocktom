@@ -5,7 +5,7 @@ import { UiSize } from "../UiSize"
 
 interface Props<T extends Dropdown.Option> {
     options: T[],
-    value: T | null,
+    value: string | null,
     onChange: (value: T | null) => void,
     content?: (props: Dropdown.ContentProps<T>) => ReactNode,
     trigger?: (props: Dropdown.TriggerProps<T>) => ReactNode,
@@ -18,6 +18,8 @@ interface Props<T extends Dropdown.Option> {
 export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
     const [isOpen, setIsOpen] = useState(false)
     const ref = useRef<HTMLDivElement | null>(null)
+
+    const value = props.options.find(option => option.value === props.value) ?? null
 
     const Content = props.content ?? BaseContent
     const Trigger = props.trigger ?? BaseTrigger
@@ -43,7 +45,7 @@ export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
         ref={ref}
     >
         <Trigger
-            value={props.value}
+            value={value}
             isOpen={isOpen}
             onToggleOpen={() => setIsOpen(!isOpen)}
             size={props.size}
@@ -55,7 +57,7 @@ export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
             options={props.options}
             onSelect={value => props.onChange(value)}
             onToggleOpen={(isOpen) => setIsOpen(isOpen ?? !isOpen)}
-            selected={props.value?.value ?? null}
+            selected={props.value ?? null}
             size={props.size}
         />
     </div>

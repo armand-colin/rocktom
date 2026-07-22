@@ -8,13 +8,15 @@ import type { Handler } from "../../utils/handlers/Handler";
 import { TimeMover } from "../../utils/handlers/TimeMover";
 import { TimeResizer } from "../../utils/handlers/TimeResizer";
 import { MouseButtons } from "../../utils/MouseButtons";
-import { Button } from "../button/Button";
+import { Button, ButtonTheme } from "../button/Button";
 import { Select } from "../select/Select";
 import "./NoteTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import { Icon } from "../icon/Icon";
 import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
 import { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
+import { FormInputField } from "../form/FormInputField";
+import { Dropdown } from "../dropdown/Dropdown";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
@@ -50,18 +52,37 @@ export function NoteTrackEditorView(props: {
         className="NoteTrackEditorView"
         transform={props.transform}
     >
-        <TrackEditorHead>
-            {track.instrument.name}
-            <Select
-                value={pattern?.id ?? ""}
-                onChange={onSelectPattern}
-                options={patterns.map(pattern => ({
-                    label: pattern.name,
-                    value: pattern.id
-                }))}
-                placeholder="No Pattern created"
-            />
-            <Button onClick={() => props.editor.createPattern()}>Create pattern</Button>
+        <TrackEditorHead className="grid gap-2 w-full">
+            <FormInputField label="Instrument">
+                {track.instrument.name}
+            </FormInputField>
+
+            <FormInputField
+                label="Pattern"
+                controlClassName="flex gap-2"
+            >
+                <Dropdown
+                    value={pattern?.id ?? null}
+                    onChange={value => {
+                        if (value)
+                            onSelectPattern(value?.value)
+                    }}
+                    options={patterns.map(pattern => ({
+                        label: pattern.name,
+                        value: pattern.id
+                    }))}
+                    placeholder="No Pattern"
+                    className="flex-1"
+                />
+                <Button
+                    shape="square"
+                    onClick={() => props.editor.createPattern()}
+                    theme={ButtonTheme.Primary}
+                >
+                    <Icon name="add" />
+                </Button>
+            </FormInputField>
+
         </TrackEditorHead>
         <TrackEditorContent
             time={props.time}

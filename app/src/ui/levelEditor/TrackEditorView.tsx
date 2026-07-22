@@ -25,13 +25,21 @@ export function TrackEditorView(props: {
     </div>
 }
 
-export function TrackEditorHead(props: { children: ReactNode, className?: string, noPadding?: boolean }) {
+export function TrackEditorHead(props: {
+    children: ReactNode,
+    className?: string,
+    noPadding?: boolean,
+    title?: string
+}) {
     const className = "TrackEditorHead" + (props.className ? ` ${props.className}` : "")
 
     return <div
         className={className}
         data-no-padding={props.noPadding ? "true" : undefined}
     >
+        {
+            props.title && <div className="title">{props.title}</div>
+        }
         {props.children}
     </div>
 }

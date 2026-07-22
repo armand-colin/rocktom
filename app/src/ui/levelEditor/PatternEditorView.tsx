@@ -28,6 +28,7 @@ import { useShortcut } from "../../hooks/useShortcut";
 import { ShortcutView } from "../shortcut/ShortcutView";
 import { Shortcuts } from "../../resources/shortcut/Shortcuts";
 import { SelectionWindowView } from "./SelectionWindowView";
+import { Dropdown } from "../dropdown/Dropdown";
 
 export function PatternEditorView(props: {
     editor: PatternEditor,
@@ -136,13 +137,19 @@ export function PatternEditorView(props: {
                 value={pattern.name}
                 onChange={name => props.editor.setName(name)}
             />
-            <Select
-                value={string.index ?? -1}
-                onChange={index => props.editor.setString(props.editor.pattern.instrument.strings[index])}
+            <Dropdown
+                value={string.index.toString()}
                 options={props.editor.pattern.instrument.strings.map(string => ({
                     label: string.name,
-                    value: string.index
+                    value: string.index.toString(),
+                    index: string.index
                 }))}
+                onChange={value => {
+                    if (!value)
+                        return
+
+                    props.editor.setString(props.editor.pattern.instrument.strings[value.index])
+                }}
             />
             <Button onClick={onSplit}>
                 Split

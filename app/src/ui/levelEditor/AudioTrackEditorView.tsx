@@ -17,6 +17,7 @@ import { ElementRenderer } from "../ElementRenderer";
 import { SelectDocumentPopup } from "../selectDocumentPopup/SelectDocumentPopup";
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { useThrottle } from "../../hooks/useThrottle";
+import { FormInputField } from "../form/FormInputField";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
@@ -54,7 +55,13 @@ export function AudioTrackEditorView(props: {
                 step={0.01}
             />
             <Button onClick={onChoosePlayback}>Choose playback</Button>
-            <Toggle value={enabled} onChange={enabled => mixer.audio.setEnabled(enabled)} />
+            
+            <FormInputField label="Enabled">
+                <Toggle
+                    value={enabled}
+                    onChange={enabled => mixer.audio.setEnabled(enabled)}
+                />
+            </FormInputField>
         </TrackEditorHead>
 
         <TrackEditorContent time={props.time}>

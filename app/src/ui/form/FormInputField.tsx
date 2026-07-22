@@ -8,6 +8,7 @@ type Props = {
     error?: ReactNode,
     children: ReactNode,
     className?: string,
+    controlClassName?: string,
 }
 
 export function FormInputField(props: Props) {
@@ -21,7 +22,7 @@ export function FormInputField(props: Props) {
         data-has-error={Boolean(props.error)}
     >
         {label && <div className="label">{label}</div>}
-        <div className="control">
+        <div className={`control ${props.controlClassName ?? ""}`}>
             {props.children}
         </div>
         {/* Error rendering is intentionally deferred, but the slot/API is ready. */}
