@@ -2,7 +2,15 @@
     position: relative;
 
     .BaseItem {
-        padding: var(--spacing-3);
+        &[data-size="s"] {
+            padding: var(--spacing-1) var(--spacing-2);
+            font: var(--font-body-sm);
+        }
+
+        &[data-size="m"] {
+            padding: var(--spacing-3) var(--spacing-4);
+            font: var(--font-body-md);
+        }
 
         &:first-child {
             border-radius: var(--radius-sm) var(--radius-sm) 0 0;
@@ -16,6 +24,10 @@
             cursor: pointer;
 
             &:hover {
+                background-color: var(--color-grey-400);
+            }
+
+            &:active {
                 background-color: var(--color-grey-600);
             }
         }
@@ -24,6 +36,7 @@
             background-color: var(--color-blue-500);
             color: var(--color-blue-50);
         }
+
         >span {
             pointer-events: none;
             user-select: none;
@@ -35,7 +48,8 @@
         background: var(--color-grey-500);
         border-radius: var(--radius-sm);
         position: absolute;
-        top: 36px;
+        z-index: 1;
+        top: 100%;
         left: 0;
         width: 100%;
         max-width: 300px;
@@ -50,7 +64,6 @@
     }
 
     .BaseTrigger {
-        padding: var(--spacing-3);
         border-radius: var(--radius-2);
         background-color: var(--color-grey-500);
         border-radius: var(--radius-sm);
@@ -60,7 +73,21 @@
         gap: var(--spacing-2);
         cursor: pointer;
 
+        &[data-size="s"] {
+            padding: var(--spacing-1) var(--spacing-2);
+            font: var(--font-body-sm);
+        }
+
+        &[data-size="m"] {
+            padding: var(--spacing-3) var(--spacing-4);
+            font: var(--font-body-md);
+        }
+
         &:hover {
+            background-color: var(--color-grey-400);
+        }
+
+        &:active {
             background-color: var(--color-grey-600);
         }
 
@@ -68,6 +95,12 @@
         >.Icon {
             pointer-events: none;
             user-select: none;
+        }
+
+        &[data-empty="true"] {
+            >span {
+                color: var(--color-grey-200);
+            }
         }
     }
 }

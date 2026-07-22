@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Dropdown } from "./Dropdown";
+import { UiSize } from "../UiSize";
 
 export default {
     title: 'Dropdown',
@@ -24,11 +25,19 @@ const simpleOptions: Dropdown.Option[] = [
 export const Default = () => {
     const [simpleValue, setSimpleValue] = useState<Dropdown.Option | null>(null)
 
-    return <div>
+    return <div className="grid gap-2">
         <Dropdown<Dropdown.Option>
             options={simpleOptions}
             value={simpleValue}
             onChange={setSimpleValue}
+            placeholder="Select an option"
+        />
+        <Dropdown<Dropdown.Option>
+            options={simpleOptions}
+            value={simpleValue}
+            onChange={setSimpleValue}
+            placeholder="Select an option"
+            size={UiSize.S}
         />
     </div>
 }

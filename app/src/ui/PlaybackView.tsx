@@ -81,17 +81,6 @@ function PlaybackControls(props: { playback: Playback }) {
             <InactiveHider enabled={playing} timeout={3000}>
                 <YoutubeVolumeSlider playback={props.playback} />
 
-                <div className="speed">
-                    <p>Playback speed</p>
-
-                    <div className="container">
-                        <PlaybackSpeedButton playback={props.playback} value={1.0} />
-                        <PlaybackSpeedButton playback={props.playback} value={0.9} />
-                        <PlaybackSpeedButton playback={props.playback} value={0.8} />
-                        <PlaybackSpeedButton playback={props.playback} value={0.7} />
-                    </div>
-                </div>
-
                 <div className="metronome">
                     <label>
                         Metronome <Toggle
@@ -117,22 +106,6 @@ function PlaybackControls(props: { playback: Playback }) {
             </InactiveHider>
         </div>
     );
-}
-
-function floatsEqual(a: number, b: number, epsilon = 0.0001) {
-    return Math.abs(a - b) < epsilon
-}
-
-function PlaybackSpeedButton(props: { playback: Playback, value: number }) {
-    const { speed } = useComponent(props.playback)
-
-    return <button
-        className="PlaybackSpeedButton"
-        data-active={floatsEqual(props.value, speed)}
-        onClick={() => props.playback.speed = props.value}
-    >
-        {props.value * 100}%
-    </button>
 }
 
 function PlayButton(props: { playback: Playback }) {

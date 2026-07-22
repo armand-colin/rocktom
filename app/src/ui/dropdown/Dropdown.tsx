@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import "./Dropdown.scss"
 import { Icon } from "../icon/Icon"
 import { UiSize } from "../UiSize"
@@ -12,23 +12,42 @@ interface Props<T extends Dropdown.Option> {
     item?: (props: Dropdown.ItemProps<T>) => ReactNode,
     className?: string
     size?: UiSize
+    placeholder?: string
 }
 
 export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
     const [isOpen, setIsOpen] = useState(false)
+    const ref = useRef<HTMLDivElement | null>(null)
 
     const Content = props.content ?? BaseContent
     const Trigger = props.trigger ?? BaseTrigger
     const Item = props.item ?? BaseItem
 
+    useEffect(() => {
+        if (!isOpen)
+            return;
+
+        function onClick(e: MouseEvent) {
+            if (ref.current?.contains(e.target as Node))
+                return;
+            setIsOpen(false)
+        }
+
+        window.addEventListener("click", onClick)
+
+        return () => window.removeEventListener("click", onClick)
+    }, [isOpen])
+
     return <div
         className={`Dropdown ${props.className ?? ""}`}
-        data-size={props.size ?? UiSize.M}
+        ref={ref}
     >
         <Trigger
             value={props.value}
             isOpen={isOpen}
             onToggleOpen={() => setIsOpen(!isOpen)}
+            size={props.size}
+            placeholder={props.placeholder}
         />
         <Content
             isOpen={isOpen}
@@ -37,6 +56,7 @@ export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
             onSelect={value => props.onChange(value)}
             onToggleOpen={(isOpen) => setIsOpen(isOpen ?? !isOpen)}
             selected={props.value?.value ?? null}
+            size={props.size}
         />
     </div>
 }
@@ -45,8 +65,10 @@ function BaseTrigger<T extends Dropdown.Option>(props: Dropdown.TriggerProps<T>)
     return <div
         className="BaseTrigger"
         onClick={() => props.onToggleOpen()}
+        data-size={props.size ?? UiSize.M}
+        data-empty={props.value === null}
     >
-        <span>{props.value?.label}</span>
+        <span>{props.value?.label ?? props.placeholder}</span>
         <Icon name="arrow_drop_down" />
     </div>
 }
@@ -56,6 +78,7 @@ function BaseItem<T extends Dropdown.Option>(props: Dropdown.ItemProps<T>) {
         className="BaseItem"
         data-selected={props.selected}
         onClick={() => props.onSelect()}
+        data-size={props.size ?? UiSize.M}
     >
         <span>{props.value.label}</span>
     </div>
@@ -67,6 +90,7 @@ function BaseContent<T extends Dropdown.Option>(props: Dropdown.ContentProps<T>)
     return <div
         className="BaseContent"
         data-open={props.isOpen}
+        data-size={props.size ?? UiSize.M}
     >
         {props.options.map(option => (
             <Item
@@ -77,6 +101,7 @@ function BaseContent<T extends Dropdown.Option>(props: Dropdown.ContentProps<T>)
                     props.onToggleOpen(false)
                 }}
                 selected={option.value === props.selected}
+                size={props.size}
             />
         ))}
     </div>
@@ -96,21 +121,22 @@ export namespace Dropdown {
         onToggleOpen: (isOpen?: boolean) => void,
         onSelect: (value: T | null) => void,
         selected: string | null
-        size: UiSize
+        size?: UiSize
     }
 
     export interface TriggerProps<T extends Dropdown.Option> {
         value: T | null,
         isOpen: boolean,
         onToggleOpen: (isOpen?: boolean) => void,
-        size: UiSize
+        size?: UiSize,
+        placeholder?: string
     }
 
     export interface ItemProps<T extends Dropdown.Option> {
         value: T,
         selected: boolean,
         onSelect: () => void,
-        size: UiSize
+        size?: UiSize
     }
 
 }
