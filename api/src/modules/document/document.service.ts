@@ -6,7 +6,7 @@ import { AppConfigService } from '../../config/config.service';
 import path from 'path';
 import {  writeFile } from 'fs/promises';
 import { uuid } from '../../utils/uuid';
-import { createReadStream } from 'fs';
+import { createReadStream, unlinkSync } from 'fs';
 
 @Injectable()
 export class DocumentService {
@@ -89,6 +89,12 @@ export class DocumentService {
       disposition: `inline; filename="${document.filename}"`,
       type: mimeTypeFromExtension(document.extension),
     });
+  }
+
+  async remove(id: string, requestingUserId: string): Promise<void> {
+    const document = await this.getById(id, requestingUserId);
+    await this.documentRepository.delete(document.id);
+    unlinkSync(path.join(this.directory, document.id));
   }
 
 }

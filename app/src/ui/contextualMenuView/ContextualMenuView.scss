@@ -27,7 +27,7 @@
     }
 
     &[data-visible="true"] .menu {
-        animation: showAnimation 0.16s cubic-bezier(.38,.21,.21,.98);
+        animation: var(--animate-pop-in);
     }
 
     .menu {

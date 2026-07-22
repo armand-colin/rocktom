@@ -1,0 +1,73 @@
+.Dropdown {
+    position: relative;
+
+    .BaseItem {
+        padding: var(--spacing-3);
+
+        &:first-child {
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        }
+
+        &:last-child {
+            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+        }
+
+        &[data-selected="false"] {
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--color-grey-600);
+            }
+        }
+
+        &[data-selected="true"] {
+            background-color: var(--color-blue-500);
+            color: var(--color-blue-50);
+        }
+        >span {
+            pointer-events: none;
+            user-select: none;
+        }
+    }
+
+    .BaseContent {
+        display: grid;
+        background: var(--color-grey-500);
+        border-radius: var(--radius-sm);
+        position: absolute;
+        top: 36px;
+        left: 0;
+        width: 100%;
+        max-width: 300px;
+
+        &[data-open="false"] {
+            display: none;
+        }
+
+        &[data-open="true"] {
+            animation: var(--animate-pop-in);
+        }
+    }
+
+    .BaseTrigger {
+        padding: var(--spacing-3);
+        border-radius: var(--radius-2);
+        background-color: var(--color-grey-500);
+        border-radius: var(--radius-sm);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: var(--spacing-2);
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--color-grey-600);
+        }
+
+        >span,
+        >.Icon {
+            pointer-events: none;
+            user-select: none;
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { CurrentSession } from "../session/current-session.decorator";
 import { Session } from "../session/session.entity";
 import { SessionGuard } from "../session/session.guard";
@@ -42,6 +42,15 @@ export class DocumentController {
         @CurrentSession() session: Session
     ) {
         return this.documentService.download(id, session.userId);
+    }
+
+    @Delete(':id')
+    @UseGuards(SessionGuard)
+    remove(
+        @Param('id') id: string,
+        @CurrentSession() session: Session
+    ) {
+        return this.documentService.remove(id, session.userId);
     }
 
 }

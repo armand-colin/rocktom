@@ -45,7 +45,8 @@ export const icons = [
     "check_circle",
     "delete",
     "keyboard_option_key",
-    "keyboard_command_key"
+    "keyboard_command_key",
+    "add"
 ] as const;
 
 export type IconName = typeof icons[number];

@@ -107,6 +107,17 @@
     line-height: var(--leading-blg);
 }
 
+@keyframes popInAnimation {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 :root {
     /* Short aliases so existing SCSS can keep using var(--primary), etc. */
     --background: var(--color-background);
@@ -142,10 +153,12 @@
     --font-body-sm: 400 var(--text-bsm)/var(--leading-bsm) var(--font-lexend);
     --font-body-md: 400 var(--text-bmd)/var(--leading-bmd) var(--font-lexend);
     --font-body-lg: 400 var(--text-blg)/var(--leading-blg) var(--font-lexend);
-    
+
     --font-heading-md: 600 var(--text-hmd)/var(--leading-hmd) var(--font-lexend);
     --font-heading-lg: 600 var(--text-hlg)/var(--leading-hlg) var(--font-lexend);
     --font-heading-xl: 600 var(--text-hxl)/var(--leading-hxl) var(--font-lexend);
+
+    --animate-pop-in: popInAnimation 0.08s cubic-bezier(.38, .21, .21, .98);
 }
 
 body {
