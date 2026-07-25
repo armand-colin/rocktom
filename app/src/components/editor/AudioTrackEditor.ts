@@ -26,6 +26,10 @@ export class AudioTrackEditor extends Component {
         return this._audioData
     }
 
+    get playback() {
+        return this._playback
+    }
+
     private _onTrackChange = () => {
         const playbackId = this.track.playbackId
 

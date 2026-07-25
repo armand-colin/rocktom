@@ -40,6 +40,7 @@ export const icons = [
     "instant_mix",
     "progress_activity",
     "play_arrow",
+    "pause",
     "edit",
     "more_vert",
     "check_circle",

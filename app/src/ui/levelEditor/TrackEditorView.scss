@@ -2,11 +2,13 @@
     display: grid;
     grid-template-columns: 300px 1fr;
     outline: 1px solid var(--outline);
+    position: relative;
 
     >.TrackEditorHead {
         grid-column: 1;
         border-right: 1px solid var(--outline);
         display: grid;
+        position: relative;
 
         >.content {
             padding: 8px;

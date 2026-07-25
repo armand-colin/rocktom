@@ -5,7 +5,7 @@ import type { LevelEditor } from "../../components/editor/LevelEditor";
 import { Mixer } from "../../resources/Mixer";
 import { WindowManager } from "../../resources/WindowManager";
 import type { TimedPattern } from "../../sound/song/Pattern";
-import { Button } from "../button/Button";
+import { Button, ButtonTheme } from "../button/Button";
 import { Icon } from "../icon/Icon";
 import { StringInput } from "../input/StringInput";
 import { MixerView } from "../mixerView/MixerView";
@@ -80,12 +80,20 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
     }
 
     return <div className="LevelEditorView">
-        <div className="head">
-            <Button onClick={onBack}>Back</Button>
-            <LevelName
-                name={level.name}
-                onChange={name => props.editor.setName(name)}
-            />
+        <div className="head grid gap-2 p-2">
+            <div className="flex gap-2 items-center">
+                <Button
+                    onClick={onBack}
+                    shape="square"
+                >
+                    <Icon name="arrow_back" />
+                </Button>
+
+                <LevelName
+                    name={level.name}
+                    onChange={name => props.editor.setName(name)}
+                />
+            </div>
             <div className="flex gap-m">
                 <Button onClick={onSave} disabled={isUpdating}>
                     Save
@@ -98,8 +106,9 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
                 <PlayerControls player={props.editor.player} />
                 <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
             </div>
-            <SongEditorView editor={props.editor} />
         </div>
+        
+        <SongEditorView editor={props.editor} />
     </div>
 }
 
@@ -144,9 +153,15 @@ function PlayerControls(props: { player: EditorPlayer }) {
             props.player.play()
         }
     }
-    return <div className="PlayerControls flex gap-m">
-        <Button onClick={onPlayPause}>
-            {playing ? 'Pause' : 'Play'}
+    return <div className="PlayerControls flex gap-2">
+        <Button
+            onClick={onPlayPause}
+            theme={ButtonTheme.Primary}
+            shape="square"
+        >
+            <Icon
+                name={playing ? "pause" : "play_arrow"}
+            />
             <ShortcutView shortcut={Shortcuts.Play} />
         </Button>
 
@@ -155,7 +170,15 @@ function PlayerControls(props: { player: EditorPlayer }) {
             <ShortcutView shortcut={Shortcuts.Reset} />
         </Button>
 
-        <Button data-active={enabled} onClick={() => mixer.metronome.toggleEnabled()}><Icon name="acute" /></Button>
+        <Button
+            data-active={enabled}
+            onClick={() => mixer.metronome.toggleEnabled()}
+            theme={
+                enabled ? ButtonTheme.Primary : ButtonTheme.Default
+            }
+        >
+            Metronome {enabled ? "On" : "Off"}
+        </Button>
     </div>
 }
 

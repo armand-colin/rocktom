@@ -26,7 +26,7 @@ export function AudioTrackEditorView(props: {
     waveformRenderer: AudioWaveformRenderer,
     time: Time
 }) {
-    const { track } = useComponent(props.editor)
+    const { track, playback } = useComponent(props.editor)
     const popupManager = usePopupManager()
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
@@ -58,14 +58,22 @@ export function AudioTrackEditorView(props: {
                     step={0.01}
                 />
             </FormInputField>
+
+            <FormInputField label="Playback">
+                {
+                    playback ?
+                        <span className="whitespace-nowrap text-ellipsis overflow-hidden w-full block">{playback.filename}</span> :
+                        <span className="text-grey-200">No playback</span>
+                }
+            </FormInputField>
             <Button onClick={onChoosePlayback}>Choose playback</Button>
 
-            <FormInputField label="Enabled">
+            <div className="absolute right-0 top-0 px-2 py-4">
                 <Toggle
                     value={enabled}
                     onChange={enabled => mixer.audio.setEnabled(enabled)}
                 />
-            </FormInputField>
+            </div>
         </TrackEditorHead>
 
         <TrackEditorContent time={props.time}>

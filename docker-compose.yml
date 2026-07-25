@@ -60,7 +60,3 @@ services:
       - "${APP_PORT:?APP_PORT is required}:80"
     depends_on:
       - api
-
-volumes:
-  postgres_data:
-  api_storage:

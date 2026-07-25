@@ -45,7 +45,7 @@
 
     &[data-size="m"]:not([data-variant="ghost"]) {
         padding: 8px;
-        gap: var(--spacing-s);
+        gap: var(--spacing-2);
 
         &[data-shape="rectangle"] {
             padding-left: 12px;
@@ -55,7 +55,7 @@
 
     &[data-size="s"]:not([data-variant="ghost"]) {
         padding: 3px;
-        gap: var(--spacing-xs);
+        gap: var(--spacing-1);
         font: var(--font-s);
 
         &[data-shape="rectangle"] {
