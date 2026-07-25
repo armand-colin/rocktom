@@ -18,6 +18,7 @@ import { SelectDocumentPopup } from "../selectDocumentPopup/SelectDocumentPopup"
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { useThrottle } from "../../hooks/useThrottle";
 import { FormInputField } from "../form/FormInputField";
+import { MixerButton } from "../mixerButton/MixerButton";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
@@ -68,11 +69,8 @@ export function AudioTrackEditorView(props: {
             </FormInputField>
             <Button onClick={onChoosePlayback}>Choose playback</Button>
 
-            <div className="absolute right-0 top-0 px-2 py-4">
-                <Toggle
-                    value={enabled}
-                    onChange={enabled => mixer.audio.setEnabled(enabled)}
-                />
+            <div className="absolute right-0 top-0 p-2">
+                <MixerButton channel={mixer.audio} />
             </div>
         </TrackEditorHead>
 

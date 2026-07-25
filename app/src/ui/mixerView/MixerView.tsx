@@ -4,6 +4,7 @@ import { EngineContext, useComponent } from "@niloc/ecs-react";
 import { Mixer, type MixerChannel } from "../../resources/Mixer";
 import { Toggle } from "../toggle/Toggle";
 import { Slider } from "../slider/Slider";
+import { MixerButton } from "../mixerButton/MixerButton";
 
 export function MixerView() {
 	const { engine } = useContext(EngineContext)
@@ -21,10 +22,10 @@ export function MixerView() {
 }
 
 function ChannelView(props: { channel: MixerChannel }) {
-	const { enabled, volume } = useComponent(props.channel)
+	const { volume } = useComponent(props.channel)
 
 	return <div className="ChannelView">
-		<Toggle value={enabled} onChange={enabled => props.channel.setEnabled(enabled)} />
+		<MixerButton channel={props.channel} />
 
 		<p>{props.channel.name}</p>
 
