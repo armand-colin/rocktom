@@ -6,7 +6,7 @@ type Props = {
     label?: ReactNode,
     field?: FormField<FormDataEntryValue, any>,
     error?: ReactNode,
-    children: ReactNode,
+    children?: ReactNode,
     className?: string,
     controlClassName?: string,
 }

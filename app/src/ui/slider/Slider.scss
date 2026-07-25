@@ -1,6 +1,6 @@
 .Slider {
     height: 12px;
-    background: var(--surface);
+    background: var(--color-grey-500);
     position: relative;
     border-radius: 4px;
     user-select: none;
@@ -11,18 +11,18 @@
         left: 0;
         width: calc(var(--t) * (100% - 9px) + 9px);
         height: 100%;
-        background: var(--primary);
+        background: var(--color-blue-500);
         border-radius: 4px;
     }
 
     .knob {
-        width: 12px;
+        width: 18px;
         height: 18px;
-        background: var(--text);
+        background: var(--color-grey-50);
         border-radius: 4px;
         position: absolute;
         top: 50%;
-        left: calc(var(--t) * (100% - 12px) + 6px);
+        left: calc(var(--t) * (100% - 18px) + 9px);
         transform: translate(-50%, -50%);
     }
 
@@ -30,25 +30,27 @@
         pointer-events: none;
 
         .knob {
-            background: var(--surface-active);
+            background: var(--color-grey-600);
         }
 
         .before {
-            background: var(--surface-hover);
+            background: var(--color-grey-500);
         }
     }
 
     &:hover {
-        background: var(--surface-hover);
+        background: var(--color-grey-600);
+
         .before {
-            background: var(--primary-hover);
+            background: var(--color-blue-500);
         }
     }
     
     &[data-active="true"] {
-        background: var(--surface-hover);
+        background: var(--color-grey-600);
+
         .before {
-            background: var(--primary-active);
+            background: var(--color-blue-500);
         }
     }
 }

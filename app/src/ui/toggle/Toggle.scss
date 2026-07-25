@@ -1,7 +1,7 @@
 .Toggle {
     height: 12px;
     width: 36px;
-    background: var(--surface);
+    background: var(--color-grey-500);
     border-radius: 6px;
     position: relative;
     cursor: pointer;
@@ -9,8 +9,8 @@
     .knob {
         width: 18px;
         height: 18px;
-        background: var(--text);
-        border-radius: 50%;
+        background: var(--color-grey-50);
+        border-radius: 4px;
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -18,7 +18,7 @@
     }
 
     &[data-active="true"] {
-        background: var(--primary);
+        background: var(--color-blue-500);
 
         .knob {
             left: calc(100% - 18px);

@@ -2,7 +2,6 @@ import { useContext } from "react";
 import "./MixerView.scss";
 import { EngineContext, useComponent } from "@niloc/ecs-react";
 import { Mixer, type MixerChannel } from "../../resources/Mixer";
-import { Toggle } from "../toggle/Toggle";
 import { Slider } from "../slider/Slider";
 import { MixerButton } from "../mixerButton/MixerButton";
 

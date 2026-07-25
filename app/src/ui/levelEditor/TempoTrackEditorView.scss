@@ -7,15 +7,16 @@
         .marker {
             position: absolute;
             bottom: 0;
-            height: 24px;
+            height: 100%;
             border: 1px solid red;
         }
 
         .time {
             position: absolute;
             left: 0;
-            top: 1px;
+            top: 0px;
             transform: translateX(-50%);
+            z-index: 1;
             user-select: none;
             cursor: ew-resize;
 
@@ -35,7 +36,7 @@
         .hint {
             position: absolute;
             left: 50%;
-            top: 26px;
+            top: 30px;
             transform: translateX(-50%);
             user-select: none;
             pointer-events: none;

@@ -10,7 +10,6 @@ import { NumberInput } from "../input/NumberInput";
 import "./AudioTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
 import type { Time } from "../../components/Time";
-import { Toggle } from "../toggle/Toggle";
 import { Mixer } from "../../resources/Mixer";
 import type { AudioWaveformRenderer } from "../../components/editor/AudioWaveformRenderer";
 import { ElementRenderer } from "../ElementRenderer";
@@ -31,7 +30,6 @@ export function AudioTrackEditorView(props: {
     const popupManager = usePopupManager()
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
-    const { enabled } = useComponent(mixer.audio)
 
     function onChoosePlayback() {
         function onSelect(document: DocumentEntity) {

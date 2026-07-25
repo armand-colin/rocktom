@@ -48,15 +48,17 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                     onChange={onInitialChange}
                 />
             </FormInputField>
-            
+
             {
                 lastEvent &&
-                <NumberInput
-                    name="lastEventBpm"
-                    value={lastEvent.tempo.bpm}
-                    step={1}
-                    onChange={onLastEventBpmChange}
-                />
+                <FormInputField label="Last event BPM">
+                    <NumberInput
+                        name="lastEventBpm"
+                        value={lastEvent.tempo.bpm}
+                        step={1}
+                        onChange={onLastEventBpmChange}
+                    />
+                </FormInputField>
             }
         </TrackEditorHead>
 
