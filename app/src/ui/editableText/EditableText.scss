@@ -1,3 +1,5 @@
 .EditableText {
-    
+    >p {
+        user-select: none;
+    }
 }

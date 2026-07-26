@@ -32,6 +32,7 @@ export const icons = [
     "shift",
     "arrow_back",
     "code",
+    "chevron_right",
     "arrow_drop_down",
     "arrow_downward",
     "download",
@@ -47,7 +48,8 @@ export const icons = [
     "delete",
     "keyboard_option_key",
     "keyboard_command_key",
-    "add"
+    "add",
+    "check"
 ] as const;
 
 export type IconName = typeof icons[number];

@@ -2,6 +2,8 @@
     position: relative;
 
     .BaseItem {
+        border-radius: var(--radius-sm);
+
         &[data-size="s"] {
             padding: var(--spacing-1) var(--spacing-2);
             font: var(--font-body-sm);
@@ -10,14 +12,6 @@
         &[data-size="m"] {
             padding: var(--spacing-3) var(--spacing-4);
             font: var(--font-body-md);
-        }
-
-        &:first-child {
-            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-        }
-
-        &:last-child {
-            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
         }
 
         &[data-selected="false"] {
@@ -48,11 +42,13 @@
         background: var(--color-grey-500);
         border-radius: var(--radius-sm);
         position: absolute;
-        z-index: 1;
-        top: 100%;
+        z-index: 2;
+        top: calc(100% + var(--spacing-2));
         left: 0;
         width: 100%;
         max-width: 300px;
+        padding:var(--spacing-2);
+        outline: 1px solid var(--color-grey-400);
 
         &[data-open="false"] {
             display: none;
@@ -74,12 +70,12 @@
         cursor: pointer;
 
         &[data-size="s"] {
-            padding: var(--spacing-1) var(--spacing-2);
+            padding: var(--spacing-1) var(--spacing-1) var(--spacing-1) var(--spacing-2);
             font: var(--font-body-sm);
         }
 
         &[data-size="m"] {
-            padding: var(--spacing-3) var(--spacing-4);
+            padding: var(--spacing-3) var(--spacing-3) var(--spacing-3) var(--spacing-4);
             font: var(--font-body-md);
         }
 

@@ -9,7 +9,6 @@ export function MixerView() {
 	const mixer = engine.getResource(Mixer)
 
 	return <div className="MixerView">
-		<h2>Mixer</h2>
 		<div className="channels">
 			<MixerChannelView channel={mixer.master} />
 			<MixerChannelView channel={mixer.audio} />

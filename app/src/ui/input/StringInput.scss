@@ -12,9 +12,11 @@
 
     &[data-size="m"] input {
         padding: var(--spacing-3) var(--spacing-4);
+        font:var(--font-body-md);
     }
 
     &[data-size="s"] input {
         padding: var(--spacing-1) var(--spacing-2);
+        font:var(--font-body-sm);
     }
 }

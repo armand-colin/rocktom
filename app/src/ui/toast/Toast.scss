@@ -2,5 +2,7 @@
     background: var(--container);
     padding: var(--spacing-4);
     min-width: 200px;
-    border-radius: var(--radius-xs);
+    border-radius: var(--radius-sm);
+    display: flex;
+    gap: var(--spacing-3);
 }

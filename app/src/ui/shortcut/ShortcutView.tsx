@@ -4,7 +4,9 @@ import './ShortcutView.scss'
 import { Icon } from "../icon/Icon";
 import { OS } from "../../utils/OS";
 
-export function ShortcutView(props: { shortcut: Shortcut }) {
+export function ShortcutView(props: { 
+    shortcut: Shortcut,
+}) {
     const parts = useMemo(() => {
         const parts = []
 

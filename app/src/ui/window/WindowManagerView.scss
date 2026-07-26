@@ -21,15 +21,15 @@
         > .head {
             display: grid;
             grid-template-columns: 1fr 24px;
-            height: 26px;
             align-items: center;
             background: var(--surface-hover);
             border-bottom: 1px solid var(--outline);
             border-radius: 4px 4px 0 0;
             user-select: none;
+            padding: var(--spacing-1);
 
             > p {
-                padding-left: 8px;
+                padding-left: var(--spacing-2);
                 pointer-events: none;
             }
 

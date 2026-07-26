@@ -1,14 +1,12 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
-import type { LevelEditor } from "../../components/editor/LevelEditor";
+import { LevelEditor } from "../../components/editor/LevelEditor";
 import { Mixer } from "../../resources/Mixer";
-import { WindowManager } from "../../resources/WindowManager";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button, ButtonTheme } from "../button/Button";
 import { Icon } from "../icon/Icon";
 import { StringInput } from "../input/StringInput";
-import { MixerView } from "../mixerView/MixerView";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
 import { FocusTrackEditorView } from "./FocusTrackEditorView";
 import "./LevelEditorView.scss";
@@ -25,10 +23,26 @@ import { Toast } from "../toast/Toast";
 import { useShortcut } from "../../hooks/useShortcut";
 import { Shortcuts } from "../../resources/shortcut/Shortcuts";
 import { ShortcutView } from "../shortcut/ShortcutView";
+import { Toolbar } from "../toolbar/Toolbar";
 
-export function LevelEditorView(props: { editor: LevelEditor }) {
-    const { engine } = useContext(EngineContext)
-    const windowManager = engine.getResource(WindowManager)
+function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
+    return [
+        Toolbar.Tab.create("File", [
+            Toolbar.Item.shortcut("Save", Shortcuts.Save),
+        ]),
+        Toolbar.Tab.create("View", [
+            Toolbar.Item.section("Windows", [
+                Toolbar.Item.simple("Toggle mixer", () => {
+                    editor.toggleMixer()
+                }),
+            ]),
+        ])
+    ]
+}
+
+export function LevelEditorView(props: {
+    editor: LevelEditor
+}) {
     const { level } = useComponent(props.editor)
     const { mutate: updateLevel, isLoading: isUpdating } = useMutation(LevelQueries.update)
     const navigate = useNavigate()
@@ -37,6 +51,8 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
     useShortcut(Shortcuts.Play, onPlay)
     useShortcut(Shortcuts.Save, onSave)
     useShortcut(Shortcuts.Reset, onReset)
+
+    const toolbarTabs = useMemo(() => createToolbarTabs(props.editor), [props.editor])
 
     function onPlay() {
         if (props.editor.player.playing) {
@@ -63,16 +79,14 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
         }).then(() => {
             toastManager.add(close => <Toast.Simple
                 message="Level saved successfully"
+                icon="check"
                 close={close}
             />, 2000)
         })
     }
 
     function showMixer() {
-        windowManager.add(
-            { name: "Mixer", id: "mixer" },
-            () => <MixerView />
-        )
+        props.editor.toggleMixer()
     }
 
     function onBack() {
@@ -81,6 +95,7 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
 
     return <div className="LevelEditorView">
         <div className="head grid gap-2 p-2">
+            <Toolbar tabs={toolbarTabs} />
             <div className="flex gap-2 items-center">
                 <Button
                     onClick={onBack}
@@ -95,19 +110,11 @@ export function LevelEditorView(props: { editor: LevelEditor }) {
                 />
             </div>
             <div className="flex gap-m">
-                <Button onClick={onSave} disabled={isUpdating}>
-                    Save
-                    {
-                        isUpdating ?
-                            <Icon name="progress_activity" /> :
-                            <ShortcutView shortcut={Shortcuts.Save} />
-                    }
-                </Button>
                 <PlayerControls player={props.editor.player} />
                 <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
             </div>
         </div>
-        
+
         <SongEditorView editor={props.editor} />
     </div>
 }

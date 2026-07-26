@@ -83,8 +83,8 @@ export class SelectionWindow extends Component {
 
     private _update() {
         if (!this._enabled) {
-            // Check if enabled
-            const sqDistance = Vec2.dot(this.start, this.end)
+            const vec = Vec2.subtract(this.end, this.start)
+            const sqDistance = vec.x * vec.x + vec.y * vec.y
             if (sqDistance < SQ_DISTANCE_BEFORE_ENABLING) 
                 return
 

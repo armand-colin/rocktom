@@ -1,0 +1,93 @@
+.PatternEditorView {
+    display: grid;
+    grid-template-rows: 0fr 1fr;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+
+    >.head {
+        padding: var(--spacing-3);
+        display: grid;
+        gap: var(--spacing-2);
+    }
+
+    >.body {
+        --note-height: 26px;
+        display: grid;
+        grid-template-rows: 0fr 1fr;
+        background: var(--surface);
+        border-radius: 0 0 8px 8px;
+        overflow: hidden;
+
+        >.TrackEditorView>.keyboard {
+            position: relative;
+            overflow: hidden;
+
+            .NoteTransformView {
+                position: absolute;
+                inset: 0;
+            }
+        }
+
+        >.TrackEditorView>.notes {
+            position: relative;
+            overflow: hidden;
+
+            .shadow-note {
+                position: absolute;
+                height: var(--note-height);
+                width: 100%;
+                top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) * var(--note-height));
+                border-bottom: 1px solid var(--marker-beat);
+
+                &:last-child {
+                    border-top: 1px solid var(--marker-beat);
+                }
+            }
+        }
+
+        .KeyboardNoteView {
+            position: absolute;
+            height: var(--note-height);
+            width: 100%;
+            top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) * var(--note-height));
+            background: var(--surface);
+            outline: 1px solid var(--outline);
+            display: flex;
+            align-items: center;
+            padding-left: 4px;
+            font: var(--font-body-sm);
+
+            &[data-available="true"] {
+                background-color: var(--color);
+                color: var(--contrast);
+                outline: 1px solid var(--contrast);
+                font-weight: 500;
+            }
+        }
+
+        .TimeMarkersView {
+            position: absolute;
+            inset: 0;
+
+            >.marker {
+                position: absolute;
+                bottom: 0;
+                top: 0;
+                width: 1px;
+                background: var(--marker);
+                left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px - 1px);
+
+                &[data-type="bar"] {
+                    background: var(--marker-bar);
+                    width: 1px;
+                }
+
+                &[data-type="beat"] {
+                    background: var(--marker-beat);
+                }
+            }
+        }
+    }
+}
+

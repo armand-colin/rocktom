@@ -9,6 +9,11 @@
     pointer-events: none;
     z-index: 1000;
     transition: opacity 0.16s ease-out;
+    border-radius: var(--radius-xs);
+    
+    &[data-enabled="false"] {
+        opacity: 0;
+    }
     
     &[data-enabled="true"] {
         opacity: 1;

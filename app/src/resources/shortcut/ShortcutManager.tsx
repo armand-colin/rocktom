@@ -49,6 +49,10 @@ export class ShortcutManager extends Resource {
         this._bindings.set(shortcut, { shortcut, action })
     }
 
+    trigger(shortcut: Shortcut) {
+        this.getAction(shortcut).publish()
+    }
+
     register(shortcut: Shortcut, callback: () => void) {
         this.getAction(shortcut).register(callback)
     }

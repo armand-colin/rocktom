@@ -3,7 +3,7 @@ import { WindowManager, WindowPosition, WindowSize, type Window } from "../../re
 import type { Level } from "../../sound/Level";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
-import { PatternEditorView } from "../../ui/levelEditor/PatternEditorView";
+import { PatternEditorView } from "../../ui/levelEditor/patternEditor/PatternEditorView";
 import { VirtualBass } from "../VirtualBass";
 import { AudioTrackEditor } from "./AudioTrackEditor";
 import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
@@ -13,6 +13,8 @@ import { NoteTrackEditor } from "./NoteTrackEditor";
 import { PatternEditor } from "./PatternEditor";
 import { TempoTrackEditor } from "./TempoTrackEditor";
 import { TimeTransform } from "./TimeTransform";
+import { MixerView } from "../../ui/mixerView/MixerView";
+import { Vec2 } from "@niloc/utils";
 
 export class LevelEditor extends Component {
 
@@ -29,6 +31,7 @@ export class LevelEditor extends Component {
 
     private _pattern: PatternEditor | null = null
     private _patternWindow: Window | null = null
+    private _mixerWindow: Window | null = null
 
     constructor(engine: Engine, level: Level) {
         super(engine)
@@ -115,6 +118,35 @@ export class LevelEditor extends Component {
         this.changed()
     }
 
+    toggleMixer(show?: boolean) {
+        show ??= !this._mixerWindow
+
+        if (show) {
+            if (this._mixerWindow)
+                return
+
+            const windowManager = this.engine.getResource(WindowManager)
+            this._mixerWindow = windowManager.add(
+                { 
+                    name: "Mixer", 
+                    id: "mixer",
+                    size: WindowSize.fixed(Vec2.create(530, 250))
+                },
+                () => <MixerView />
+            )
+            this.changed()
+
+            this._mixerWindow.events.on('closed', () => {
+                this._mixerWindow = null
+                this.changed()
+            })
+        } else {
+            this._mixerWindow?.close()
+            this._mixerWindow = null
+            this.changed()
+        }
+    }
+
     private _onScroll = (event: Event) => {
         event.preventDefault()
     }
@@ -130,6 +162,8 @@ export class LevelEditor extends Component {
         this._pattern = null
         this._patternWindow?.close()
         this._patternWindow = null
+        this._mixerWindow?.close()
+        this._mixerWindow = null
         window.removeEventListener("wheel", this._onWheel)
         window.removeEventListener("scroll", this._onScroll)
     }
