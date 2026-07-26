@@ -5,6 +5,7 @@ import { Popup } from "../../popup/Popup"
 import { FormInputField } from "../../form/FormInputField"
 import { Button } from "../../button/Button"
 import { Rules } from "../../../3d/Rules"
+import { Toggle } from "../../toggle/Toggle"
 
 export function NoteEventPopup(props: {
     note: NoteEvent,
@@ -12,14 +13,20 @@ export function NoteEventPopup(props: {
     close: () => void
 }) {
     const [fingerPosition, setFingerPosition] = useState(props.note.fingerPosition)
+    const [slideConnects, setSlideConnects] = useState(props.note.slide?.connect ?? false)
 
     function onSave() {
         props.note.fingerPosition = fingerPosition
+
+        if (props.note.slide) {
+            props.note.slide.connect = slideConnects
+        }
+
         props.onUpdate()
         props.close()
     }
 
-    return <Popup.BaseContainer>
+    return <Popup.BaseContainer className="w-[300px]">
         <Popup.BaseTitle title="Note Event" />
 
         <FormInputField label="Finger position">
@@ -32,6 +39,14 @@ export function NoteEventPopup(props: {
                 step={1}
             />
         </FormInputField>
+        {
+            props.note.slide && <FormInputField label="Slide connects">
+                <Toggle 
+                    value={slideConnects}
+                    onChange={setSlideConnects}
+                />
+            </FormInputField>
+        }
 
         <Button type="submit" onClick={onSave}>Save</Button>
     </Popup.BaseContainer>

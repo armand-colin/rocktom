@@ -1,6 +1,8 @@
 import { Emitter } from "@niloc/utils";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { Handler } from "./Handler";
+import { Instance } from "../../Instance";
+import { MouseState } from "../../components/editor/actions/MouseState";
 
 export class TimeResizer implements Handler {
 
@@ -18,6 +20,8 @@ export class TimeResizer implements Handler {
         this._startX = opts.event.clientX
         this._startDuration = opts.duration
         this._transform = opts.transform
+
+        Instance.engine.getResource(MouseState).setClickPrevented(true)
 
         window.addEventListener("mousemove", this._onMouseMove)
         window.addEventListener("mouseup", this._onMouseUp)
@@ -40,6 +44,7 @@ export class TimeResizer implements Handler {
     destroy() {
         window.removeEventListener("mousemove", this._onMouseMove)
         window.removeEventListener("mouseup", this._onMouseUp)
+        Instance.engine.getResource(MouseState).setClickPrevented(false)
     }
 
 }

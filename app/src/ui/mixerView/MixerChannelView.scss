@@ -1,0 +1,18 @@
+.MixerChannelView {
+    display: grid;
+    grid-template-columns: 0fr 90px 60px 1fr;
+    align-items: center;
+    gap: var(--spacing-3);
+
+    >span {
+        padding: var(--spacing-2);
+        border-radius: var(--radius-md);
+        background: var(--color-grey-900);
+        text-align: center;
+        border: 1px solid var(--color-grey-500);
+    }
+
+    &[data-hide-label="true"] {
+        grid-template-columns: 0fr 60px 1fr;
+    }
+}

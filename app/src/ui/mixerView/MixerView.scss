@@ -8,13 +8,6 @@
         display: flex;
         flex-direction: column;
         gap: 24px;
-
-        .ChannelView {
-            display: grid;
-            grid-template-columns: 0fr 90px 1fr;
-            gap: 12px;
-            align-items: center;
-        }
     }
 
 }

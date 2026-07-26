@@ -1,6 +1,8 @@
 import { Emitter } from "@niloc/utils";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { Handler } from "./Handler";
+import { MouseState } from "../../components/editor/actions/MouseState";
+import { Instance } from "../../Instance";
 
 export class TimeMover implements Handler {
 
@@ -25,6 +27,8 @@ export class TimeMover implements Handler {
         this._minTicks = opts.minTicks ?? 0
         this._maxTicks = opts.maxTicks ?? Infinity
 
+        Instance.engine.getResource(MouseState).setClickPrevented(true)
+
         window.addEventListener("mousemove", this._onMouseMove)
         window.addEventListener("mouseup", this._onMouseUp)
     }
@@ -47,6 +51,7 @@ export class TimeMover implements Handler {
     destroy() {
         window.removeEventListener("mousemove", this._onMouseMove)
         window.removeEventListener("mouseup", this._onMouseUp)
+        Instance.engine.getResource(MouseState).setClickPrevented(false)
     }
 
 }

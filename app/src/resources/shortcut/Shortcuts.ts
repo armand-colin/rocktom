@@ -7,7 +7,8 @@ export namespace Shortcuts {
     export const Save = new Shortcut({ keyCode: KeyCode.S, ctrl: true })
 
     export const Editor = {
-        Split: new Shortcut({ keyCode: KeyCode.S, alt: true })
+        Split: new Shortcut({ keyCode: KeyCode.X, alt: true }),
+        Slide: new Shortcut({ keyCode: KeyCode.S, alt: true }),
     }
 
 }

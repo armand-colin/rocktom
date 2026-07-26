@@ -5,11 +5,11 @@
     width: 100%;
     overflow: hidden;
 
-    > .head {
+    >.head {
         padding: 4px 8px;
     }
 
-    > .body {
+    >.body {
         --note-height: 26px;
         display: grid;
         grid-template-rows: 0fr 1fr;
@@ -17,7 +17,7 @@
         border-radius: 0 0 8px 8px;
         overflow: hidden;
 
-        > .TrackEditorView > .keyboard {
+        >.TrackEditorView>.keyboard {
             position: relative;
             overflow: hidden;
 
@@ -27,7 +27,7 @@
             }
         }
 
-        > .TrackEditorView > .notes {
+        >.TrackEditorView>.notes {
             position: relative;
             overflow: hidden;
 
@@ -35,10 +35,7 @@
                 position: absolute;
                 height: var(--note-height);
                 width: 100%;
-                top: calc(
-                    (var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) *
-                        var(--note-height)
-                );
+                top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) * var(--note-height));
                 border-bottom: 1px solid var(--marker-beat);
 
                 &:last-child {
@@ -51,9 +48,7 @@
             position: absolute;
             height: var(--note-height);
             width: 100%;
-            top: calc(
-                (var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) * var(--note-height)
-            );
+            top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) * var(--note-height));
             background: var(--surface);
             outline: 1px solid var(--outline);
             display: flex;
@@ -67,86 +62,11 @@
             }
         }
 
-        .NoteView {
-            position: absolute;
-            height: var(--note-height);
-            width: 100%;
-            top: calc(
-                (var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) * var(--note-height)
-            );
-            background-color: var(--color);
-            left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
-            width: calc(var(--duration) * var(--ratio) * 1px);
-            border-radius: 2px;
-            border: 1px solid var(--contrast);
-
-            padding-left: 3px;
-            padding-right: 3px;
-
-            &[data-instant="true"] {
-                width: 6px;
-                left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px - 3px);
-            }
-
-            &[data-selected="true"] {
-                outline: 3px solid var(--outline);
-                outline-offset: 2px;
-            }
-
-            .resizer {
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                right: -2px;
-                width: 4px;
-                cursor: ew-resize;
-            }
-
-            > p {
-                overflow: hidden;
-                color: var(--contrast);
-                pointer-events: none;
-            }
-
-            .fret-hint {
-                position: absolute;
-                right: calc(100% + 4px);
-                top: 0;
-                bottom: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: var(--color);
-                z-index: 3;
-                color: white;
-                padding: 0 8px;
-                opacity: 0;
-                pointer-events: none;
-                border-radius: 4px;
-                color: var(--contrast);
-                outline: 1px solid var(--contrast);
-            }
-
-            @keyframes show-hint {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
-            }
-
-            &:hover > .fret-hint {
-                animation: show-hint 0.2s forwards;
-                animation-delay: 1s;
-            }
-        }
-
         .TimeMarkersView {
             position: absolute;
             inset: 0;
 
-            > .marker {
+            >.marker {
                 position: absolute;
                 bottom: 0;
                 top: 0;
@@ -158,10 +78,119 @@
                     background: var(--marker-bar);
                     width: 1px;
                 }
+
                 &[data-type="beat"] {
                     background: var(--marker-beat);
                 }
             }
         }
     }
+}
+
+.NoteView {
+    position: absolute;
+    height: var(--note-height);
+    top: calc((var(--index-range) - (var(--index) - var(--min-index)) - 1 - var(--note-offset)) * var(--note-height));
+    left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
+
+    &[data-instant="true"] {
+        left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px - 3px);
+
+        .main,
+        .slide {
+            width: 6px;
+        }
+    }
+
+    &[data-selected="true"] {
+
+        .main,
+        .slide {
+            outline: 3px solid var(--outline);
+            outline-offset: 2px;
+        }
+    }
+
+    .resizer-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: -2px;
+        width: 4px;
+        cursor: ew-resize;
+    }
+
+    .resizer-left {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -2px;
+        width: 4px;
+        cursor: ew-resize;
+    }
+
+    @keyframes show-hint {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .main,
+    .slide {
+        position: absolute;
+        height: var(--note-height);
+        border-radius: 2px;
+        border: 1px solid var(--contrast);
+        padding-left: 3px;
+        padding-right: 3px;
+        background-color: var(--color);
+
+        >p {
+            overflow: hidden;
+            color: var(--contrast);
+            pointer-events: none;
+        }
+
+        &:hover>.fret-hint {
+            animation: show-hint 0.2s forwards;
+            animation-delay: 1s;
+        }
+    }
+
+    .main {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc((var(--duration) - var(--slide-duration)) * var(--ratio) * 1px);
+    }
+
+    .slide {
+        left: calc((var(--duration) - var(--slide-duration)) * var(--ratio) * 1px);
+        width: calc(var(--slide-duration) * var(--ratio) * 1px);
+        top: calc((var(--note-fret) - var(--slide-fret)) * var(--note-height));
+    }
+
+    .fret-hint {
+        position: absolute;
+        right: calc(100% + 4px);
+        top: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color);
+        z-index: 3;
+        color: white;
+        padding: 0 8px;
+        opacity: 0;
+        pointer-events: none;
+        border-radius: 4px;
+        color: var(--contrast);
+        outline: 1px solid var(--contrast);
+    }
+
 }

@@ -5,9 +5,7 @@ import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
 import "./PlaybackView.scss";
 // import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
-import { Slider } from "./slider/Slider";
 import { Icon } from "./icon/Icon";
-import { Toggle } from "./toggle/Toggle";
 import { Tempo } from "../sound/Tempo";
 import { PlaybackProgressView } from "./PlaybackProgressView";
 import type { Time } from "../components/Time";
@@ -18,6 +16,8 @@ import type { DeltaTime } from "../components/DeltaTime";
 import { useShortcut } from "../hooks/useShortcut";
 import { ShortcutView } from "./shortcut/ShortcutView";
 import { Shortcuts } from "../resources/shortcut/Shortcuts";
+import { FormInputField } from "./form/FormInputField";
+import { MixerChannelView } from "./mixerView/MixerChannelView";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -49,7 +49,6 @@ export function PlaybackView(props: { playback: Playback }) {
         <InactiveHider enabled={playing} timeout={3000}>
             <PlaybackProgressView playback={props.playback} />
         </InactiveHider>
-
         {/* <LiveInstrumentView /> */}
     </div>
 }
@@ -60,49 +59,49 @@ function PlaybackControls(props: { playback: Playback }) {
     const navigate = useNavigate()
 
     const { playing } = useComponent(props.playback)
-    const { enabled: metronomeEnabled, volume: metronomeVolume } = useComponent(mixer.metronome)
 
     return (
-        <div className="PlaybackControls">
-            <button
-                className="BackButton"
-                onClick={() => navigate("/app")}
-            >
-                <Icon name="arrow_back" /> Back to level selection
-            </button>
+        <div className="PlaybackControls flex flex-col gap-3">
+            <div>
+                <button
+                    className="BackButton"
+                    onClick={() => navigate("/app")}
+                >
+                    <Icon name="arrow_back" /> Back to level selection
+                </button>
 
-            <h1>{props.playback.level.name}</h1>
+                <h1>{props.playback.level.name}</h1>
+            </div>
 
             <div className="buttons">
                 <PlayButton playback={props.playback} />
                 <ResetButton playback={props.playback} />
             </div>
 
-            <InactiveHider enabled={playing} timeout={3000}>
-                <YoutubeVolumeSlider playback={props.playback} />
-
-                <div className="metronome">
-                    <label>
-                        Metronome <Toggle
-                            value={metronomeEnabled}
-                            onChange={v => mixer.metronome.setEnabled(v)}
+            <InactiveHider
+                enabled={playing}
+                timeout={3000}
+                className="flex flex-col gap-5"
+            >
+                <div className="flex flex-col gap-2">
+                    <FormInputField label="Playback volume">
+                        <MixerChannelView
+                            channel={mixer.audio}
+                            hideLabel
                         />
-                    </label>
-                    <Slider
-                        min={0}
-                        max={1}
-                        value={metronomeVolume}
-                        onChange={v => mixer.metronome.setVolume(v)}
-                        disabled={!metronomeEnabled}
-                    />
+                    </FormInputField>
+                    <FormInputField label="Metronome volume">
+                        <MixerChannelView
+                            channel={mixer.metronome}
+                            hideLabel
+                        />
+                    </FormInputField>
                 </div>
 
-                <div className="time">
-                    <PlaybackTimeView
-                        time={props.playback.time}
-                        deltaTime={props.playback.deltaTime} 
-                    />
-                </div>
+                <PlaybackTimeView
+                    time={props.playback.time}
+                    deltaTime={props.playback.deltaTime}
+                />
             </InactiveHider>
         </div>
     );
@@ -134,21 +133,6 @@ function ResetButton(props: { playback: Playback }) {
     >
         RESET <ShortcutView shortcut={Shortcuts.Reset} />
     </button>
-}
-
-function YoutubeVolumeSlider(props: { playback: Playback }) {
-    const { audioVolume } = useComponent(props.playback)
-
-    return <div className="YoutubeVolumeSlider">
-        <Icon name="volume_up" />
-        <small>{(audioVolume * 100) | 0}%</small>
-        <Slider
-            min={0}
-            max={1}
-            value={audioVolume}
-            onChange={v => { props.playback.audioVolume = v }}
-        />
-    </div>
 }
 
 function formatPlaybackTime(seconds: number): string {

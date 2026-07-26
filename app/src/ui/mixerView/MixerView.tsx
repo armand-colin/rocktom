@@ -1,9 +1,8 @@
 import { useContext } from "react";
 import "./MixerView.scss";
-import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { Mixer, type MixerChannel } from "../../resources/Mixer";
-import { Slider } from "../slider/Slider";
-import { MixerButton } from "../mixerButton/MixerButton";
+import { EngineContext } from "@niloc/ecs-react";
+import { Mixer } from "../../resources/Mixer";
+import { MixerChannelView } from "./MixerChannelView";
 
 export function MixerView() {
 	const { engine } = useContext(EngineContext)
@@ -12,27 +11,10 @@ export function MixerView() {
 	return <div className="MixerView">
 		<h2>Mixer</h2>
 		<div className="channels">
-			<ChannelView channel={mixer.master} />
-			<ChannelView channel={mixer.audio} />
-			<ChannelView channel={mixer.feedback} />
-			<ChannelView channel={mixer.metronome} />
+			<MixerChannelView channel={mixer.master} />
+			<MixerChannelView channel={mixer.audio} />
+			<MixerChannelView channel={mixer.feedback} />
+			<MixerChannelView channel={mixer.metronome} />
 		</div>
-	</div>
-}
-
-function ChannelView(props: { channel: MixerChannel }) {
-	const { volume } = useComponent(props.channel)
-
-	return <div className="ChannelView">
-		<MixerButton channel={props.channel} />
-
-		<p>{props.channel.name}</p>
-
-		<Slider
-			value={volume}
-			min={0}
-			max={props.channel.maxVolume}
-			onChange={v => props.channel.setVolume(v)}
-		/>
 	</div>
 }

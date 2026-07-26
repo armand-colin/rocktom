@@ -1,6 +1,6 @@
 import { Component, Engine } from "@niloc/ecs";
 import type { String } from "../../sound/instrument/String";
-import { NoteEvent } from "../../sound/song/NoteEvent";
+import { NoteEvent, type NoteSlide } from "../../sound/song/NoteEvent";
 import type { Pattern, TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
 import { Selection } from "../Selection";
@@ -105,6 +105,17 @@ export class PatternEditor extends Component {
 
         noteEvent.fret = fret
         this._string = noteEvent.string
+        this.changed()
+    }
+
+    setNoteSlide(id: string, slide: NoteSlide | null) {
+        const note = this.pattern.notes.find(n => n.id === id)
+        if (!note)
+            return
+
+        note.slide = slide
+        this._string = note.string
+        this._setDuration = note.duration
         this.changed()
     }
 

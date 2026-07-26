@@ -5,6 +5,7 @@ type Props = {
     children?: React.ReactNode
     timeout?: number,
     enabled?: boolean,
+    className?: string,
 }
 
 enum State {
@@ -57,7 +58,7 @@ export function InactiveHider(props: Props) {
     }, [props.enabled])
 
     return <div
-        className="InactiveHider"
+        className={`InactiveHider ${props.className}`}
         data-state={state}
     >
         {state !== State.Hidden && props.children}
