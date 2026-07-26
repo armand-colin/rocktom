@@ -33,7 +33,7 @@ export class FretTexture extends Texture {
 
         for (let fret = 0; fret <= Rules.maxFret; fret++) {
             context.fillStyle = "white"
-            context.font = `${fontSize}px Stack`
+            context.font = `${fontSize}px Lexend`
             context.textAlign = "center"
             context.textBaseline = "middle"
             context.strokeStyle = "black"
