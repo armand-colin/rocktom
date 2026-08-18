@@ -49,7 +49,9 @@ export const icons = [
     "keyboard_option_key",
     "keyboard_command_key",
     "add",
-    "check"
+    "check",
+    "av_timer",
+    "refresh"
 ] as const;
 
 export type IconName = typeof icons[number];

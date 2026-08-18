@@ -1,5 +1,5 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import { LevelEditor } from "../../components/editor/LevelEditor";
 import { Mixer } from "../../resources/Mixer";
@@ -22,13 +22,16 @@ import { useToastManager } from "../../hooks/useToastManager";
 import { Toast } from "../toast/Toast";
 import { useShortcut } from "../../hooks/useShortcut";
 import { Shortcuts } from "../../resources/shortcut/Shortcuts";
-import { ShortcutView } from "../shortcut/ShortcutView";
 import { Toolbar } from "../toolbar/Toolbar";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
         Toolbar.Tab.create("File", [
             Toolbar.Item.shortcut("Save", Shortcuts.Save),
+        ]),
+        Toolbar.Tab.create("Playback", [
+            Toolbar.Item.shortcut("Play / Pause", Shortcuts.Play),
+            Toolbar.Item.shortcut("Reset", Shortcuts.Reset),
         ]),
         Toolbar.Tab.create("View", [
             Toolbar.Item.section("Windows", [
@@ -104,47 +107,24 @@ export function LevelEditorView(props: {
                     <Icon name="arrow_back" />
                 </Button>
 
-                <LevelName
-                    name={level.name}
+                <StringInput
+                    value={level.name}
                     onChange={name => props.editor.setName(name)}
                 />
-            </div>
-            <div className="flex gap-m">
+
                 <PlayerControls player={props.editor.player} />
-                <Button onClick={showMixer} ><Icon name="instant_mix" /></Button>
+                <Button
+                    onClick={showMixer}
+                    shape="square"
+                >
+                    <Icon name="instant_mix" />
+                </Button>
             </div>
         </div>
 
         <SongEditorView editor={props.editor} />
     </div>
 }
-
-function LevelName(props: { name: string, onChange: (name: string) => void }) {
-    const [editing, setEditing] = useState(false)
-    const [name, setName] = useState(props.name)
-
-    useEffect(() => {
-        setName(props.name)
-    }, [props.name])
-
-    return <div className="LevelName">
-        {
-            editing ?
-                <StringInput
-                    value={name}
-                    name="level-name"
-                    onChange={setName}
-                    autoFocus
-                    onBlur={() => {
-                        props.onChange(name)
-                        setEditing(false)
-                    }}
-                /> :
-                <p onDoubleClick={() => setEditing(true)}>{props.name}</p>
-        }
-    </div>
-}
-
 
 function PlayerControls(props: { player: EditorPlayer }) {
     const { engine } = useContext(EngineContext)
@@ -160,6 +140,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
             props.player.play()
         }
     }
+
     return <div className="PlayerControls flex gap-2">
         <Button
             onClick={onPlayPause}
@@ -169,12 +150,13 @@ function PlayerControls(props: { player: EditorPlayer }) {
             <Icon
                 name={playing ? "pause" : "play_arrow"}
             />
-            <ShortcutView shortcut={Shortcuts.Play} />
         </Button>
 
-        <Button onClick={() => props.player.reset()}>
-            Reset
-            <ShortcutView shortcut={Shortcuts.Reset} />
+        <Button
+            onClick={() => props.player.reset()}
+            shape="square"
+        >
+            <Icon name="refresh" />
         </Button>
 
         <Button
