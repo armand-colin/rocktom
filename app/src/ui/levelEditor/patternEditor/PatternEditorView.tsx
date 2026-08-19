@@ -26,6 +26,7 @@ import { PatternEditorNoteView } from "./PatternEditorNoteView";
 import { FormInputField } from "../../form/FormInputField";
 import { StringInput } from "../../input/StringInput";
 import { UiSize } from "../../UiSize";
+import { MagnetizationView } from "../magnetizationView/MagnetizationView";
 
 const toolbarTabs: Toolbar.Tab[] = [
     Toolbar.Tab.create("Edit", [
@@ -115,13 +116,23 @@ export function PatternEditorView(props: {
     }
 
     function onNotesMouseDown(e: MouseEvent) {
-        if (!notesRef.current)
+        if (e.buttons === MouseButtons.Left) {
+            e.stopPropagation()
+            e.preventDefault()
+            
+            props.editor.selection.clear()
             return
+        }
 
-        props.editor.startSelectionWindow(
-            e.nativeEvent,
-            notesRef.current!
-        )
+        if (e.buttons === MouseButtons.Right) {
+            if (!notesRef.current)
+                return
+
+            props.editor.startSelectionWindow(
+                e.nativeEvent,
+                notesRef.current!
+            )
+        }
     }
 
     function onSplit() {
@@ -158,38 +169,40 @@ export function PatternEditorView(props: {
         onMouseDown={onMouseDown}
     >
         <div className="head">
-            <Toolbar
-                tabs={toolbarTabs}
-            />
+            <Toolbar tabs={toolbarTabs} />
 
-<div className="grid grid-cols-[200px_100px] gap-3">
+            <div className="grid grid-cols-[200px_100px_180px] gap-3">
 
-            <FormInputField label="Pattern name">
-                <StringInput
-                    value={pattern.name}
-                    onChange={name => props.editor.setName(name)}
-                    size={UiSize.S}
+                <FormInputField label="Pattern name">
+                    <StringInput
+                        value={pattern.name}
+                        onChange={name => props.editor.setName(name)}
+                        size={UiSize.S}
                     />
-            </FormInputField>
+                </FormInputField>
 
-            <FormInputField label="String">
-                <Dropdown
-                    size={UiSize.S}
-                    value={string.index.toString()}
-                    options={props.editor.pattern.instrument.strings.map(string => ({
-                        label: string.name,
-                        value: string.index.toString(),
-                        index: string.index
-                    }))}
-                    onChange={value => {
-                        if (!value)
-                            return
+                <FormInputField label="String">
+                    <Dropdown
+                        size={UiSize.S}
+                        value={string.index.toString()}
+                        options={props.editor.pattern.instrument.strings.map(string => ({
+                            label: string.name,
+                            value: string.index.toString(),
+                            index: string.index
+                        }))}
+                        onChange={value => {
+                            if (!value)
+                                return
 
-                        props.editor.setString(props.editor.pattern.instrument.strings[value.index])
-                    }}
-                />
-            </FormInputField>
-</div>
+                            props.editor.setString(props.editor.pattern.instrument.strings[value.index])
+                        }}
+                    />
+                </FormInputField>
+
+                <FormInputField label="Magnetization">
+                    <MagnetizationView transform={props.editor.transform} />
+                </FormInputField>
+            </div>
         </div>
         <div
             className="body"

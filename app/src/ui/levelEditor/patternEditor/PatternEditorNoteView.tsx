@@ -56,6 +56,8 @@ export function PatternEditorNoteView(props: {
         e.preventDefault()
         e.stopPropagation()
 
+        onSelect(e);
+
         const resizer = ResizeNoteDuration.start({
             event: e.nativeEvent,
             editor: props.editor,
@@ -71,6 +73,8 @@ export function PatternEditorNoteView(props: {
     function onResizeSlideDuration(e: MouseEvent) {
         e.preventDefault()
         e.stopPropagation()
+
+        onSelect(e)
 
         const resizer = ResizeNoteSlideDuration.start({
             event: e.nativeEvent,
