@@ -200,7 +200,10 @@ export function PatternEditorView(props: {
                 </FormInputField>
 
                 <FormInputField label="Magnetization">
-                    <MagnetizationView transform={props.editor.transform} />
+                    <MagnetizationView
+                        transform={props.editor.transform}
+                        size={UiSize.S}
+                    />
                 </FormInputField>
             </div>
         </div>

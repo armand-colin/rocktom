@@ -72,8 +72,16 @@ function deserialize(data: SerializedNoteEvent, instrument: Instrument): NoteEve
     }
 }
 
+function clone(note: NoteEvent): NoteEvent {
+    return {
+        ...note,
+        slide: note.slide ? { ...note.slide } : null
+    }
+}
+
 export const NoteEvent = {
     create,
     serialize,
-    deserialize
+    deserialize,
+    clone
 }

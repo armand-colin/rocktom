@@ -10,6 +10,8 @@ import { NoteTransform } from "./NoteTransform";
 import type { Note } from "../../sound/note/Note";
 import { Rules } from "../../3d/Rules";
 import { SelectionWindow } from "./SelectionWindow";
+import { Clipboard } from "../../resources/clipboard/Clipboard";
+import { ClipboardEntryKind } from "../../resources/clipboard/ClipboardEntryKind";
 
 export class PatternEditor extends Component {
 
@@ -147,6 +149,22 @@ export class PatternEditor extends Component {
         this._string = string
         this._setDuration = note.duration
         this.changed()
+    }
+
+    copySelectionToClipboard(): boolean {
+        const selection = [...this.selection.elements]
+        if (selection.length === 0)
+            return false
+
+        selection.sort((a, b) => a.time - b.time)
+
+        const clipboard = this.engine.getResource(Clipboard)
+        clipboard.set({
+            kind: ClipboardEntryKind.PatternNoteEvents,
+            payload: selection.map(note => NoteEvent.clone(note))
+        })
+
+        return true
     }
 
     startSelectionWindow(e: MouseEvent, container: HTMLElement) {
