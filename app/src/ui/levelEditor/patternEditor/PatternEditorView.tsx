@@ -30,10 +30,14 @@ import { MagnetizationView } from "../magnetizationView/MagnetizationView";
 
 const toolbarTabs: Toolbar.Tab[] = [
     Toolbar.Tab.create("Edit", [
-        Toolbar.Item.shortcut("Copy", Shortcuts.Editor.Copy),
-        Toolbar.Item.shortcut("Paste", Shortcuts.Editor.Paste),
-        Toolbar.Item.shortcut("Split", Shortcuts.Editor.Split),
-        Toolbar.Item.shortcut("Slide", Shortcuts.Editor.Slide),
+        Toolbar.Item.section("Clipboard", [
+            Toolbar.Item.shortcut("Copy", Shortcuts.Editor.Copy),
+            Toolbar.Item.shortcut("Paste", Shortcuts.Editor.Paste),
+        ]),
+        Toolbar.Item.section("Notes", [
+            Toolbar.Item.shortcut("Split", Shortcuts.Editor.Split),
+            Toolbar.Item.shortcut("Slide", Shortcuts.Editor.Slide),
+        ]),
     ]),
 ]
 
