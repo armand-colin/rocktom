@@ -196,6 +196,11 @@ export class PatternEditor extends Component {
         return true
     }
 
+    pasteFromClipboardAtGlobalTime(globalTime: number): boolean {
+        const anchorTime = globalTime - this.transform.hardOffset
+        return this.pasteFromClipboard(anchorTime)
+    }
+
     startSelectionWindow(e: MouseEvent, container: HTMLElement) {
         if (this._selectionWindow)
             return

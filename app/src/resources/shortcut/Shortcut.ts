@@ -1,5 +1,6 @@
 export enum KeyCode {
     C = "KeyC",
+    V = "KeyV",
     S = "KeyS",
     R = "KeyR",
     X = "KeyX",
