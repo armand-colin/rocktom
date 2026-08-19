@@ -44,11 +44,9 @@ export function PatternEditorNoteView(props: {
 
     function onSelect(e: MouseEvent) {
         if (e.shiftKey) {
-            props.editor.selection.add(props.note)
+            props.editor.addToSelection(props.note)
         } else {
-            if (!props.editor.selection.has(props.note)) {
-                props.editor.selection.set([props.note])
-            }
+            props.editor.setSelection([props.note])
         }
     }
 

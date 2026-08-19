@@ -3,7 +3,7 @@ import { Emitter, Vec2 } from "@niloc/utils";
 import type { NoteEvent } from "../../sound/song/NoteEvent";
 import type { NoteTransform } from "./NoteTransform";
 import type { TimeTransform } from "./TimeTransform";
-import type { Selection } from "../Selection";
+import type { PatternEditor } from "./PatternEditor";
 
 const SQ_DISTANCE_BEFORE_ENABLING = 100;
 
@@ -17,7 +17,7 @@ export class SelectionWindow extends Component {
     private _notes: NoteEvent[]
     private _timeTransform: TimeTransform
     private _noteTransform: NoteTransform
-    private _selection: Selection<NoteEvent>
+    private _editor: PatternEditor
     private _container: HTMLElement
     private _enabled = false
 
@@ -27,7 +27,7 @@ export class SelectionWindow extends Component {
         container: HTMLElement,
         timeTransform: TimeTransform,
         noteTransform: NoteTransform,
-        selection: Selection<NoteEvent>,
+        editor: PatternEditor,
     }) {
         super(engine)
         const bounds = options.container.getBoundingClientRect()
@@ -45,7 +45,7 @@ export class SelectionWindow extends Component {
         this._notes = options.notes
         this._timeTransform = options.timeTransform
         this._noteTransform = options.noteTransform
-        this._selection = options.selection
+        this._editor = options.editor
 
         window.addEventListener('mousemove', this._onMouseMove)
         window.addEventListener('mouseup', this._onMouseUp)
@@ -119,7 +119,7 @@ export class SelectionWindow extends Component {
             notes.push(note)
         }
 
-        this._selection.set(notes)
+        this._editor.setSelection(notes)
         this.changed()
     }
 

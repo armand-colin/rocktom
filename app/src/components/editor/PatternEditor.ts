@@ -64,15 +64,40 @@ export class PatternEditor extends Component {
         }
     }
 
+    setSelection(notes: NoteEvent[]) {
+        this.selection.set(notes)
+        this._syncStringFromSelection()
+        this.changed()
+    }
+
+    addToSelection(note: NoteEvent) {
+        this.selection.add(note)
+        this._syncStringFromNote(note)
+        this.changed()
+    }
+
     selectNote(id: string) {
         const note = this.pattern.notes.find(n => n.id === id)
         if (!note)
             return
 
+        this.setSelection([note])
+    }
+
+    private _syncStringFromSelection() {
+        const note = this.selection.elements.reduce<NoteEvent | null>((earliest, current) => {
+            if (!earliest || current.time < earliest.time)
+                return current
+            return earliest
+        }, null)
+
+        if (note)
+            this._syncStringFromNote(note)
+    }
+
+    private _syncStringFromNote(note: NoteEvent) {
         this._string = note.string
         this._setDuration = note.duration
-        this.selection.set([note])
-        this.changed()
     }
 
     setNoteDuration(id: string, duration: number) {
@@ -186,13 +211,10 @@ export class PatternEditor extends Component {
             pastedNotes.push(note)
         }
 
-        if (pastedNotes.length > 0) {
-            this.selection.set(pastedNotes)
-            this._string = pastedNotes[0].string
-            this._setDuration = pastedNotes[0].duration
-        }
-
-        this.changed()
+        if (pastedNotes.length > 0)
+            this.setSelection(pastedNotes)
+        else
+            this.changed()
         return true
     }
 
@@ -211,7 +233,7 @@ export class PatternEditor extends Component {
             container: container,
             timeTransform: this.transform,
             noteTransform: this.noteTransform,
-            selection: this.selection
+            editor: this
         })
 
         this._selectionWindow = selectionWindow
