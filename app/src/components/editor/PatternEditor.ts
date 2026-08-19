@@ -37,6 +37,8 @@ export class PatternEditor extends Component {
         this.noteTransform = engine.createComponent(NoteTransform, this.pattern.instrument)
         this.selection = engine.createComponent<Selection<NoteEvent>, []>(Selection)
         this._string = this.pattern.instrument.strings[0]
+
+        this.selection.onChange(this._onSelectionChanged)
     }
 
     get string() {
@@ -64,40 +66,12 @@ export class PatternEditor extends Component {
         }
     }
 
-    setSelection(notes: NoteEvent[]) {
-        this.selection.set(notes)
-        this._syncStringFromSelection()
-        this.changed()
-    }
-
-    addToSelection(note: NoteEvent) {
-        this.selection.add(note)
-        this._syncStringFromNote(note)
-        this.changed()
-    }
-
     selectNote(id: string) {
         const note = this.pattern.notes.find(n => n.id === id)
         if (!note)
             return
 
-        this.setSelection([note])
-    }
-
-    private _syncStringFromSelection() {
-        const note = this.selection.elements.reduce<NoteEvent | null>((earliest, current) => {
-            if (!earliest || current.time < earliest.time)
-                return current
-            return earliest
-        }, null)
-
-        if (note)
-            this._syncStringFromNote(note)
-    }
-
-    private _syncStringFromNote(note: NoteEvent) {
-        this._string = note.string
-        this._setDuration = note.duration
+        this.selection.set([note])
     }
 
     setNoteDuration(id: string, duration: number) {
@@ -158,6 +132,8 @@ export class PatternEditor extends Component {
         this.pattern.add(note)
         this.changed()
 
+        this.selection.set([note])
+
         return note;
     }
 
@@ -211,9 +187,9 @@ export class PatternEditor extends Component {
             pastedNotes.push(note)
         }
 
-        if (pastedNotes.length > 0)
-            this.setSelection(pastedNotes)
-        else
+        if (pastedNotes.length > 0) {
+            this.selection.set(pastedNotes)
+        } else
             this.changed()
         return true
     }
@@ -252,6 +228,20 @@ export class PatternEditor extends Component {
         })
 
         this.changed()
+    }
+
+    private _onSelectionChanged = () => {
+        const lastNote = this.selection.elements[this.selection.elements.length - 1]
+
+        if (lastNote) {
+            this._string = lastNote.string
+            this.changed()
+        }
+    }
+
+    destroy(): void {
+        super.destroy()
+        this.selection.offChange(this._onSelectionChanged)
     }
 
 }

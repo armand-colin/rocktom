@@ -119,7 +119,7 @@ export class SelectionWindow extends Component {
             notes.push(note)
         }
 
-        this._editor.setSelection(notes)
+        this._editor.selection.set(notes)
         this.changed()
     }
 
