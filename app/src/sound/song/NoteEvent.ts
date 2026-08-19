@@ -75,6 +75,7 @@ function deserialize(data: SerializedNoteEvent, instrument: Instrument): NoteEve
 function clone(note: NoteEvent): NoteEvent {
     return {
         ...note,
+        id: nanoid(),
         slide: note.slide ? { ...note.slide } : null
     }
 }

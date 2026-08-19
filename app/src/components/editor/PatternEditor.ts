@@ -167,6 +167,35 @@ export class PatternEditor extends Component {
         return true
     }
 
+    pasteFromClipboard(anchorTime: number): boolean {
+        const clipboard = this.engine.getResource(Clipboard)
+        const entry = clipboard.read(ClipboardEntryKind.PatternNoteEvents)
+        if (!entry || entry.payload.length === 0)
+            return false
+
+        const sourceNotes = [...entry.payload].sort((a, b) => a.time - b.time)
+        const minTime = sourceNotes[0].time
+        const offset = anchorTime - minTime
+
+        const pastedNotes: NoteEvent[] = []
+        for (const sourceNote of sourceNotes) {
+            const note = NoteEvent.clone(sourceNote)
+            note.time = Math.max(0, note.time + offset)
+
+            this.pattern.add(note)
+            pastedNotes.push(note)
+        }
+
+        if (pastedNotes.length > 0) {
+            this.selection.set(pastedNotes)
+            this._string = pastedNotes[0].string
+            this._setDuration = pastedNotes[0].duration
+        }
+
+        this.changed()
+        return true
+    }
+
     startSelectionWindow(e: MouseEvent, container: HTMLElement) {
         if (this._selectionWindow)
             return
