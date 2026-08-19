@@ -30,6 +30,7 @@ import { MagnetizationView } from "../magnetizationView/MagnetizationView";
 
 const toolbarTabs: Toolbar.Tab[] = [
     Toolbar.Tab.create("Edit", [
+        Toolbar.Item.shortcut("Copy", Shortcuts.Editor.Copy),
         Toolbar.Item.shortcut("Split", Shortcuts.Editor.Split),
         Toolbar.Item.shortcut("Slide", Shortcuts.Editor.Slide),
     ]),
@@ -42,6 +43,7 @@ export function PatternEditorView(props: {
     const { pattern, string, selectionWindow } = useComponent(props.editor)
     const { elements: selection } = useComponent(props.editor.selection)
 
+    useShortcut(Shortcuts.Editor.Copy, onCopy)
     useShortcut(Shortcuts.Editor.Split, onSplit)
     useShortcut(Shortcuts.Editor.Slide, onSlide)
 
@@ -145,6 +147,10 @@ export function PatternEditorView(props: {
             editor={props.editor}
             notes={selection}
         />)
+    }
+
+    function onCopy() {
+        props.editor.copySelectionToClipboard()
     }
 
     function onSlide() {
