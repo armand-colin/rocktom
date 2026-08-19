@@ -121,7 +121,7 @@ export function PatternEditorView(props: {
     }
 
     function onNotesMouseDown(e: MouseEvent) {
-        if (e.buttons === MouseButtons.Left) {
+        if (e.buttons === MouseButtons.Right) {
             e.stopPropagation()
             e.preventDefault()
             
@@ -129,7 +129,7 @@ export function PatternEditorView(props: {
             return
         }
 
-        if (e.buttons === MouseButtons.Right) {
+        if (e.buttons === MouseButtons.Left) {
             if (!notesRef.current)
                 return
 
