@@ -1,4 +1,6 @@
 .PlaybackProgressView {
+    position: relative;
+    overflow: hidden;
     height: 80px;
     background: var(--color-grey-500);
     border-radius: var(--radius-sm);
@@ -19,6 +21,9 @@
         height: 100%;
         width: calc(var(--marker-duration) / var(--duration) * 100%);
         padding: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         pointer-events: none;
         
         &:not(:last-child) {

@@ -11,7 +11,7 @@ export function PlaybackProgressView(props: { playback: Playback }) {
         const rect = (e.target as HTMLElement).getBoundingClientRect()
         const clickPosition = e.clientX - rect.left
         const clickRatio = clickPosition / rect.width
-        const newTicks = clickRatio * duration
+        const newTicks = Math.max(0, Math.min(clickRatio * duration, duration))
         props.playback.seekTicks(newTicks)
     }
 
@@ -48,7 +48,7 @@ export function PlaybackProgressView(props: { playback: Playback }) {
     return <div
         className="PlaybackProgressView"
         style={{
-            '--progress': (ticks / duration),
+            '--progress': duration > 0 ? Math.min(ticks / duration, 1) : 0,
             '--duration': props.playback.level.durationInTicks
         } as CSSProperties}
         onClick={onClick}

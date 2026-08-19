@@ -42,7 +42,6 @@ export function PatternEditorView(props: {
     player: EditorPlayer
 }) {
     const { pattern, string, selectionWindow } = useComponent(props.editor)
-    const { ticks } = useComponent(props.player.time)
     const { elements: selection } = useComponent(props.editor.selection)
 
     useShortcut(Shortcuts.Editor.Copy, onCopy)
@@ -157,7 +156,7 @@ export function PatternEditorView(props: {
     }
 
     function onPaste() {
-        props.editor.pasteFromClipboardAtGlobalTime(ticks)
+        props.editor.pasteFromClipboardAtGlobalTime(props.player.time.ticks)
     }
 
     function onSlide() {
