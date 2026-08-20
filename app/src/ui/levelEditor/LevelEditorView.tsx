@@ -23,6 +23,7 @@ import { Toast } from "../toast/Toast";
 import { useShortcut } from "../../hooks/useShortcut";
 import { Shortcuts } from "../../resources/shortcut/Shortcuts";
 import { Toolbar } from "../toolbar/Toolbar";
+import { FormInputField } from "../form/FormInputField";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
@@ -113,6 +114,7 @@ export function LevelEditorView(props: {
                 />
 
                 <PlayerControls player={props.editor.player} />
+
                 <Button
                     onClick={showMixer}
                     shape="square"
@@ -183,9 +185,11 @@ function SongEditorView(props: { editor: LevelEditor }) {
         onWheel={e => props.editor.timeTransform.handleWheel(e.nativeEvent, e.currentTarget)}
     >
         <div className="head">
-            <MagnetizationView
-                transform={props.editor.timeTransform}
-            />
+            <FormInputField label="Magnetization" className="max-w-50">
+                <MagnetizationView
+                    transform={props.editor.timeTransform}
+                />
+            </FormInputField>
         </div>
         <div className="time">
             <TimeTransformView
