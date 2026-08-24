@@ -12,6 +12,7 @@ import { Rules } from "../../3d/Rules";
 import { SelectionWindow } from "./SelectionWindow";
 import { Clipboard } from "../../resources/clipboard/Clipboard";
 import { ClipboardEntryKind } from "../../resources/clipboard/ClipboardEntryKind";
+import { PatternEditorMouseDispatcher } from "./actions/PatternEditorMouseDispatcher";
 
 export class PatternEditor extends Component {
 
@@ -20,6 +21,7 @@ export class PatternEditor extends Component {
     readonly noteTransform: NoteTransform
     readonly virtualBass: VirtualBass
     readonly selection: Selection<NoteEvent>
+    readonly mouse: PatternEditorMouseDispatcher
 
     private _selectionWindow: SelectionWindow | null = null
 
@@ -37,6 +39,7 @@ export class PatternEditor extends Component {
         this.noteTransform = engine.createComponent(NoteTransform, this.pattern.instrument)
         this.selection = engine.createComponent<Selection<NoteEvent>, []>(Selection)
         this._string = this.pattern.instrument.strings[0]
+        this.mouse = new PatternEditorMouseDispatcher(this)
 
         this.selection.onChange(this._onSelectionChanged)
     }
@@ -240,6 +243,7 @@ export class PatternEditor extends Component {
     }
 
     destroy(): void {
+        this.mouse.destroy()
         super.destroy()
         this.selection.offChange(this._onSelectionChanged)
     }

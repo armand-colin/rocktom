@@ -1,36 +1,33 @@
-import type { NoteEvent } from "../../../sound/song/NoteEvent";
 import type { Handler } from "../../../utils/handlers/Handler";
 import { TimeResizer } from "../../../utils/handlers/TimeResizer";
 import { MouseButtons } from "../../../utils/MouseButtons";
-import type { PatternEditor } from "../PatternEditor";
+import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
 
-export namespace ResizeNoteSlideDuration {
+export class ResizeNoteSlideDuration implements PatternEditorMouseAction {
 
-    export function start(options: {
-        event: MouseEvent,
-        editor: PatternEditor,
-        note: NoteEvent,
-    }): Handler | null {
-        if (!options.note.slide || options.event.buttons !== MouseButtons.Left)
-            return null;
+    start(context: PatternEditorMouseActionContext): Handler | null {
+        const { event, editor, note } = context
+
+        if (!note.slide || event.buttons !== MouseButtons.Left)
+            return null
 
         const resizer = new TimeResizer({
-            event: options.event,
-            duration: options.note.duration - options.note.slide.duration,
-            transform: options.editor.transform,
+            event,
+            duration: note.duration - note.slide.duration,
+            transform: editor.transform,
         })
 
-        resizer.events.on('changed', duration => {
-            const slideDuration = Math.min(Math.max(options.note.duration - duration, 0), options.note.duration);
+        resizer.events.on("changed", duration => {
+            const slideDuration = Math.min(Math.max(note.duration - duration, 0), note.duration)
 
-            options.editor.setNoteSlide(options.note.id, {
-                fret: options.note.slide!.fret,
+            editor.setNoteSlide(note.id, {
+                fret: note.slide!.fret,
                 duration: slideDuration,
-                connect: options.note.slide!.connect
+                connect: note.slide!.connect
             })
         })
 
-        return resizer;
+        return resizer
     }
 
 }

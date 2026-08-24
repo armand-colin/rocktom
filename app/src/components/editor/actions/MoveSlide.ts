@@ -1,39 +1,33 @@
-import type { NoteEvent } from "../../../sound/song/NoteEvent";
 import type { Handler } from "../../../utils/handlers/Handler";
 import { NoteMover } from "../../../utils/handlers/NoteMover";
-import type { PatternEditor } from "../PatternEditor";
+import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
 
-export namespace MoveSlide {
+export class MoveSlide implements PatternEditorMouseAction {
 
-    export function start(options: {
-        event: MouseEvent,
-        editor: PatternEditor,
-        note: NoteEvent,
-    }): Handler | null {
-        if (!options.note.slide)
-            return null;
+    start(context: PatternEditorMouseActionContext): Handler | null {
+        const { event, editor, note } = context
 
-        options.event.stopPropagation()
-        options.event.preventDefault()
+        if (!note.slide)
+            return null
 
-        const slideNote = options.note.string.fret(options.note.slide.fret)
+        const slideNote = note.string.fret(note.slide.fret)
 
         const noteMover = new NoteMover({
-            event: options.event,
+            event,
             startNote: slideNote,
-            string: options.note.string,
-            transform: options.editor.noteTransform
+            string: note.string,
+            transform: editor.noteTransform
         })
 
-        noteMover.events.on('change', note => {
-            options.editor.setNoteSlide(options.note.id, {
-                fret: note.index - options.note.string.note.index,
-                duration: options.note.slide!.duration,
-                connect: options.note.slide!.connect
+        noteMover.events.on("change", pitch => {
+            editor.setNoteSlide(note.id, {
+                fret: pitch.index - note.string.note.index,
+                duration: note.slide!.duration,
+                connect: note.slide!.connect
             })
         })
 
-        return noteMover;
+        return noteMover
     }
 
 }
