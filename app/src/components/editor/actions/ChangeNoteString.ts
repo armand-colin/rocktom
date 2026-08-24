@@ -1,9 +1,7 @@
-import type { Handler } from "../../../utils/handlers/Handler";
-import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
+import type { PatternEditorMouseAction } from "./PatternEditorMouseAction";
 
-export class ChangeNoteString implements PatternEditorMouseAction {
-
-    start(context: PatternEditorMouseActionContext): Handler | null {
+export const ChangeNoteString: PatternEditorMouseAction = {
+    start(context) {
         const { editor, note } = context
 
         editor.selectNote(note.id)
@@ -22,5 +20,4 @@ export class ChangeNoteString implements PatternEditorMouseAction {
 
         return null
     }
-
 }

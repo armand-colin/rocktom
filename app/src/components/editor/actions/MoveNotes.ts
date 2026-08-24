@@ -2,11 +2,10 @@ import type { NoteEvent } from "../../../sound/song/NoteEvent";
 import { Handler } from "../../../utils/handlers/Handler";
 import { NoteMover } from "../../../utils/handlers/NoteMover";
 import { TimeMover } from "../../../utils/handlers/TimeMover";
-import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
+import type { PatternEditorMouseAction } from "./PatternEditorMouseAction";
 
-export class MoveNotes implements PatternEditorMouseAction {
-
-    start(context: PatternEditorMouseActionContext): Handler | null {
+export const MoveNotes: PatternEditorMouseAction = {
+    start(context) {
         const { event, editor, note } = context
 
         const minTimeNote = editor.selection.elements.reduce<NoteEvent | null>((min, selected) => {
@@ -58,5 +57,4 @@ export class MoveNotes implements PatternEditorMouseAction {
 
         return Handler.compose(handlers)
     }
-
 }

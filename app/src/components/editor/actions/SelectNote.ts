@@ -1,8 +1,7 @@
-import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
+import type { PatternEditorMouseAction } from "./PatternEditorMouseAction";
 
-export class SelectNote implements PatternEditorMouseAction {
-
-    start(context: PatternEditorMouseActionContext) {
+export const SelectNote: PatternEditorMouseAction = {
+    start(context) {
         const { event, editor, note } = context
 
         if (event.shiftKey) {
@@ -17,5 +16,4 @@ export class SelectNote implements PatternEditorMouseAction {
         editor.selection.set([note])
         return null
     }
-
 }

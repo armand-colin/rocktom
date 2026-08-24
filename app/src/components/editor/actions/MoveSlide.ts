@@ -1,10 +1,8 @@
-import type { Handler } from "../../../utils/handlers/Handler";
 import { NoteMover } from "../../../utils/handlers/NoteMover";
-import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
+import type { PatternEditorMouseAction } from "./PatternEditorMouseAction";
 
-export class MoveSlide implements PatternEditorMouseAction {
-
-    start(context: PatternEditorMouseActionContext): Handler | null {
+export const MoveSlide: PatternEditorMouseAction = {
+    start(context) {
         const { event, editor, note } = context
 
         if (!note.slide)
@@ -29,5 +27,4 @@ export class MoveSlide implements PatternEditorMouseAction {
 
         return noteMover
     }
-
 }

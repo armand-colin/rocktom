@@ -8,6 +8,25 @@ export type PatternEditorMouseActionContext = {
     note: NoteEvent
 }
 
+export type PatternEditorGridMouseActionContext = {
+    event: MouseEvent
+    editor: PatternEditor
+    container: HTMLElement
+}
+
+export type PatternEditorViewMouseActionContext = {
+    event: MouseEvent
+    editor: PatternEditor
+}
+
 export interface PatternEditorMouseAction {
     start(context: PatternEditorMouseActionContext): Handler | null
+}
+
+export interface PatternEditorGridMouseAction {
+    start(context: PatternEditorGridMouseActionContext): Handler | null
+}
+
+export interface PatternEditorViewMouseAction {
+    start(context: PatternEditorViewMouseActionContext): Handler | null
 }

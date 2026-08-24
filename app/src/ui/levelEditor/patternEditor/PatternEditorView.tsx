@@ -15,12 +15,10 @@ import type { NoteTransform } from "../../../components/editor/NoteTransform";
 import { PopupManager } from "../../../resources/PopupManager";
 import { SplitPopup } from "../split/SplitPopup";
 import { Instance } from "../../../Instance";
-import type { NoteEvent } from "../../../sound/song/NoteEvent";
 import { useShortcut } from "../../../hooks/useShortcut";
 import { Shortcuts } from "../../../resources/shortcut/Shortcuts";
 import { SelectionWindowView } from "../SelectionWindowView";
 import { Dropdown } from "../../dropdown/Dropdown";
-import { MouseState } from "../../../components/editor/actions/MouseState";
 import { Toolbar } from "../../toolbar/Toolbar";
 import { PatternEditorNoteView } from "./PatternEditorNoteView";
 import { FormInputField } from "../../form/FormInputField";
@@ -47,6 +45,7 @@ export function PatternEditorView(props: {
 }) {
     const { pattern, string, selectionWindow } = useComponent(props.editor)
     const { elements: selection } = useComponent(props.editor.selection)
+    const mouse = props.editor.mouse
 
     useShortcut(Shortcuts.Editor.Copy, onCopy)
     useShortcut(Shortcuts.Editor.Paste, onPaste)
@@ -57,23 +56,6 @@ export function PatternEditorView(props: {
     const minNote = pattern.instrument.lowestString.fret(0)
     const maxNote = pattern.instrument.highestString.fret(Rules.maxFret)
 
-    function stringUp() {
-        const string = props.editor.string
-        const index = (string.index + 1) % props.editor.pattern.instrument.strings.length
-        const newString = props.editor.pattern.instrument.strings[index]
-
-        if (newString)
-            props.editor.setString(newString)
-    }
-
-    function onMouseDown(e: MouseEvent) {
-        if (e.buttons === MouseButtons.Middle) {
-            e.preventDefault()
-            e.stopPropagation()
-            stringUp()
-        }
-    }
-
     const notes = useMemo(() => {
         const notes = []
         for (let i = minNote.index; i <= maxNote.index; i++)
@@ -81,67 +63,6 @@ export function PatternEditorView(props: {
 
         return notes
     }, [minNote, maxNote])
-
-    function onNotesClick(e: MouseEvent) {
-        if (!notesRef.current || props.editor.selectionWindow?.enabled)
-            return
-
-        if (Instance.engine.getResource(MouseState).clickPrevented)
-            return;
-
-        // Shall find ticks and note
-        const rect = notesRef.current.getBoundingClientRect()
-        const mouseX = e.clientX - rect.left
-        const mouseY = e.clientY - rect.top
-        const ticks = props.editor.transform.magnetize(mouseX / props.editor.transform.ratio - props.editor.transform.offset)
-        const note = props.editor.noteTransform.getNoteForOffset(mouseY)
-
-        let noteEvent: NoteEvent | null = null
-        if (!string.canPlay(note)) {
-            // Find first string that matches
-            const strings = props.editor.pattern.instrument.strings
-            for (const string of strings) {
-                if (string.canPlay(note)) {
-                    noteEvent = props.editor.addNote(
-                        string,
-                        note.index - string.note.index,
-                        ticks
-                    )
-                    return
-                }
-            }
-        } else {
-            noteEvent = props.editor.addNote(
-                string,
-                note.index - string.note.index,
-                ticks
-            )
-        }
-
-        if (noteEvent) {
-            props.editor.selectNote(noteEvent.id)
-        }
-    }
-
-    function onNotesMouseDown(e: MouseEvent) {
-        if (e.buttons === MouseButtons.Right) {
-            e.stopPropagation()
-            e.preventDefault()
-            
-            props.editor.selection.clear()
-            return
-        }
-
-        if (e.buttons === MouseButtons.Left) {
-            if (!notesRef.current)
-                return
-
-            props.editor.startSelectionWindow(
-                e.nativeEvent,
-                notesRef.current!
-            )
-        }
-    }
 
     function onSplit() {
         const selection = props.editor.selection.elements
@@ -182,7 +103,13 @@ export function PatternEditorView(props: {
 
     return <div
         className="PatternEditorView"
-        onMouseDown={onMouseDown}
+        onMouseDown={e => {
+            if (e.buttons === MouseButtons.Middle) {
+                e.preventDefault()
+                e.stopPropagation()
+            }
+            mouse.onViewMouseDown(e.nativeEvent)
+        }}
     >
         <div className="head">
             <Toolbar tabs={toolbarTabs} />
@@ -266,8 +193,20 @@ export function PatternEditorView(props: {
                     time={props.player.time}
                     className="notes"
                     ref={notesRef}
-                    onClick={onNotesClick}
-                    onMouseDown={onNotesMouseDown}
+                    onClick={e => {
+                        if (!notesRef.current)
+                            return
+                        mouse.onGridClick(e.nativeEvent, notesRef.current)
+                    }}
+                    onMouseDown={e => {
+                        if (!notesRef.current)
+                            return
+                        if (e.buttons === MouseButtons.Right) {
+                            e.preventDefault()
+                            e.stopPropagation()
+                        }
+                        mouse.onGridMouseDown(e.nativeEvent, notesRef.current)
+                    }}
                 >
                     <TimeMarkersView transform={props.editor.transform} />
 

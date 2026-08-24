@@ -202,34 +202,8 @@ export class PatternEditor extends Component {
         return this.pasteFromClipboard(anchorTime)
     }
 
-    startSelectionWindow(e: MouseEvent, container: HTMLElement) {
-        if (this._selectionWindow)
-            return
-
-        const selectionWindow = new SelectionWindow(this.engine, {
-            notes: this.pattern.notes,
-            event: e,
-            container: container,
-            timeTransform: this.transform,
-            noteTransform: this.noteTransform,
-            editor: this
-        })
-
+    setSelectionWindow(selectionWindow: SelectionWindow | null) {
         this._selectionWindow = selectionWindow
-
-        selectionWindow.events.on('end', () => {
-            // Adding timeout to know if we're still selecting (and avoid click events)
-            setTimeout(() => {
-                if (this._selectionWindow !== selectionWindow)
-                    return
-
-                selectionWindow.destroy()
-                this._selectionWindow = null;
-
-                this.changed();
-            }, 50)
-        })
-
         this.changed()
     }
 
@@ -244,6 +218,8 @@ export class PatternEditor extends Component {
 
     destroy(): void {
         this.mouse.destroy()
+        this._selectionWindow?.destroy()
+        this._selectionWindow = null
         super.destroy()
         this.selection.offChange(this._onSelectionChanged)
     }

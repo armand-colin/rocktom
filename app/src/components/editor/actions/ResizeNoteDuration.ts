@@ -1,12 +1,10 @@
 import type { NoteEvent } from "../../../sound/song/NoteEvent";
-import type { Handler } from "../../../utils/handlers/Handler";
 import { TimeResizer } from "../../../utils/handlers/TimeResizer";
 import { MouseButtons } from "../../../utils/MouseButtons";
-import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
+import type { PatternEditorMouseAction } from "./PatternEditorMouseAction";
 
-export class ResizeNoteDuration implements PatternEditorMouseAction {
-
-    start(context: PatternEditorMouseActionContext): Handler | null {
+export const ResizeNoteDuration: PatternEditorMouseAction = {
+    start(context) {
         const { event, editor } = context
 
         if (event.buttons !== MouseButtons.Left)
@@ -47,5 +45,4 @@ export class ResizeNoteDuration implements PatternEditorMouseAction {
 
         return resizer
     }
-
 }

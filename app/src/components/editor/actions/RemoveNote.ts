@@ -1,10 +1,8 @@
-import type { PatternEditorMouseAction, PatternEditorMouseActionContext } from "./PatternEditorMouseAction";
+import type { PatternEditorMouseAction } from "./PatternEditorMouseAction";
 
-export class RemoveNote implements PatternEditorMouseAction {
-
-    start(context: PatternEditorMouseActionContext) {
+export const RemoveNote: PatternEditorMouseAction = {
+    start(context) {
         context.editor.removeNote(context.note.id)
         return null
     }
-
 }
