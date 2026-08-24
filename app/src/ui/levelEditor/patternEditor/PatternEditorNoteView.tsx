@@ -21,6 +21,17 @@ export function PatternEditorNoteView(props: {
     const note = props.string.fret(props.fret)
     const mouse = props.editor.mouse
 
+    function dispatchNative(
+        e: MouseEvent,
+        action: (nativeEvent: globalThis.MouseEvent) => void
+    ) {
+        // React synthetic bubbling is separate from native stopPropagation —
+        // must stop here so resizers don't also hit note/slide/grid handlers.
+        e.preventDefault()
+        e.stopPropagation()
+        action(e.nativeEvent)
+    }
+
     function onDoubleClick(e: MouseEvent) {
         e.preventDefault()
         e.stopPropagation()
@@ -56,34 +67,34 @@ export function PatternEditorNoteView(props: {
             "--note-fret": props.note.fret,
             "--slide-fret": props.note.slide?.fret ?? 0,
         } as CSSProperties}
-        onContextMenu={e => mouse.onNoteContextMenu(e.nativeEvent, props.note)}
+        onContextMenu={e => dispatchNative(e, nativeEvent => mouse.onNoteContextMenu(nativeEvent, props.note))}
         onMouseEnter={e => mouse.onNoteMouseEnter(e.nativeEvent, props.note)}
         onDoubleClick={onDoubleClick}
         onClick={onClick}
     >
         <div
             className="main"
-            onMouseDown={e => mouse.onNoteMouseDown(e.nativeEvent, props.note)}
+            onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onNoteMouseDown(nativeEvent, props.note))}
         >
             <p>{note.name}{note.octave}</p>
             <div className="fret-hint">{props.fret}</div>
-            <div className="resizer-right" onMouseDown={e => {
+            <div className="resizer-right" onMouseDown={e => dispatchNative(e, nativeEvent => {
                 if (props.note.slide)
-                    mouse.onResizeSlideDuration(e.nativeEvent, props.note)
+                    mouse.onResizeSlideDuration(nativeEvent, props.note)
                 else
-                    mouse.onResizeDuration(e.nativeEvent, props.note)
-            }} />
+                    mouse.onResizeDuration(nativeEvent, props.note)
+            })} />
         </div>
 
         {
             props.note.slide && <div
                 className="slide"
-                onMouseDown={e => mouse.onSlideMouseDown(e.nativeEvent, props.note)}
+                onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onSlideMouseDown(nativeEvent, props.note))}
             >
                 <p>{slideNote?.name}{slideNote?.octave}</p>
                 <div className="fret-hint">{props.note.slide.fret}</div>
-                <div className="resizer-right" onMouseDown={e => mouse.onResizeDuration(e.nativeEvent, props.note)}></div>
-                <div className="resizer-left" onMouseDown={e => mouse.onResizeSlideDuration(e.nativeEvent, props.note)}></div>
+                <div className="resizer-right" onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onResizeDuration(nativeEvent, props.note))}></div>
+                <div className="resizer-left" onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onResizeSlideDuration(nativeEvent, props.note))}></div>
             </div>
         }
     </div>
