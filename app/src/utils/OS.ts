@@ -38,5 +38,6 @@ function isCtrl(event: MouseEvent | KeyboardEvent | WheelEvent): boolean {
 export const OS = {
     current: os,
     isMacOS: os === OSType.MacOS,
-    isCtrl: isCtrl
+    isCtrl: isCtrl,
+    deleteKeyCode: os === OSType.MacOS ? "Backspace" : "Delete",
 }

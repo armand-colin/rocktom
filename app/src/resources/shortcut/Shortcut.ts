@@ -1,3 +1,5 @@
+import { OS } from "../../utils/OS"
+
 export enum KeyCode {
     C = "KeyC",
     V = "KeyV",
@@ -6,14 +8,23 @@ export enum KeyCode {
     X = "KeyX",
     N = "KeyN",
     Space = "Space",
+    Delete = "Delete",
 }
 
 export namespace KeyCode {
+
+    export function toEventCode(code: KeyCode): string {
+        if (code === KeyCode.Delete)
+            return OS.deleteKeyCode
+        return code
+    }
 
     export function toString(code: KeyCode): string {
         switch (code) {
             case KeyCode.Space:
                 return 'Space'
+            case KeyCode.Delete:
+                return OS.isMacOS ? 'Backspace' : 'Suppr'
             default:
                 return code.slice(3)
         }

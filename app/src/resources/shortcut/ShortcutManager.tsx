@@ -1,5 +1,5 @@
 import { Action, Engine, Resource } from "@niloc/ecs";
-import type { Shortcut } from "./Shortcut";
+import { KeyCode, type Shortcut } from "./Shortcut";
 import { OS } from "../../utils/OS";
 
 type ShortcutBinding = {
@@ -29,7 +29,7 @@ export class ShortcutManager extends Resource {
                     return
 
                 if (
-                    event.code === shortcut.keyCode &&
+                    event.code === KeyCode.toEventCode(shortcut.keyCode) &&
                     ctrl === shortcut.ctrl &&
                     event.altKey === shortcut.alt &&
                     event.shiftKey === shortcut.shift

@@ -69,6 +69,19 @@ export class PatternEditor extends Component {
         }
     }
 
+    removeSelection(): boolean {
+        const selection = [...this.selection.elements]
+        if (selection.length === 0)
+            return false
+
+        for (const note of selection)
+            this.pattern.remove(note.id)
+
+        this.selection.clear()
+        this.changed()
+        return true
+    }
+
     selectNote(id: string) {
         const note = this.pattern.notes.find(n => n.id === id)
         if (!note)
