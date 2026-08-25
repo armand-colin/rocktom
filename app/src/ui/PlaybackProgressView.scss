@@ -3,14 +3,13 @@
     grid-template-rows: auto 1fr;
     gap: var(--spacing-2);
     align-items: end;
-    height: 100px;
-    transition: height 0.3s ease-in-out, gap 0.3s ease-in-out;
+    transition: gap 0.3s var(--curve-smooth);
 
     .skip {
         min-height: 0;
         overflow: hidden;
         opacity: 1;
-        transition: opacity 0.3s ease-in-out;
+        transition: opacity 0.3s var(--curve-smooth);
         justify-self: end;
     }
 
@@ -23,7 +22,8 @@
         outline: 1px solid var(--color-grey-400);
         width: 100%;
         cursor: pointer;
-        transition: height 0.3s ease-in-out;
+        transition: height 0.3s var(--curve-smooth);
+        height: 100px;
     }
 
     .bar {
@@ -49,7 +49,7 @@
 
         .marker-label {
             opacity: 1;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s var(--curve-smooth);
         }
 
         &:not(:last-child) {

@@ -160,7 +160,9 @@
     --font-heading-lg: 600 var(--text-hlg)/var(--leading-hlg) var(--font-lexend);
     --font-heading-xl: 600 var(--text-hxl)/var(--leading-hxl) var(--font-lexend);
 
-    --animate-pop-in: popInAnimation 0.08s cubic-bezier(.38, .21, .21, .98);
+    --animate-pop-in: popInAnimation 0.08s var(--curve-smooth);
+
+    --curve-smooth: cubic-bezier(.38, .21, .21, .98);
 }
 
 @layer base {
