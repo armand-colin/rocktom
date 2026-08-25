@@ -5,12 +5,9 @@
     td {
         padding: 2px 0;
         vertical-align: baseline;
-        
-        &:first-child {
-            width: min-content;
-        }
 
         &.label {
+            width: 0;
             opacity: 0.5;
             padding-right: 8px;
             white-space: nowrap;
