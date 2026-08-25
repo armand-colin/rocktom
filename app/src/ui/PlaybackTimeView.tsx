@@ -19,26 +19,28 @@ export function PlaybackTimeView(props: { time: Time, deltaTime: DeltaTime }) {
     const bars = (time.ticks / Tempo.bars(1)) | 0
     const beatInBar = (time.ticks % Tempo.bars(1)) / Tempo.PPQ
 
-    return <div className="PlaybackTimeView">
-        <div className="field">
-            <span className="label">Time</span>
-            <span className="value">{formatPlaybackTime(time.seconds)}</span>
-        </div>
-        <div className="field">
-            <span className="label">Ticks</span>
-            <span className="value">{time.ticks}</span>
-        </div>
-        <div className="field">
-            <span className="label">Tempo</span>
-            <span className="value">{time.tempo.bpm.toFixed(1)} BPM</span>
-        </div>
-        <div className="field">
-            <span className="label">Bar</span>
-            <span className="value">{bars} : {beatInBar.toFixed(1)}</span>
-        </div>
-        <div className="field">
-            <span className="label">Delta</span>
-            <span className="value">{(deltaTime * 1000) | 0}ms</span>
-        </div>
-    </div>
+    return <table className="PlaybackTimeView">
+        <tbody>
+            <tr>
+                <td className="label">Time</td>
+                <td className="value">{formatPlaybackTime(time.seconds)}</td>
+            </tr>
+            <tr>
+                <td className="label">Ticks</td>
+                <td className="value">{time.ticks}</td>
+            </tr>
+            <tr>
+                <td className="label">Tempo</td>
+                <td className="value">{time.tempo.bpm.toFixed(1)} BPM</td>
+            </tr>
+            <tr>
+                <td className="label">Bar</td>
+                <td className="value">{bars} : {beatInBar.toFixed(1)}</td>
+            </tr>
+            <tr>
+                <td className="label">Delta</td>
+                <td className="value">{(deltaTime * 1000) | 0}ms</td>
+            </tr>
+        </tbody>
+    </table>
 }
