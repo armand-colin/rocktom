@@ -12,10 +12,11 @@
         outline: 1px solid var(--outline);
 
         .head {
-            padding: 4px 8px;
+            padding: var(--spacing-2);
             height: 26px;
             background: var(--surface);
-            border-radius: 8px 8px 0 0;
+            border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+            font: var(--font-body-sm);
             overflow: hidden;
             display: flex;
 
