@@ -76,6 +76,7 @@ export function PlaybackProgressView(props: {
     return <div
         className="PlaybackProgressView"
         data-minified={props.minified || undefined}
+        data-can-skip={nextMarker ? true : undefined}
     >
         <div className="skip">
             <Tooltip
@@ -89,7 +90,6 @@ export function PlaybackProgressView(props: {
             >
                 <Button
                     onClick={onSkip}
-                    disabled={!nextMarker}
                     size={UiSize.M}
                     shape="square"
                     theme={ButtonTheme.Primary}

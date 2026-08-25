@@ -15,6 +15,13 @@ $animationDuration: 0.16s;
         justify-self: end;
     }
 
+    &:not([data-can-skip]) {
+        .skip {
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+
     .track {
         position: relative;
         overflow: hidden;
@@ -80,3 +87,4 @@ $animationDuration: 0.16s;
         }
     }
 }
+
