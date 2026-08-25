@@ -17,8 +17,7 @@
         grid-template-columns: 1fr 24px;
         align-items: center;
         background: var(--surface-hover);
-        border-bottom: 1px solid var(--outline);
-        border-radius: 4px 4px 0 0;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
         user-select: none;
         padding: var(--spacing-1);
 
