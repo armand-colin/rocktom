@@ -5,6 +5,10 @@
     td {
         padding: 2px 0;
         vertical-align: baseline;
+        
+        &:first-child {
+            width: min-content;
+        }
 
         &.label {
             opacity: 0.5;
