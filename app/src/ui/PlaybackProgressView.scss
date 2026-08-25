@@ -58,9 +58,7 @@
     }
 
     &[data-minified] {
-        height: 12px;
         gap: 0;
-        grid-template-rows: 0fr 1fr;
 
         .skip {
             opacity: 0;
