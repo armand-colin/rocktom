@@ -1,15 +1,17 @@
+$animationDuration: 0.16s;
+
 .PlaybackProgressView {
     display: grid;
     grid-template-rows: auto 1fr;
     gap: var(--spacing-2);
     align-items: end;
-    transition: gap 0.3s var(--curve-smooth);
+    transition: gap $animationDuration var(--curve-smooth);
 
     .skip {
         min-height: 0;
         overflow: hidden;
         opacity: 1;
-        transition: opacity 0.3s var(--curve-smooth);
+        transition: opacity $animationDuration var(--curve-smooth);
         justify-self: end;
     }
 
@@ -22,7 +24,7 @@
         outline: 1px solid var(--color-grey-400);
         width: 100%;
         cursor: pointer;
-        transition: height 0.3s var(--curve-smooth);
+        transition: height $animationDuration var(--curve-smooth);
         height: 100px;
     }
 
@@ -49,7 +51,7 @@
 
         .marker-label {
             opacity: 1;
-            transition: opacity 0.3s var(--curve-smooth);
+            transition: opacity $animationDuration var(--curve-smooth);
         }
 
         &:not(:last-child) {
