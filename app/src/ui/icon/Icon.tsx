@@ -50,6 +50,7 @@ export const icons = [
     "delete",
     "keyboard_option_key",
     "keyboard_command_key",
+    "keyboard_tab",
     "add",
     "check",
     "av_timer",

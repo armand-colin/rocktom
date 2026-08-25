@@ -1,0 +1,107 @@
+.WindowView {
+    position: fixed;
+    left: calc(var(--x) * 1px);
+    top: calc(var(--y) * 1px);
+    width: calc(var(--width) * 1px);
+    height: calc(var(--height) * 1px);
+    background: var(--color-grey-700);
+    border-radius: 8px;
+    pointer-events: auto;
+    box-shadow: var(--shadow-lg);
+    display: grid;
+    grid-template-rows: 0fr 1fr;
+    z-index: 20;
+
+    > .head {
+        display: grid;
+        grid-template-columns: 1fr 24px;
+        align-items: center;
+        background: var(--surface-hover);
+        border-bottom: 1px solid var(--outline);
+        border-radius: 4px 4px 0 0;
+        user-select: none;
+        padding: var(--spacing-1);
+
+        > p {
+            padding-left: var(--spacing-2);
+            pointer-events: none;
+        }
+
+        > .close {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+        }
+    }
+
+    > .resizer {
+        position: absolute;
+
+        &[data-direction="east"] {
+            top: 0;
+            bottom: 0;
+            right: -2px;
+            width: 4px;
+            cursor: ew-resize;
+        }
+
+        &[data-direction="south"] {
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 4px;
+            cursor: ns-resize;
+        }
+
+        &[data-direction="west"] {
+            top: 0;
+            bottom: 0;
+            left: -2px;
+            width: 4px;
+            cursor: ew-resize;
+        }
+
+        &[data-direction="north"] {
+            left: 0;
+            right: 0;
+            top: -2px;
+            height: 4px;
+            cursor: ns-resize;
+        }
+
+        &[data-direction="north-east"] {
+            top: -2px;
+            right: -2px;
+            width: 4px;
+            height: 4px;
+            cursor: nesw-resize;
+        }
+
+        &[data-direction="north-west"] {
+            top: -2px;
+            left: -2px;
+            width: 4px;
+            height: 4px;
+            cursor: nwse-resize;
+        }
+
+        &[data-direction="south-east"] {
+            bottom: -2px;
+            right: -2px;
+            width: 4px;
+            height: 4px;
+            cursor: nwse-resize;
+        }
+
+        &[data-direction="south-west"] {
+            bottom: -2px;
+            left: -2px;
+            width: 4px;
+            height: 4px;
+            cursor: nesw-resize;
+        }
+    }
+}

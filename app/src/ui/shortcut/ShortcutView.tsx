@@ -29,6 +29,8 @@ export function ShortcutView(props: {
 
         if (props.shortcut.keyCode === KeyCode.Space)
             parts.push(<Icon name="space_bar" />)
+        else if (props.shortcut.keyCode === KeyCode.Tab)
+            parts.push(<Icon name="keyboard_tab" />)
         else if (props.shortcut.keyCode === KeyCode.Delete && OS.isMacOS)
             parts.push(<Icon name="backspace" />)
         else
