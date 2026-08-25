@@ -105,42 +105,6 @@
             }
         }
 
-        .PlaybackSpeedButton {
-            padding: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 80px;
-            text-align: center;
-            background: grey;
-
-            &[data-active="true"] {
-                background: #cc0ddd;
-            }
-        }
-
-        .PlayButton,
-        .ResetButton {
-            padding: 12px;
-            font-size: 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            background: #7c7c7c;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            &:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-        }
-
-        .ResetButton {
-            background: grey;
-        }
-
         .BackButton {
             padding: 0;
             margin-bottom: 12px;
