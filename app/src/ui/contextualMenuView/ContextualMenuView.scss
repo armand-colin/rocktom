@@ -45,8 +45,7 @@
         padding: var(--spacing-1);
         background: var(--surface);
         border-radius: var(--radius-s);
-        outline: 1px solid var(--outline-0);
-        box-shadow: var(--shadow-m);
+        box-shadow: var(--shadow-lg);
 
         .item {
             cursor: pointer;
