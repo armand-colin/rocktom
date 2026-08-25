@@ -20,6 +20,7 @@ import { FormInputField } from "./form/FormInputField";
 import { MixerChannelView } from "./mixerView/MixerChannelView";
 import { Tooltip } from "./tooltip/Tooltip";
 import { UiSize } from "./UiSize";
+import { Button, ButtonTheme } from "./button/Button";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -130,14 +131,16 @@ function PlayButton(props: { playback: Playback }) {
                 </>
             }
         >
-            <button
+            <Button
                 className="PlayButton"
                 onClick={onClick}
                 disabled={loading}
-                aria-label={label}
+                theme={ButtonTheme.Primary}
+                size={UiSize.M}
+                shape="square"
             >
                 <Icon name={playing ? "pause" : "play_arrow"} />
-            </button>
+            </Button>
         </Tooltip>
     )
 }
