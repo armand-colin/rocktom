@@ -35,42 +35,35 @@ export function PlaybackProgressView(props: {
 
     useShortcut(Shortcuts.Skip, onSkip, { enabled: !!nextMarker })
 
-    function onTrackClick(e: MouseEvent) {
+    function onSectionClick(e: MouseEvent, start: number, sectionDuration: number) {
         const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
         const clickPosition = e.clientX - rect.left
-        const clickRatio = clickPosition / rect.width
-        const newTicks = Math.max(0, Math.min(clickRatio * duration, duration))
+        const clickRatio = sectionDuration > 0 ? clickPosition / rect.width : 0
+        const newTicks = Math.max(
+            0,
+            Math.min(start + clickRatio * sectionDuration, duration)
+        )
         props.playback.seekTicks(newTicks)
     }
 
-    const markers = useMemo(() => {
-        const markersElements = []
-
-        for (let i = 0; i < markersList.length; i++) {
-            const marker = markersList[i]
-            let markerDuration = 0
-            if (i < markersList.length - 1) {
-                const next = markersList[i + 1]
-                markerDuration = next.time - marker.time
-            } else {
-                markerDuration = duration - marker.time
-            }
-
-            markersElements.push(
-                <div
-                    key={marker.time}
-                    className="marker"
-                    style={{
-                        "--marker-duration": markerDuration,
-                        "--marker-time": marker.time
-                    } as CSSProperties}
-                >
-                    <span className="marker-label">{marker.name}</span>
-                </div>
-            )
+    const sections = useMemo(() => {
+        if (markersList.length === 0) {
+            return [{ key: "full", start: 0, sectionDuration: duration, name: null }]
         }
 
-        return markersElements
+        return markersList.map((marker, i) => {
+            const start = marker.time
+            const sectionDuration = i < markersList.length - 1
+                ? markersList[i + 1].time - start
+                : duration - start
+
+            return {
+                key: String(marker.time),
+                start,
+                sectionDuration,
+                name: marker.name,
+            }
+        })
     }, [markersList, duration])
 
     return <div
@@ -101,14 +94,24 @@ export function PlaybackProgressView(props: {
 
         <div
             className="track"
-            style={{
-                '--progress': duration > 0 ? Math.min(ticks / duration, 1) : 0,
-                '--duration': duration
-            } as CSSProperties}
-            onClick={onTrackClick}
+            style={{ "--ticks": ticks } as CSSProperties}
         >
-            <div className="bar"></div>
-            {markers}
+            {sections.map(section => (
+                <div
+                    key={section.key}
+                    className="section"
+                    style={{
+                        "--marker-time": section.start,
+                        "--marker-duration": section.sectionDuration,
+                    } as CSSProperties}
+                    onClick={(e) => onSectionClick(e, section.start, section.sectionDuration)}
+                >
+                    <div className="bar" />
+                    {section.name !== null && (
+                        <span className="marker-label">{section.name}</span>
+                    )}
+                </div>
+            ))}
         </div>
     </div>
 }

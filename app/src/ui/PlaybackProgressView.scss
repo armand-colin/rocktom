@@ -23,47 +23,48 @@ $animationDuration: 0.16s;
     }
 
     .track {
+        display: flex;
+        gap: var(--spacing-1);
+        width: 100%;
+        height: 100px;
+        transition: height $animationDuration var(--curve-smooth);
+    }
+
+    .section {
         position: relative;
+        flex-grow: var(--marker-duration);
+        flex-shrink: 0;
+        flex-basis: 0;
         overflow: hidden;
-        height: 80px;
+        height: 100%;
         background: var(--color-grey-500);
         border-radius: var(--radius-sm);
         outline: 1px solid var(--color-grey-400);
-        width: 100%;
         cursor: pointer;
-        transition: height $animationDuration var(--curve-smooth);
-        height: 100px;
+        padding: 4px;
+        font: var(--font-body-sm);
     }
 
     .bar {
-        width: calc(min(var(--progress) * 100%, 100%));
+        position: absolute;
+        inset: 0;
+        width: calc(
+            clamp(0, (var(--ticks) - var(--marker-time)) / var(--marker-duration), 1) * 100%
+        );
         height: 100%;
         background: var(--color-blue-500);
         border-radius: 4px 0 0 4px;
         pointer-events: none;
     }
 
-    .marker {
-        position: absolute;
-        top: 0;
-        left: calc(var(--marker-time) / var(--duration) * 100%);
-        height: 100%;
-        width: calc(var(--marker-duration) / var(--duration) * 100%);
-        padding: 4px;
+    .marker-label {
+        position: relative;
+        opacity: 1;
+        transition: opacity $animationDuration var(--curve-smooth);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         pointer-events: none;
-        font: var(--font-body-sm);
-
-        .marker-label {
-            opacity: 1;
-            transition: opacity $animationDuration var(--curve-smooth);
-        }
-
-        &:not(:last-child) {
-            border-right: 1px solid var(--outline);
-        }
     }
 
     &[data-minified] {
@@ -76,15 +77,15 @@ $animationDuration: 0.16s;
 
         .track {
             height: 12px;
+            gap: 2px;
         }
 
-        .marker {
+        .section {
             padding: 0;
+        }
 
-            .marker-label {
-                opacity: 0;
-            }
+        .marker-label {
+            opacity: 0;
         }
     }
 }
-
