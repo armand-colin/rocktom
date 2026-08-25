@@ -1,3 +1,4 @@
+import { Instance } from "../../../Instance";
 import { SelectionWindow } from "../SelectionWindow";
 import type { PatternEditorGridMouseAction } from "./PatternEditorMouseAction";
 
@@ -8,7 +9,7 @@ export const StartSelectionWindow: PatternEditorGridMouseAction = {
         if (editor.selectionWindow)
             return null
 
-        const selectionWindow = new SelectionWindow(editor.engine, {
+        const selectionWindow = new SelectionWindow(Instance.engine, {
             notes: editor.pattern.notes,
             event,
             container,
