@@ -33,6 +33,13 @@
         --color: var(--color-red-50);
     }
 
+    &[data-theme="ghost"] {
+        --background: transparent;
+        --hover-background: var(--color-grey-400);
+        --active-background: var(--color-grey-600);
+        --color: var(--color-grey-50);
+    }
+
     &[data-size="m"] {
         font-size: var(--text-bmd);
         line-height: var(--leading-bmd);

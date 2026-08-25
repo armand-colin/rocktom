@@ -6,6 +6,7 @@ export enum ButtonTheme {
     Default = "default",
     Primary = "primary",
     Danger = "danger",
+    Ghost = "ghost",
 }
 
 type Props = {

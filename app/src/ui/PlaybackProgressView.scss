@@ -1,10 +1,18 @@
 .PlaybackProgressView {
-    position: relative;
-    overflow: hidden;
-    height: 80px;
-    background: var(--color-grey-500);
-    border-radius: var(--radius-sm);
-    outline: 1px solid var(--color-grey-400);
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+
+    .track {
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+        height: 80px;
+        background: var(--color-grey-500);
+        border-radius: var(--radius-sm);
+        outline: 1px solid var(--color-grey-400);
+        cursor: pointer;
+    }
 
     .bar {
         width: calc(min(var(--progress) * 100%, 100%));

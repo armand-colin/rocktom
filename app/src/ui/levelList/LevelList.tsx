@@ -130,6 +130,7 @@ export function LevelList(props: {
                             size={UiSize.S}
                             onClick={(e) => openLevelMenu(e, level)}
                             shape="square"
+                            theme={ButtonTheme.Ghost}
                         >
                             <Icon name="more_vert" />
                         </Button>
