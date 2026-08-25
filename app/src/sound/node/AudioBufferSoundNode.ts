@@ -23,6 +23,7 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
     }
 
     setPlaybackRate(rate: number) {
+        this._playbackRate = rate
         this.node.playbackRate.value = rate
     }
 
@@ -37,15 +38,12 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
     }
 
     seek(time: number) {
-        this._seek = time
+        this._seek = Math.max(0, time)
 
         if (this._playing) {
+            this.node.onended = null
             this.node.stop();
             this._playing = false;
-
-            this.rebuild()
-            this.refreshConnections()
-
             this.play()
         }
     }
@@ -55,9 +53,25 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
             return;
         }
 
+        // BufferSourceNode is one-shot: always use a fresh node so seek-then-play works.
+        this.rebuild()
+        this.refreshConnections()
+
+        const offset = this._clampedOffset()
+        this._seek = offset
         this._playing = true
         this._playTime = this.audioContext.currentTime
-        this.node.start(undefined, this._seek);
+
+        this.node.start(this._playTime, offset)
+        this.node.onended = () => {
+            if (!this._playing)
+                return
+
+            this._seek = this._buffer.duration
+            this._playing = false
+            this.rebuild()
+            this.refreshConnections()
+        }
     }
 
     playAt(when: number): AudioBufferSourceNode {
@@ -77,6 +91,7 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
 
         this._seek = this.getTime()
         this._playing = false
+        this.node.onended = null
         this.node.stop()
 
         this.rebuild()
@@ -85,6 +100,13 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
 
     rebuild(): void {
         this.node = this.build()
+    }
+
+    private _clampedOffset() {
+        if (this._buffer.duration <= 0)
+            return 0
+
+        return Math.min(this._seek, Math.max(0, this._buffer.duration - 0.001))
     }
 
 }

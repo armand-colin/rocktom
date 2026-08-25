@@ -85,12 +85,14 @@ export class EditorPlayer extends Component {
         } else {
             this._audioPlayer.pause()
             this._audioPlayer.seek(0)
-            if (this.playing)
-                this._playAudio()
         }
 
-        if (this.playing)
+        // Re-arm play/schedule after seek so a pending initial delay is cancelled
+        // and seeking into the audio region actually starts playback.
+        if (this.playing) {
+            this._playAudio()
             this._metronome.sync(seconds, 1)
+        }
     }
 
     reset() {

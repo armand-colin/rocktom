@@ -52,10 +52,13 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
     }
 
     play(): void {
+        this.clearScheduledPlay()
+        this.engine.getResource(SoundEngine).resume()
         this._audioNode?.play();
     }
 
     pause(): void {
+        this.clearScheduledPlay()
         this._audioNode?.pause();
     }
 
@@ -64,6 +67,7 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
     }
 
     seek(seconds: number): void {
+        this.clearScheduledPlay()
         this._audioNode?.seek(seconds);
     }
 
@@ -79,6 +83,7 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
         this.clearScheduledPlay()
 
         this._scheduledPlay = setTimeout(() => {
+            this._scheduledPlay = null
             this.play()
         }, Duration.milliseconds(playAfter))
     }

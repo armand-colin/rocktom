@@ -164,11 +164,24 @@ export class Playback extends Component {
         }
         this._rig.update(ticks)
 
-        const audioSeekTime = Math.max(0, this.time.seconds - this.level.audioTrack.time)
-        this._audioPlayer.seek(audioSeekTime)
+        const audioSeekTime = this.time.seconds - this.level.audioTrack.time
+        if (audioSeekTime >= 0) {
+            this._audioPlayer.seek(audioSeekTime)
+        } else {
+            this._audioPlayer.pause()
+            this._audioPlayer.seek(0)
+        }
+
         this._playingNotes.update(ticks)
-        if (this.playing)
+
+        // Re-arm play/schedule after seek (cancel stale delay, start if in range).
+        if (this.playing) {
+            if (audioSeekTime >= 0)
+                this._audioPlayer.play()
+            else
+                this._audioPlayer.schedulePlay(Duration.fromSeconds(-audioSeekTime))
             this._metronome.sync(seconds, this._speed)
+        }
         this.changed()
     }
 
