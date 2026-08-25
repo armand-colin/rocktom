@@ -13,7 +13,7 @@
         position: absolute;
         left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
         display: flex;
-        padding: 0 4px;
+        padding: 0 var(--spacing-3);
         align-items: center;
         margin-left: -1px;
 
