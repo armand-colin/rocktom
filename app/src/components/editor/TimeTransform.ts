@@ -6,15 +6,25 @@ import { OS } from "../../utils/OS";
 export type TimeMarker = {
     ticks: number,
     name: string,
-    type: "bar" | "beat" | "other"
+    type: "bar" | "beat" | "other",
+    base: string,
+    suffix: string
 }
 
-function getMarkerName(ticks: number, step: number): string {
+function getMarkerName(ticks: number, step: number): {
+    full: string,
+    base: string,
+    suffix: string
+} {
     const barTicks = Tempo.bars(1)
     const bar = Math.trunc(ticks / barTicks)
 
     if (step >= barTicks) {
-        return bar.toString()
+        return {
+            full: bar.toString(),
+            base: bar.toString(),
+            suffix: ""
+        }
     }
 
     const posInBar = ticks - bar * barTicks
@@ -22,13 +32,21 @@ function getMarkerName(ticks: number, step: number): string {
 
     if (step >= primaryStep) {
         const sub = Math.trunc(posInBar / step) + 1
-        return `${bar}.${sub}`
+        return {
+            full: `${bar}.${sub}`,
+            base: bar.toString(),
+            suffix: `.${sub}`
+        }
     }
 
     const sub1 = Math.trunc(posInBar / primaryStep) + 1
     const posInPrimary = posInBar - (sub1 - 1) * primaryStep
     const sub2 = Math.trunc(posInPrimary / step) + 1
-    return `${bar}.${sub1}.${sub2}`
+    return {
+        full: `${bar}.${sub1}.${sub2}`,
+        base: bar.toString(),
+        suffix: `.${sub1}.${sub2}`
+    }
 }
 
 export class TimeTransform extends Component {
@@ -110,9 +128,13 @@ export class TimeTransform extends Component {
 
         let i = start
         while (i < end) {
+            const name = getMarkerName(i, step)
+
             yield {
                 ticks: i,
-                name: getMarkerName(i, step),
+                name: name.full,
+                base: name.base,
+                suffix: name.suffix,
                 type: i % Tempo.bars(1) === 0 ? "bar" : i % Tempo.beats(1) === 0 ? "beat" : "other"
             }
 
