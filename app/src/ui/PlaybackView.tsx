@@ -159,13 +159,13 @@ function ResetButton(props: { playback: Playback }) {
                 </>
             }
         >
-            <button
+            <Button
                 className="ResetButton"
                 onClick={() => props.playback.reset()}
-                aria-label="Reset"
+                shape="square"
             >
                 <Icon name="refresh" />
-            </button>
+            </Button>
         </Tooltip>
     )
 }
