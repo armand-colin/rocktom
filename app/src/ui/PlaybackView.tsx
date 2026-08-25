@@ -18,6 +18,8 @@ import { ShortcutView } from "./shortcut/ShortcutView";
 import { Shortcuts } from "../resources/shortcut/Shortcuts";
 import { FormInputField } from "./form/FormInputField";
 import { MixerChannelView } from "./mixerView/MixerChannelView";
+import { Tooltip } from "./tooltip/Tooltip";
+import { UiSize } from "./UiSize";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -109,6 +111,7 @@ function PlaybackControls(props: { playback: Playback }) {
 
 function PlayButton(props: { playback: Playback }) {
     const { loading, playing } = useComponent(props.playback)
+    const label = playing ? "Pause" : "Play"
 
     function onClick() {
         if (props.playback.playing)
@@ -117,22 +120,48 @@ function PlayButton(props: { playback: Playback }) {
             props.playback.play()
     }
 
-    return <button
-        className="PlayButton"
-        onClick={onClick}
-        disabled={loading}
-    >
-        {playing ? "PAUSE" : "PLAY"} <ShortcutView shortcut={Shortcuts.Play} />
-    </button>
+    return (
+        <Tooltip
+            size={UiSize.S}
+            content={
+                <>
+                    {label}
+                    <ShortcutView shortcut={Shortcuts.Play} />
+                </>
+            }
+        >
+            <button
+                className="PlayButton"
+                onClick={onClick}
+                disabled={loading}
+                aria-label={label}
+            >
+                <Icon name={playing ? "pause" : "play_arrow"} />
+            </button>
+        </Tooltip>
+    )
 }
 
 function ResetButton(props: { playback: Playback }) {
-    return <button
-        className="ResetButton"
-        onClick={() => props.playback.reset()}
-    >
-        RESET <ShortcutView shortcut={Shortcuts.Reset} />
-    </button>
+    return (
+        <Tooltip
+            size={UiSize.S}
+            content={
+                <>
+                    Reset
+                    <ShortcutView shortcut={Shortcuts.Reset} />
+                </>
+            }
+        >
+            <button
+                className="ResetButton"
+                onClick={() => props.playback.reset()}
+                aria-label="Reset"
+            >
+                <Icon name="refresh" />
+            </button>
+        </Tooltip>
+    )
 }
 
 function formatPlaybackTime(seconds: number): string {
