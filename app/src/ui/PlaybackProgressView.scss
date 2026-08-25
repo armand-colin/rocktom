@@ -3,6 +3,7 @@
     flex-direction: column;
     gap: var(--spacing-2);
     align-items: flex-end;
+    height: 100px;
 
     .track {
         position: relative;
@@ -35,6 +36,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         pointer-events: none;
+        font: var(--font-body-sm);
         
         &:not(:last-child) {
             border-right: 1px solid var(--outline);
