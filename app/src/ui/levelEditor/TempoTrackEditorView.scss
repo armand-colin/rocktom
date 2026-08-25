@@ -13,9 +13,8 @@
 
         .time {
             position: absolute;
-            left: 0;
-            top: 0px;
-            transform: translateX(-100%);
+            left: var(--spacing-1);
+            top: var(--spacing-1);
             z-index: 1;
             user-select: none;
             cursor: ew-resize;
@@ -35,8 +34,8 @@
 
         .hint {
             position: absolute;
-            left: 0;
-            top: 30px;
+            left: var(--spacing-1);
+            top: 32px;
             user-select: none;
             pointer-events: none;
             font-size: 12px;
