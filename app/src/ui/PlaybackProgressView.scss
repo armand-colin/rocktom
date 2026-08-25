@@ -1,20 +1,29 @@
 .PlaybackProgressView {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr;
     gap: var(--spacing-2);
-    align-items: flex-end;
+    align-items: end;
     height: 100px;
+    transition: height 0.3s ease-in-out, gap 0.3s ease-in-out;
+
+    .skip {
+        min-height: 0;
+        overflow: hidden;
+        opacity: 1;
+        transition: opacity 0.3s ease-in-out;
+        justify-self: end;
+    }
 
     .track {
         position: relative;
         overflow: hidden;
-        flex: 1;
         height: 80px;
         background: var(--color-grey-500);
         border-radius: var(--radius-sm);
         outline: 1px solid var(--color-grey-400);
         width: 100%;
         cursor: pointer;
+        transition: height 0.3s ease-in-out;
     }
 
     .bar {
@@ -37,9 +46,37 @@
         white-space: nowrap;
         pointer-events: none;
         font: var(--font-body-sm);
-        
+
+        .marker-label {
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+
         &:not(:last-child) {
             border-right: 1px solid var(--outline);
+        }
+    }
+
+    &[data-minified] {
+        height: 12px;
+        gap: 0;
+        grid-template-rows: 0fr 1fr;
+
+        .skip {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .track {
+            height: 12px;
+        }
+
+        .marker {
+            padding: 0;
+
+            .marker-label {
+                opacity: 0;
+            }
         }
     }
 }

@@ -10,7 +10,10 @@ import { Tooltip } from "./tooltip/Tooltip";
 import { UiSize } from "./UiSize";
 import "./PlaybackProgressView.scss";
 
-export function PlaybackProgressView(props: { playback: Playback }) {
+export function PlaybackProgressView(props: {
+    playback: Playback
+    minified?: boolean
+}) {
     const { ticks } = useComponent(props.playback.time)
     const duration = props.playback.level.durationInTicks
     const markersList = props.playback.level.noteTrack.markers
@@ -62,7 +65,7 @@ export function PlaybackProgressView(props: { playback: Playback }) {
                         "--marker-time": marker.time
                     } as CSSProperties}
                 >
-                    {marker.name}
+                    <span className="marker-label">{marker.name}</span>
                 </div>
             )
         }
@@ -70,26 +73,31 @@ export function PlaybackProgressView(props: { playback: Playback }) {
         return markersElements
     }, [markersList, duration])
 
-    return <div className="PlaybackProgressView">
-        <Tooltip
-            size={UiSize.S}
-            content={
-                <>
-                    Skip
-                    <ShortcutView shortcut={Shortcuts.Skip} />
-                </>
-            }
-        >
-            <Button
-                onClick={onSkip}
-                disabled={!nextMarker}
-                size={UiSize.M}
-                shape="square"
-                theme={ButtonTheme.Primary}
+    return <div
+        className="PlaybackProgressView"
+        data-minified={props.minified || undefined}
+    >
+        <div className="skip">
+            <Tooltip
+                size={UiSize.S}
+                content={
+                    <>
+                        Skip
+                        <ShortcutView shortcut={Shortcuts.Skip} />
+                    </>
+                }
             >
-                <Icon name="skip_next" />
-            </Button>
-        </Tooltip>
+                <Button
+                    onClick={onSkip}
+                    disabled={!nextMarker}
+                    size={UiSize.M}
+                    shape="square"
+                    theme={ButtonTheme.Primary}
+                >
+                    <Icon name="skip_next" />
+                </Button>
+            </Tooltip>
+        </div>
 
         <div
             className="track"

@@ -11,7 +11,7 @@ import { PlaybackProgressView } from "./PlaybackProgressView";
 import type { Time } from "../components/Time";
 import { Mixer } from "../resources/Mixer";
 import { useNavigate } from "react-router-dom";
-import { InactiveHider } from "./inactiveHider/InactiveHider";
+import { InactiveHider, InactiveHiderFn, InactiveHiderState } from "./inactiveHider/InactiveHider";
 import type { DeltaTime } from "../components/DeltaTime";
 import { useShortcut } from "../hooks/useShortcut";
 import { ShortcutView } from "./shortcut/ShortcutView";
@@ -49,9 +49,14 @@ export function PlaybackView(props: { playback: Playback }) {
 
         <PlaybackControls playback={props.playback} />
 
-        <InactiveHider enabled={playing} timeout={3000}>
-            <PlaybackProgressView playback={props.playback} />
-        </InactiveHider>
+        <InactiveHiderFn enabled={playing} timeout={3000}>
+            {({ state }) => (
+                <PlaybackProgressView
+                    playback={props.playback}
+                    minified={state !== InactiveHiderState.Shown}
+                />
+            )}
+        </InactiveHiderFn>
         {/* <LiveInstrumentView /> */}
     </div>
 }

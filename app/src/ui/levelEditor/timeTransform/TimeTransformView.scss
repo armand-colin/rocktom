@@ -16,6 +16,10 @@
         padding: 0 4px;
         align-items: center;
         margin-left: -1px;
+
+        &:not([data-type="bar"]) {
+            font: var(--font-body-sm);
+        }
     }
 
     .playhead {

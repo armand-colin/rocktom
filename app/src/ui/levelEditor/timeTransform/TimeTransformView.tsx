@@ -41,6 +41,7 @@ export function TimeTransformView(props: {
             markers.push(<div
                 key={marker.ticks}
                 className="marker"
+                data-type={marker.type}
                 style={{ "--ticks": marker.ticks } as CSSProperties}
             >
                 {marker.name}
