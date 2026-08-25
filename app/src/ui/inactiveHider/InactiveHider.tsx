@@ -1,22 +1,21 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import "./InactiveHider.scss"
 
-type Props = {
-    children?: React.ReactNode
-    timeout?: number,
-    enabled?: boolean,
-    className?: string,
-}
-
-enum State {
+export enum InactiveHiderState {
     Shown = "shown",
     Hiding = "hiding",
     Hidden = "hidden",
 }
 
-export function InactiveHider(props: Props) {
+type InactiveHiderFnProps = {
+    children: (args: { state: InactiveHiderState }) => ReactNode
+    timeout?: number
+    enabled?: boolean
+}
+
+export function InactiveHiderFn(props: InactiveHiderFnProps) {
     const hideTimeout = useRef<number | null>(null)
-    const [state, setState] = useState(State.Shown)
+    const [state, setState] = useState(InactiveHiderState.Shown)
 
     useEffect(() => {
         if (!props.enabled) {
@@ -24,12 +23,12 @@ export function InactiveHider(props: Props) {
                 clearTimeout(hideTimeout.current)
                 hideTimeout.current = null
             }
-            setState(State.Shown)
+            setState(InactiveHiderState.Shown)
             return;
         }
 
         const update = () => {
-            setState(State.Shown);
+            setState(InactiveHiderState.Shown);
 
             if (hideTimeout.current) {
                 clearTimeout(hideTimeout.current)
@@ -38,10 +37,10 @@ export function InactiveHider(props: Props) {
 
             hideTimeout.current = setTimeout(() => {
                 hideTimeout.current = null;
-                setState(State.Hiding);
+                setState(InactiveHiderState.Hiding);
 
                 hideTimeout.current = setTimeout(() => {
-                    setState(State.Hidden);
+                    setState(InactiveHiderState.Hidden);
                 }, 1000, undefined);
             }, props.timeout, undefined)
         }
@@ -57,10 +56,27 @@ export function InactiveHider(props: Props) {
         }
     }, [props.enabled])
 
-    return <div
-        className={`InactiveHider ${props.className}`}
-        data-state={state}
-    >
-        {state !== State.Hidden && props.children}
-    </div>
+    return props.children({ state })
+}
+
+type Props = {
+    children?: ReactNode
+    timeout?: number
+    enabled?: boolean
+    className?: string
+}
+
+export function InactiveHider(props: Props) {
+    return (
+        <InactiveHiderFn enabled={props.enabled} timeout={props.timeout}>
+            {({ state }) => (
+                <div
+                    className={`InactiveHider ${props.className}`}
+                    data-state={state}
+                >
+                    {state !== InactiveHiderState.Hidden && props.children}
+                </div>
+            )}
+        </InactiveHiderFn>
+    )
 }
