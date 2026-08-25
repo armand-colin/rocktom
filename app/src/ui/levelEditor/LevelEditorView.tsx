@@ -78,7 +78,7 @@ export function LevelEditorView(props: {
         updateLevel(level.id, {
             name: level.name,
             serialized: JSON.stringify(level.serializeTracks()),
-            duration: level.durationInSeconds,
+            duration: Math.round(level.durationInSeconds),
             playbackId: level.audioTrack.playbackId
         }).then(() => {
             toastManager.add(close => <Toast.Simple

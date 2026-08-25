@@ -129,6 +129,7 @@ export function LevelList(props: {
                         <Button
                             size={UiSize.S}
                             onClick={(e) => openLevelMenu(e, level)}
+                            shape="square"
                         >
                             <Icon name="more_vert" />
                         </Button>

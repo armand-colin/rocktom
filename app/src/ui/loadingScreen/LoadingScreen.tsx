@@ -8,13 +8,14 @@ enum LoadingState {
     DONE = "done"
 }
 
-export function LoadingScreen(props: { children?: ReactNode }) {
-    const [loadingState, setLoadingState] = useState(props.children ? LoadingState.DONE : LoadingState.LOADING);
+export function LoadingScreen(props: { loading: boolean, children?: ReactNode }) {
+    const [loadingState, setLoadingState] = useState(
+        props.loading ? LoadingState.LOADING : LoadingState.DONE
+    );
     const loadedTimeout = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        const loaded = !!props.children;
-        if (!loaded) {
+        if (props.loading) {
             if (loadedTimeout.current) {
                 clearTimeout(loadedTimeout.current);
                 loadedTimeout.current = null;
@@ -24,7 +25,6 @@ export function LoadingScreen(props: { children?: ReactNode }) {
             return;
         }
 
-        // Else we're loaded
         if (loadedTimeout.current !== null) {
             return;
         }
@@ -35,7 +35,7 @@ export function LoadingScreen(props: { children?: ReactNode }) {
             setLoadingState(LoadingState.DONE);
             loadedTimeout.current = null;
         }, 2000)
-    }, [!!props.children])
+    }, [props.loading])
 
     useEffect(() => {
         return () => {

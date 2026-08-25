@@ -47,11 +47,17 @@ export class Level {
     }
 
     get durationInTicks() {
-        const lastNote = this.noteTrack.lastNote
-        if (!lastNote)
-            return 0
+        let end = 0
 
-        return lastNote.time + lastNote.duration
+        for (const timedPattern of this.noteTrack.timedPatterns) {
+            end = Math.max(end, timedPattern.time + timedPattern.duration)
+        }
+
+        for (const note of this.noteTrack.notes()) {
+            end = Math.max(end, note.time + note.duration)
+        }
+
+        return end
     }
 
     get durationInSeconds(): number {

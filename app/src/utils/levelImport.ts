@@ -17,7 +17,7 @@ export function parseImportedLevelTracks(content: string): ImportedLevelTracks {
 
     return {
         serialized: JSON.stringify(json),
-        duration: level.durationInSeconds,
+        duration: Math.round(level.durationInSeconds),
         playbackId: null,
     }
 }

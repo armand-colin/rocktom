@@ -70,24 +70,20 @@ export class NoteTrack {
     }
 
     get lastNote() {
-        const lastPattern = this.timedPatterns[this.timedPatterns.length - 1]
-        if (!lastPattern)
-            return null
+        let last: { time: number, duration: number } | null = null
 
-        const lastNoteInPattern = lastPattern.pattern.notes[lastPattern.pattern.notes.length - 1]
-        if (!lastNoteInPattern)
-            return null
-
-        return {
-            ...lastNoteInPattern,
-            time: lastNoteInPattern.time + lastPattern.time
+        for (const note of this.notes()) {
+            if (!last || note.time + note.duration >= last.time + last.duration)
+                last = note
         }
+
+        return last
     }
 
     *notes() {
-        for (const { time, pattern, offset } of this.timedPatterns) {
+        for (const { time, pattern, offset, duration } of this.timedPatterns) {
             for (const note of pattern.notes) {
-                if (note.time < offset || note.time > offset + pattern.duration) {
+                if (note.time < offset || note.time >= offset + duration) {
                     continue
                 }
 

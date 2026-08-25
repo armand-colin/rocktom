@@ -22,10 +22,9 @@
             top: 0;
             bottom: 0;
             left: 0;
-            width: 2px;
-            background: var(--primary);
+            height: 100%;
+            border: 1px solid red;
             cursor: ew-resize;
-            transform: translateX(-1px);
         }
 
         .head {

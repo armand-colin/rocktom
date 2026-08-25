@@ -43,7 +43,7 @@ export function PlaybackProgressView(props: { playback: Playback }) {
         }
 
         return markersElements
-    }, [props.playback.level.noteTrack.markers])
+    }, [props.playback.level.noteTrack.markers, duration])
 
     return <div
         className="PlaybackProgressView"

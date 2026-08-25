@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { FormField } from "../../../form/FormField";
+import type { FormHandler } from "../../../form/FormHandler";
+import { FormSchema } from "../../../form/FormSchema";
+import { useForm } from "../../../hooks/useForm";
 import { Button, ButtonTheme } from "../../button/Button";
-import { Popup } from "../Popup";
+import { Form } from "../../form/Form";
 import { StringInput } from "../../input/StringInput";
+import { Popup } from "../Popup";
 
 interface Props {
     close: () => void,
@@ -14,8 +18,17 @@ interface Props {
     cancelLabel?: string,
 }
 
+const schema = new FormSchema({
+    value: FormField.string(),
+})
+
 export function PromptPopup(props: Props) {
-    const [value, setValue] = useState(props.defaultValue ?? "");
+    const handler = useForm(schema)
+
+    function onSubmit(e: FormHandler.Result<typeof schema>) {
+        props.onConfirm(e.json.value)
+        props.close()
+    }
 
     return <Popup.BaseContainer>
         {
@@ -28,28 +41,28 @@ export function PromptPopup(props: Props) {
         }
         <p>{props.text}</p>
 
-        <StringInput 
-            value={value}
-            onChange={setValue}
-            autoFocus
-            placeholder={props.placeholder}
-        />
+        <Form handler={handler} onSubmit={onSubmit}>
+            <StringInput
+                field={handler.fields.value}
+                defaultValue={props.defaultValue}
+                autoFocus
+                placeholder={props.placeholder}
+            />
 
-        <div className="flex justify-end gap-3">
-            <Button
-                onClick={props.close}
-            >
-                {props.cancelLabel || "Cancel"}
-            </Button>
-            <Button
-                onClick={() => {
-                    props.onConfirm(value)
-                    props.close()
-                }}
-                theme={ButtonTheme.Primary}
-            >
-                {props.confirmLabel || "Confirm"}
-            </Button>
-        </div>
+            <div className="flex justify-end gap-3">
+                <Button
+                    type="button"
+                    onClick={props.close}
+                >
+                    {props.cancelLabel || "Cancel"}
+                </Button>
+                <Button
+                    type="submit"
+                    theme={ButtonTheme.Primary}
+                >
+                    {props.confirmLabel || "Confirm"}
+                </Button>
+            </div>
+        </Form>
     </Popup.BaseContainer>
 }

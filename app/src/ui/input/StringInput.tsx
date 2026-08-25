@@ -6,6 +6,7 @@ import { UiSize } from "../UiSize"
 type Props = {
     name?: string,
     value?: string,
+    defaultValue?: string,
     field?: FormField<string, any>,
     onChange?: (value: string) => void,
     autoFocus?: boolean,
@@ -27,6 +28,7 @@ export function StringInput(props: Props) {
         <input
             type={props.type ?? 'text'}
             value={props.value}
+            defaultValue={props.defaultValue}
             onChange={e => props.onChange?.(e.target.value)}
             onBlur={props.onBlur}
             autoFocus={props.autoFocus}
