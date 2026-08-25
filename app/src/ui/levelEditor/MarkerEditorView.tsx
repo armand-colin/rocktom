@@ -113,7 +113,7 @@ function MarkerView(props: {
         contextualMenu.open(e.nativeEvent, [
             ContextualMenuItem.action({
                 label: "Delete Marker",
-                icon: "shift",
+                icon: "delete",
                 action: () => {
                     props.editor.removeMarker(props.id)
                 },

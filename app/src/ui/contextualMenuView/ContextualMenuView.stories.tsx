@@ -58,7 +58,7 @@ const mixedItems: ContextualMenuItem[] = [
   }),
   ContextualMenuItem.action({
     label: "Delete Pattern",
-    icon: "shift",
+    icon: "delete",
     action: noop,
   }),
 ];

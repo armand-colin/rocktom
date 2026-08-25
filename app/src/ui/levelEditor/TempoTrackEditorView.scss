@@ -15,7 +15,7 @@
             position: absolute;
             left: 0;
             top: 0px;
-            transform: translateX(-50%);
+            transform: translateX(-100%);
             z-index: 1;
             user-select: none;
             cursor: ew-resize;
@@ -35,9 +35,9 @@
 
         .hint {
             position: absolute;
-            left: 50%;
+            left: 0;
             top: 30px;
-            transform: translateX(-50%);
+            transform: translateX(-100%);
             user-select: none;
             pointer-events: none;
             font-size: 12px;
