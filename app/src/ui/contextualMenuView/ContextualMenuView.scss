@@ -31,9 +31,16 @@
     }
 
     .menu {
+        // Flip left/up when the cursor is within --edge of the right/bottom of the viewport.
+        --edge: 300px;
+        --flip-x: min(0, sign(100vw - var(--edge) - var(--x) * 1px));
+        --flip-y: min(0, sign(100vh - var(--edge) - var(--y) * 1px));
+
         position: fixed;
         left: calc(var(--x) * 1px);
         top: calc(var(--y) * 1px);
+        translate: calc(var(--flip-x) * 100%) calc(var(--flip-y) * 100%);
+        transform-origin: calc(var(--flip-x) * -100%) calc(var(--flip-y) * -100%);
         min-width: 200px;
         padding: var(--spacing-1);
         background: var(--surface);

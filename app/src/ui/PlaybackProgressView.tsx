@@ -3,7 +3,8 @@ import { useMemo, type CSSProperties, type MouseEvent } from "react";
 import type { Playback } from "../components/Playback";
 import { useShortcut } from "../hooks/useShortcut";
 import { Shortcuts } from "../resources/shortcut/Shortcuts";
-import { Button } from "./button/Button";
+import { Button, ButtonTheme } from "./button/Button";
+import { Icon } from "./icon/Icon";
 import { ShortcutView } from "./shortcut/ShortcutView";
 import { Tooltip } from "./tooltip/Tooltip";
 import { UiSize } from "./UiSize";
@@ -83,8 +84,10 @@ export function PlaybackProgressView(props: { playback: Playback }) {
                 onClick={onSkip}
                 disabled={!nextMarker}
                 size={UiSize.M}
+                shape="square"
+                theme={ButtonTheme.Primary}
             >
-                Skip
+                <Icon name="skip_next" />
             </Button>
         </Tooltip>
 

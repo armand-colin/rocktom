@@ -43,6 +43,7 @@ export const icons = [
     "progress_activity",
     "play_arrow",
     "pause",
+    "skip_next",
     "edit",
     "more_vert",
     "check_circle",

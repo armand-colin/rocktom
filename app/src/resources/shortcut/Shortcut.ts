@@ -8,7 +8,7 @@ export enum KeyCode {
     X = "KeyX",
     N = "KeyN",
     Space = "Space",
-    Enter = "Enter",
+    Tab = "Tab",
     Delete = "Delete",
 }
 
@@ -24,8 +24,8 @@ export namespace KeyCode {
         switch (code) {
             case KeyCode.Space:
                 return 'Space'
-            case KeyCode.Enter:
-                return 'Enter'
+            case KeyCode.Tab:
+                return 'Tab'
             case KeyCode.Delete:
                 return OS.isMacOS ? 'Backspace' : 'Suppr'
             default:
