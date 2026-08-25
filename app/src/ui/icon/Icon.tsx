@@ -29,6 +29,7 @@ export const icons = [
     "volume_up",
     "volume_off",
     "space_bar",
+    "backspace",
     "shift",
     "arrow_back",
     "code",
