@@ -1,0 +1,16 @@
+.PlaybackTimeView {
+    display: grid;
+    gap: 4px;
+    font-variant-numeric: tabular-nums;
+
+    .field {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+
+        .label {
+            opacity: 0.5;
+            min-width: 48px;
+        }
+    }
+}
