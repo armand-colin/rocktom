@@ -10,6 +10,8 @@ export enum KeyCode {
     Space = "Space",
     Tab = "Tab",
     Delete = "Delete",
+    ArrowUp = "ArrowUp",
+    ArrowDown = "ArrowDown",
 }
 
 export namespace KeyCode {
@@ -28,6 +30,10 @@ export namespace KeyCode {
                 return 'Tab'
             case KeyCode.Delete:
                 return OS.isMacOS ? 'Backspace' : 'Suppr'
+            case KeyCode.ArrowUp:
+                return '↑'
+            case KeyCode.ArrowDown:
+                return '↓'
             default:
                 return code.slice(3)
         }

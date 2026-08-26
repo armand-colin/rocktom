@@ -13,6 +13,8 @@ export namespace Shortcuts {
         Delete: new Shortcut({ keyCode: KeyCode.Delete }),
         Split: new Shortcut({ keyCode: KeyCode.X, alt: true }),
         Slide: new Shortcut({ keyCode: KeyCode.S, alt: true }),
+        CycleStringUp: new Shortcut({ keyCode: KeyCode.ArrowUp, alt: true }),
+        CycleStringDown: new Shortcut({ keyCode: KeyCode.ArrowDown, alt: true }),
     }
 
 }

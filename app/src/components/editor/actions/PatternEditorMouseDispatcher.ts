@@ -22,7 +22,7 @@ export class PatternEditorMouseDispatcher {
     constructor(private readonly _editor: PatternEditor) { }
 
     onNoteMouseDown(event: MouseEvent, note: NoteEvent) {
-        if (event.buttons === MouseButtons.Middle) {
+        if (event.buttons === MouseButtons.Middle || (event.buttons === MouseButtons.Left && event.altKey)) {
             event.preventDefault()
             event.stopPropagation()
             this._start(ChangeNoteString, event, note)
@@ -39,7 +39,7 @@ export class PatternEditorMouseDispatcher {
     }
 
     onSlideMouseDown(event: MouseEvent, note: NoteEvent) {
-        if (event.buttons === MouseButtons.Middle) {
+        if (event.buttons === MouseButtons.Middle || (event.buttons === MouseButtons.Left && event.altKey)) {
             event.preventDefault()
             event.stopPropagation()
             this._start(ChangeNoteString, event, note)

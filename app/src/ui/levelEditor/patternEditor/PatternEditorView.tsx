@@ -36,6 +36,8 @@ const toolbarTabs: Toolbar.Tab[] = [
             Toolbar.Item.shortcut("Delete", Shortcuts.Editor.Delete),
             Toolbar.Item.shortcut("Split", Shortcuts.Editor.Split),
             Toolbar.Item.shortcut("Slide", Shortcuts.Editor.Slide),
+            Toolbar.Item.shortcut("String up", Shortcuts.Editor.CycleStringUp),
+            Toolbar.Item.shortcut("String down", Shortcuts.Editor.CycleStringDown),
         ]),
     ]),
 ]
@@ -53,6 +55,8 @@ export function PatternEditorView(props: {
     useShortcut(Shortcuts.Editor.Delete, onDelete)
     useShortcut(Shortcuts.Editor.Split, onSplit)
     useShortcut(Shortcuts.Editor.Slide, onSlide)
+    useShortcut(Shortcuts.Editor.CycleStringUp, onCycleStringUp)
+    useShortcut(Shortcuts.Editor.CycleStringDown, onCycleStringDown)
 
     const notesRef = useRef<HTMLDivElement | null>(null)
     const minNote = pattern.instrument.lowestString.fret(0)
@@ -105,6 +109,14 @@ export function PatternEditorView(props: {
                 connect: false
             })
         }
+    }
+
+    function onCycleStringUp() {
+        props.editor.cycleSelectionString(1)
+    }
+
+    function onCycleStringDown() {
+        props.editor.cycleSelectionString(-1)
     }
 
     return <div

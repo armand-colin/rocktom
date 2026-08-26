@@ -168,6 +168,34 @@ export class PatternEditor extends Component {
         this.changed()
     }
 
+    cycleNoteString(id: string, direction: 1 | -1) {
+        const note = this.pattern.notes.find(n => n.id === id)
+        if (!note)
+            return
+
+        const pitch = note.string.fret(note.fret)
+        const strings = this.pattern.instrument.strings
+        const count = strings.length
+
+        for (let i = 1; i < count; i++) {
+            const index = ((note.string.index + direction * i) % count + count) % count
+            const newString = strings[index]
+            if (newString.canPlay(pitch)) {
+                this.setNoteString(id, newString)
+                return
+            }
+        }
+    }
+
+    cycleSelectionString(direction: 1 | -1) {
+        const selection = [...this.selection.elements]
+        if (selection.length === 0)
+            return
+
+        for (const note of selection)
+            this.cycleNoteString(note.id, direction)
+    }
+
     copySelectionToClipboard(): boolean {
         const selection = [...this.selection.elements]
         if (selection.length === 0)
