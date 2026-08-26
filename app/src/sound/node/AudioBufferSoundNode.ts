@@ -8,6 +8,14 @@ import { SoundNode } from "./SoundNode";
  */
 const DEFAULT_STRETCH_LATENCY_SECONDS = 0.08
 
+/** WSOLA timing tuned to reduce stutter/doubling on drums at moderate slow-down ratios. */
+const QUALITY_STRETCH_PARAMETERS = {
+    quickSeek: false,
+    sequenceMs: 100,
+    seekWindowMs: 20,
+    overlapMs: 12,
+} as const
+
 export class AudioBufferSoundNode extends SoundNode<SoundTouchNode> {
 
     private _buffer: AudioBuffer
@@ -35,6 +43,7 @@ export class AudioBufferSoundNode extends SoundNode<SoundTouchNode> {
         const stretch = new SoundTouchNode({ context: this.audioContext })
         stretch.pitch.value = 1
         stretch.playbackRate.value = this._playbackRate
+        stretch.setStretchParameters({ ...QUALITY_STRETCH_PARAMETERS })
         return stretch
     }
 
