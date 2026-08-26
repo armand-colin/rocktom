@@ -1,5 +1,5 @@
 .TapTempoPopup {
-    width: 280px;
+    width: 340px;
 
     >.bpm {
         display: flex;
@@ -19,6 +19,12 @@
 
     >.tap {
         min-height: 120px;
-        font-size: 1.25rem;
+        align-items: center;
+    }
+
+    >.actions {
+        display: flex;
+        gap: var(--spacing-2);
+        align-items: flex-end;
     }
 }

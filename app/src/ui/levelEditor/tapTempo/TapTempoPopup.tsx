@@ -59,17 +59,19 @@ export function TapTempoPopup(props: {
             Tap
         </Button>
 
-        <Button onClick={onReset} disabled={taps.length === 0}>
-            Reset
-        </Button>
+        <div className="actions">
+            <Button onClick={onReset} disabled={taps.length === 0}>
+                Reset
+            </Button>
 
-        <Button
-            theme={ButtonTheme.Primary}
-            onClick={onSetInitial}
-            disabled={bpm === null}
-        >
-            Set as initial BPM
-        </Button>
+            <Button
+                theme={ButtonTheme.Primary}
+                onClick={onSetInitial}
+                disabled={bpm === null}
+            >
+                Set as initial BPM
+            </Button>
+        </div>
     </Popup.BaseContainer>
 }
 
