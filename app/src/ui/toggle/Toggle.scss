@@ -30,4 +30,13 @@
             left: 0;
         }
     }
+
+    &[data-unknown="true"] {
+        background: var(--color-grey-400);
+
+        .knob {
+            left: calc(50% - 9px);
+            opacity: 0.7;
+        }
+    }
 }

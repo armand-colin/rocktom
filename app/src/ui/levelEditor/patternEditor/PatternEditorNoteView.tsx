@@ -36,11 +36,13 @@ export function PatternEditorNoteView(props: {
         e.preventDefault()
         e.stopPropagation()
 
+        const notes = props.editor.selection.has(props.note)
+            ? [...props.editor.selection.elements]
+            : [props.note]
+
         Instance.engine.getResource(PopupManager).add(close => <NoteEventPopup
-            note={props.note}
-            onUpdate={() => {
-                // TODO: in case of render-changing updates, want to update printing
-            }}
+            notes={notes}
+            onUpdate={() => props.editor.changed()}
             close={close}
         />)
     }

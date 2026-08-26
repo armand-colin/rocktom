@@ -6,7 +6,7 @@ import "./NumberInput.scss"
 
 type Props = {
     name: string,
-    value: number,
+    value: number | null,
     step?: number,
     min?: number,
     max?: number,
@@ -18,7 +18,7 @@ type Props = {
 }
 
 export function NumberInput(props: Props) {
-    const [value, setValue] = useState(props.value.toString())
+    const [value, setValue] = useState(props.value === null ? "" : props.value.toString())
     const sliderRef = useRef<Slider | null>(null)
 
     function onChange(e: ChangeEvent<HTMLInputElement>) {
@@ -37,6 +37,9 @@ export function NumberInput(props: Props) {
 
     function onMouseDown(e: MouseEvent) {
         e.preventDefault()
+        if (props.value === null)
+            return
+
         const slider = new Slider({
             event: e.nativeEvent,
             value: props.value,
@@ -64,7 +67,7 @@ export function NumberInput(props: Props) {
     }, [])
 
     useEffect(() => {
-        setValue(props.value.toString())
+        setValue(props.value === null ? "" : props.value.toString())
     }, [props.value])
 
     return <div className="NumberInput" data-size={props.size ?? UiSize.M}>

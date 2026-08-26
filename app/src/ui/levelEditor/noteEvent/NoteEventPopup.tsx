@@ -7,43 +7,69 @@ import { Button } from "../../button/Button"
 import { Rules } from "../../../3d/Rules"
 import { Toggle } from "../../toggle/Toggle"
 
+type Editable<T> = {
+    value: T | null
+    dirty: boolean
+}
+
+function initEditable<T>(values: T[]): Editable<T> {
+    const first = values[0]
+    const allEqual = values.every(value => value === first)
+    return { value: allEqual ? first : null, dirty: false }
+}
+
 export function NoteEventPopup(props: {
-    note: NoteEvent,
+    notes: NoteEvent[],
     onUpdate: () => void,
     close: () => void
 }) {
-    const [fingerPosition, setFingerPosition] = useState(props.note.fingerPosition)
-    const [slideConnects, setSlideConnects] = useState(props.note.slide?.connect ?? false)
+    const notes = props.notes
+    const allHaveSlide = notes.length > 0 && notes.every(note => note.slide !== null)
+
+    const [fingerPosition, setFingerPosition] = useState<Editable<number>>(() =>
+        initEditable(notes.map(note => note.fingerPosition))
+    )
+    const [slideConnects, setSlideConnects] = useState<Editable<boolean>>(() =>
+        allHaveSlide
+            ? initEditable(notes.map(note => note.slide!.connect))
+            : { value: false, dirty: false }
+    )
 
     function onSave() {
-        props.note.fingerPosition = fingerPosition
+        for (const note of notes) {
+            if (fingerPosition.dirty && fingerPosition.value !== null)
+                note.fingerPosition = fingerPosition.value
 
-        if (props.note.slide) {
-            props.note.slide.connect = slideConnects
+            if (slideConnects.dirty && note.slide)
+                note.slide.connect = slideConnects.value === true
         }
 
         props.onUpdate()
         props.close()
     }
 
+    const title = notes.length === 1
+        ? "Note Event"
+        : `Note Events (${notes.length})`
+
     return <Popup.BaseContainer className="w-[300px]">
-        <Popup.BaseTitle title="Note Event" />
+        <Popup.BaseTitle title={title} />
 
         <FormInputField label="Finger position">
             <NumberInput
                 name="fingerPosition"
-                onChange={setFingerPosition}
-                value={fingerPosition}
+                onChange={value => setFingerPosition({ value, dirty: true })}
+                value={fingerPosition.value}
                 min={0}
                 max={Rules.maxFret}
                 step={1}
             />
         </FormInputField>
         {
-            props.note.slide && <FormInputField label="Slide connects">
-                <Toggle 
-                    value={slideConnects}
-                    onChange={setSlideConnects}
+            allHaveSlide && <FormInputField label="Slide connects">
+                <Toggle
+                    value={slideConnects.value}
+                    onChange={value => setSlideConnects({ value, dirty: true })}
                 />
             </FormInputField>
         }
