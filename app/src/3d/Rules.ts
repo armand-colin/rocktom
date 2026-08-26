@@ -18,7 +18,7 @@ export const Rules = {
     neckHeight: 1.6,
     fretWidth: 1,
     stringDistance: 0.6,
-    maxFret: 15,
+    maxFret: 18,
     timeRatio: 0.05,
     stringLength: 15 * 1, // maxFret * fretWidth
     getX,
