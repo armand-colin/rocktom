@@ -1,4 +1,6 @@
 import { Engine, Resource } from "@niloc/ecs"
+import { SoundTouchNode } from "@soundtouchjs/audio-worklet"
+import processorUrl from "@soundtouchjs/audio-worklet/processor?url"
 import type { AudioRange } from "../sound/AudioRange"
 import { AudioBufferSoundNode } from "../sound/node/AudioBufferSoundNode"
 import { AudioElementSoundNode } from "../sound/node/AudioElementSoundNode"
@@ -13,6 +15,8 @@ export class SoundEngine extends Resource {
 
     private _audioContext: AudioContext
     private _nodes: SoundNode[] = []
+    private _soundTouchReady: Promise<void> | null = null
+    private _soundTouchContext: AudioContext | null = null
 
     readonly output: DestinationSoundNode
 
@@ -34,6 +38,19 @@ export class SoundEngine extends Resource {
 
     private _onStateChange = () => { }
 
+    /**
+     * Registers the local SoundTouch AudioWorklet processor for the current AudioContext.
+     * Safe to call multiple times; re-registers after refresh() creates a new context.
+     */
+    ensureSoundTouchRegistered(): Promise<void> {
+        if (this._soundTouchReady && this._soundTouchContext === this._audioContext)
+            return this._soundTouchReady
+
+        this._soundTouchContext = this._audioContext
+        this._soundTouchReady = SoundTouchNode.register(this._audioContext, processorUrl)
+        return this._soundTouchReady
+    }
+
     refresh() {
         this._audioContext.removeEventListener('statechange', this._onStateChange)
         this._audioContext.close()
@@ -41,11 +58,20 @@ export class SoundEngine extends Resource {
         this._audioContext = new AudioContext()
         this._audioContext.addEventListener('statechange', this._onStateChange)
 
-        for (const node of this._nodes)
-            node.setAudioContext(this._audioContext)
+        this._soundTouchReady = null
+        this._soundTouchContext = null
 
-        for (const node of this._nodes)
-            node.refreshConnections()
+        const context = this._audioContext
+        void this.ensureSoundTouchRegistered().then(() => {
+            if (this._audioContext !== context)
+                return
+
+            for (const node of this._nodes)
+                node.setAudioContext(this._audioContext)
+
+            for (const node of this._nodes)
+                node.refreshConnections()
+        })
     }
 
     disposeNode(node: SoundNode) {
@@ -80,7 +106,8 @@ export class SoundEngine extends Resource {
         return node
     }
 
-    createAudioBufferNode(buffer: AudioBuffer): AudioBufferSoundNode {
+    async createAudioBufferNode(buffer: AudioBuffer): Promise<AudioBufferSoundNode> {
+        await this.ensureSoundTouchRegistered()
         const node = new AudioBufferSoundNode(this._audioContext, buffer)
         this._register(node)
         return node

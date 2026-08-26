@@ -19,6 +19,7 @@ export class EditorPlayer extends Component {
     private _audioPlayer: AudioPlayer
     private _loaded: boolean = false
     private _previousSeek: number = 0
+    private _speed = 1
 
     constructor(engine: Engine, level: Level, virtualBass: VirtualBass) {
         super(engine)
@@ -49,12 +50,24 @@ export class EditorPlayer extends Component {
         return this._loaded && !this._audioPlayer.isLoading()
     }
 
+    get speed() {
+        return this._speed
+    }
+
+    set speed(value: number) {
+        this._speed = value
+        this._audioPlayer.setSpeed(value)
+        if (this.playing)
+            this.metronome.sync(this.time.seconds, value)
+        this.changed()
+    }
+
     play() {
         if (this.playing)
             return
 
         this._updateCoroutine = this.startCoroutine(this._update())
-        this.metronome.sync(this.time.seconds, 1)
+        this.metronome.sync(this.time.seconds, this._speed)
 
         this._playAudio()
         this.changed()
@@ -91,7 +104,7 @@ export class EditorPlayer extends Component {
         // and seeking into the audio region actually starts playback.
         if (this.playing) {
             this._playAudio()
-            this.metronome.sync(seconds, 1)
+            this.metronome.sync(seconds, this._speed)
         }
     }
 
@@ -102,7 +115,7 @@ export class EditorPlayer extends Component {
         this.metronome.reset()
 
         if (this._updateCoroutine !== null) {
-            this.metronome.sync(0, 1)
+            this.metronome.sync(0, this._speed)
             // Scheduling play
             this._playAudio()
         }
@@ -121,6 +134,7 @@ export class EditorPlayer extends Component {
         )
 
         this._audioPlayer.load()
+        this._audioPlayer.setSpeed(this._speed)
 
         if (this.playing)
             this._playAudio()
@@ -138,7 +152,8 @@ export class EditorPlayer extends Component {
         if (this.time.seconds >= this.level.audioTrack.time) {
             this._audioPlayer.play()
         } else {
-            this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time - this.time.seconds))
+            const delaySeconds = (this.level.audioTrack.time - this.time.seconds) / this._speed
+            this._audioPlayer.schedulePlay(Duration.fromSeconds(delaySeconds))
         }
     }
 
@@ -154,11 +169,13 @@ export class EditorPlayer extends Component {
                 deltaTime -= audioDeltaTime / 24
             }
 
+            deltaTime = deltaTime * this._speed
+
             const seconds = this.time.seconds + deltaTime
             const ticks = this.level.tempoTrack.ticksFromSeconds(seconds)
             this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
 
-            this.metronome.update(ticks, 1)
+            this.metronome.update(ticks, this._speed)
 
             lastUpdate = now
 

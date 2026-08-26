@@ -36,14 +36,14 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
 
     async load(): Promise<void> {
         const audioData = await AudioData.fetch(this.engine, this._trackId)
-        
+
         this._audioBuffer = audioData.audioBuffer
-        
-        this._audioNode = this.engine.getResource(SoundEngine)
-        .createAudioBufferNode(this._audioBuffer);
-        
-        this._audioNode.connect(this._node);
-        
+
+        this._audioNode = await this.engine.getResource(SoundEngine)
+            .createAudioBufferNode(this._audioBuffer)
+
+        this._audioNode.connect(this._node)
+
         this._loaded = true
     }
 

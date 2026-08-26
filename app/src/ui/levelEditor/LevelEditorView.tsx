@@ -26,6 +26,7 @@ import { Toolbar } from "../toolbar/Toolbar";
 import { FormInputField } from "../form/FormInputField";
 import { usePopupManager } from "../../hooks/usePopupManager";
 import { TapTempoPopup } from "./tapTempo/TapTempoPopup";
+import { Slider } from "../slider/Slider";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
@@ -150,7 +151,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
     const { enabled } = useComponent(mixer.metronome)
-    const { playing } = useComponent(props.player)
+    const { playing, speed } = useComponent(props.player)
 
     function onPlayPause() {
         if (playing) {
@@ -161,7 +162,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
         }
     }
 
-    return <div className="PlayerControls flex gap-2">
+    return <div className="PlayerControls flex gap-2 items-center">
         <Button
             onClick={onPlayPause}
             theme={ButtonTheme.Primary}
@@ -188,6 +189,20 @@ function PlayerControls(props: { player: EditorPlayer }) {
         >
             Metronome {enabled ? "On" : "Off"}
         </Button>
+
+        <div className="flex items-center gap-2 min-w-40">
+            <span className="text-sm whitespace-nowrap">
+                {speed.toFixed(2)}x
+            </span>
+            <Slider
+                className="w-28"
+                value={speed}
+                min={0.5}
+                max={1.5}
+                step={0.05}
+                onChange={value => { props.player.speed = value }}
+            />
+        </div>
     </div>
 }
 

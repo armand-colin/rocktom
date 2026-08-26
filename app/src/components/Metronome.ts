@@ -27,8 +27,8 @@ export class Metronome extends Component {
         fetch(sound)
             .then(response => response.arrayBuffer())
             .then(buffer => this._soundEngine.createAudioBuffer(buffer))
-            .then(audioBuffer => {
-                this._node = this._soundEngine.createAudioBufferNode(audioBuffer)
+            .then(async audioBuffer => {
+                this._node = await this._soundEngine.createAudioBufferNode(audioBuffer)
                 const mixer = this.engine.getResource(Mixer)
                 mixer.metronome.connect(this._node)
             })

@@ -1,8 +1,10 @@
+import { SoundTouchNode } from "@soundtouchjs/audio-worklet";
 import { SoundNode } from "./SoundNode";
 
-export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
+export class AudioBufferSoundNode extends SoundNode<SoundTouchNode> {
 
     private _buffer: AudioBuffer
+    private _source: AudioBufferSourceNode
 
     private _playbackRate: number = 1
     private _playing = false
@@ -13,18 +15,32 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         super(audioContext)
         this._buffer = buffer
         this.node = this.build()
+        this._source = this._buildSource()
+        this._source.connect(this.node)
     }
 
-    protected build(): AudioBufferSourceNode {
+    protected build(): SoundTouchNode {
+        const stretch = new SoundTouchNode({ context: this.audioContext })
+        stretch.pitch.value = 1
+        stretch.playbackRate.value = this._playbackRate
+        return stretch
+    }
+
+    private _buildSource(): AudioBufferSourceNode {
         const source = this.audioContext.createBufferSource()
         source.buffer = this._buffer
         source.playbackRate.value = this._playbackRate
         return source
     }
 
+    private _syncPlaybackRate() {
+        this._source.playbackRate.value = this._playbackRate
+        this.node.playbackRate.value = this._playbackRate
+    }
+
     setPlaybackRate(rate: number) {
         this._playbackRate = rate
-        this.node.playbackRate.value = rate
+        this._syncPlaybackRate()
     }
 
     getTime(): number {
@@ -41,8 +57,8 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         this._seek = Math.max(0, time)
 
         if (this._playing) {
-            this.node.onended = null
-            this.node.stop();
+            this._source.onended = null
+            this._source.stop();
             this._playing = false;
             this.play()
         }
@@ -53,7 +69,7 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
             return;
         }
 
-        // BufferSourceNode is one-shot: always use a fresh node so seek-then-play works.
+        // BufferSourceNode is one-shot: always use a fresh source so seek-then-play works.
         this.rebuild()
         this.refreshConnections()
 
@@ -62,8 +78,8 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         this._playing = true
         this._playTime = this.audioContext.currentTime
 
-        this.node.start(this._playTime, offset)
-        this.node.onended = () => {
+        this._source.start(this._playTime, offset)
+        this._source.onended = () => {
             if (!this._playing)
                 return
 
@@ -74,6 +90,7 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
         }
     }
 
+    /** One-shot playback that bypasses pitch-preserving stretch (e.g. metronome). */
     playAt(when: number): AudioBufferSourceNode {
         const source = this.audioContext.createBufferSource()
         source.buffer = this._buffer
@@ -91,15 +108,52 @@ export class AudioBufferSoundNode extends SoundNode<AudioBufferSourceNode> {
 
         this._seek = this.getTime()
         this._playing = false
-        this.node.onended = null
-        this.node.stop()
+        this._source.onended = null
+        this._source.stop()
 
         this.rebuild()
         this.refreshConnections()
     }
 
     rebuild(): void {
+        try {
+            this._source.disconnect()
+        } catch {
+            // already disconnected
+        }
+
+        this._source = this._buildSource()
+        this._source.connect(this.node)
+    }
+
+    setAudioContext(audioContext: AudioContext): void {
+        super.setAudioContext(audioContext)
+
+        try {
+            this.node.disconnect()
+        } catch {
+            // already disconnected
+        }
+
         this.node = this.build()
+        this.rebuild()
+    }
+
+    dispose(): void {
+        this._playing = false
+        this._source.onended = null
+        try {
+            this._source.stop()
+        } catch {
+            // not started or already stopped
+        }
+        try {
+            this._source.disconnect()
+        } catch {
+            // already disconnected
+        }
+
+        super.dispose()
     }
 
     private _clampedOffset() {
