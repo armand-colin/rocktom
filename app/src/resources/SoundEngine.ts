@@ -7,7 +7,7 @@ import { GainSoundNode } from "../sound/node/GainSoundNode"
 import { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode"
 import { OscillatorSoundNode } from "../sound/node/OscillatorSoundNode"
 import { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode"
-import type { SoundNode } from "../sound/node/SoundNode"
+import { SoundNode } from "../sound/node/SoundNode"
 
 export class SoundEngine extends Resource {
 
@@ -48,33 +48,47 @@ export class SoundEngine extends Resource {
             node.refreshConnections()
     }
 
+    disposeNode(node: SoundNode) {
+        if (node === this.output)
+            return
+
+        const index = this._nodes.indexOf(node)
+        if (index !== -1)
+            this._nodes.splice(index, 1)
+    }
+
+    private _register(node: SoundNode) {
+        SoundNode.setUnregister(node, () => this.disposeNode(node))
+        this._nodes.push(node)
+    }
+
     createAnalyserNode(range: AudioRange): SoundAnalyserNode {
         const node = new SoundAnalyserNode(this.engine, this._audioContext, range)
-        this._nodes.push(node)
+        this._register(node)
         return node
     }
 
     createMediaStreamNode(): MediaStreamSoundNode {
         const node = new MediaStreamSoundNode(this._audioContext)
-        this._nodes.push(node)
+        this._register(node)
         return node
     }
 
     createGainNode(): GainSoundNode {
         const node = new GainSoundNode(this._audioContext)
-        this._nodes.push(node)
+        this._register(node)
         return node
     }
 
     createAudioBufferNode(buffer: AudioBuffer): AudioBufferSoundNode {
         const node = new AudioBufferSoundNode(this._audioContext, buffer)
-        this._nodes.push(node)
+        this._register(node)
         return node
     }
 
     createAudioElementNode(audio: HTMLAudioElement): AudioElementSoundNode {
         const node = new AudioElementSoundNode(this._audioContext, audio)
-        this._nodes.push(node)
+        this._register(node)
         return node
     }
 
@@ -84,7 +98,7 @@ export class SoundEngine extends Resource {
 
     createOscillatorNode(): OscillatorSoundNode {
         const node = new OscillatorSoundNode(this._audioContext)
-        this._nodes.push(node)
+        this._register(node)
         return node
     }
 

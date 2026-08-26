@@ -78,8 +78,8 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
     }
 
     destroy() {
-        this.disconnect()
         this._coroutine.cancel()
+        this.dispose()
     }
 
     rebuild(): void {

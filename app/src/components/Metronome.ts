@@ -96,7 +96,7 @@ export class Metronome extends Component {
     destroy(): void {
         super.destroy()
         this._cancelScheduled()
-        this._node?.disconnect()
+        this._node?.dispose()
     }
 
     private _scheduleClick(when: number) {

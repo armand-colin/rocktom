@@ -75,7 +75,7 @@ export class LiveInstrument extends Component {
 
     destroy() {
         this._mediaStream.getTracks().forEach(track => track.stop())
-        this._streamNode.disconnect()
+        this._streamNode.dispose()
     }
 
 }

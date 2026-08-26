@@ -97,14 +97,11 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
 
     clear(): void {
         this.pause()
-        
-        if (this._audioNode) {
-            this._audioNode.disconnect()
-        }
 
+        this._audioNode?.dispose()
         this._audioBuffer = null
         this._audioNode = null
-        this._node.disconnect()
+        this._node.dispose()
 
         this.destroy()
     }

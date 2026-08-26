@@ -4,12 +4,21 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
     protected audioContext: AudioContext
 
     private _connections: SoundNode[] = []
+    private _unregister: (() => void) | null = null
 
     constructor(audioContext: AudioContext) {
         this.audioContext = audioContext
     }
 
     protected abstract build(): T
+
+    private _setUnregister(unregister: () => void) {
+        this._unregister = unregister
+    }
+
+    static setUnregister(node: SoundNode, unregister: () => void) {
+        node._setUnregister(unregister)
+    }
 
     connect(node: SoundNode) {
         this._connections.push(node)
@@ -31,6 +40,12 @@ export abstract class SoundNode<T extends (AudioNode | null) = AudioNode | null>
                     this.node.disconnect(node.node)
             }
         }
+    }
+
+    dispose() {
+        this.disconnect()
+        this._unregister?.()
+        this._unregister = null
     }
 
     protected connectToOutputs(source: AudioNode) {
