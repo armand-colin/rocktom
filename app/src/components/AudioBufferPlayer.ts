@@ -75,6 +75,15 @@ export class AudioBufferPlayer extends Component implements AudioPlayer {
         this._audioNode?.setPlaybackRate(speed)
     }
 
+    /** Calibrate SoundTouch sync latency (seconds). Exposed for editor testing. */
+    setStretchLatency(seconds: number): void {
+        this._audioNode?.setStretchLatency(seconds)
+    }
+
+    getStretchLatency(): number {
+        return this._audioNode?.getStretchLatency() ?? 0
+    }
+
     setVolume(volume: number): void {
         this.engine.getResource(Mixer).audio.setVolume(volume)
     }
