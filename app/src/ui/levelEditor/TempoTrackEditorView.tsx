@@ -143,6 +143,7 @@ function EventView(props: {
         style={{
             "--ticks": props.ticks
         } as CSSProperties}
+        draggable={false}
     >
         <div
             className="time"
@@ -164,7 +165,7 @@ function EventView(props: {
                     <span>{props.time.toFixed(2)}</span>
             }
         </div>
-        <div className="hint">{props.bpm.toFixed(2)} BPM</div>
-        <div className="marker"></div>
+        <div className="hint" draggable={false}>{props.bpm.toFixed(2)} BPM</div>
+        <div className="marker" draggable={false}></div>
     </div>
 }
