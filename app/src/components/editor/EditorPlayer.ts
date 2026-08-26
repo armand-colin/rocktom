@@ -13,11 +13,11 @@ export class EditorPlayer extends Component {
     readonly level: Level
     readonly time: Time
     readonly virtualBass: VirtualBass
+    readonly metronome: Metronome
 
     private _updateCoroutine: Coroutine | null = null
     private _audioPlayer: AudioPlayer
     private _loaded: boolean = false
-    private _metronome: Metronome
     private _previousSeek: number = 0
 
     constructor(engine: Engine, level: Level, virtualBass: VirtualBass) {
@@ -26,7 +26,7 @@ export class EditorPlayer extends Component {
         this.time = engine.createComponent(Time, level.tempoTrack.getTempoAt(0))
         this.virtualBass = virtualBass
 
-        this._metronome = engine.createComponent(Metronome, level.tempoTrack)
+        this.metronome = engine.createComponent(Metronome, level.tempoTrack)
 
         this._audioPlayer = AudioPlayerFactory.create(
             engine,
@@ -54,7 +54,7 @@ export class EditorPlayer extends Component {
             return
 
         this._updateCoroutine = this.startCoroutine(this._update())
-        this._metronome.sync(this.time.seconds, 1)
+        this.metronome.sync(this.time.seconds, 1)
 
         this._playAudio()
         this.changed()
@@ -91,7 +91,7 @@ export class EditorPlayer extends Component {
         // and seeking into the audio region actually starts playback.
         if (this.playing) {
             this._playAudio()
-            this._metronome.sync(seconds, 1)
+            this.metronome.sync(seconds, 1)
         }
     }
 
@@ -99,10 +99,10 @@ export class EditorPlayer extends Component {
         this.time.set(0, 0, this.level.tempoTrack.getTempoAt(0))
         this._audioPlayer.seek(0)
         this._audioPlayer.pause()
-        this._metronome.reset()
+        this.metronome.reset()
 
         if (this._updateCoroutine !== null) {
-            this._metronome.sync(0, 1)
+            this.metronome.sync(0, 1)
             // Scheduling play
             this._playAudio()
         }
@@ -158,7 +158,7 @@ export class EditorPlayer extends Component {
             const ticks = this.level.tempoTrack.ticksFromSeconds(seconds)
             this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
 
-            this._metronome.update(ticks, 1)
+            this.metronome.update(ticks, 1)
 
             lastUpdate = now
 

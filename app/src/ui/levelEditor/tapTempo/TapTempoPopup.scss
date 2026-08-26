@@ -1,0 +1,24 @@
+.TapTempoPopup {
+    width: 280px;
+
+    >.bpm {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: var(--spacing-3);
+        font: var(--font-heading-xl);
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        text-align: center;
+
+        >.unit {
+            font: var(--font-heading-md);
+            opacity: 0.6;
+        }
+    }
+
+    >.tap {
+        min-height: 120px;
+        font-size: 1.25rem;
+    }
+}

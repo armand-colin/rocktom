@@ -24,6 +24,8 @@ import { useShortcut } from "../../hooks/useShortcut";
 import { Shortcuts } from "../../resources/shortcut/Shortcuts";
 import { Toolbar } from "../toolbar/Toolbar";
 import { FormInputField } from "../form/FormInputField";
+import { usePopupManager } from "../../hooks/usePopupManager";
+import { TapTempoPopup } from "./tapTempo/TapTempoPopup";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
@@ -51,6 +53,7 @@ export function LevelEditorView(props: {
     const { mutate: updateLevel, isLoading: isUpdating } = useMutation(LevelQueries.update)
     const navigate = useNavigate()
     const toastManager = useToastManager()
+    const popupManager = usePopupManager()
 
     useShortcut(Shortcuts.Play, onPlay)
     useShortcut(Shortcuts.Save, onSave)
@@ -93,6 +96,14 @@ export function LevelEditorView(props: {
         props.editor.toggleMixer()
     }
 
+    function showTapTempo() {
+        popupManager.add(close => <TapTempoPopup
+            close={close}
+            tempoTrack={props.editor.tempoTrack}
+            player={props.editor.player}
+        />)
+    }
+
     function onBack() {
         navigate("/app")
     }
@@ -114,6 +125,13 @@ export function LevelEditorView(props: {
                 />
 
                 <PlayerControls player={props.editor.player} />
+
+                <Button
+                    onClick={showTapTempo}
+                    shape="square"
+                >
+                    <Icon name="av_timer" />
+                </Button>
 
                 <Button
                     onClick={showMixer}
