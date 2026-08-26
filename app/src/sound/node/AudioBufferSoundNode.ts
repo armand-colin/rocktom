@@ -10,7 +10,7 @@ const DEFAULT_STRETCH_LATENCY_SECONDS = 0.08
 
 /** WSOLA timing tuned to reduce stutter/doubling on drums at moderate slow-down ratios. */
 const QUALITY_STRETCH_PARAMETERS = {
-    quickSeek: false,
+    quickSeek: true,
     sequenceMs: 100,
     seekWindowMs: 20,
     overlapMs: 12,
