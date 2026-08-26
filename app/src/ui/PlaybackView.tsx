@@ -19,6 +19,7 @@ import { MixerChannelView } from "./mixerView/MixerChannelView";
 import { Tooltip } from "./tooltip/Tooltip";
 import { UiSize } from "./UiSize";
 import { Button, ButtonTheme } from "./button/Button";
+import { Slider } from "./slider/Slider";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -64,7 +65,7 @@ function PlaybackControls(props: { playback: Playback }) {
     const mixer = engine.getResource(Mixer)
     const navigate = useNavigate()
 
-    const { playing } = useComponent(props.playback)
+    const { playing, speed } = useComponent(props.playback)
 
     return (
         <div className="PlaybackControls flex flex-col gap-3">
@@ -90,6 +91,15 @@ function PlaybackControls(props: { playback: Playback }) {
                 className="flex flex-col gap-5"
             >
                 <div className="flex flex-col gap-2">
+                    <FormInputField label={`Speed ${speed.toFixed(2)}x`}>
+                        <Slider
+                            value={speed}
+                            min={0.5}
+                            max={1.5}
+                            step={0.05}
+                            onChange={value => { props.playback.speed = value }}
+                        />
+                    </FormInputField>
                     <FormInputField label="Playback volume">
                         <MixerChannelView
                             channel={mixer.audio}
