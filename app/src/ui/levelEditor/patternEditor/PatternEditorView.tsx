@@ -24,6 +24,8 @@ import { StringInput } from "../../input/StringInput";
 import { UiSize } from "../../UiSize";
 import { MagnetizationView } from "../magnetizationView/MagnetizationView";
 import { KeyboardNotesView } from "./KeyboardNotesView";
+import { MouseTarget } from "../../../mouse/MouseTarget";
+import { MouseTargetType } from "../../../mouse/MouseTargetType";
 
 const toolbarTabs: Toolbar.Tab[] = [
     Toolbar.Tab.create("Edit", [
@@ -47,7 +49,6 @@ export function PatternEditorView(props: {
 }) {
     const { pattern, string, selectionWindow } = useComponent(props.editor)
     const { elements: selection } = useComponent(props.editor.selection)
-    const mouse = props.editor.mouse
 
     useShortcut(Shortcuts.Editor.Copy, onCopy)
     useShortcut(Shortcuts.Editor.Paste, onPaste)
@@ -57,7 +58,6 @@ export function PatternEditorView(props: {
     useShortcut(Shortcuts.Editor.CycleStringUp, onCycleStringUp)
     useShortcut(Shortcuts.Editor.CycleStringDown, onCycleStringDown)
 
-    const notesRef = useRef<HTMLDivElement | null>(null)
     const minNote = pattern.instrument.lowestString.fret(0)
     const maxNote = pattern.instrument.highestString.fret(Rules.maxFret)
 
@@ -118,14 +118,18 @@ export function PatternEditorView(props: {
         props.editor.cycleSelectionString(-1)
     }
 
+    const editorTarget: MouseTarget.PatternEditor = {
+        type: MouseTargetType.PatternEditor,
+        editor: props.editor,
+    }
+
     return <div
         className="PatternEditorView"
+        {...MouseTarget.props(editorTarget)}
         onMouseDown={e => {
-            if (e.buttons === MouseButtons.Middle) {
+            MouseTarget.set(e.nativeEvent, editorTarget)
+            if (e.buttons === MouseButtons.Middle)
                 e.preventDefault()
-                e.stopPropagation()
-            }
-            mouse.onViewMouseDown(e.nativeEvent)
         }}
     >
         <div className="head">
@@ -180,7 +184,6 @@ export function PatternEditorView(props: {
             }}
             onContextMenu={e => {
                 e.preventDefault()
-                e.stopPropagation()
             }}
         >
             <TimeTransformView
@@ -207,20 +210,25 @@ export function PatternEditorView(props: {
                 <TrackEditorContent
                     time={props.player.time}
                     className="notes"
-                    ref={notesRef}
                     onClick={e => {
-                        if (!notesRef.current)
+                        if (!(e.currentTarget instanceof HTMLElement))
                             return
-                        mouse.onGridClick(e.nativeEvent, notesRef.current)
+                        MouseTarget.set(e.nativeEvent, {
+                            type: MouseTargetType.PatternGrid,
+                            editor: props.editor,
+                            container: e.currentTarget,
+                        })
                     }}
                     onMouseDown={e => {
-                        if (!notesRef.current)
+                        if (!(e.currentTarget instanceof HTMLElement))
                             return
-                        if (e.buttons === MouseButtons.Right) {
+                        MouseTarget.set(e.nativeEvent, {
+                            type: MouseTargetType.PatternGrid,
+                            editor: props.editor,
+                            container: e.currentTarget,
+                        })
+                        if (e.buttons === MouseButtons.Right)
                             e.preventDefault()
-                            e.stopPropagation()
-                        }
-                        mouse.onGridMouseDown(e.nativeEvent, notesRef.current)
                     }}
                 >
                     <TimeMarkersView transform={props.editor.transform} />

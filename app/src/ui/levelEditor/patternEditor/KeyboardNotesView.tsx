@@ -3,6 +3,8 @@ import { Rules } from "../../../3d/Rules"
 import type { PatternEditor } from "../../../components/editor/PatternEditor"
 import type { String } from "../../../sound/instrument/String"
 import { Note } from "../../../sound/note/Note"
+import { MouseTarget } from "../../../mouse/MouseTarget"
+import { MouseTargetType } from "../../../mouse/MouseTargetType"
 
 export function KeyboardNotesView(props: {
     string: String,
@@ -27,20 +29,22 @@ export function KeyboardNotesView(props: {
 }
 
 function KeyboardNoteView(props: { note: Note, string: String, editor: PatternEditor }) {
-    const mouse = props.editor.mouse
+    const target: MouseTarget.PatternEditorKeyboard = {
+        type: MouseTargetType.PatternEditorKeyboard,
+        editor: props.editor,
+        note: props.note,
+    }
 
     return <div
         className="KeyboardNoteView"
+        data-mouse-target={MouseTargetType.PatternEditorKeyboard}
         data-available={props.note.index >= props.string.note.index && props.note.index <= props.string.fret(Rules.maxFret).index}
         style={{
             "--index": props.note.index,
             "--color": "#" + props.string.color.getHexString(),
             "--contrast": "#" + props.string.outlineColor.getHexString(),
         } as CSSProperties}
-
-        onMouseDown={e => mouse.onKeyboardNoteMouseDown(e.nativeEvent, props.note)}
-        onMouseEnter={e => mouse.onKeyboardNoteMouseEnter(e.nativeEvent, props.note)}
-        onMouseLeave={() => mouse.onKeyboardNoteMouseLeave()}
+        {...MouseTarget.props(target)}
     >
         {props.note.name}{props.note.octave}
     </div>

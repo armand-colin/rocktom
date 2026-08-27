@@ -12,7 +12,12 @@ import { Rules } from "../../3d/Rules";
 import { SelectionWindow } from "./SelectionWindow";
 import { Clipboard } from "../../resources/clipboard/Clipboard";
 import { ClipboardEntryKind } from "../../resources/clipboard/ClipboardEntryKind";
-import { PatternEditorMouseDispatcher } from "./actions/PatternEditorMouseDispatcher";
+import { MouseDispatcher } from "../../mouse/MouseDispatcher";
+import type { MouseEventDispatcher } from "../../mouse/MouseEventDispatcher";
+import { PatternCycleStringMouseDispatcher } from "./actions/PatternCycleStringMouseDispatcher";
+import { PatternGridMouseDispatcher } from "./actions/PatternGridMouseDispatcher";
+import { PatternKeyboardMouseDispatcher } from "./actions/PatternKeyboardMouseDispatcher";
+import { PatternNoteMouseDispatcher } from "./actions/PatternNoteMouseDispatcher";
 
 export class PatternEditor extends Component {
 
@@ -21,9 +26,9 @@ export class PatternEditor extends Component {
     readonly noteTransform: NoteTransform
     readonly virtualBass: VirtualBass
     readonly selection: Selection<NoteEvent>
-    readonly mouse: PatternEditorMouseDispatcher
 
     private _selectionWindow: SelectionWindow | null = null
+    private _mouseDispatchers: MouseEventDispatcher[] = []
 
     private _string: String
     private _setDuration: number = Tempo.beats(1)
@@ -39,7 +44,16 @@ export class PatternEditor extends Component {
         this.noteTransform = engine.createComponent(NoteTransform, this.pattern.instrument)
         this.selection = engine.createComponent<Selection<NoteEvent>, []>(Selection)
         this._string = this.pattern.instrument.strings[0]
-        this.mouse = new PatternEditorMouseDispatcher(this)
+
+        const mouse = engine.getResource(MouseDispatcher)
+        this._mouseDispatchers = [
+            new PatternNoteMouseDispatcher(this),
+            new PatternKeyboardMouseDispatcher(this),
+            new PatternCycleStringMouseDispatcher(this),
+            new PatternGridMouseDispatcher(this),
+        ]
+        for (const dispatcher of this._mouseDispatchers)
+            mouse.push(dispatcher)
 
         this.selection.onChange(this._onSelectionChanged)
     }
@@ -258,7 +272,10 @@ export class PatternEditor extends Component {
     }
 
     destroy(): void {
-        this.mouse.destroy()
+        const mouse = this.engine.getResource(MouseDispatcher)
+        for (const dispatcher of this._mouseDispatchers)
+            mouse.remove(dispatcher)
+        this._mouseDispatchers = []
         this._selectionWindow?.destroy()
         this._selectionWindow = null
         super.destroy()

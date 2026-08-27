@@ -1,46 +1,59 @@
-import type { Note } from "../../../sound/note/Note";
-import type { Handler } from "../../../utils/handlers/Handler";
-import { MouseButtons } from "../../../utils/MouseButtons";
-import type { PatternEditor } from "../PatternEditor";
-import type { PatternEditorKeyboardMouseAction } from "./PatternEditorMouseAction";
+import { MouseActionHandler } from "../../../mouse/MouseActionHandler"
+import type { MouseTarget } from "../../../mouse/MouseTarget"
+import { MouseTargetType } from "../../../mouse/MouseTargetType"
+import type { Note } from "../../../sound/note/Note"
+import type { PatternEditor } from "../PatternEditor"
 
-export const PlayKeyboardNote: PatternEditorKeyboardMouseAction = {
-    start(context) {
-        const { event, editor, note } = context
-
-        if (event.buttons !== MouseButtons.Left)
-            return null
-
+export namespace PlayKeyboardNote {
+    export function start(editor: PatternEditor, note: Note): MouseActionHandler | null {
         if (editor.selectionWindow)
             return null
 
-        editor.virtualBass.playNote(note)
         return new PlayKeyboardNoteHandler(editor, note)
     }
 }
 
-class PlayKeyboardNoteHandler implements Handler {
-
-    private _destroyed = false
+class PlayKeyboardNoteHandler extends MouseActionHandler {
 
     constructor(
         private readonly _editor: PatternEditor,
-        private readonly _note: Note
+        private _note: Note
     ) {
-        window.addEventListener("mouseup", this._onMouseUp)
+        super()
+        this._editor.virtualBass.playNote(this._note)
+        MouseActionHandler.onDispose(this, () => {
+            this._editor.virtualBass.stopNote(this._note)
+        })
     }
 
-    private _onMouseUp = () => {
-        this.destroy()
+    override onMouseUp() {
+        this.dispose()
     }
 
-    destroy() {
-        if (this._destroyed)
+    override onMouseOver(_event: MouseEvent, target: MouseTarget | null) {
+        if (target?.type !== MouseTargetType.PatternEditorKeyboard)
             return
 
-        this._destroyed = true
-        window.removeEventListener("mouseup", this._onMouseUp)
+        if (target.editor !== this._editor)
+            return
+
+        if (target.note === this._note)
+            return
+
         this._editor.virtualBass.stopNote(this._note)
+        this._note = target.note
+        this._editor.virtualBass.playNote(this._note)
+    }
+
+    override onMouseOut(event: MouseEvent) {
+        const related = event.relatedTarget
+        if (related instanceof Node) {
+            const element = related instanceof Element ? related : related.parentElement
+            if (element?.closest(`[data-mouse-target="${MouseTargetType.PatternEditorKeyboard}"]`))
+                return
+        }
+
+        this.dispose()
     }
 
 }

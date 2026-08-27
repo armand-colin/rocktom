@@ -6,6 +6,8 @@ import type { PatternEditor } from "../../../components/editor/PatternEditor"
 import type { NoteEvent } from "../../../sound/song/NoteEvent"
 import type { String } from "../../../sound/instrument/String"
 import { Note } from "../../../sound/note/Note"
+import { MouseTarget } from "../../../mouse/MouseTarget"
+import { MouseTargetType } from "../../../mouse/MouseTargetType"
 import "./PatternEditorNoteView.scss"
 
 export function PatternEditorNoteView(props: {
@@ -19,17 +21,29 @@ export function PatternEditorNoteView(props: {
     selected: boolean
 }) {
     const note = props.string.fret(props.fret)
-    const mouse = props.editor.mouse
 
-    function dispatchNative(
-        e: MouseEvent,
-        action: (nativeEvent: globalThis.MouseEvent) => void
-    ) {
-        // React synthetic bubbling is separate from native stopPropagation —
-        // must stop here so resizers don't also hit note/slide/grid handlers.
-        e.preventDefault()
-        e.stopPropagation()
-        action(e.nativeEvent)
+    const noteTarget: MouseTarget.NoteEvent = {
+        type: MouseTargetType.NoteEvent,
+        editor: props.editor,
+        noteEvent: props.note,
+    }
+
+    const slideTarget: MouseTarget.NoteSlide = {
+        type: MouseTargetType.NoteSlide,
+        editor: props.editor,
+        noteEvent: props.note,
+    }
+
+    const durationEndTarget: MouseTarget.NoteDurationEndResizer = {
+        type: MouseTargetType.NoteDurationEndResizer,
+        editor: props.editor,
+        noteEvent: props.note,
+    }
+
+    const slideDurationTarget: MouseTarget.NoteSlideDurationResizer = {
+        type: MouseTargetType.NoteSlideDurationResizer,
+        editor: props.editor,
+        noteEvent: props.note,
     }
 
     function onDoubleClick(e: MouseEvent) {
@@ -45,10 +59,6 @@ export function PatternEditorNoteView(props: {
             onUpdate={() => props.editor.changed()}
             close={close}
         />)
-    }
-
-    function onClick(e: MouseEvent) {
-        e.stopPropagation()
     }
 
     const slideNote = props.note.slide ?
@@ -69,34 +79,36 @@ export function PatternEditorNoteView(props: {
             "--note-fret": props.note.fret,
             "--slide-fret": props.note.slide?.fret ?? 0,
         } as CSSProperties}
-        onContextMenu={e => dispatchNative(e, nativeEvent => mouse.onNoteContextMenu(nativeEvent, props.note))}
-        onMouseEnter={e => mouse.onNoteMouseEnter(e.nativeEvent, props.note)}
+        {...MouseTarget.props(noteTarget)}
         onDoubleClick={onDoubleClick}
-        onClick={onClick}
     >
         <div
             className="main"
-            onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onNoteMouseDown(nativeEvent, props.note))}
+            {...MouseTarget.props(noteTarget)}
         >
             <p>{note.name}{note.octave}</p>
             <div className="fret-hint">{props.fret}</div>
-            <div className="resizer-right" onMouseDown={e => dispatchNative(e, nativeEvent => {
-                if (props.note.slide)
-                    mouse.onResizeSlideDuration(nativeEvent, props.note)
-                else
-                    mouse.onResizeDuration(nativeEvent, props.note)
-            })} />
+            <div
+                className="resizer-right"
+                {...MouseTarget.props(props.note.slide ? slideDurationTarget : durationEndTarget)}
+            />
         </div>
 
         {
             props.note.slide && <div
                 className="slide"
-                onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onSlideMouseDown(nativeEvent, props.note))}
+                {...MouseTarget.props(slideTarget)}
             >
                 <p>{slideNote?.name}{slideNote?.octave}</p>
                 <div className="fret-hint">{props.note.slide.fret}</div>
-                <div className="resizer-right" onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onResizeDuration(nativeEvent, props.note))}></div>
-                <div className="resizer-left" onMouseDown={e => dispatchNative(e, nativeEvent => mouse.onResizeSlideDuration(nativeEvent, props.note))}></div>
+                <div
+                    className="resizer-right"
+                    {...MouseTarget.props(durationEndTarget)}
+                />
+                <div
+                    className="resizer-left"
+                    {...MouseTarget.props(slideDurationTarget)}
+                />
             </div>
         }
     </div>
