@@ -11,6 +11,7 @@ import { PopupManager } from '../resources/PopupManager'
 import { CreateLevelPopup } from '../ui/createLevelPopup/CreateLevelPopup'
 import { ProfileButton } from '../ui/profile/ProfileButton'
 import './HomePage.scss'
+import { LiveInstrumentButton } from '../ui/liveInstrument/LiveInstrumentButton'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, data: levels, mutate: getAllLevels } = useMutation(LevelQueries.getAll)
@@ -66,6 +67,7 @@ export function HomePage() {
           >
             Create Level
           </Button>
+          <LiveInstrumentButton />
         </div>
       </header>
       <main className="HomePage-content">
