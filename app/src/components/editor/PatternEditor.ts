@@ -282,4 +282,8 @@ export class PatternEditor extends Component {
         this.selection.offChange(this._onSelectionChanged)
     }
 
+    triggerChanged() {
+        this.changed()
+    }
+
 }
