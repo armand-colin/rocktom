@@ -17,6 +17,10 @@
 
         > p {
             text-align: center;
+
+            &[data-locked="false"] {
+                opacity: 0.45;
+            }
         }
     }
 
@@ -50,6 +54,14 @@
 
         &[data-status="success"] {
             background: rgb(25, 75, 25);
+        }
+
+        &[data-status="idle"] {
+            background: rgb(40, 40, 40);
+        }
+
+        &[data-locked="false"] .caret {
+            opacity: 0.25;
         }
 
         &::before {

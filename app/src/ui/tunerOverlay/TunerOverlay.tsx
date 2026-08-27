@@ -12,17 +12,18 @@ const bass = new Bass()
 
 export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () => void }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
-    const { detectedFrequency, targetString } = useComponent(tuner)
+    const { detectedFrequency, targetString, locked } = useComponent(tuner)
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
     const cents = useMemo(() => {
-        if (!targetString)
+        if (!targetString || detectedFrequency <= 0)
             return 0
         
         return FineNote.cents(targetString.note.frequency, detectedFrequency)
     }, [targetString, detectedFrequency])
 
-    const status = Math.abs(cents) < 5 ? "success" :
+    const status = !locked ? "idle" :
+        Math.abs(cents) < 5 ? "success" :
         Math.abs(cents) < 10 ? "warn" :
             "error"
 
@@ -90,12 +91,13 @@ export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () =>
                 }
             </div>
 
-            <p>{detectedFrequency.toFixed(2)}Hz</p>
-            <p>{cents}</p>
+            <p data-locked={locked ? "true" : "false"}>{detectedFrequency > 0 ? `${detectedFrequency.toFixed(2)}Hz` : "—"}</p>
+            <p data-locked={locked ? "true" : "false"}>{targetString && detectedFrequency > 0 ? cents : "—"}</p>
 
             <div
                 className="tuner"
                 data-status={status}
+                data-locked={locked ? "true" : "false"}
                 style={{
                     "--t": t,
                 } as CSSProperties}

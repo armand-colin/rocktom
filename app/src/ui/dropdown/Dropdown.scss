@@ -4,14 +4,19 @@
     .BaseItem {
         border-radius: var(--radius-sm);
 
-        &[data-size="s"] {
-            padding: var(--spacing-1) var(--spacing-2);
+        &[data-size="md"] {
+            padding: var(--spacing-3) var(--spacing-4);
+            font: var(--font-body-md);
+        }
+
+        &[data-size="sm"] {
+            padding: var(--spacing-2) var(--spacing-3);
             font: var(--font-body-sm);
         }
 
-        &[data-size="m"] {
-            padding: var(--spacing-3) var(--spacing-4);
-            font: var(--font-body-md);
+        &[data-size="xs"] {
+            padding: var(--spacing-1) var(--spacing-2);
+            font: var(--font-body-xs);
         }
 
         &[data-selected="false"] {
@@ -70,14 +75,19 @@
         gap: var(--spacing-2);
         cursor: pointer;
 
-        &[data-size="s"] {
-            padding: var(--spacing-1) var(--spacing-1) var(--spacing-1) var(--spacing-2);
+        &[data-size="md"] {
+            padding: var(--spacing-3) var(--spacing-3) var(--spacing-3) var(--spacing-4);
+            font: var(--font-body-md);
+        }
+
+        &[data-size="sm"] {
+            padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) var(--spacing-3);
             font: var(--font-body-sm);
         }
 
-        &[data-size="m"] {
-            padding: var(--spacing-3) var(--spacing-3) var(--spacing-3) var(--spacing-4);
-            font: var(--font-body-md);
+        &[data-size="xs"] {
+            padding: var(--spacing-1) var(--spacing-1) var(--spacing-1) var(--spacing-2);
+            font: var(--font-body-xs);
         }
 
         &:hover {

@@ -2,7 +2,7 @@
     background: var(--surface);
     border-radius: 4px;
     display: grid;
-    grid-template-columns: 1fr 34px;
+    grid-template-columns: 1fr 0fr;
     overflow: hidden;
 
     input {
@@ -19,31 +19,38 @@
     .slider {
         background: var(--surface-hover);
         flex-shrink: 0;
-        width: 26px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: ew-resize;
+        user-select: none;
     }
 
-    &[data-size="m"] input {
-        padding: 8px 8px;
+
+    &[data-size="md"] {
+        font: var(--font-body-md);
+        grid-template-columns: 1fr var(--size-md);
+
+        input {
+            padding: var(--spacing-3) var(--spacing-4);
+        }
     }
 
-    &[data-size="m"] .slider {
-        width: 34px;
+    &[data-size="sm"] {
+        font: var(--font-body-sm);
+        grid-template-columns: 1fr var(--size-sm);
+
+        input {
+            padding: var(--spacing-2) var(--spacing-3);
+        }
     }
 
-    &[data-size="s"] input {
-        padding: 4px 8px;
-    }
+    &[data-size="xs"] {
+        font: var(--font-body-xs);
+        grid-template-columns: 1fr var(--size-xs);
 
-    &[data-size="s"] {
-        grid-template-columns: 1fr 26px;
-    }
-
-    &[data-size="s"] .slider {
-        width: 26px;
-        height: 26px;
+        input {
+            padding: var(--spacing-1) var(--spacing-2);
+        }
     }
 }

@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, ButtonTheme } from "./Button";
 import { UiSize } from "../UiSize";
+import { Icon } from "../icon/Icon";
+import { Fragment } from "react/jsx-runtime";
 
 const meta = {
   title: "UI/Button",
@@ -8,7 +10,6 @@ const meta = {
   args: {
     children: "Click me",
     disabled: false,
-    size: UiSize.M,
     theme: ButtonTheme.Default,
   },
   argTypes: {
@@ -28,13 +29,40 @@ type Story = StoryObj<typeof meta>;
 
 export const Main: Story = {
   render: (args) => (
-    <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-      <Button {...args} disabled={false}>
-        Enabled
-      </Button>
-      <Button {...args} disabled>
-        Disabled
-      </Button>
+    <div className="grid gap-4">
+      {
+        UiSize.all.map(size => (<div
+          key={size}
+          className="grid gap-4 grid-cols-[80px_100px_100px] items-start justify-items-start"
+        >
+          <Button
+            {...args}
+            size={size}
+            disabled={false}
+          >
+            Button
+          </Button>
+
+          <Button
+            {...args}
+            size={size}
+            disabled={false}
+          >
+            <Icon name="delete" />
+            Button
+          </Button>
+
+          <Button
+            {...args}
+            size={size}
+            disabled={false}
+            shape="square"
+          >
+            <Icon name="delete" />
+          </Button>
+        </div>
+        ))
+      }
     </div>
   ),
 };

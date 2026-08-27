@@ -1,6 +1,8 @@
+$amountWidth: 60px;
+
 .MixerChannelView {
     display: grid;
-    grid-template-columns: 0fr 90px 50px 1fr;
+    grid-template-columns: 0fr 90px $amountWidth 1fr;
     align-items: center;
     gap: var(--spacing-3);
 
@@ -14,6 +16,6 @@
     }
 
     &[data-hide-label="true"] {
-        grid-template-columns: 0fr 50px 1fr;
+        grid-template-columns: 0fr $amountWidth 1fr;
     }
 }

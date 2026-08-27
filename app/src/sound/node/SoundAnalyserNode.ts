@@ -51,6 +51,7 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
 
     private _rawFrequencies = new Float32Array(0)
     private _frequencies = new Float32Array(0)
+    private _timeDomain = new Float32Array(0)
     private _coroutine: Coroutine
     private _range: AudioRange
 
@@ -68,6 +69,18 @@ export class SoundAnalyserNode extends SoundNode<AnalyserNode> {
 
     get frequencies() {
         return this._frequencies
+    }
+
+    get sampleRate() {
+        return this.audioContext.sampleRate
+    }
+
+    getTimeDomainData(): Float32Array {
+        if (this._timeDomain.length !== this.node.fftSize)
+            this._timeDomain = new Float32Array(this.node.fftSize)
+
+        this.node.getFloatTimeDomainData(this._timeDomain)
+        return this._timeDomain
     }
 
     protected build(): AnalyserNode {

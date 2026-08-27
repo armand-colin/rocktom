@@ -4,7 +4,6 @@ import type { Playback } from "../components/Playback";
 import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
 import "./PlaybackView.scss";
-// import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
 import { Icon } from "./icon/Icon";
 import { PlaybackProgressView } from "./PlaybackProgressView";
 import { PlaybackTimeView } from "./PlaybackTimeView";
@@ -20,6 +19,7 @@ import { Tooltip } from "./tooltip/Tooltip";
 import { UiSize } from "./UiSize";
 import { Button, ButtonTheme } from "./button/Button";
 import { Slider } from "./slider/Slider";
+import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -56,7 +56,7 @@ export function PlaybackView(props: { playback: Playback }) {
                 />
             )}
         </InactiveHiderFn>
-        {/* <LiveInstrumentView /> */}
+        <LiveInstrumentView />
     </div>
 }
 

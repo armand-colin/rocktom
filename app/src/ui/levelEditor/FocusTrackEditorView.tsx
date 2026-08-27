@@ -11,6 +11,7 @@ import { MouseButtons } from "../../utils/MouseButtons";
 import { TimeMover } from "../../utils/handlers/TimeMover";
 import type { Handler } from "../../utils/handlers/Handler";
 import { FormInputField } from "../form/FormInputField";
+import { UiSize } from "../UiSize";
 
 export function FocusTrackEditorView(props: {
     editor: FocusTrackEditor,
@@ -162,6 +163,7 @@ function FocusEventView(props: {
             <FocusEditor
                 value={props.focus}
                 onChange={value => props.editor.setFocus(props.id, value)}
+				size={UiSize.XS}
             />
         </div>
     </div>

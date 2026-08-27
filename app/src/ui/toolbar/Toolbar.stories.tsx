@@ -8,25 +8,29 @@ export default {
 
 const tabs: Toolbar.Tab[] = [
     Toolbar.Tab.create("File", [
-        Toolbar.Item.shortcut("New", new Shortcut({ keyCode: KeyCode.N, ctrl: true })),
-        Toolbar.Item.simple("Open", () => {}),
-        Toolbar.Item.simple("Save", () => {}),
-        Toolbar.Item.simple("Save As", () => {}),
-        Toolbar.Item.simple("Save All", () => {}),
-        Toolbar.Item.simple("Close", () => {}),
-        Toolbar.Item.simple("Exit", () => {}),
+        Toolbar.Item.section("Actions", [
+            Toolbar.Item.shortcut("New", new Shortcut({ keyCode: KeyCode.N, ctrl: true })),
+            Toolbar.Item.simple("Open", () => { }),
+            Toolbar.Item.simple("Close", () => { }),
+            Toolbar.Item.simple("Exit", () => { }),
+        ]),
+        Toolbar.Item.section('Storage', [
+            Toolbar.Item.simple("Save", () => { }),
+            Toolbar.Item.simple("Save As", () => { }),
+            Toolbar.Item.simple("Save All", () => { }),
+        ])
     ]),
     Toolbar.Tab.create("Edit", [
-        Toolbar.Item.simple("Undo", () => {}),
-        Toolbar.Item.simple("Redo", () => {}),
-        Toolbar.Item.simple("Cut", () => {}),
+        Toolbar.Item.simple("Undo", () => { }),
+        Toolbar.Item.simple("Redo", () => { }),
+        Toolbar.Item.simple("Cut", () => { }),
         Toolbar.Item.menu("Meditation", [
-            Toolbar.Item.simple("Meditation 1", () => {}),
-            Toolbar.Item.simple("Meditation 2", () => {}),
-            Toolbar.Item.simple("Meditation 3", () => {}),
+            Toolbar.Item.simple("Meditation 1", () => { }),
+            Toolbar.Item.simple("Meditation 2", () => { }),
+            Toolbar.Item.simple("Meditation 3", () => { }),
         ]),
-        Toolbar.Item.simple("Paste", () => {}),
-        Toolbar.Item.simple("Delete", () => {}),
+        Toolbar.Item.simple("Paste", () => { }),
+        Toolbar.Item.simple("Delete", () => { }),
     ]),
 ]
 

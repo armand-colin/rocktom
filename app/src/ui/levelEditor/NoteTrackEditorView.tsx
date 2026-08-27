@@ -19,6 +19,7 @@ import { Dropdown } from "../dropdown/Dropdown";
 import { PopupManager } from "../../resources/PopupManager";
 import { Instance } from "../../Instance";
 import { PromptPopup } from "../popup/promptPopup/PromptPopup";
+import { UiSize } from "../UiSize";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
@@ -79,6 +80,7 @@ export function NoteTrackEditorView(props: {
             >
                 <Dropdown
                     value={pattern?.id ?? null}
+                    size={UiSize.S}
                     onChange={value => {
                         if (value)
                             onSelectPattern(value?.value)
@@ -94,6 +96,7 @@ export function NoteTrackEditorView(props: {
                     shape="square"
                     onClick={onCreatePattern}
                     theme={ButtonTheme.Primary}
+                    size={UiSize.S}
                 >
                     <Icon name="add" />
                 </Button>
@@ -267,24 +270,31 @@ function TimedPatternView(props: {
                 {props.pattern.name}
             </p>
 
-            <Button variant="ghost" onClick={onContextualClick}>
+            <Button
+                variant="ghost"
+                onClick={onContextualClick}
+                size={UiSize.XS}
+                shape="square"
+            >
                 <Icon name="more_vert" />
             </Button>
         </div>
         <div className="notes">
-            {props.pattern.notes
-                .filter(note => note.time >= props.offset && note.time < props.offset + props.duration)
-                .map(note => <div
-                    key={note.id}
-                    className="note"
-                    style={{
-                        "--note-ticks": note.time - props.offset,
-                        "--note-duration": note.duration,
-                        "--note-fret": note.fret,
-                        "--contrast": "#" + note.string.outlineColor.getHexString(),
-                        "--color": "#" + note.string.color.getHexString()
-                    } as CSSProperties}
-                />)}
+            <div className="container">
+                {props.pattern.notes
+                    .filter(note => note.time >= props.offset && note.time < props.offset + props.duration)
+                    .map(note => <div
+                        key={note.id}
+                        className="note"
+                        style={{
+                            "--note-ticks": note.time - props.offset,
+                            "--note-duration": note.duration,
+                            "--note-fret": note.fret,
+                            "--contrast": "#" + note.string.outlineColor.getHexString(),
+                            "--color": "#" + note.string.color.getHexString()
+                        } as CSSProperties}
+                    />)}
+            </div>
         </div>
         <div className="resizer-left" onMouseDown={onResizeLeft} />
         <div className="resizer-right" onMouseDown={onResizeRight} />

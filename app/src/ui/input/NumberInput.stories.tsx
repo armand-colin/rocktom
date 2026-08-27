@@ -28,34 +28,43 @@ type Story = StoryObj<typeof meta>;
 
 export const Main: Story = {
   args: {
-    onChange: () => {},
+    onChange: () => { },
   },
   render: (args) => {
     const [bpmValue, setBpmValue] = useState(120);
     const [gainValue, setGainValue] = useState(0.5);
 
     return (
-      <div style={{ display: "grid", gap: 12, maxWidth: 360 }}>
-        <NumberInput
-          {...args}
-          name="bpm"
-          value={bpmValue}
-          step={1}
-          min={30}
-          max={300}
-          sensibility={0.2}
-          onChange={setBpmValue}
-        />
-        <NumberInput
-          {...args}
-          name="gain"
-          value={gainValue}
-          step={0.1}
-          min={0}
-          max={1}
-          sensibility={0.01}
-          onChange={setGainValue}
-        />
+      <div className="grid gap-4">
+        {
+          UiSize.all.map(size => <div
+            key={size}
+            className="grid gap-4 grid-cols-[200px_200px]"
+          >
+            <NumberInput
+              {...args}
+              size={size}
+              name="bpm"
+              value={bpmValue}
+              step={1}
+              min={30}
+              max={300}
+              sensibility={0.2}
+              onChange={setBpmValue}
+            />
+            <NumberInput
+              {...args}
+              size={size}
+              name="gain"
+              value={gainValue}
+              step={0.1}
+              min={0}
+              max={1}
+              sensibility={0.01}
+              onChange={setGainValue}
+            />
+          </div>)
+        }
       </div>
     );
   },

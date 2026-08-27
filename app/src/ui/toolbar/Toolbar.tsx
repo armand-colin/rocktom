@@ -5,6 +5,8 @@ import { Shortcut } from "../../resources/shortcut/Shortcut";
 import { ShortcutView } from "../shortcut/ShortcutView";
 import { Instance } from "../../Instance";
 import { ShortcutManager } from "../../resources/shortcut/ShortcutManager";
+import { Button } from "../button/Button";
+import { UiSize } from "../UiSize";
 
 interface Props {
     tabs: Toolbar.Tab[]
@@ -89,9 +91,13 @@ function ToolbarTab(props: {
     return <div
         className="ToolbarTab"
         data-open={open}
-        onClick={onClick}
     >
-        {props.tab.label}
+        <Button
+            size={UiSize.XS}
+            onClick={onClick}
+        >
+            {props.tab.label}
+        </Button>
         {
             open && <div className="items">
                 {props.tab.items.map((item, index) => {
@@ -160,18 +166,17 @@ function ToolbarSimpleItem(props: {
     onClick: () => void,
     onClose: () => void
 }) {
-    return <div
+    return <Button
         className="ToolbarItem ToolbarSimpleItem"
+        size={UiSize.XS}
         onClick={e => {
             e.stopPropagation();
             props.onClick();
             props.onClose();
         }}
     >
-        <span>
-            {props.label}
-        </span>
-    </div>
+        {props.label}
+    </Button>
 }
 
 function ToolbarShortcutItem(props: {
@@ -185,15 +190,16 @@ function ToolbarShortcutItem(props: {
         Instance.engine.getResource(ShortcutManager).trigger(props.shortcut)
         props.onClose();
     }
-    return <div
+    return <Button
         className="ToolbarItem ToolbarShortcutItem"
+        size={UiSize.XS}
         onClick={onClick}
     >
-        <span>
-            {props.label}
-            <ShortcutView shortcut={props.shortcut} />
-        </span>
-    </div>
+        {props.label}
+        <ShortcutView
+            shortcut={props.shortcut}
+        />
+    </Button>
 }
 
 function ToolbarMenuItem(props: {
@@ -222,16 +228,14 @@ function ToolbarMenuItem(props: {
             props.onSetPath([props.index]);
     }
 
-    return <div
+    return <Button
         className="ToolbarItem ToolbarMenuItem"
         onClick={onToggle}
+        size={UiSize.XS}
     >
-        <span>
-            {props.label}
+        {props.label}
 
-            <Icon name="chevron_right" />
-        </span>
-
+        <Icon name="chevron_right" />
         {
             open && <div className="items">
                 {props.items.map((item, index) => {
@@ -245,7 +249,7 @@ function ToolbarMenuItem(props: {
                 })}
             </div>
         }
-    </div>
+    </Button>
 }
 
 function ToolbarSectionItem(props: {

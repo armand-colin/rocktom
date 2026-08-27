@@ -26,18 +26,16 @@ export const Default = () => {
     const [simpleValue, setSimpleValue] = useState<Dropdown.Option | null>(null)
 
     return <div className="grid gap-2">
-        <Dropdown<Dropdown.Option>
-            options={simpleOptions}
-            value={simpleValue?.value ?? null}
-            onChange={setSimpleValue}
-            placeholder="Select an option"
-        />
-        <Dropdown<Dropdown.Option>
-            options={simpleOptions}
-            value={simpleValue?.value ?? null}
-            onChange={setSimpleValue}
-            placeholder="Select an option"
-            size={UiSize.S}
-        />
+        {
+            UiSize.all.map(size => (
+                <Dropdown<Dropdown.Option>
+                    options={simpleOptions}
+                    value={simpleValue?.value ?? null}
+                    onChange={setSimpleValue}
+                    placeholder="Select an option"
+                    size={size}
+                />
+            ))
+        }
     </div>
 }

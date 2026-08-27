@@ -35,22 +35,31 @@ export const Main: Story = {
 
     return (
       <div style={{ display: "grid", gap: 12, maxWidth: 360 }}>
-        <StringInput
-          {...args}
-          type="text"
-          name="title"
-          value={textValue}
-          placeholder="Type here"
-          onChange={setTextValue}
-        />
-        <StringInput
-          {...args}
-          type="email"
-          name="email"
-          value={emailValue}
-          placeholder="you@example.com"
-          onChange={setEmailValue}
-        />
+        {
+          UiSize.all.map(size => <div
+            key={size}
+            className="grid gap-4 grid-cols-[200px_200px]"
+          >
+            <StringInput
+              {...args}
+              size={size}
+              type="text"
+              name="title"
+              value={textValue}
+              placeholder="Type here"
+              onChange={setTextValue}
+            />
+            <StringInput
+              {...args}
+              size={size}
+              type="email"
+              name="email"
+              value={emailValue}
+              placeholder="you@example.com"
+              onChange={setEmailValue}
+            />
+          </div>)
+        }
       </div>
     );
   },

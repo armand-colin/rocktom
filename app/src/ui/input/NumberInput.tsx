@@ -15,6 +15,8 @@ type Props = {
     onChange: (value: number) => void,
     autoFocus?: boolean,
     onBlur?: () => void,
+    disabled?: boolean,
+    className?: string,
 }
 
 export function NumberInput(props: Props) {
@@ -70,7 +72,7 @@ export function NumberInput(props: Props) {
         setValue(props.value === null ? "" : props.value.toString())
     }, [props.value])
 
-    return <div className="NumberInput" data-size={props.size ?? UiSize.M}>
+    return <div className={`NumberInput ${props.className ?? ""}`} data-size={props.size ?? UiSize.M}>
         <input
             type="number"
             name={props.name}
@@ -82,6 +84,7 @@ export function NumberInput(props: Props) {
             onBlur={props.onBlur}
             autoFocus={props.autoFocus}
             onKeyDown={onKeyDown}
+            disabled={props.disabled}
         />
         <div className="slider" onMouseDown={onMouseDown}>
             <Icon name="code" />

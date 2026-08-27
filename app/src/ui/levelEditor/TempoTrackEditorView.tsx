@@ -1,15 +1,15 @@
 import { useComponent } from "@niloc/ecs-react";
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
+import { useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { Time } from "../../components/Time";
 import { NumberInput } from "../input/NumberInput";
 import "./TempoTrackEditorView.scss";
 import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "./TrackEditorView";
-import { Slider } from "../../utils/Slider";
 import type { TempoEvent } from "../../sound/song/TempoTrack";
 import type { Handler } from "../../utils/handlers/Handler";
 import { FormInputField } from "../form/FormInputField";
+import { UiSize } from "../UiSize";
 
 export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: Time }) {
     const { track } = useComponent(props.editor)
@@ -40,26 +40,29 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
         <TrackEditorHead
             title="Tempo track"
         >
-            <FormInputField label="Initial BPM">
-                <NumberInput
-                    name="initialBpm"
-                    value={track.initialTempo.bpm}
-                    step={1}
-                    onChange={onInitialChange}
-                />
-            </FormInputField>
+            <div className="grid grid-cols-2 gap-3 w-full">
+                <FormInputField label="Initial BPM">
+                    <NumberInput
+                        name="initialBpm"
+                        value={track.initialTempo.bpm}
+                        step={1}
+                        onChange={onInitialChange}
+                        size={UiSize.S}
+                    />
+                </FormInputField>
 
-            {
-                lastEvent &&
                 <FormInputField label="Last event BPM">
                     <NumberInput
                         name="lastEventBpm"
-                        value={lastEvent.tempo.bpm}
+                        value={lastEvent?.tempo.bpm ?? null}
+                        disabled={!lastEvent}
                         step={1}
                         onChange={onLastEventBpmChange}
+                        size={UiSize.S}
                     />
                 </FormInputField>
-            }
+            </div>
+
         </TrackEditorHead>
 
         <TrackEditorContent
@@ -95,7 +98,6 @@ function EventView(props: {
     onTimeChange: (time: number) => void,
     onRemove: () => void
 }) {
-    const [changingTime, setChangingTime] = useState(false)
     const handler = useRef<Handler | null>(null)
 
     useEffect(() => {
@@ -105,36 +107,10 @@ function EventView(props: {
         }
     }, [])
 
-    function onStartChangingTime(e: MouseEvent<HTMLDivElement>) {
+    function onContextualMenu(e: MouseEvent) {
         e.stopPropagation()
-        setChangingTime(true)
-    }
-
-    function onRemove(e: MouseEvent<HTMLDivElement>) {
         e.preventDefault()
-        e.stopPropagation()
         props.onRemove()
-    }
-
-    function onMouseDown(e: MouseEvent<HTMLDivElement>) {
-        e.stopPropagation()
-
-        handler.current?.destroy()
-
-        const slider = new Slider({
-            value: props.time,
-            step: 0.005,
-            event: e.nativeEvent,
-            min: props.previousEvent ? props.previousEvent.time + 0.01 : 0,
-            max: props.nextEvent ? props.nextEvent.time - 0.01 : Infinity,
-            sensibility: 0.001
-        })
-
-        slider.on('change', time => {
-            props.onTimeChange(time)
-        })
-
-        handler.current = slider
     }
 
     return <div
@@ -144,27 +120,16 @@ function EventView(props: {
             "--ticks": props.ticks
         } as CSSProperties}
         draggable={false}
+        onContextMenu={onContextualMenu}
     >
-        <div
+        <NumberInput
+            name="time"
             className="time"
-            onDoubleClick={onStartChangingTime}
-            onContextMenu={onRemove}
-            onMouseDown={onMouseDown}
-            draggable={false}
-        >
-            {
-                changingTime ?
-                    <NumberInput
-                        name="time"
-                        onChange={time => props.onTimeChange(time)}
-                        value={props.time}
-                        step={0.01}
-                        autoFocus={true}
-                        onBlur={() => setChangingTime(false)}
-                    /> :
-                    <span>{props.time.toFixed(2)}</span>
-            }
-        </div>
+            onChange={time => props.onTimeChange(time)}
+            value={props.time}
+            step={0.01}
+            size={UiSize.XS}
+        />
         <div className="hint" draggable={false}>{props.bpm.toFixed(2)} BPM</div>
         <div className="marker" draggable={false}></div>
     </div>

@@ -32,10 +32,15 @@
 
     --font-lexend: "Lexend", Arial;
 
-    --text-bsm: 12px;
-    --leading-bsm: 16px;
     --text-bmd: 16px;
     --leading-bmd: 20px;
+
+    --text-bsm: 14px;
+    --leading-bsm: 18px;
+
+    --text-bxs: 12px;
+    --leading-bxs: 16px;
+
     --text-blg: 18px;
     --leading-blg: 22px;
 
@@ -76,6 +81,7 @@
     --color-danger-outline: #d12e2e;
     --color-danger-text: #f3f6ff;
 
+    --spacing-05: 2px;
     --spacing-1: 4px;
     --spacing-2: 6px;
     --spacing-3: 8px;
@@ -94,14 +100,19 @@
     --shadow-lg: 0 16px 40px -6px rgba(0, 0, 0, 0.85), 0 8px 16px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
 
+@utility text-body-md {
+    font-size: var(--text-bmd);
+    line-height: var(--leading-bmd);
+}
+
 @utility text-body-sm {
     font-size: var(--text-bsm);
     line-height: var(--leading-bsm);
 }
 
-@utility text-body-md {
-    font-size: var(--text-bmd);
-    line-height: var(--leading-bmd);
+@utility text-body-xs {
+    font-size: var(--text-bxs);
+    line-height: var(--leading-bxs);
 }
 
 @utility text-body-lg {
@@ -152,6 +163,7 @@
     --danger-outline: var(--color-danger-outline);
     --danger-text: var(--color-danger-text);
 
+    --font-body-xs: 400 var(--text-bxs)/var(--leading-bxs) var(--font-lexend);
     --font-body-sm: 400 var(--text-bsm)/var(--leading-bsm) var(--font-lexend);
     --font-body-md: 400 var(--text-bmd)/var(--leading-bmd) var(--font-lexend);
     --font-body-lg: 400 var(--text-blg)/var(--leading-blg) var(--font-lexend);
@@ -163,6 +175,10 @@
     --animate-pop-in: popInAnimation 0.08s var(--curve-smooth);
 
     --curve-smooth: cubic-bezier(.38, .21, .21, .98);
+
+    --size-md: 36px;
+    --size-sm: 30px;
+    --size-xs: 24px;
 }
 
 @layer base {

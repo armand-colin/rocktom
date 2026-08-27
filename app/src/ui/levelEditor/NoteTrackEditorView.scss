@@ -5,26 +5,29 @@
         bottom: 0;
         left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px);
         width: calc(var(--duration) * var(--ratio) * 1px);
+        outline: 1px solid var(--color-grey-600);
 
         display: grid;
         grid-template-rows: 0fr 1fr;
-        border-radius: 8px;
-        outline: 1px solid var(--outline);
+        border-radius: var(--radius-sm);
+        cursor: move;
 
         .head {
-            padding: var(--spacing-2);
-            height: 26px;
+            height: var(--size-xs);
             background: var(--surface);
-            border-radius: var(--radius-xs) var(--radius-xs) 0 0;
-            font: var(--font-body-sm);
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            font: var(--font-body-xs);
             overflow: hidden;
             display: flex;
+            display: grid;
+            grid-template-columns: 1fr 0fr;
 
-            > p {
+            >p {
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
                 flex: 1;
+                padding: var(--spacing-1) 0 var(--spacing-1) var(--spacing-2);
             }
 
             .contextual {
@@ -36,6 +39,14 @@
         .notes {
             position: relative;
             overflow: clip;
+            background: var(--color-grey-800);
+            padding: var(--spacing-2) 0;
+
+            .container {
+                position: relative;
+                height: 100%;
+                width: 100%;
+            }
 
             .note {
                 position: absolute;
@@ -55,7 +66,7 @@
             bottom: 0;
             left: -2px;
             width: 4px;
-            cursor: ew-resize;
+            cursor: w-resize;
         }
 
         .resizer-right {
@@ -64,7 +75,7 @@
             bottom: 0;
             right: -2px;
             width: 4px;
-            cursor: ew-resize;
+            cursor: e-resize;
         }
     }
 }
