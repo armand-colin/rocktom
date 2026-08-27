@@ -56,7 +56,7 @@ export function PatternEditorNoteView(props: {
 
         Instance.engine.getResource(PopupManager).add(close => <NoteEventPopup
             notes={notes}
-            onUpdate={() => props.editor.changed()}
+            onUpdate={() => props.editor.triggerChanged()}
             close={close}
         />)
     }

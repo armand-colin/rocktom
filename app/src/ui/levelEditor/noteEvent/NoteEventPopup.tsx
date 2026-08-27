@@ -6,7 +6,6 @@ import { FormInputField } from "../../form/FormInputField"
 import { Button } from "../../button/Button"
 import { Rules } from "../../../3d/Rules"
 import { Toggle } from "../../toggle/Toggle"
-import type { PatternEditor } from "../../../components/editor/PatternEditor"
 
 type Editable<T> = {
     value: T | null
@@ -21,7 +20,6 @@ function initEditable<T>(values: T[]): Editable<T> {
 
 export function NoteEventPopup(props: {
     notes: NoteEvent[],
-    editor: PatternEditor,
     onUpdate: () => void,
     close: () => void
 }) {
@@ -43,10 +41,8 @@ export function NoteEventPopup(props: {
                 note.fingerPosition = fingerPosition.value
 
             if (slideConnects.dirty && note.slide)
-                note.slide.connect = slideConnects.value === true()
+                note.slide.connect = slideConnects.value === true
         }
-
-        props.editor.triggerChanged()
 
         props.onUpdate()
         props.close()
