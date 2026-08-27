@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Button, ButtonTheme } from "./Button";
 import { UiSize } from "../UiSize";
 import { Icon } from "../icon/Icon";
-import { Fragment } from "react/jsx-runtime";
 
 const meta = {
   title: "UI/Button",

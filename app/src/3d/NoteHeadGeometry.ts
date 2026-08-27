@@ -1,7 +1,7 @@
 import { BufferGeometry, Float32BufferAttribute } from "three"
 import type { NoteEvent } from "../sound/song/NoteEvent"
 import { Rules } from "./Rules"
-import { AtlasSprite, TextureAtlas } from "./TextureAtlas"
+import { AtlasSprite, TextureAtlas, TextureColorIndex } from "./TextureAtlas"
 
 export class NoteHeadGeometry extends BufferGeometry {
 
@@ -55,7 +55,7 @@ export class NoteHeadGeometry extends BufferGeometry {
         TextureAtlas.get().applyUvs(
             this,
             highlight ? AtlasSprite.HeadHighlight : AtlasSprite.Head,
-            colorIndex
+            colorIndex as TextureColorIndex
         )
     }
 
