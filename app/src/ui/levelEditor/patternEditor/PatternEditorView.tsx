@@ -1,11 +1,9 @@
 import { useComponent } from "@niloc/ecs-react";
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Rules } from "../../../3d/Rules";
 import type { EditorPlayer } from "../../../components/editor/EditorPlayer";
 import type { PatternEditor } from "../../../components/editor/PatternEditor";
 import type { TimeTransform } from "../../../components/editor/TimeTransform";
-import type { VirtualBass } from "../../../components/VirtualBass";
-import type { String } from "../../../sound/instrument/String";
 import { Note } from "../../../sound/note/Note";
 import { MouseButtons } from "../../../utils/MouseButtons";
 import "./PatternEditorView.scss";
@@ -25,6 +23,7 @@ import { FormInputField } from "../../form/FormInputField";
 import { StringInput } from "../../input/StringInput";
 import { UiSize } from "../../UiSize";
 import { MagnetizationView } from "../magnetizationView/MagnetizationView";
+import { KeyboardNotesView } from "./KeyboardNotesView";
 
 const toolbarTabs: Toolbar.Tab[] = [
     Toolbar.Tab.create("Edit", [
@@ -197,14 +196,12 @@ export function PatternEditorView(props: {
                     noPadding
                 >
                     <NoteTransformView transform={props.editor.noteTransform}>
-                        {
-                            notes.map(note => <KeyboardNoteView
-                                key={note.index}
-                                note={note}
-                                string={string}
-                                instrument={props.editor.virtualBass}
-                            />)
-                        }
+                        <KeyboardNotesView
+                            string={string}
+                            instrument={props.editor.virtualBass}
+                            minNote={minNote}
+                            maxNote={maxNote}
+                        />
                     </NoteTransformView>
                 </TrackEditorHead>
                 <TrackEditorContent
@@ -262,41 +259,6 @@ export function PatternEditorView(props: {
         </div>
     </div >
 }
-
-function KeyboardNoteView(props: { note: Note, string: String, instrument: VirtualBass }) {
-    function play(e: MouseEvent) {
-        e.preventDefault()
-        e.stopPropagation()
-
-        if (e.buttons === MouseButtons.Left)
-            props.instrument.playNote(props.note)
-    }
-
-    function stop(e: MouseEvent) {
-        e.preventDefault()
-        e.stopPropagation()
-        props.instrument.stopNote(props.note)
-    }
-
-    return <div
-        className="KeyboardNoteView"
-        data-available={props.note.index >= props.string.note.index && props.note.index <= props.string.fret(Rules.maxFret).index}
-        style={{
-            "--index": props.note.index,
-            "--color": "#" + props.string.color.getHexString(),
-            "--contrast": "#" + props.string.outlineColor.getHexString(),
-        } as CSSProperties}
-
-        onMouseDown={play}
-        onMouseUp={stop}
-        onMouseLeave={stop}
-        onMouseEnter={play}
-    >
-        {props.note.name}{props.note.octave}
-    </div>
-}
-
-
 
 function TimeMarkersView(props: { transform: TimeTransform }) {
     const { offset, ratio } = useComponent(props.transform)
