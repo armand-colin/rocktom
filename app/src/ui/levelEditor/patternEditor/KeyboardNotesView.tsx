@@ -1,13 +1,12 @@
-import { useMemo, type CSSProperties, type MouseEvent } from "react"
+import { useMemo, type CSSProperties } from "react"
 import { Rules } from "../../../3d/Rules"
-import type { VirtualBass } from "../../../components/VirtualBass"
+import type { PatternEditor } from "../../../components/editor/PatternEditor"
 import type { String } from "../../../sound/instrument/String"
 import { Note } from "../../../sound/note/Note"
-import { MouseButtons } from "../../../utils/MouseButtons"
 
 export function KeyboardNotesView(props: {
     string: String,
-    instrument: VirtualBass,
+    editor: PatternEditor,
     minNote: Note,
     maxNote: Note,
 }) {
@@ -23,24 +22,12 @@ export function KeyboardNotesView(props: {
         key={note.index}
         note={note}
         string={props.string}
-        instrument={props.instrument}
+        editor={props.editor}
     />)
 }
 
-function KeyboardNoteView(props: { note: Note, string: String, instrument: VirtualBass }) {
-    function play(e: MouseEvent) {
-        e.preventDefault()
-        e.stopPropagation()
-
-        if (e.buttons === MouseButtons.Left)
-            props.instrument.playNote(props.note)
-    }
-
-    function stop(e: MouseEvent) {
-        e.preventDefault()
-        e.stopPropagation()
-        props.instrument.stopNote(props.note)
-    }
+function KeyboardNoteView(props: { note: Note, string: String, editor: PatternEditor }) {
+    const mouse = props.editor.mouse
 
     return <div
         className="KeyboardNoteView"
@@ -51,10 +38,9 @@ function KeyboardNoteView(props: { note: Note, string: String, instrument: Virtu
             "--contrast": "#" + props.string.outlineColor.getHexString(),
         } as CSSProperties}
 
-        onMouseDown={play}
-        onMouseUp={stop}
-        onMouseLeave={stop}
-        onMouseEnter={play}
+        onMouseDown={e => mouse.onKeyboardNoteMouseDown(e.nativeEvent, props.note)}
+        onMouseEnter={e => mouse.onKeyboardNoteMouseEnter(e.nativeEvent, props.note)}
+        onMouseLeave={() => mouse.onKeyboardNoteMouseLeave()}
     >
         {props.note.name}{props.note.octave}
     </div>

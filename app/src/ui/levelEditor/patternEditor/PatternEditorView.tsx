@@ -198,7 +198,7 @@ export function PatternEditorView(props: {
                     <NoteTransformView transform={props.editor.noteTransform}>
                         <KeyboardNotesView
                             string={string}
-                            instrument={props.editor.virtualBass}
+                            editor={props.editor}
                             minNote={minNote}
                             maxNote={maxNote}
                         />

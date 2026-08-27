@@ -1,3 +1,4 @@
+import type { Note } from "../../../sound/note/Note";
 import type { NoteEvent } from "../../../sound/song/NoteEvent";
 import type { Handler } from "../../../utils/handlers/Handler";
 import { MouseButtons } from "../../../utils/MouseButtons";
@@ -8,7 +9,8 @@ import { ClearSelection } from "./ClearSelection";
 import { CycleActiveString } from "./CycleActiveString";
 import { MoveNotes } from "./MoveNotes";
 import { MoveSlide } from "./MoveSlide";
-import type { PatternEditorMouseAction } from "./PatternEditorMouseAction";
+import type { PatternEditorKeyboardMouseAction, PatternEditorMouseAction } from "./PatternEditorMouseAction";
+import { PlayKeyboardNote } from "./PlayKeyboardNote";
 import { RemoveNote } from "./RemoveNote";
 import { ResizeNoteDuration } from "./ResizeNoteDuration";
 import { ResizeNoteSlideDuration } from "./ResizeNoteSlideDuration";
@@ -18,6 +20,7 @@ import { StartSelectionWindow } from "./StartSelectionWindow";
 export class PatternEditorMouseDispatcher {
 
     private _activeHandler: Handler | null = null
+    private _keyboardHandler: Handler | null = null
 
     constructor(private readonly _editor: PatternEditor) { }
 
@@ -123,13 +126,34 @@ export class PatternEditorMouseDispatcher {
         }
     }
 
+    onKeyboardNoteMouseDown(event: MouseEvent, note: Note) {
+        if (event.buttons === MouseButtons.Left)
+            event.preventDefault()
+
+        this._startKeyboard(PlayKeyboardNote, event, note)
+    }
+
+    onKeyboardNoteMouseEnter(event: MouseEvent, note: Note) {
+        this._startKeyboard(PlayKeyboardNote, event, note)
+    }
+
+    onKeyboardNoteMouseLeave() {
+        this._clearKeyboardHandler()
+    }
+
     destroy() {
         this._clearHandler()
+        this._clearKeyboardHandler()
     }
 
     private _clearHandler() {
         this._activeHandler?.destroy()
         this._activeHandler = null
+    }
+
+    private _clearKeyboardHandler() {
+        this._keyboardHandler?.destroy()
+        this._keyboardHandler = null
     }
 
     private _start(action: PatternEditorMouseAction, event: MouseEvent, note: NoteEvent) {
@@ -142,6 +166,19 @@ export class PatternEditorMouseDispatcher {
         if (handler) {
             this._clearHandler()
             this._activeHandler = handler
+        }
+    }
+
+    private _startKeyboard(action: PatternEditorKeyboardMouseAction, event: MouseEvent, note: Note) {
+        const handler = action.start({
+            event,
+            editor: this._editor,
+            note
+        })
+
+        if (handler) {
+            this._clearKeyboardHandler()
+            this._keyboardHandler = handler
         }
     }
 
