@@ -1,23 +1,23 @@
-import { Mesh, Object3D } from "three";
-import type { Instrument } from "../sound/instrument/Instrument";
-import type { NoteEvent } from "../sound/song/NoteEvent";
-import { FretMesh } from "./FretMesh";
-import { NoteHeadGeometry } from "./NoteHeadGeometry";
-import { NoteMaterial } from "./NoteMaterial";
-import { NoteTailGeometry } from "./NoteTailGeometry";
-import { Rules } from "./Rules";
+import { Mesh, Object3D, type MeshBasicMaterial } from "three"
+import type { Instrument } from "../sound/instrument/Instrument"
+import type { NoteEvent } from "../sound/song/NoteEvent"
+import { FretMesh } from "./FretMesh"
+import { NoteHeadGeometry } from "./NoteHeadGeometry"
+import { NoteTailGeometry } from "./NoteTailGeometry"
+import { Rules } from "./Rules"
+import { TextureAtlas } from "./TextureAtlas"
 
 const TIME_RATIO = 0.05
 
 export class Note3D extends Object3D {
 
-    private _headMaterial: NoteMaterial
-    private _headHighlightMaterial: NoteMaterial
-    private _tailMaterial: NoteMaterial
-    private _tailHighlightMaterial: NoteMaterial
+    private _headGeometry: NoteHeadGeometry
+    private _headHighlightGeometry: NoteHeadGeometry
+    private _tailGeometry: NoteTailGeometry | null = null
+    private _tailHighlightGeometry: NoteTailGeometry | null = null
 
-    private _head: Mesh<NoteHeadGeometry, NoteMaterial>
-    private _tail: Mesh<NoteTailGeometry, NoteMaterial> | null = null
+    private _head: Mesh<NoteHeadGeometry, MeshBasicMaterial>
+    private _tail: Mesh<NoteTailGeometry, MeshBasicMaterial> | null = null
     private _fret: FretMesh | null = null
 
     private _note: NoteEvent
@@ -28,16 +28,17 @@ export class Note3D extends Object3D {
 
         this._note = note
 
-        this._headMaterial = NoteMaterial.head(note.string)
-        this._headHighlightMaterial = NoteMaterial.headHighlight(note.string)
-        this._tailMaterial = NoteMaterial.tail(note.string)
-        this._tailHighlightMaterial = NoteMaterial.tailHighlight(note.string)
+        const material = TextureAtlas.get().material
 
-        this._head = new Mesh(NoteHeadGeometry.create(note), this._headMaterial)
+        this._headGeometry = NoteHeadGeometry.create(note, false)
+        this._headHighlightGeometry = NoteHeadGeometry.create(note, true)
+        this._head = new Mesh(this._headGeometry, material)
         this.add(this._head)
 
         if (note.duration > 0) {
-            this._tail = new Mesh(NoteTailGeometry.create(note), this._tailMaterial)
+            this._tailGeometry = NoteTailGeometry.create(note, false)
+            this._tailHighlightGeometry = NoteTailGeometry.create(note, true)
+            this._tail = new Mesh(this._tailGeometry, material)
             this.add(this._tail)
         }
 
@@ -52,12 +53,10 @@ export class Note3D extends Object3D {
             this.position.x = Rules.getX(note.fingerPosition + 1.5)
 
         this.position.y = Rules.getStringY(instrument, note.string)
-        this.position.z = (0 - this._note.time) * TIME_RATIO // hide it in the beginning
+        this.position.z = (0 - this._note.time) * TIME_RATIO
     }
 
     update(ticks: number) {
-
-        // Update position based on time if needed
         this.position.z = (ticks - this._note.time) * TIME_RATIO
 
         if (
@@ -68,21 +67,17 @@ export class Note3D extends Object3D {
                 return
 
             this._highlighted = true
-
-            // Setting highlight material
-            this._head.material = this._headHighlightMaterial
-            if (this._tail)
-                this._tail.material = this._tailHighlightMaterial
+            this._head.geometry = this._headHighlightGeometry
+            if (this._tail && this._tailHighlightGeometry)
+                this._tail.geometry = this._tailHighlightGeometry
         } else {
             if (!this._highlighted)
                 return
 
             this._highlighted = false
-
-            // Setting base material
-            this._head.material = this._headMaterial
-            if (this._tail)
-                this._tail.material = this._tailMaterial
+            this._head.geometry = this._headGeometry
+            if (this._tail && this._tailGeometry)
+                this._tail.geometry = this._tailGeometry
         }
     }
 

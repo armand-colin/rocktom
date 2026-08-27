@@ -1,6 +1,8 @@
 import type { Color } from "three"
+import { AtlasPalette } from "../../3d/AtlasPalette"
 import { Rules } from "../../3d/Rules"
 import { Note } from "../note/Note"
+import type { TextureColorIndex } from "../../3d/TextureAtlas"
 
 export class String {
 
@@ -8,6 +10,7 @@ export class String {
     readonly t: number
     readonly name: string
     readonly note: Note
+    readonly colorIndex: TextureColorIndex
     readonly color: Color
     readonly highlightColor: Color
     readonly outlineColor: Color
@@ -17,7 +20,6 @@ export class String {
         t: number,
         name: string,
         note: Note,
-        color: Color,
         highlightColor: Color,
         outlineColor: Color
     ) {
@@ -25,7 +27,8 @@ export class String {
         this.t = t
         this.name = name
         this.note = note
-        this.color = color
+        this.colorIndex = index as TextureColorIndex
+        this.color = AtlasPalette.color(this.colorIndex).clone()
         this.highlightColor = highlightColor
         this.outlineColor = outlineColor
     }
@@ -35,7 +38,7 @@ export class String {
     }
 
     canPlay(note: Note): boolean {
-        return note.index >= this.note.index && 
+        return note.index >= this.note.index &&
             (note.index - this.note.index) <= Rules.maxFret
     }
 

@@ -1,5 +1,5 @@
 import { useComponent } from "@niloc/ecs-react"
-import { useEffect, useMemo, useRef, type CSSProperties } from "react"
+import { useMemo, type CSSProperties } from "react"
 import type { LiveInstrument } from "../../components/LiveInstrument"
 import { Tuner } from "../../components/Tuner"
 import { useComponentInstance } from "../../hooks/useComponentInstance"
@@ -13,7 +13,6 @@ const bass = new Bass()
 export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () => void }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
     const { detectedFrequency, targetString, locked } = useComponent(tuner)
-    const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
     const cents = useMemo(() => {
         if (!targetString || detectedFrequency <= 0)
@@ -28,47 +27,6 @@ export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () =>
             "error"
 
     const t = Math.max(Math.min(cents, 20), -20) / 40 + 0.5
-
-    function draw() {
-        const canvas = canvasRef.current
-        if (!canvas) {
-            return
-        }
-
-        const context = canvas.getContext("2d")!
-        const width = canvas.width
-        const height = canvas.height
-        const frequencies = tuner.frequencies
-        const frequency = tuner.detectedFrequency
-
-        context.clearRect(0, 0, width, height)
-
-        context.fillStyle = "black"
-        context.fillRect(0, 0, width, height)
-        context.fillStyle = "lime"
-
-        // Draw filled shape
-        const barWidth = width / frequencies.length
-        context.beginPath()
-        context.moveTo(0, height)
-        for (let i = 0; i < frequencies.length; i++) {
-            const value = frequencies[i]
-            const barHeight = value * height
-            context.lineTo(i * barWidth, height - barHeight)
-        }
-        context.lineTo(width, height)
-        context.closePath()
-        context.fill()
-
-        // Draw frequency as a vertical line at correct frequency
-        context.fillStyle = "red"
-        const frequencyX = (frequency / (tuner.frequencyStep * frequencies.length)) * width
-        context.fillRect(frequencyX, 0, 2, height);
-    }
-
-    useEffect(() => {
-        draw()
-    }, [detectedFrequency])
 
 
     return <div className="TunerOverlay">
@@ -104,8 +62,6 @@ export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () =>
             >
                 <div className="caret"></div>
             </div>
-
-            <canvas ref={canvasRef}></canvas>
         </div>
     </div>
 }

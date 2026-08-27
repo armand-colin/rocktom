@@ -1,25 +1,28 @@
-import { AnimationCurve } from "@niloc/utils";
-import { Mesh, MeshBasicMaterial, Object3D, PlaneGeometry, Texture, TextureLoader } from "three";
-import { lerp } from "three/src/math/MathUtils.js";
-import texture from "../assets/highlightTile.png";
-import type { NoteEvent } from "../sound/song/NoteEvent";
-import type { TempoTrack } from "../sound/song/TempoTrack";
-import { Rules } from "./Rules";
+import { AnimationCurve } from "@niloc/utils"
+import { Mesh, MeshBasicMaterial, Object3D, PlaneGeometry } from "three"
+import { lerp } from "three/src/math/MathUtils.js"
+import type { NoteEvent } from "../sound/song/NoteEvent"
+import type { TempoTrack } from "../sound/song/TempoTrack"
+import { Rules } from "./Rules"
+import { AtlasSprite, TextureAtlas } from "./TextureAtlas"
 
 class PlayingNote3D extends Object3D {
 
-    static _loader = new TextureLoader()
-    static _texture: Texture | null = null
-
-    static _geometry: PlaneGeometry = new PlaneGeometry(Rules.fretWidth * 0.6, Rules.stringDistance * 0.5)
-    static _emptyGeometry: PlaneGeometry = new PlaneGeometry(Rules.fretWidth * 4, Rules.stringDistance * 0.3)
-
+    private static _geometries = new Map<string, PlaneGeometry>()
     static _scaleRatio = 0.2
 
-    static get texture() {
-        if (!this._texture)
-            this._texture = this._loader.load(texture)
-        return this._texture
+    private static geometry(event: NoteEvent): PlaneGeometry {
+        const fretless = event.fret === 0
+        const key = `${fretless ? 1 : 0}-${event.string.colorIndex}`
+        let geometry = this._geometries.get(key)
+        if (!geometry) {
+            geometry = fretless
+                ? new PlaneGeometry(Rules.fretWidth * 4, Rules.stringDistance * 0.3)
+                : new PlaneGeometry(Rules.fretWidth * 0.6, Rules.stringDistance * 0.5)
+            TextureAtlas.get().applyUvs(geometry, AtlasSprite.HighlightTile, event.string.colorIndex)
+            this._geometries.set(key, geometry)
+        }
+        return geometry
     }
 
     private _ticks: number = 0
@@ -33,17 +36,12 @@ class PlayingNote3D extends Object3D {
         this._event = event
         this._fadeOutDuration = fadeOutDuration
         this._material = new MeshBasicMaterial({
-            color: event.string.color,
-            map: PlayingNote3D.texture,
+            map: TextureAtlas.get().texture,
             transparent: true,
-            opacity: 1.0
+            opacity: 1.0,
         })
 
-        const geometry = event.fret === 0 ?
-            PlayingNote3D._emptyGeometry :
-            PlayingNote3D._geometry
-
-        this._mesh = new Mesh(geometry, this._material)
+        this._mesh = new Mesh(PlayingNote3D.geometry(event), this._material)
         this.add(this._mesh)
         this._updatePosition()
     }
@@ -71,7 +69,6 @@ class PlayingNote3D extends Object3D {
         this._material.opacity = 1.0 - easedT
         this.scale.setScalar(1 + easedT * PlayingNote3D._scaleRatio)
 
-        // Handle slide
         if (this.event.slide) {
             const slideStartTicks = this.event.time + this.event.duration - this.event.slide.duration
 
@@ -97,16 +94,7 @@ class PlayingNote3D extends Object3D {
     set(event: NoteEvent, fadeOutDuration: number) {
         this._event = event
         this._fadeOutDuration = fadeOutDuration
-
-        // update material
-        this._material.color.set(event.string.color)
-
-        const geometry = event.fret === 0 ?
-            PlayingNote3D._emptyGeometry :
-            PlayingNote3D._geometry
-
-        this._mesh.geometry = geometry
-
+        this._mesh.geometry = PlayingNote3D.geometry(event)
         this._updatePosition()
     }
 

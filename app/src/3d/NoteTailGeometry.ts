@@ -1,6 +1,7 @@
-import { BufferGeometry, Float32BufferAttribute } from "three";
-import type { NoteEvent } from "../sound/song/NoteEvent";
-import { Rules } from "./Rules";
+import { BufferGeometry, Float32BufferAttribute } from "three"
+import type { NoteEvent } from "../sound/song/NoteEvent"
+import { Rules } from "./Rules"
+import { AtlasSprite, TextureAtlas } from "./TextureAtlas"
 
 const EaseIn = (t: number) => t * t
 const EaseInOut = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
@@ -16,12 +17,11 @@ export class NoteTailGeometry extends BufferGeometry {
     private _uvs: number[] = []
     private _halfWidth: number
 
-    static create(note: NoteEvent): NoteTailGeometry {
-        // TODO: add hash that takes duration and slide offset into account
-        return new NoteTailGeometry(note)
+    static create(note: NoteEvent, highlight = false): NoteTailGeometry {
+        return new NoteTailGeometry(note, highlight)
     }
 
-    constructor(note: NoteEvent) {
+    constructor(note: NoteEvent, highlight = false) {
         super()
 
         this._note = note
@@ -39,8 +39,14 @@ export class NoteTailGeometry extends BufferGeometry {
         this._addSlide()
 
         this.setIndex(this._indices)
-        this.setAttribute('position', new Float32BufferAttribute(this._positions, 3))
-        this.setAttribute('uv', new Float32BufferAttribute(this._uvs, 2))
+        this.setAttribute("position", new Float32BufferAttribute(this._positions, 3))
+        this.setAttribute("uv", new Float32BufferAttribute(this._uvs, 2))
+
+        TextureAtlas.get().applyUvs(
+            this,
+            highlight ? AtlasSprite.TailHighlight : AtlasSprite.Tail,
+            note.string.colorIndex
+        )
     }
 
     private _addStraightTail() {

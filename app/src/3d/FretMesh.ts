@@ -1,37 +1,16 @@
-import { Mesh, MeshBasicMaterial, PlaneGeometry } from "three";
-import { Rules } from "./Rules";
-import { FretTexture } from "./FretTexture";
+import { Mesh, type MeshBasicMaterial, PlaneGeometry } from "three"
+import { AtlasPalette } from "./AtlasPalette"
+import { Rules } from "./Rules"
+import { AtlasSprite, TextureAtlas, TextureColorIndex } from "./TextureAtlas"
 
 export class FretMesh extends Mesh {
 
     static _geometries: (PlaneGeometry | null)[] = Array(Rules.maxFret + 1).fill(null)
-    static _material: MeshBasicMaterial
 
     static createGeometry(fret: number): PlaneGeometry {
         const geometry = new PlaneGeometry(Rules.stringDistance * 0.6, Rules.stringDistance * 0.6)
-        
-        // Setting uvs to allow for a texture atlas
-        const uv = geometry.attributes.uv
-        for (let k = 0; k < uv.count; k++) {
-            let u = uv.getX(k)
-            const v = uv.getY(k)
-            u = u * (1 / (Rules.maxFret + 1)) + (fret / (Rules.maxFret + 1))
-            uv.setXY(k, u, v)
-        }
-
+        TextureAtlas.get().applyUvs(geometry, AtlasSprite.fret(fret), AtlasPalette.Reserve as TextureColorIndex)
         return geometry
-    }
-
-    static createMaterial() {
-        if (this._material)
-            return this._material
-
-        this._material = new MeshBasicMaterial({
-            map: FretTexture.load(),
-            transparent: true
-        })
-
-        return this._material
     }
 
     static create(fret: number): FretMesh {
@@ -45,7 +24,7 @@ export class FretMesh extends Mesh {
             this._geometries[fret] = geometry
         }
 
-        return new FretMesh(geometry, this.createMaterial(), fret)
+        return new FretMesh(geometry, TextureAtlas.get().material, fret)
     }
 
     constructor(geometry: PlaneGeometry, material: MeshBasicMaterial, fret: number) {
