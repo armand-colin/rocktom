@@ -5,8 +5,11 @@
     --knob-radius: var(--radius-sm);
     --knob-width: var(--size-xxs);
 
+    --slider-background: unset;
+    --slider-progress-background: unset;
+
     height: var(--height);
-    background: var(--color-grey-500);
+    background: var(--slider-background, var(--color-grey-500));
     position: relative;
     border-radius: var(--radius);
     user-select: none;
@@ -17,7 +20,7 @@
         left: 0;
         width: calc(var(--t) * (100% - var(--knob-width) - var(--padding) * 2) + var(--knob-width) + var(--padding) * 2);
         height: var(--height);
-        background: var(--color-blue-500);
+        background: var(--slider-progress-background, var(--color-blue-500));
         border-radius: var(--radius);
     }
 
@@ -44,18 +47,18 @@
     }
 
     &:hover {
-        background: var(--color-grey-600);
+        background: var(--slider-background, var(--color-grey-600));
 
         .before {
-            background: var(--color-blue-500);
+            background: var(--slider-progress-background, var(--color-blue-500));
         }
     }
 
     &[data-active="true"] {
-        background: var(--color-grey-600);
+        background: var(--slider-background, var(--color-grey-600));
 
         .before {
-            background: var(--color-blue-500);
+            background: var(--slider-progress-background, var(--color-blue-500));
         }
     }
 }

@@ -4,6 +4,7 @@
     display: grid;
     grid-template-columns: 1fr 0fr;
     overflow: hidden;
+    color: var(--color-grey-50);
 
     input {
         background: none;

@@ -1,0 +1,85 @@
+.ColorPicker {
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-1);
+
+    .preview {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+
+        .swatch {
+            width: var(--size-md);
+            height: var(--size-md);
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--outline);
+            flex-shrink: 0;
+        }
+
+        .hex {
+            font: var(--font-body-sm);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    .area {
+        position: relative;
+        height: 120px;
+        border-radius: var(--radius-xs);
+        cursor: crosshair;
+        background:
+            linear-gradient(to top, #000, transparent),
+            linear-gradient(to right, #fff, hsl(calc(var(--hue) * 1deg), 100%, 50%));
+
+        .cursor {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+            left: calc(var(--x) * 100%);
+            top: calc(var(--y) * 100%);
+            translate: -50% -50%;
+        }
+    }
+
+    .hue .Slider {
+        --slider-background: linear-gradient(to right,
+                hsl(0, 100%, 50%),
+                hsl(60, 100%, 50%),
+                hsl(120, 100%, 50%),
+                hsl(180, 100%, 50%),
+                hsl(240, 100%, 50%),
+                hsl(300, 100%, 50%),
+                hsl(360, 100%, 50%));
+
+        --slider-progress-background: none;
+    }
+
+    .mode {
+        display: flex;
+        gap: var(--spacing-1);
+
+        .Button {
+            flex: 1;
+        }
+    }
+
+    .channels {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-2);
+
+        label {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-1);
+            font: var(--font-body-xs);
+            color: var(--color-grey-200);
+        }
+    }
+}

@@ -1,0 +1,42 @@
+.ColorInput {
+    display: flex;
+    align-items: stretch;
+    background: var(--surface);
+    border-radius: 4px;
+    overflow: hidden;
+
+    &[data-disabled="true"] {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .swatch {
+        flex-shrink: 0;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        background: none;
+
+        &:disabled {
+            cursor: default;
+        }
+    }
+
+    &[data-size="md"] .swatch {
+        width: var(--size-lg);
+    }
+
+    &[data-size="sm"] .swatch {
+        width: var(--size-md);
+    }
+
+    &[data-size="xs"] .swatch {
+        width: var(--size-sm);
+    }
+
+    .StringInput {
+        flex: 1;
+        min-width: 0;
+        background: none;
+    }
+}
