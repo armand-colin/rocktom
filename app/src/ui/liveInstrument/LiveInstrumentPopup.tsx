@@ -8,6 +8,7 @@ import { LiveInstrument } from "../../components/LiveInstrument";
 import { Instance } from "../../Instance";
 import { LiveInstrumentPreferences } from "../../resources/LiveInstrumentPreferences";
 import { SoundEngine } from "../../resources/SoundEngine";
+import { Icon } from "../icon/Icon";
 
 type Props = {
     close: () => void
@@ -27,11 +28,11 @@ export function LiveInstrumentPopup(props: Props) {
         />
 
         {
-            instrument ? 
-            <LiveInstrumentPreview
-                instrument={instrument}
-            /> :
-            null
+            instrument ?
+                <LiveInstrumentPreview
+                    instrument={instrument}
+                /> :
+                null
         }
     </Popup.BaseContainer>
 }
@@ -66,7 +67,7 @@ function InstrumentDropdown(props: { instrument: LiveInstrument | null }) {
         state.setInstrument(liveInstrument)
     }
 
-    return <div>
+    return <div className="flex gap-2">
         <Dropdown
             options={mediaStreamList.streams.map<Dropdown.Option>(stream => ({
                 label: stream.label,
@@ -74,9 +75,21 @@ function InstrumentDropdown(props: { instrument: LiveInstrument | null }) {
             }))}
             value={props.instrument?.streamId ?? null}
             onChange={setInstrument}
+            placeholder="Select a microphone"
         />
-        <Button onClick={onRefresh}>
-            Refresh
+        {
+            props.instrument && <Button
+                shape="square"
+                onClick={() => setInstrument(null)}
+            >
+                <Icon name="close" />
+            </Button>
+        }
+        <Button
+            onClick={onRefresh}
+            shape="square"
+        >
+            <Icon name="refresh" />
         </Button>
     </div>
 }

@@ -17,7 +17,11 @@ export namespace Popup {
             <h3>{props.title}</h3>
             {
                 props.close ?
-                    <Button onClick={props.close} size={UiSize.S} shape="square">
+                    <Button
+                        onClick={props.close}
+                        size={UiSize.XS}
+                        shape="square"
+                    >
                         <Icon name="close" />
                     </Button> :
                     null

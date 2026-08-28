@@ -1,8 +1,9 @@
 import { useResource } from "@niloc/ecs-react";
 import { State } from "../../resources/State";
-import { Button, ButtonTheme } from "../button/Button";
+import { Button } from "../button/Button";
 import { PopupManager } from "../../resources/PopupManager";
 import { LiveInstrumentPopup } from "./LiveInstrumentPopup";
+import { LED } from "../led/LED";
 
 export function LiveInstrumentButton() {
     const { instrument } = useResource(State)
@@ -13,11 +14,11 @@ export function LiveInstrumentButton() {
             close={close} 
         />)
     }
-    
+
     return <Button
-        theme={instrument ? ButtonTheme.Primary : ButtonTheme.Default}
         onClick={onClick}
     >
+        <LED theme={instrument ? "primary" : "default"} />
         Instrument
     </Button>
 }

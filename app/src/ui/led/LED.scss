@@ -1,0 +1,23 @@
+.LED {
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+    border: 2px solid var(--color-grey-700);
+    background-color: var(--color-grey-500);
+    transition: all 0.16s var(--easing-smooth);
+
+    &[data-theme="default"] {
+        background-color: var(--color-grey-500);
+        border-color: var(--color-grey-700);
+    }
+
+    &[data-theme="error"] {
+        background-color: var(--color-error-500);
+        border-color: var(--color-error-700);
+    }
+
+    &[data-theme="primary"] {
+        background-color: var(--color-primary-500);
+        border-color: var(--color-primary-700);
+    }
+}
