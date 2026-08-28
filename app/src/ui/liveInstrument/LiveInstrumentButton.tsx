@@ -23,7 +23,7 @@ export function LiveInstrumentButton() {
 
     return <Button
         onClick={onClick}
-        className="items-center"
+        className="items-center LiveInstrumentButton"
     >
         {
             instrument ?

@@ -19,7 +19,7 @@ import { Tooltip } from "./tooltip/Tooltip";
 import { UiSize } from "./UiSize";
 import { Button, ButtonTheme } from "./button/Button";
 import { Slider } from "./slider/Slider";
-import { LiveInstrumentView } from "./liveInstrument/LiveInstrumentView";
+import { LiveInstrumentButton } from "./liveInstrument/LiveInstrumentButton";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -56,7 +56,7 @@ export function PlaybackView(props: { playback: Playback }) {
                 />
             )}
         </InactiveHiderFn>
-        <LiveInstrumentView />
+        <LiveInstrumentButton />
     </div>
 }
 
