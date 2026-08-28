@@ -1,4 +1,3 @@
-import { Color } from "three"
 import { Note } from "../note/Note"
 import { String } from "./String"
 
@@ -56,10 +55,10 @@ export class Instrument {
 
 export class Bass extends Instrument {
 
-    static E = new String(0, 0 / 3, "E", Note.fromName("E", 1), new Color("#ff1b1b"), new Color("#700c0c"))
-    static A = new String(1, 1 / 3, "A", Note.fromName("A", 1), new Color("#726914"), new Color("#58500c"))
-    static D = new String(2, 2 / 3, "D", Note.fromName("D", 2), new Color("#2626ff"), new Color("#090934"))
-    static G = new String(3, 3 / 3, "G", Note.fromName("G", 2), new Color("#ff7a0d"), new Color("#47280f"))
+    static E = new String(0, 0 / 3, "E", Note.fromName("E", 1))
+    static A = new String(1, 1 / 3, "A", Note.fromName("A", 1))
+    static D = new String(2, 2 / 3, "D", Note.fromName("D", 2))
+    static G = new String(3, 3 / 3, "G", Note.fromName("G", 2))
 
     constructor() {
         super(

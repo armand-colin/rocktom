@@ -257,6 +257,31 @@ export class PatternEditor extends Component {
         return this.pasteFromClipboard(anchorTime)
     }
 
+    duplicateSelection(): boolean {
+        const selection = [...this.selection.elements]
+        if (selection.length === 0)
+            return false
+
+        let minTime = Infinity
+        let endTime = -Infinity
+        for (const note of selection) {
+            minTime = Math.min(minTime, note.time)
+            endTime = Math.max(endTime, note.time + note.duration)
+        }
+
+        const offset = endTime - minTime
+        const duplicatedNotes: NoteEvent[] = []
+        for (const sourceNote of selection) {
+            const note = NoteEvent.clone(sourceNote)
+            note.time = sourceNote.time + offset
+            this.pattern.add(note)
+            duplicatedNotes.push(note)
+        }
+
+        this.selection.set(duplicatedNotes)
+        return true
+    }
+
     setSelectionWindow(selectionWindow: SelectionWindow | null) {
         this._selectionWindow = selectionWindow
         this.changed()

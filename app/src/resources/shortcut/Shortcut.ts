@@ -2,6 +2,7 @@ import { OS } from "../../utils/OS"
 
 export enum KeyCode {
     C = "KeyC",
+    D = "KeyD",
     V = "KeyV",
     S = "KeyS",
     R = "KeyR",

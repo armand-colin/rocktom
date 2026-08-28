@@ -10,6 +10,7 @@ export namespace Shortcuts {
     export const Editor = {
         Copy: new Shortcut({ keyCode: KeyCode.C, ctrl: true }),
         Paste: new Shortcut({ keyCode: KeyCode.V, ctrl: true }),
+        Duplicate: new Shortcut({ keyCode: KeyCode.D, ctrl: true }),
         Delete: new Shortcut({ keyCode: KeyCode.Delete }),
         Split: new Shortcut({ keyCode: KeyCode.X, alt: true }),
         Slide: new Shortcut({ keyCode: KeyCode.S, alt: true }),

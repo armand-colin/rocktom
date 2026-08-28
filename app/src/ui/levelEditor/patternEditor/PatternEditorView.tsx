@@ -32,6 +32,7 @@ const toolbarTabs: Toolbar.Tab[] = [
         Toolbar.Item.section("Clipboard", [
             Toolbar.Item.shortcut("Copy", Shortcuts.Editor.Copy),
             Toolbar.Item.shortcut("Paste", Shortcuts.Editor.Paste),
+            Toolbar.Item.shortcut("Duplicate", Shortcuts.Editor.Duplicate),
         ]),
         Toolbar.Item.section("Notes", [
             Toolbar.Item.shortcut("Delete", Shortcuts.Editor.Delete),
@@ -52,6 +53,7 @@ export function PatternEditorView(props: {
 
     useShortcut(Shortcuts.Editor.Copy, onCopy)
     useShortcut(Shortcuts.Editor.Paste, onPaste)
+    useShortcut(Shortcuts.Editor.Duplicate, onDuplicate)
     useShortcut(Shortcuts.Editor.Delete, onDelete)
     useShortcut(Shortcuts.Editor.Split, onSplit)
     useShortcut(Shortcuts.Editor.Slide, onSlide)
@@ -87,6 +89,10 @@ export function PatternEditorView(props: {
 
     function onPaste() {
         props.editor.pasteFromClipboardAtGlobalTime(props.player.time.ticks)
+    }
+
+    function onDuplicate() {
+        props.editor.duplicateSelection()
     }
 
     function onDelete() {

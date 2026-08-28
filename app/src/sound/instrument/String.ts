@@ -3,6 +3,7 @@ import { AtlasPalette } from "../../3d/AtlasPalette"
 import { Rules } from "../../3d/Rules"
 import { Note } from "../note/Note"
 import type { TextureColorIndex } from "../../3d/TextureAtlas"
+import { ColorUtils } from "../../utils/ColorUtils"
 
 export class String {
 
@@ -20,8 +21,6 @@ export class String {
         t: number,
         name: string,
         note: Note,
-        highlightColor: Color,
-        outlineColor: Color
     ) {
         this.index = index
         this.t = t
@@ -29,8 +28,8 @@ export class String {
         this.note = note
         this.colorIndex = index as TextureColorIndex
         this.color = AtlasPalette.color(this.colorIndex).clone()
-        this.highlightColor = highlightColor
-        this.outlineColor = outlineColor
+        this.highlightColor = ColorUtils.lighten(this.color, 0.4)
+        this.outlineColor = ColorUtils.darken(this.color, 0.4)
     }
 
     fret(fret: number): Note {
