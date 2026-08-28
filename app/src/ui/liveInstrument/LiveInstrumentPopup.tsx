@@ -10,7 +10,7 @@ import { LiveInstrumentPreferences } from "../../resources/LiveInstrumentPrefere
 import { SoundEngine } from "../../resources/SoundEngine";
 import { Icon } from "../icon/Icon";
 import { PopupManager } from "../../resources/PopupManager";
-import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
+import { TunerPopup } from "../tunerPopup/TunerPopup";
 
 type Props = {
     close: () => void
@@ -101,8 +101,8 @@ function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
     const popupManager = useResource(PopupManager)
 
     function onTune() {
-        popupManager.add(close => <TunerOverlay
-            onClose={close}
+        popupManager.add(close => <TunerPopup
+            close={close}
             instrument={props.instrument}
         />)
     }

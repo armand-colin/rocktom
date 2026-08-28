@@ -8,7 +8,7 @@ import { Button } from "../button/Button";
 import { Icon } from "../icon/Icon";
 import { InstrumentList } from "../instrumentList/InstrumentList";
 import { Slider, SliderScale } from "../slider/Slider";
-import { TunerOverlay } from "../tunerOverlay/TunerOverlay";
+import { TunerPopup } from "../tunerPopup/TunerPopup";
 import "./LiveInstrumentView.scss";
 import { Toggle } from "../toggle/Toggle";
 import { State } from "../../resources/State";
@@ -97,8 +97,8 @@ function TuneButton(props: { instrument: LiveInstrument }) {
             return
         }
 
-        setOverlay(<TunerOverlay
-            onClose={() => setOverlay(null)}
+        setOverlay(<TunerPopup
+            close={() => setOverlay(null)}
             instrument={props.instrument}
         />)
     }

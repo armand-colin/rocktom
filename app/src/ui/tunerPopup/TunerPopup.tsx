@@ -6,11 +6,11 @@ import { useComponentInstance } from "../../hooks/useComponentInstance"
 import { Bass } from "../../sound/instrument/Instrument"
 import { FineNote } from "../../sound/note/Note"
 import { Button } from "../button/Button"
-import "./TunerOverlay.scss"
+import "./TunerPopup.scss"
 
 const bass = new Bass()
 
-export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () => void }) {
+export function TunerPopup(props: { instrument: LiveInstrument, close: () => void }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
     const { detectedFrequency, targetString, locked } = useComponent(tuner)
 
@@ -31,7 +31,7 @@ export function TunerOverlay(props: { instrument: LiveInstrument, onClose: () =>
 
     return <div className="TunerOverlay">
         <div className="body">
-            <Button onClick={props.onClose}>Close</Button>
+            <Button onClick={props.close}>Close</Button>
 
             <div className="strings">
                 {
