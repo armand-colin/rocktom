@@ -11,6 +11,7 @@ import { SoundEngine } from "../../resources/SoundEngine";
 import { Icon } from "../icon/Icon";
 import { PopupManager } from "../../resources/PopupManager";
 import { TunerPopup } from "../tunerPopup/TunerPopup";
+import { useEffect } from "react";
 
 type Props = {
     close: () => void
@@ -41,17 +42,21 @@ export function LiveInstrumentPopup(props: Props) {
 
 function InstrumentDropdown(props: { instrument: LiveInstrument | null }) {
     const mediaStreamList = useResource(MediaStreamList)
+    const { loading } = mediaStreamList
 
     function onRefresh() {
         mediaStreamList.refresh()
     }
+
+    useEffect(() => {
+        mediaStreamList.refresh()
+    }, [])
 
     async function setInstrument(option: Dropdown.Option | null) {
         const state = Instance.engine.getResource(State)
         const preferences = Instance.engine.getResource(LiveInstrumentPreferences)
 
         if (!option) {
-            // Shall dismount old
             state.setInstrument(null)
             return;
         }
@@ -77,7 +82,7 @@ function InstrumentDropdown(props: { instrument: LiveInstrument | null }) {
             }))}
             value={props.instrument?.streamId ?? null}
             onChange={setInstrument}
-            placeholder="Select a microphone"
+            placeholder={loading ? "Loading..." : "Select a microphone"}
         />
         {
             props.instrument && <Button

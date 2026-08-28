@@ -5,20 +5,42 @@ import { PopupManager } from "../../resources/PopupManager";
 import { LiveInstrumentPopup } from "./LiveInstrumentPopup";
 import { LED } from "../led/LED";
 
+function clampString(value: string, maxLength: number) {
+    if (value.length <= maxLength)
+        return value
+    return value.slice(0, maxLength) + "..."
+}
+
 export function LiveInstrumentButton() {
     const { instrument } = useResource(State)
     const popupManager = useResource(PopupManager)
 
     function onClick() {
-        popupManager.add(close => <LiveInstrumentPopup 
-            close={close} 
+        popupManager.add(close => <LiveInstrumentPopup
+            close={close}
         />)
     }
 
     return <Button
         onClick={onClick}
+        className="items-center"
     >
-        <LED theme={instrument ? "primary" : "default"} />
-        Instrument
+        {
+            instrument ?
+                <InstrumentLED /> :
+                null
+        }
+        {
+            instrument ?
+                clampString(instrument.name, 20) :
+                "Instrument"
+        }
     </Button>
+}
+
+function InstrumentLED() {
+    // TODO: show when instrument is 'playing' (e.g. there's sound)
+    return <LED
+        theme={"primary"}
+    />
 }

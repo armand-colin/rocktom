@@ -7,17 +7,17 @@
     transition: all 0.16s var(--easing-smooth);
 
     &[data-theme="default"] {
-        background-color: var(--color-grey-500);
+        background-color: var(--color-grey-400);
         border-color: var(--color-grey-700);
     }
 
     &[data-theme="error"] {
-        background-color: var(--color-error-500);
-        border-color: var(--color-error-700);
+        background-color: var(--color-red-400);
+        border-color: var(--color-red-700);
     }
 
     &[data-theme="primary"] {
-        background-color: var(--color-primary-500);
-        border-color: var(--color-primary-700);
+        background-color: var(--color-blue-400);
+        border-color: var(--color-blue-700);
     }
 }

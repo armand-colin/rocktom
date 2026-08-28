@@ -5,7 +5,7 @@ import { Tuner } from "../../components/Tuner"
 import { useComponentInstance } from "../../hooks/useComponentInstance"
 import { Bass } from "../../sound/instrument/Instrument"
 import { FineNote } from "../../sound/note/Note"
-import { Button } from "../button/Button"
+import { Button, ButtonTheme } from "../button/Button"
 import "./TunerPopup.scss"
 import { Popup } from "../popup/Popup"
 
@@ -13,6 +13,7 @@ const bass = new Bass()
 
 export function TunerPopup(props: { instrument: LiveInstrument, close: () => void }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
+
     const { detectedFrequency, targetString, locked } = useComponent(tuner)
 
     const cents = useMemo(() => {
@@ -30,20 +31,19 @@ export function TunerPopup(props: { instrument: LiveInstrument, close: () => voi
     const t = Math.max(Math.min(cents, 20), -20) / 40 + 0.5
 
 
-    return <Popup.BaseContainer className="TunerOverlay">
+    return <Popup.BaseContainer className="TunerPopup w-[400px]">
         <Popup.BaseTitle
             title="Tuner"
             close={props.close}
         />
-        <div className="strings">
+
+        <div className="flex gap-2">
             {
                 bass.strings.map(s => {
                     return <Button
                         onClick={() => tuner.targetString = s}
-                        data-active={s === targetString}
-                        style={{
-                            "--color": "#" + s.color.getHexString()
-                        } as CSSProperties}
+                        theme={tuner.targetString === s ? ButtonTheme.Primary : ButtonTheme.Default}
+                        className="flex-1"
                     >
                         {s.name}
                     </Button>

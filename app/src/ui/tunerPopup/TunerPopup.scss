@@ -1,20 +1,4 @@
 .TunerPopup {
-
-    .strings {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 6px;
-
-        > .Button {
-            flex: 1;
-
-            &[data-active="true"] {
-                background: var(--color);
-            }
-        }
-    }
-
     .tuner {
         width: 100%;
         height: 12px;

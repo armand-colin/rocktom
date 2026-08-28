@@ -181,6 +181,7 @@
     --size-md: 36px;
     --size-sm: 30px;
     --size-xs: 24px;
+    --size-xxs: 18px;
 }
 
 @layer base {

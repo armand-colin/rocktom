@@ -1,19 +1,25 @@
 .Toggle {
-    height: 12px;
-    width: 36px;
+    --height: var(--size-xxs);
+    --width: calc(var(--size-xxs) * 2.5);
+    --knob-width: var(--size-xxs);
+    --padding: var(--spacing-1);
+    --radius: var(--radius-md);
+    --knob-radius: var(--radius-sm);
+
+    height: var(--height);
+    width: var(--width);
     background: var(--color-grey-500);
-    border-radius: 6px;
+    border-radius: var(--radius);
     position: relative;
     cursor: pointer;
 
     .knob {
-        width: 18px;
-        height: 18px;
+        width: var(--knob-width);
+        height: calc(var(--height) - var(--padding) * 2);
         background: var(--color-grey-50);
-        border-radius: 4px;
+        border-radius: var(--knob-radius);
         position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
+        top: var(--padding);
         transition: left 0.2s;
     }
 
@@ -21,13 +27,13 @@
         background: var(--color-blue-500);
 
         .knob {
-            left: calc(100% - 18px);
+            left: calc(100% - var(--knob-width) - var(--padding));
         }
     }
 
     &[data-active="false"] {
         .knob {
-            left: 0;
+            left: var(--padding);
         }
     }
 
@@ -35,7 +41,7 @@
         background: var(--color-grey-400);
 
         .knob {
-            left: calc(50% - 9px);
+            left: calc(50% - var(--knob-width) / 2 + var(--padding));
             opacity: 0.7;
         }
     }

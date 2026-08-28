@@ -1,29 +1,34 @@
 .Slider {
-    height: 12px;
+    --height: var(--size-xxs);
+    --padding: var(--spacing-1);
+    --radius: var(--radius-md);
+    --knob-radius: var(--radius-sm);
+    --knob-width: var(--size-xxs);
+
+    height: var(--height);
     background: var(--color-grey-500);
     position: relative;
-    border-radius: 4px;
+    border-radius: var(--radius);
     user-select: none;
 
     .before {
         position: absolute;
         top: 0;
         left: 0;
-        width: calc(var(--t) * (100% - 9px) + 9px);
-        height: 100%;
+        width: calc(var(--t) * (100% - var(--knob-width) - var(--padding) * 2) + var(--knob-width) + var(--padding) * 2);
+        height: var(--height);
         background: var(--color-blue-500);
-        border-radius: 4px;
+        border-radius: var(--radius);
     }
 
     .knob {
-        width: 18px;
-        height: 18px;
+        width: var(--knob-width);
+        height: calc(var(--height) - var(--padding) * 2);
         background: var(--color-grey-50);
-        border-radius: 4px;
+        border-radius: var(--knob-radius);
         position: absolute;
-        top: 50%;
-        left: calc(var(--t) * (100% - 18px) + 9px);
-        transform: translate(-50%, -50%);
+        top: var(--padding);
+        left: calc(var(--t) * (100% - var(--knob-width) - var(--padding) * 2) + var(--padding));
     }
 
     &[aria-disabled="true"] {
@@ -45,7 +50,7 @@
             background: var(--color-blue-500);
         }
     }
-    
+
     &[data-active="true"] {
         background: var(--color-grey-600);
 
