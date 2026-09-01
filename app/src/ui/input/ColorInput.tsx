@@ -8,6 +8,7 @@ import { ColorPicker } from "../colorPicker/ColorPicker"
 import { StringInput } from "./StringInput"
 import { UiSize } from "../UiSize"
 import "./ColorInput.scss"
+import { Button } from "../button/Button"
 
 type Props = {
     value: Color
@@ -29,13 +30,13 @@ export function ColorInput(props: Props) {
             return
 
         contextualMenu.open(e.nativeEvent, [
-            ContextualMenuItem.custom((close) => (
+            ContextualMenuItem.custom((close) => <div>
+                <div><Button onClick={close}>Close</Button></div>
                 <ColorPicker
                     value={props.value}
                     onChange={props.onChange}
-                    onClose={close}
                 />
-            )),
+            </div>),
         ])
     }
 
