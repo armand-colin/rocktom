@@ -14,6 +14,8 @@ import { useComponentInstance } from "../../hooks/useComponentInstance";
 import { Tuner } from "../../components/Tuner";
 import { TunerView } from "./TunerView";
 import { Instrument } from "../../sound/instrument/Instrument";
+import { MixerChannelView } from "../mixerView/MixerChannelView";
+import { Mixer } from "../../resources/Mixer";
 
 type Props = {
     close: () => void
@@ -21,6 +23,8 @@ type Props = {
 
 export function LiveInstrumentPopup(props: Props) {
     const { instrument } = useResource(State)
+    const engine = Instance.engine
+    const mixer = engine.getResource(Mixer)
 
     return <Popup.BaseContainer>
         <Popup.BaseTitle
@@ -30,6 +34,10 @@ export function LiveInstrumentPopup(props: Props) {
 
         <InstrumentDropdown
             instrument={instrument}
+        />
+
+        <MixerChannelView
+            channel={mixer.feedback}
         />
 
         {
