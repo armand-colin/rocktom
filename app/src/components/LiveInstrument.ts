@@ -4,6 +4,7 @@ import { SoundEngine } from "../resources/SoundEngine";
 import { AudioRange } from "../sound/AudioRange";
 import type { MediaStreamSoundNode } from "../sound/node/MediaStreamSoundNode";
 import { Mixer } from "../resources/Mixer";
+import { Instrument } from "../sound/instrument/Instrument";
 
 type Opts = {
     stream: MediaStream,
@@ -13,6 +14,7 @@ type Opts = {
 
 export class LiveInstrument extends Component {
 
+    readonly instrument: Instrument = Instrument.Bass
     private _name: string
     private _mediaStream: MediaStream
     private _streamId: string
