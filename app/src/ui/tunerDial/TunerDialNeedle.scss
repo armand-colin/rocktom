@@ -10,7 +10,7 @@
         fill: white;
     }
 
-    &[data-locked="false"] {
+    &[data-disabled="true"] {
         opacity: 0.25;
     }
 }

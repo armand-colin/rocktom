@@ -3,7 +3,7 @@ import { TunerDialUtils } from "./TunerDialUtils"
 
 type Props = {
     angle: number
-    locked?: boolean
+    disabled?: boolean
     className?: string
 }
 
@@ -16,7 +16,7 @@ export function TunerDialNeedle(props: Props) {
 
     return <g
         className={`TunerDialNeedle ${props.className ?? ""}`}
-        data-locked={props.locked === false ? "false" : "true"}
+        data-disabled={!!props.disabled}
         transform={`rotate(${props.angle}, ${pivot.x}, ${pivot.y})`}
     >
         <line

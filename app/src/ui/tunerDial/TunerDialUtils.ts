@@ -2,6 +2,13 @@ export namespace TunerDialUtils {
 
     export type Status = "idle" | "success" | "warn" | "error"
 
+    export const Status = {
+        Idle: "idle",
+        Success: "success",
+        Warn: "warn",
+        Error: "error",
+    } as const
+
     export type ArcGeometry = {
         cx: number
         cy: number

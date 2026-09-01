@@ -6,7 +6,7 @@ import { TunerDialUtils } from "./TunerDialUtils"
 
 type Props = {
     cents: number
-    locked?: boolean
+    disabled?: boolean
     status?: TunerDialUtils.Status
     referenceFrequency?: number
     centRange?: number
@@ -26,7 +26,7 @@ export function TunerDial(props: Props) {
     return <div
         className={`TunerDial ${props.className ?? ""}`}
         data-status={status}
-        data-locked={props.locked === false ? "false" : "true"}
+        data-disabled={!!props.disabled}
         style={{ height } as CSSProperties}
     >
         <svg
@@ -43,7 +43,7 @@ export function TunerDial(props: Props) {
             />
             <TunerDialNeedle
                 angle={angle}
-                locked={props.locked}
+                disabled={props.disabled}
             />
         </svg>
     </div>

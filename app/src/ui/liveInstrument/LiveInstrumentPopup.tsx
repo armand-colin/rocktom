@@ -26,7 +26,7 @@ export function LiveInstrumentPopup(props: Props) {
     const engine = Instance.engine
     const mixer = engine.getResource(Mixer)
 
-    return <Popup.BaseContainer>
+    return <Popup.BaseContainer className="w-150">
         <Popup.BaseTitle
             title="Live Instrument"
             close={props.close}
@@ -114,7 +114,7 @@ function InstrumentDropdown(props: { instrument: LiveInstrument | null }) {
 function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
 
-    return <div>
+    return <div className="grid gap-2">
         <h2>Tuner</h2>
         {
             tuner ?

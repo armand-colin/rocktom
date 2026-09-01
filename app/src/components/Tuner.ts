@@ -26,6 +26,7 @@ export class Tuner extends Component {
         super(engine)
         this._analyser = engine.getResource(SoundEngine).createAnalyserNode(instrument.range)
         instrument.rawOutput.connect(this._analyser)
+        this._targetString = instrument.instrument.lowestString
         this.startCoroutine(this._update())
         Object.assign(window, { tuner: this })
     }
