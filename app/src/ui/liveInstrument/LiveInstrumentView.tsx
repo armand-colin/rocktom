@@ -12,7 +12,7 @@ import { Toggle } from "../toggle/Toggle";
 import { State } from "../../resources/State";
 import { Mixer } from "../../resources/Mixer";
 import { useComponentInstance } from "../../hooks/useComponentInstance";
-import { useNullableComponent } from "../../hooks/useNullableComponent";
+import { useComponent } from "../../hooks/useNullableComponent";
 
 export function LiveInstrumentView() {
     const { instrument } = useResource(State)
@@ -76,7 +76,7 @@ function VolumePreview(props: { instrument: LiveInstrument }) {
     const { range } = useComponent(props.instrument)
     const inspector = useComponentInstance(AudioInspector, props.instrument.rawOutput, range)
 
-    useNullableComponent(inspector)
+    useComponent(inspector)
 
     return <div
         className="VolumePreview"

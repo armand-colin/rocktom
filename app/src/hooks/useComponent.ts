@@ -1,9 +1,9 @@
 import type { Component } from "@niloc/ecs";
 import { useEffect, useState } from "react";
 
-export function useNullableComponent<T extends Component>(
-    component: T | null
-): T | null {
+export function useComponent<T extends Component | null>(
+    component: T
+): T {
     const [_, forceUpdate] = useState(0)
 
     useEffect(() => {
