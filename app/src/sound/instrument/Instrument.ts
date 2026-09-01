@@ -10,6 +10,7 @@ export type Instrument = {
     strings: String[],
     lowestString: String,
     highestString: String,
+    name: string
 }
 
 export namespace Instrument {
@@ -22,6 +23,7 @@ export namespace Instrument {
     ]
 
     export const Bass: Instrument = {
+        name: "Bass",
         type: InstrumentType.Bass,
         strings: bassStrings,
         lowestString: bassStrings[0],
