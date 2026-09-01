@@ -1,4 +1,5 @@
 import { Resource } from "@niloc/ecs"
+import { LiveAudioConstraints } from "../sound/LiveAudioConstraints"
 
 export interface MediaStreamDescription {
     deviceId: string,
@@ -49,14 +50,7 @@ export class MediaStreamList extends Resource {
     }
 
     request(id: string | null): Promise<MediaStream> {
-        return navigator.mediaDevices.getUserMedia({
-            audio: {
-                deviceId: id ? { exact: id } : undefined,
-                autoGainControl: false,
-                noiseSuppression: false,
-                echoCancellation: false
-            }
-        })
+        return LiveAudioConstraints.requestMediaStream(id)
     }
 
 }

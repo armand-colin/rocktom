@@ -23,7 +23,7 @@ export class SoundEngine extends Resource {
     constructor(engine: Engine) {
         super(engine)
 
-        this._audioContext = new AudioContext()
+        this._audioContext = this._createAudioContext()
 
         this.output = new DestinationSoundNode(this._audioContext)
         this._nodes.push(this.output)
@@ -37,6 +37,10 @@ export class SoundEngine extends Resource {
     }
 
     private _onStateChange = () => { }
+
+    private _createAudioContext() {
+        return new AudioContext({ latencyHint: 'interactive' })
+    }
 
     /**
      * Registers the local SoundTouch AudioWorklet processor for the current AudioContext.
@@ -55,7 +59,7 @@ export class SoundEngine extends Resource {
         this._audioContext.removeEventListener('statechange', this._onStateChange)
         this._audioContext.close()
 
-        this._audioContext = new AudioContext()
+        this._audioContext = this._createAudioContext()
         this._audioContext.addEventListener('statechange', this._onStateChange)
 
         this._soundTouchReady = null

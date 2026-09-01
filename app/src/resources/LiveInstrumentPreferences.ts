@@ -1,5 +1,6 @@
 import { Engine, Resource } from "@niloc/ecs"
 import type { AudioRange } from "../sound/AudioRange"
+import { LiveAudioConstraints } from "../sound/LiveAudioConstraints"
 
 export class LiveInstrumentPreferences extends Resource {
 
@@ -64,14 +65,7 @@ export class LiveInstrumentPreferences extends Resource {
     }
 
     getMediaStream(): Promise<MediaStream> {
-        return navigator.mediaDevices.getUserMedia({
-            audio: {
-                deviceId: {
-                    exact: this._deviceId ?? undefined
-                },
-                echoCancellation: false,
-            }
-        })
+        return LiveAudioConstraints.requestMediaStream(this._deviceId)
     }
 
     save() {
