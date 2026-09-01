@@ -11,7 +11,7 @@ import "./LiveInstrumentView.scss";
 import { Toggle } from "../toggle/Toggle";
 import { State } from "../../resources/State";
 import { Mixer } from "../../resources/Mixer";
-import { useComponentInstanceClean } from "../../hooks/useComponentInstanceClean";
+import { useComponentInstance } from "../../hooks/useComponentInstance";
 import { useNullableComponent } from "../../hooks/useNullableComponent";
 
 export function LiveInstrumentView() {
@@ -74,7 +74,7 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
 
 function VolumePreview(props: { instrument: LiveInstrument }) {
     const { range } = useComponent(props.instrument)
-    const inspector = useComponentInstanceClean(AudioInspector, props.instrument.rawOutput, range)
+    const inspector = useComponentInstance(AudioInspector, props.instrument.rawOutput, range)
 
     useNullableComponent(inspector)
 

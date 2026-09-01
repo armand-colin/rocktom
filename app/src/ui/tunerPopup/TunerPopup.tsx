@@ -7,13 +7,13 @@ import { FineNote } from "../../sound/note/Note"
 import { Button, ButtonTheme } from "../button/Button"
 import "./TunerPopup.scss"
 import { Popup } from "../popup/Popup"
-import { useComponentInstanceClean } from "../../hooks/useComponentInstanceClean"
+import { useComponentInstance } from "../../hooks/useComponentInstance"
 import { Spinner } from "../spinner/Spinner"
 
 const bass = new Bass()
 
 export function TunerPopup(props: { instrument: LiveInstrument, close: () => void }) {
-    const tuner = useComponentInstanceClean(Tuner, props.instrument)
+    const tuner = useComponentInstance(Tuner, props.instrument)
 
     return <Popup.BaseContainer className="TunerPopup w-[400px]">
         <Popup.BaseTitle
