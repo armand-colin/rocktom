@@ -42,21 +42,11 @@ export const Main: Story = {
 export const WithCloseButton: Story = {
   render: () => {
     const [color, setColor] = useState(() => new Color("#2d2dff"));
-    const [closed, setClosed] = useState(false);
-
-    if (closed) {
-      return (
-        <button type="button" onClick={() => setClosed(false)}>
-          Reopen picker
-        </button>
-      );
-    }
 
     return (
       <ColorPicker
         value={color}
         onChange={setColor}
-        onClose={() => setClosed(true)}
       />
     );
   },
