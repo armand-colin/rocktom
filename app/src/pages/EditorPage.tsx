@@ -8,7 +8,7 @@ import { LevelEditor } from "../components/editor/LevelEditor"
 import { Level } from "../sound/Level"
 import { Instance } from "../Instance"
 import { NoteTrack } from "../sound/song/NoteTrack"
-import { Bass } from "../sound/instrument/Instrument"
+import { Instrument } from "../sound/instrument/Instrument"
 import { Tempo } from "../sound/Tempo"
 import { AudioTrack } from "../sound/song/AudioTrack"
 import { TempoTrack } from "../sound/song/TempoTrack"
@@ -54,7 +54,7 @@ function EditorView(props: { level: LevelEntity }) {
                     id: props.level.id,
                     name: props.level.name,
                     tracks: {
-                        note: new NoteTrack(new Bass(), [], []),
+                        note: new NoteTrack(Instrument.Bass, [], []),
                         audio: new AudioTrack({ time: 0, playbackId: null }),
                         tempo: new TempoTrack(new Tempo(120)),
                         focus: new FocusTrack(Focus.default(), [])

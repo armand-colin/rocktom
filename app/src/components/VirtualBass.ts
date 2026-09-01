@@ -1,7 +1,7 @@
 import { Component, Engine } from "@niloc/ecs";
 import { Mixer } from "../resources/Mixer";
 import { SoundEngine } from "../resources/SoundEngine";
-import { Bass } from "../sound/instrument/Instrument";
+import { Instrument } from "../sound/instrument/Instrument";
 import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { OscillatorSoundNode } from "../sound/node/OscillatorSoundNode";
 import type { Note } from "../sound/note/Note";
@@ -15,7 +15,7 @@ type Oscillator = {
 
 export class VirtualBass extends Component {
 
-    private _instrument = new Bass()
+    private _instrument = Instrument.Bass
     private _node: GainSoundNode
 
     private _oscillators: Oscillator[] = []

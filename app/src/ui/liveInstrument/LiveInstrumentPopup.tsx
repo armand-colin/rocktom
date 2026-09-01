@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { useComponentInstance } from "../../hooks/useComponentInstance";
 import { Tuner } from "../../components/Tuner";
 import { TunerView } from "./TunerView";
+import { Instrument } from "../../sound/instrument/Instrument";
 
 type Props = {
     close: () => void
@@ -111,6 +112,7 @@ function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
             tuner ?
                 <TunerView
                     tuner={tuner}
+                    instrument={Instrument.Bass}
                 /> :
                 null
         }

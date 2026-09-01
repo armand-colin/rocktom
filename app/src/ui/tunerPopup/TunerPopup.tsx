@@ -2,20 +2,20 @@ import { useComponent } from "@niloc/ecs-react"
 import { useMemo, type CSSProperties } from "react"
 import type { LiveInstrument } from "../../components/LiveInstrument"
 import { Tuner } from "../../components/Tuner"
-import { Bass } from "../../sound/instrument/Instrument"
 import { FineNote } from "../../sound/note/Note"
 import { Button, ButtonTheme } from "../button/Button"
 import "./TunerPopup.scss"
 import { Popup } from "../popup/Popup"
 import { useComponentInstance } from "../../hooks/useComponentInstance"
 import { Spinner } from "../spinner/Spinner"
+import { Instrument } from "../../sound/instrument/Instrument"
 
-const bass = new Bass()
+const bass = Instrument.Bass
 
 export function TunerPopup(props: { instrument: LiveInstrument, close: () => void }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
 
-    return <Popup.BaseContainer className="TunerPopup w-[400px]">
+    return <Popup.BaseContainer className="TunerPopup w-100">
         <Popup.BaseTitle
             title="Tuner"
             close={props.close}
