@@ -3,6 +3,8 @@ import { useComponent } from "../../hooks/useComponent";
 import type { Instrument } from "../../sound/instrument/Instrument";
 import { FineNote } from "../../sound/note/Note";
 import { Button, ButtonTheme } from "../button/Button";
+import { FormInputField } from "../form/FormInputField";
+import { Toggle } from "../toggle/Toggle";
 import { TunerDial } from "../tunerDial/TunerDial";
 import { TunerDialUtils } from "../tunerDial/TunerDialUtils";
 
@@ -21,6 +23,13 @@ export function TunerView(props: { instrument: Instrument, tuner: Tuner }) {
                 TunerDialUtils.Status.Success
 
     return <div className="TunerView gap-2 grid">
+        <FormInputField label="Auto Detect">
+            <Toggle
+                value={props.tuner.autoDetect}
+                onChange={value => props.tuner.autoDetect = value}
+            />
+            </FormInputField>
+
         <div className="flex gap-2">
             {
                 props.instrument.strings.map(string => <Button

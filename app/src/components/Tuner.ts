@@ -4,29 +4,34 @@ import { Schedules } from "../Schedules";
 import { McLeodPitchDetector } from "../sound/pitch/McLeodPitchDetector";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import type { LiveInstrument } from "./LiveInstrument";
+import type { Instrument } from "../sound/instrument/Instrument";
 import type { String } from "../sound/instrument/String";
 
 const BASS_MIN_FREQUENCY = 30
 const BASS_MAX_FREQUENCY = 250
 const TARGET_SEMITONE_WINDOW = 4
+const STRING_HYSTERESIS_SEMITONES = 1
 const CLARITY_THRESHOLD = 0.85
 const SMOOTH_ALPHA = 0.35
 const SNAP_SEMITONES = 1
 
 export class Tuner extends Component {
 
+    private _instrument: Instrument
     private _analyser: SoundAnalyserNode
     private _detector = new McLeodPitchDetector()
     private _detectedFrequency: number = 0
     private _clarity: number = 0
     private _locked: boolean = false
     private _targetString: String | null = null
+    private _autoDetect = false
 
     constructor(engine: Engine, instrument: LiveInstrument) {
         super(engine)
+        this._instrument = instrument.instrument
         this._analyser = engine.getResource(SoundEngine).createAnalyserNode(instrument.range)
         instrument.rawOutput.connect(this._analyser)
-        this._targetString = instrument.instrument.lowestString
+        this._targetString = this._instrument.lowestString
         this.startCoroutine(this._update())
         Object.assign(window, { tuner: this })
     }
@@ -60,6 +65,15 @@ export class Tuner extends Component {
         this.changed()
     }
 
+    get autoDetect() {
+        return this._autoDetect
+    }
+
+    set autoDetect(value: boolean) {
+        this._autoDetect = value
+        this.changed()
+    }
+
     private *_update() {
         while (true) {
             this._detect()
@@ -86,9 +100,13 @@ export class Tuner extends Component {
         this._clarity = result.clarity
         this._locked = true
         this._detectedFrequency = this._smooth(result.frequency)
+        this._snapTargetString(result.frequency)
     }
 
     private _searchRange() {
+        if (this._autoDetect)
+            return this._instrumentRange()
+
         const targetFrequency = this._targetString?.note.frequency
         if (!targetFrequency) {
             return {
@@ -102,6 +120,58 @@ export class Tuner extends Component {
             minFrequency: Math.max(BASS_MIN_FREQUENCY, targetFrequency / ratio),
             maxFrequency: Math.min(BASS_MAX_FREQUENCY, targetFrequency * ratio)
         }
+    }
+
+    private _instrumentRange() {
+        const ratio = 2 ** (TARGET_SEMITONE_WINDOW / 12)
+        return {
+            minFrequency: Math.max(BASS_MIN_FREQUENCY, this._instrument.lowestString.note.frequency / ratio),
+            maxFrequency: Math.min(BASS_MAX_FREQUENCY, this._instrument.highestString.note.frequency * ratio)
+        }
+    }
+
+    private _snapTargetString(frequency: number) {
+        if (!this._autoDetect)
+            return
+
+        const closest = this._closestString(frequency)
+        if (!closest)
+            return
+
+        const closestDistance = this._semitoneDistance(frequency, closest)
+        if (closestDistance > TARGET_SEMITONE_WINDOW)
+            return
+
+        if (!this._targetString || closest === this._targetString) {
+            this._targetString = closest
+            return
+        }
+
+        const currentDistance = this._semitoneDistance(frequency, this._targetString)
+        if (closestDistance + STRING_HYSTERESIS_SEMITONES >= currentDistance)
+            return
+
+        this._targetString = closest
+    }
+
+    private _closestString(frequency: number): String | null {
+        let closest: String | null = null
+        let closestDistance = Infinity
+
+        for (const string of this._instrument.strings) {
+            const distance = this._semitoneDistance(frequency, string)
+            if (distance >= closestDistance)
+                continue
+
+            closest = string
+            closestDistance = distance
+        }
+
+        return closest
+    }
+
+    private _semitoneDistance(frequency: number, string: String) {
+        return Math.abs(12 * Math.log2(frequency / string.note.frequency))
     }
 
     private _smooth(frequency: number) {
