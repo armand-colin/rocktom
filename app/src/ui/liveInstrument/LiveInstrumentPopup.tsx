@@ -1,4 +1,4 @@
-import { useComponent, useResource } from "@niloc/ecs-react";
+import { useResource } from "@niloc/ecs-react";
 import { Popup } from "../popup/Popup";
 import { State } from "../../resources/State";
 import { Button } from "../button/Button";
@@ -9,9 +9,10 @@ import { Instance } from "../../Instance";
 import { LiveInstrumentPreferences } from "../../resources/LiveInstrumentPreferences";
 import { SoundEngine } from "../../resources/SoundEngine";
 import { Icon } from "../icon/Icon";
-import { PopupManager } from "../../resources/PopupManager";
-import { TunerPopup } from "../tunerPopup/TunerPopup";
 import { useEffect } from "react";
+import { useComponentInstance } from "../../hooks/useComponentInstance";
+import { Tuner } from "../../components/Tuner";
+import { TunerView } from "./TunerView";
 
 type Props = {
     close: () => void
@@ -102,17 +103,16 @@ function InstrumentDropdown(props: { instrument: LiveInstrument | null }) {
 }
 
 function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
-    useComponent(props.instrument)
-    const popupManager = useResource(PopupManager)
-
-    function onTune() {
-        popupManager.add(close => <TunerPopup
-            close={close}
-            instrument={props.instrument}
-        />)
-    }
+    const tuner = useComponentInstance(Tuner, props.instrument)
 
     return <div>
-        <Button onClick={onTune}>Tune</Button>
+        <h2>Tuner</h2>
+        {
+            tuner ?
+                <TunerView
+                    tuner={tuner}
+                /> :
+                null
+        }
     </div>
 }
