@@ -2,8 +2,6 @@ import { EngineContext, useComponent, useResource } from "@niloc/ecs-react";
 import { useContext, useState, type CSSProperties, type ReactNode } from "react";
 import { AudioInspector } from "../../components/AudioInspector";
 import type { LiveInstrument } from "../../components/LiveInstrument";
-import { useComponentInstance } from "../../hooks/useComponentInstance";
-import { AudioRangeOverlay } from "../audioRangeOverlay/AudioRangeOverlay";
 import { Button } from "../button/Button";
 import { Icon } from "../icon/Icon";
 import { InstrumentList } from "../instrumentList/InstrumentList";
@@ -13,6 +11,8 @@ import "./LiveInstrumentView.scss";
 import { Toggle } from "../toggle/Toggle";
 import { State } from "../../resources/State";
 import { Mixer } from "../../resources/Mixer";
+import { useComponentInstanceClean } from "../../hooks/useComponentInstanceClean";
+import { useNullableComponent } from "../../hooks/useNullableComponent";
 
 export function LiveInstrumentView() {
     const { instrument } = useResource(State)
@@ -64,7 +64,6 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
         }
 
         <TuneButton instrument={props.instrument} />
-        <AudioRangeTuneButton instrument={props.instrument} />
 
         <Button onClick={(e) => {
             e.stopPropagation()
@@ -75,13 +74,14 @@ function CurrentLiveInstrument(props: { instrument: LiveInstrument }) {
 
 function VolumePreview(props: { instrument: LiveInstrument }) {
     const { range } = useComponent(props.instrument)
-    const inspector = useComponentInstance(AudioInspector, props.instrument.rawOutput, range)
-    const { volume } = useComponent(inspector)
+    const inspector = useComponentInstanceClean(AudioInspector, props.instrument.rawOutput, range)
+
+    useNullableComponent(inspector)
 
     return <div
         className="VolumePreview"
         style={{
-            "--volume": volume
+            "--volume": inspector?.volume ?? 0
         } as CSSProperties}
     >
         <div className="bar"></div>
@@ -106,28 +106,6 @@ function TuneButton(props: { instrument: LiveInstrument }) {
     return <>
         <Button className="TuneButton" onClick={onClick}>
             Tune
-        </Button>
-        {overlay}
-    </>
-}
-
-function AudioRangeTuneButton(props: { instrument: LiveInstrument }) {
-    const [overlay, setOverlay] = useState<ReactNode | null>(null)
-
-    function onClick() {
-        if (overlay !== null) {
-            setOverlay(null)
-            return
-        }
-        setOverlay(<AudioRangeOverlay
-            onClose={() => setOverlay(null)}
-            instrument={props.instrument}
-        />)
-    }
-
-    return <>
-        <Button className="AudioRangeTuneButton" onClick={onClick}>
-            Audio Range ({props.instrument.range.silence.toFixed(0) + " - " + props.instrument.range.peak.toFixed(0)})
         </Button>
         {overlay}
     </>
