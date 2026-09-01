@@ -1,0 +1,20 @@
+---
+description: App file and namespace naming conventions
+globs: app/**
+alwaysApply: false
+---
+
+# App Naming
+
+## Files
+
+- Use **PascalCase** for all files: `Button.tsx`, `LevelQueries.ts`, `ColorUtils.ts`.
+- **Exception — hooks:** camelCase `use*.ts` in `app/src/hooks/` (e.g. `useMutation.ts`).
+
+## Folders
+
+- Use **camelCase**: `button/`, `tunerDial/`, `queries/level/`.
+
+## Namespaces
+
+- Use **PascalCase**: `LevelQueries`, `FormField`, `ColorUtils`.

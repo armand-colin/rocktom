@@ -1,0 +1,30 @@
+.TunerDial {
+    width: 100%;
+    background: #0a0a0a;
+    border: 1px solid #1f1f1f;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.65);
+
+    &[data-status="idle"] {
+        background: rgb(18, 18, 18);
+    }
+
+    &[data-status="success"] {
+        background: rgb(12, 28, 12);
+    }
+
+    &[data-status="warn"] {
+        background: rgb(32, 28, 10);
+    }
+
+    &[data-status="error"] {
+        background: rgb(32, 12, 12);
+    }
+
+    &__svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+}

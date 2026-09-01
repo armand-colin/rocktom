@@ -1,0 +1,33 @@
+---
+description: React component structure and Props conventions
+globs: app/src/**/*.tsx
+alwaysApply: false
+---
+
+# App Components
+
+## Props
+
+- Declare `type Props` (or `interface Props`) at the top of the file.
+- Keep `Props` private by default.
+- To export: `export type MyComponentProps = Props`, or use a namespace (e.g. `Dropdown.ContentProps`).
+
+## Exports
+
+- Named export only: `export function Button(props: Props)`.
+- No `export default` for components.
+
+## Styles
+
+- Co-locate styles: `Component.scss` next to `Component.tsx`.
+
+```tsx
+type Props = {
+  children: ReactNode;
+  onClick?: () => void;
+};
+
+export function Button(props: Props) {
+  return <button onClick={props.onClick}>{props.children}</button>;
+}
+```

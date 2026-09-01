@@ -1,0 +1,26 @@
+---
+description: Storybook single interactive story per component
+globs: app/**/*.stories.tsx
+alwaysApply: false
+---
+
+# App Storybook
+
+- Export **one story** per file (e.g. `export const Main` or `export const Default`).
+- Customize via **local interactive controls** (`useState`, sliders, toggles in the render), not multiple stories with Storybook `args`/`argTypes`.
+- Co-locate: `Component.stories.tsx` next to the component.
+- Group UI primitives under `"UI/ComponentName"`.
+
+```tsx
+export const Default = () => {
+  const [value, setValue] = useState(0);
+  return (
+    <div>
+      <MyComponent value={value} />
+      <Slider value={value} onChange={setValue} />
+    </div>
+  );
+};
+```
+
+Avoid spreading `args` across multiple story variants — prefer in-story controls instead.

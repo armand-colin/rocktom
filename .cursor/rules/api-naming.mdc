@@ -1,0 +1,28 @@
+---
+description: API file naming conventions (NestJS kebab-case.identifier.ts)
+globs: api/**
+alwaysApply: false
+---
+
+# API Naming
+
+## Files
+
+- Use `{domain}.{role}.ts` — lowercase domain, dot-separated role suffix.
+- Multi-word names use **kebab-case**: `current-session.decorator.ts`, `typeorm.config.ts`.
+- Migrations: `YYYYMMDD-description.ts` (e.g. `20260101-initial-schema.ts`).
+
+```
+level.controller.ts
+level.service.ts
+level.entity.ts
+level.dto.ts
+level.module.ts
+current-session.decorator.ts
+```
+
+## Classes
+
+- **PascalCase**, aligned with the domain: `LevelController`, `CreateLevelDto`, `LevelModule`.
+
+This naming distinguishes API files from frontend PascalCase files.

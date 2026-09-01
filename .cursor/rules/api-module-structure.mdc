@@ -1,0 +1,40 @@
+---
+description: NestJS module, controller, and service structure
+globs: api/src/modules/**
+alwaysApply: false
+---
+
+# API Module Structure
+
+## Layout
+
+One domain folder under `api/src/modules/<domain>/` with:
+
+- `domain.module.ts`
+- `domain.controller.ts`
+- `domain.service.ts`
+- `domain.entity.ts`
+- `domain.dto.ts` (as needed)
+
+Register each module in `app.module.ts`. Export the service if other modules depend on it.
+
+## Controllers
+
+- Keep controllers thin: route + guard + delegate to service.
+- Use singular route prefix: `@Controller('level')`.
+- Protect routes with `SessionGuard` + `@CurrentSession()`.
+
+```ts
+@Controller('level')
+export class LevelController {
+  @UseGuards(SessionGuard)
+  @Get()
+  getAll(@CurrentSession() session: Session) {
+    return this.levelService.getAllFromUser(session.userId);
+  }
+}
+```
+
+## Global modules
+
+Use `@Global()` sparingly for cross-cutting concerns (`SessionModule`, `MailerModule`, `AppConfigModule`).

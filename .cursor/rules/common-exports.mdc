@@ -1,0 +1,18 @@
+---
+description: No barrel files, direct imports from concrete files
+alwaysApply: true
+---
+
+# Imports and Exports
+
+- Do not create `index.ts` barrel files anywhere in the monorepo.
+- Import directly from concrete files.
+
+```ts
+// ✅ GOOD
+import { LevelQueries } from "../../queries/level/LevelQueries";
+import type { LevelEntity } from "../../queries/level/LevelEntity";
+
+// ❌ BAD
+import { LevelQueries } from "../../queries/level";
+```

@@ -1,6 +1,7 @@
 ---
 description: App query pattern with Query + Entity files
-alwaysApply: true
+globs: app/src/queries/**
+alwaysApply: false
 ---
 
 # App Queries Pattern (Queries + Entity)

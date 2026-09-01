@@ -1,0 +1,46 @@
+---
+description: NestJS DTO and TypeORM entity conventions
+globs: api/src/modules/**/*.{dto,entity}.ts
+alwaysApply: false
+---
+
+# API DTOs and Entities
+
+## DTOs
+
+- PascalCase classes suffixed with `Dto`: `CreateLevelDto`, `UpdateLevelDto`.
+- Use `class-validator` decorators on input DTOs.
+- Separate create/update DTOs per operation.
+- Response DTOs are plain classes without validators.
+
+```ts
+export class CreateLevelDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(100)
+  name!: string;
+}
+```
+
+## Entities
+
+- Colocate TypeORM entities in the module folder.
+- TS properties: **camelCase**. DB columns: **snake_case** via `name:`.
+- UUID primary keys: `@PrimaryGeneratedColumn('uuid')`.
+- Timestamps: `@CreateDateColumn` / `@UpdateDateColumn` with `timestamptz`.
+- Relations with explicit `onDelete`.
+
+```ts
+@Entity("level")
+export class Level {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Column({ name: 'user_id', type: 'uuid' })
+  userId!: string;
+}
+```
+
+## Database changes
+
+Add dated migration files. Never rely on `synchronize` (`synchronize: false`).

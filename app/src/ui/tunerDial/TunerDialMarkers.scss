@@ -1,0 +1,51 @@
+.TunerDialMarkers {
+    &__arc {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.35);
+        stroke-width: 0.75;
+    }
+
+    &__pivot-arc {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.5);
+        stroke-width: 0.75;
+    }
+
+    &__tick-line {
+        stroke: white;
+        stroke-width: 1;
+        stroke-linecap: round;
+    }
+
+    &__minor-tick {
+        stroke: rgba(255, 255, 255, 0.55);
+        stroke-width: 0.75;
+        stroke-linecap: round;
+    }
+
+    &__label {
+        fill: white;
+        font-size: 8px;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+
+        &--highlight {
+            fill: #c87830;
+        }
+    }
+
+    &__unit {
+        fill: rgba(255, 255, 255, 0.7);
+        font-size: 6px;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+    }
+
+    &__symbol {
+        fill: rgba(255, 255, 255, 0.85);
+        font-size: 10px;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+}

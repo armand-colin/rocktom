@@ -1,0 +1,23 @@
+---
+description: Use namespaces for modules that export functions or types only
+alwaysApply: true
+---
+
+# Namespaces
+
+Modules that export **only** functions or types must use an `export namespace`. No top-level function exports.
+
+**Exception:** React components stay as named function exports (`export function Button`), not inside a namespace.
+
+```ts
+// ✅ GOOD — logic module
+export namespace ColorUtils {
+  export function hexToRgb(hex: string) { ... }
+}
+
+// ✅ GOOD — React component
+export function Button(props: Props) { ... }
+
+// ❌ BAD — loose function export
+export function hexToRgb(hex: string) { ... }
+```
