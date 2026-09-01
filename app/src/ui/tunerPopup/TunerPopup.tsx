@@ -2,19 +2,37 @@ import { useComponent } from "@niloc/ecs-react"
 import { useMemo, type CSSProperties } from "react"
 import type { LiveInstrument } from "../../components/LiveInstrument"
 import { Tuner } from "../../components/Tuner"
-import { useComponentInstance } from "../../hooks/useComponentInstance"
 import { Bass } from "../../sound/instrument/Instrument"
 import { FineNote } from "../../sound/note/Note"
 import { Button, ButtonTheme } from "../button/Button"
 import "./TunerPopup.scss"
 import { Popup } from "../popup/Popup"
+import { useComponentInstanceClean } from "../../hooks/useComponentInstanceClean"
+import { Spinner } from "../spinner/Spinner"
 
 const bass = new Bass()
 
 export function TunerPopup(props: { instrument: LiveInstrument, close: () => void }) {
-    const tuner = useComponentInstance(Tuner, props.instrument)
+    const tuner = useComponentInstanceClean(Tuner, props.instrument)
 
-    const { detectedFrequency, targetString, locked } = useComponent(tuner)
+    return <Popup.BaseContainer className="TunerPopup w-[400px]">
+        <Popup.BaseTitle
+            title="Tuner"
+            close={props.close}
+        />
+
+        {
+            tuner ?
+                <TunerPopupContent instrument={props.instrument} tuner={tuner} /> :
+                <div>
+                    <Spinner />
+                </div>
+        }
+    </Popup.BaseContainer>
+}
+
+function TunerPopupContent(props: { instrument: LiveInstrument, tuner: Tuner }) {
+    const { detectedFrequency, targetString, locked } = useComponent(props.tuner)
 
     const cents = useMemo(() => {
         if (!targetString || detectedFrequency <= 0)
@@ -30,19 +48,13 @@ export function TunerPopup(props: { instrument: LiveInstrument, close: () => voi
 
     const t = Math.max(Math.min(cents, 20), -20) / 40 + 0.5
 
-
-    return <Popup.BaseContainer className="TunerPopup w-[400px]">
-        <Popup.BaseTitle
-            title="Tuner"
-            close={props.close}
-        />
-
+    return <>
         <div className="flex gap-2">
             {
                 bass.strings.map(s => {
                     return <Button
-                        onClick={() => tuner.targetString = s}
-                        theme={tuner.targetString === s ? ButtonTheme.Primary : ButtonTheme.Default}
+                        onClick={() => props.tuner.targetString = s}
+                        theme={props.tuner.targetString === s ? ButtonTheme.Primary : ButtonTheme.Default}
                         className="flex-1"
                     >
                         {s.name}
@@ -64,5 +76,5 @@ export function TunerPopup(props: { instrument: LiveInstrument, close: () => voi
         >
             <div className="caret"></div>
         </div>
-    </Popup.BaseContainer>
+    </>
 }
