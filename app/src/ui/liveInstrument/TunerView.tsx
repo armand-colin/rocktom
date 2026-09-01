@@ -28,7 +28,7 @@ export function TunerView(props: { instrument: Instrument, tuner: Tuner }) {
                 value={props.tuner.autoDetect}
                 onChange={value => props.tuner.autoDetect = value}
             />
-            </FormInputField>
+        </FormInputField>
 
         <div className="flex gap-2">
             {
