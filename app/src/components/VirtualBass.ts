@@ -26,7 +26,7 @@ export class VirtualBass extends Component {
         this._node = soundEngine.createGainNode()
 
         const mixer = engine.getResource(Mixer)
-        mixer.feedback.connect(this._node)
+        mixer.virtualInstrument.connect(this._node)
 
         this._oscillators = Array(this._instrument.strings.length)
             .fill(null)

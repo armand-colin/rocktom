@@ -1,5 +1,5 @@
-import { useComponent } from "@niloc/ecs-react";
-import { useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
+import { EngineContext, useComponent } from "@niloc/ecs-react";
+import { useContext, useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
 import type { TempoTrackEditor } from "../../components/editor/TempoTrackEditor";
 import type { TimeTransform } from "../../components/editor/TimeTransform";
 import type { Time } from "../../components/Time";
@@ -10,10 +10,14 @@ import type { TempoEvent } from "../../sound/song/TempoTrack";
 import type { Handler } from "../../utils/handlers/Handler";
 import { FormInputField } from "../form/FormInputField";
 import { UiSize } from "../UiSize";
+import { MixerButton } from "../mixerButton/MixerButton";
+import { Mixer } from "../../resources/Mixer";
 
 export function TempoTrackEditorView(props: { transform: TimeTransform, editor: TempoTrackEditor, time: Time }) {
     const { track } = useComponent(props.editor)
-
+    const { engine } = useContext(EngineContext)
+    const mixer = engine.getResource(Mixer)
+    
     function onInitialChange(bpm: number) {
         props.editor.setInitial(bpm)
     }
@@ -63,6 +67,9 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                 </FormInputField>
             </div>
 
+            <div className="absolute right-0 top-0 p-2">
+                <MixerButton channel={mixer.metronome} />
+            </div>
         </TrackEditorHead>
 
         <TrackEditorContent

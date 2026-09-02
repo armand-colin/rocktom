@@ -1,8 +1,7 @@
-import { EngineContext, useComponent } from "@niloc/ecs-react";
-import { useContext, useMemo } from "react";
+import { useComponent } from "@niloc/ecs-react";
+import { useMemo } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import { LevelEditor } from "../../components/editor/LevelEditor";
-import { Mixer } from "../../resources/Mixer";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button, ButtonTheme } from "../button/Button";
 import { Icon } from "../icon/Icon";
@@ -125,7 +124,9 @@ export function LevelEditorView(props: {
                     onChange={name => props.editor.setName(name)}
                 />
 
-                <PlayerControls player={props.editor.player} />
+                <PlayerControls
+                    player={props.editor.player}
+                />
 
                 <Button
                     onClick={showTapTempo}
@@ -148,10 +149,7 @@ export function LevelEditorView(props: {
 }
 
 function PlayerControls(props: { player: EditorPlayer }) {
-    const { engine } = useContext(EngineContext)
-    const mixer = engine.getResource(Mixer)
-    const { enabled } = useComponent(mixer.metronome)
-    const { playing, speed } = useComponent(props.player)
+    const { playing } = useComponent(props.player)
 
     function onPlayPause() {
         if (playing) {
@@ -179,30 +177,6 @@ function PlayerControls(props: { player: EditorPlayer }) {
         >
             <Icon name="refresh" />
         </Button>
-
-        <Button
-            data-active={enabled}
-            onClick={() => mixer.metronome.toggleEnabled()}
-            theme={
-                enabled ? ButtonTheme.Primary : ButtonTheme.Default
-            }
-        >
-            Metronome {enabled ? "On" : "Off"}
-        </Button>
-
-        <div className="flex items-center gap-2 min-w-40">
-            <span className="text-sm whitespace-nowrap">
-                {speed.toFixed(2)}x
-            </span>
-            <Slider
-                className="w-28"
-                value={speed}
-                min={0.5}
-                max={1.5}
-                step={0.05}
-                onChange={value => { props.player.speed = value }}
-            />
-        </div>
     </div>
 }
 
@@ -218,9 +192,14 @@ function LevelEditorTracksView(props: { editor: LevelEditor }) {
         onWheel={e => props.editor.timeTransform.handleWheel(e.nativeEvent, e.currentTarget)}
     >
         <div className="head">
-            <FormInputField label="Magnetization" className="max-w-50">
+            <FormInputField label="Magnetization" className="max-w-50 flex-1">
                 <MagnetizationView
                     transform={props.editor.timeTransform}
+                />
+            </FormInputField>
+            <FormInputField label="Playback speed">
+                <PlaybackSpeedSlider
+                    player={props.editor.player}
                 />
             </FormInputField>
         </div>
@@ -270,4 +249,20 @@ function LevelEditorTracksView(props: { editor: LevelEditor }) {
             />
         </div>
     </div>
+}
+
+function PlaybackSpeedSlider(props: { player: EditorPlayer }) {
+    const { speed } = useComponent(props.player)
+
+    return <div className="grid gap-05">
+        <span className="text-body-xs">{speed.toFixed(2)}x</span>
+        <Slider
+            className="w-28"
+            value={speed}
+            min={0.5}
+            max={1.5}
+            step={0.05}
+            onChange={value => { props.player.speed = value }}
+        />
+    </div >
 }

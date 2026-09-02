@@ -9,5 +9,10 @@
         display: grid;
         gap: var(--spacing-2);
         padding: var(--spacing-2);
+
+        >.head {
+            display: flex;
+            gap: var(--spacing-3);
+        }
     }
 }

@@ -130,7 +130,7 @@ export class LevelEditor extends Component {
                 { 
                     name: "Mixer", 
                     id: "mixer",
-                    size: WindowSize.fixed(Vec2.create(530, 250))
+                    size: WindowSize.fixed(Vec2.create(530, 370))
                 },
                 () => <MixerView />
             )

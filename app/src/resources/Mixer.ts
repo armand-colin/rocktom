@@ -89,6 +89,7 @@ export class Mixer extends Resource {
 
     readonly master: MixerChannel
     readonly feedback: MixerChannel
+    readonly virtualInstrument: MixerChannel
     readonly metronome: MixerChannel
     readonly audio: MixerChannel
 
@@ -102,10 +103,12 @@ export class Mixer extends Resource {
         this.feedback = engine.createComponent(MixerChannel, "instrument", "Instrument", 100)
         this.metronome = engine.createComponent(MixerChannel, "metronome", "Metronome")
         this.audio = engine.createComponent(MixerChannel, "audio", "Audio")
+        this.virtualInstrument = engine.createComponent(MixerChannel, "virtualInstrument", "Virtual Instrument")
 
         this.master.connect(this.feedback.node)
         this.master.connect(this.metronome.node)
         this.master.connect(this.audio.node)
+        this.master.connect(this.virtualInstrument.node)
 
         this.master.node.connect(engine.getResource(SoundEngine).output)
     }

@@ -38,10 +38,7 @@ export function LiveInstrumentPopup(props: Props) {
         />
 
         <FormInputField label="Feedback">
-            <MixerChannelView
-                channel={mixer.feedback}
-                hideLabel
-            />
+            <MixerChannelView channel={mixer.feedback} />
         </FormInputField>
 
         {
@@ -130,7 +127,7 @@ function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
                 }}
             />
         </div>
-        
+
         <div className="grid gap-2">
             <h2>Tuner</h2>
             {

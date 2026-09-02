@@ -65,6 +65,7 @@ export function AudioTrackEditorView(props: {
                         <span className="text-grey-200">No playback</span>
                 }
             </FormInputField>
+            
             <Button onClick={onChoosePlayback}>Choose playback</Button>
 
             <div className="absolute right-0 top-0 p-2">

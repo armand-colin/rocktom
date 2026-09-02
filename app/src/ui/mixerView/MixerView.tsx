@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import "./MixerView.scss";
 import { EngineContext } from "@niloc/ecs-react";
-import { Mixer } from "../../resources/Mixer";
+import { Mixer, MixerChannel } from "../../resources/Mixer";
 import { MixerChannelView } from "./MixerChannelView";
 
 export function MixerView() {
@@ -10,10 +10,20 @@ export function MixerView() {
 
 	return <div className="MixerView">
 		<div className="channels">
-			<MixerChannelView channel={mixer.master} />
-			<MixerChannelView channel={mixer.audio} />
-			<MixerChannelView channel={mixer.feedback} />
-			<MixerChannelView channel={mixer.metronome} />
+			<MixerChannelViewWithLabel channel={mixer.master} />
+			<MixerChannelViewWithLabel channel={mixer.audio} />
+			<MixerChannelViewWithLabel channel={mixer.feedback} />
+			<MixerChannelViewWithLabel channel={mixer.metronome} />
+			<MixerChannelViewWithLabel channel={mixer.virtualInstrument} />
 		</div>
+	</div>
+}
+
+function MixerChannelViewWithLabel(props: {
+	channel: MixerChannel,
+}) {
+	return <div className="MixerChannelViewWithLabel">
+		<p>{props.channel.name}</p>
+		<MixerChannelView channel={props.channel} />
 	</div>
 }
