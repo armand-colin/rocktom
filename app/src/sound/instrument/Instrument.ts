@@ -137,7 +137,7 @@ export class Instrument {
         this.strings = opts.strings.map((declaration, index) => {
             return new String(
                 index, 
-                index / opts.strings.length - 1, 
+                index / (opts.strings.length - 1), 
                 declaration.name, 
                 declaration.note
             )
