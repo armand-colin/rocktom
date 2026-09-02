@@ -2,13 +2,16 @@ import { Note } from "../note/Note"
 import { String } from "./String"
 
 export enum InstrumentType {
-    Bass = "bass"
+    Bass = "bass",
+    Guitar = "guitar",
 }
 
 function InstrumentTypeName(type: InstrumentType) {
     switch (type) {
         case InstrumentType.Bass:
             return "Bass"
+        case InstrumentType.Guitar:
+            return "Guitar"
     }
 }
 
@@ -50,6 +53,31 @@ export class Instrument {
         ]
     })
 
+    static GuitarStandard = new Instrument({
+        type: InstrumentType.Guitar,
+        tuning: InstrumentTuning.Standard,
+        strings: [
+            new String(0, 0 / 5, "E", Note.fromName("E", 2)),
+            new String(1, 1 / 5, "A", Note.fromName("A", 2)),
+            new String(2, 2 / 5, "D", Note.fromName("D", 3)),
+            new String(3, 3 / 5, "G", Note.fromName("G", 3)),
+            new String(4, 4 / 5, "B", Note.fromName("B", 4)),
+            new String(5, 5 / 5, "e", Note.fromName("E", 4)),
+        ]
+    })
+
+    static GuitarDropD = new Instrument({
+        type: InstrumentType.Guitar,
+        tuning: InstrumentTuning.DropD,
+        strings: [
+            new String(0, 0 / 5, "D", Note.fromName("D", 2)),
+            new String(1, 1 / 5, "A", Note.fromName("A", 2)),
+            new String(2, 2 / 5, "d", Note.fromName("D", 3)),
+            new String(3, 3 / 5, "G", Note.fromName("G", 3)),
+            new String(4, 4 / 5, "B", Note.fromName("B", 4)),
+            new String(5, 5 / 5, "e", Note.fromName("E", 4)),
+        ]
+    })
     static deserialize(type: InstrumentType, tuning: InstrumentTuning): Instrument {
     
         switch (type) {
@@ -59,6 +87,14 @@ export class Instrument {
                         return Instrument.BassStandard;
                     case InstrumentTuning.DropD:
                         return Instrument.BassDropD;
+                }
+            }
+            case InstrumentType.Guitar: {
+                switch (tuning) {
+                    case InstrumentTuning.Standard:
+                        return Instrument.GuitarStandard;
+                    case InstrumentTuning.DropD:
+                        return Instrument.GuitarDropD;
                 }
             }
 
