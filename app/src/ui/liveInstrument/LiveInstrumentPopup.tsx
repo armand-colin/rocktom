@@ -1,4 +1,4 @@
-import { useResource } from "@niloc/ecs-react";
+import { useComponent, useResource } from "@niloc/ecs-react";
 import { Popup } from "../popup/Popup";
 import { State } from "../../resources/State";
 import { Button } from "../button/Button";
@@ -113,15 +113,17 @@ function MediaStreamDropdown(props: { instrument: LiveInstrument | null }) {
 
 function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
+    const { instrument } = useComponent(props.instrument)
 
     return <div className="grid gap-2">
         <h2>Instrument</h2>
         <InstrumentDropdown
-            value={props.instrument.instrument}
+            value={instrument}
             onChange={instrument => {
                 props.instrument.setInstrument(instrument)
             }}
         />
+
         <h2>Tuner</h2>
         {
             tuner ?
