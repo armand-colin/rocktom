@@ -1,0 +1,66 @@
+.LevelListItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    border-radius: var(--radius-s);
+    padding: var(--spacing-4) var(--spacing-5);
+    background: var(--container);
+    list-style: none;
+
+    &-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        >.name {
+            color: var(--text);
+            font: var(--font-body-md);
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            overflow: hidden;
+        }
+    }
+
+    &-duration {
+        display: inline-flex;
+        align-items: baseline;
+        gap: var(--spacing-2);
+        font-variant-numeric: tabular-nums;
+        font: var(--font-body-sm);
+    }
+
+    &-durationLabel {
+        color: var(--outline);
+    }
+
+    &-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+        flex-shrink: 0;
+    }
+
+    &-playButton {
+        padding: 12px;
+
+        .Icon {
+            font-size: 24px;
+        }
+    }
+
+    .LevelInstruments {
+        font: var(--font-body-xs);
+
+        >span {
+            color: var(--color-blue-900);
+            background-color: var(--color-blue-300);
+            border-radius: 10px;
+            display: inline-block;
+            padding: 0 var(--spacing-2);
+        }
+    }
+}

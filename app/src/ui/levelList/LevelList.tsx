@@ -1,8 +1,5 @@
 import { useResource } from "@niloc/ecs-react";
 import { useRef, type ChangeEvent, type MouseEvent } from "react";
-import { Button, ButtonTheme } from "../button/Button";
-import { Icon } from "../icon/Icon";
-import { UiSize } from "../UiSize";
 import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
 import { Download } from "../../utils/download";
@@ -11,12 +8,7 @@ import { useToastManager } from "../../hooks/useToastManager";
 import { Toast } from "../toast/Toast";
 import "./LevelList.scss";
 import { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
-
-function formatSeconds(seconds: number) {
-    const minutes = (seconds / 60) | 0
-    const secs = (seconds % 60) | 0
-    return `${minutes}:${secs.toString().padStart(2, '0')}`
-}
+import { LevelListItem } from "./LevelListItem";
 
 function sanitizeFilename(name: string) {
     return name.replace(/[^\w.-]+/g, "_").replace(/^_+|_+$/g, "") || "level"
@@ -113,38 +105,12 @@ export function LevelList(props: {
         <ul className="LevelList">
         {
             props.levels.map((level) => (
-                <li
+                <LevelListItem
                     key={level.id}
-                    onContextMenu={e => openLevelMenu(e, level)}
-                >
-                    <div className="LevelList-info">
-                        <p className="LevelList-name">{level.name}</p>
-                        <small className="LevelList-duration">
-                            <span className="LevelList-durationLabel">Duration</span>
-                            {formatSeconds(level.duration)}
-                        </small>
-                    </div>
-
-                    <div className="LevelList-actions">
-                        <Button
-                            size={UiSize.S}
-                            onClick={(e) => openLevelMenu(e, level)}
-                            shape="square"
-                            theme={ButtonTheme.Ghost}
-                        >
-                            <Icon name="more_vert" />
-                        </Button>
-                        <Button
-                            className="LevelList-playButton"
-                            size={UiSize.M}
-                            shape="square"
-                            theme={ButtonTheme.Primary}
-                            onClick={() => props.onSelect(level)}
-                        >
-                            <Icon name="play_arrow" />
-                        </Button>
-                    </div>
-                </li>
+                    level={level}
+                    onSelect={props.onSelect}
+                    onMenuOpen={openLevelMenu}
+                />
             ))
         }
     </ul>
