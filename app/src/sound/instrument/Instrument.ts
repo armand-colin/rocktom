@@ -34,16 +34,30 @@ export const InstrumentTuning = Enum.create({
 
 export type InstrumentTuning = Enum.Infer<typeof InstrumentTuning>
 
+type StringDeclaration = {
+    name: string,
+    note: Note,
+}
+
+namespace StringDeclaration {
+    export function create(name: string, note: Note): StringDeclaration {
+        return {
+            name,
+            note,
+        }
+    }
+}
+
 export class Instrument {
 
     static BassStandard = new Instrument({
         type: InstrumentType.Bass,
         tuning: InstrumentTuning.Standard,
         strings: [
-            new String(0, 0 / 3, "E", Note.fromName("E", 1)),
-            new String(1, 1 / 3, "A", Note.fromName("A", 1)),
-            new String(2, 2 / 3, "D", Note.fromName("D", 2)),
-            new String(3, 3 / 3, "G", Note.fromName("G", 2)),
+            StringDeclaration.create("E", Note.fromName("E", 1)),
+            StringDeclaration.create("A", Note.fromName("A", 1)),
+            StringDeclaration.create("D", Note.fromName("D", 2)),
+            StringDeclaration.create("G", Note.fromName("G", 2)),
         ]
     })
 
@@ -51,10 +65,10 @@ export class Instrument {
         type: InstrumentType.Bass,
         tuning: InstrumentTuning.DropD,
         strings: [
-            new String(0, 0 / 3, "D", Note.fromName("D", 1)),
-            new String(1, 1 / 3, "A", Note.fromName("A", 1)),
-            new String(2, 2 / 3, "d", Note.fromName("D", 2)),
-            new String(3, 3 / 3, "G", Note.fromName("G", 2)),
+            StringDeclaration.create("D", Note.fromName("D", 1)),
+            StringDeclaration.create("A", Note.fromName("A", 1)),
+            StringDeclaration.create("d", Note.fromName("D", 2)),
+            StringDeclaration.create("G", Note.fromName("G", 2)),
         ]
     })
 
@@ -62,12 +76,12 @@ export class Instrument {
         type: InstrumentType.Guitar,
         tuning: InstrumentTuning.Standard,
         strings: [
-            new String(0, 0 / 5, "E", Note.fromName("E", 2)),
-            new String(1, 1 / 5, "A", Note.fromName("A", 2)),
-            new String(2, 2 / 5, "D", Note.fromName("D", 3)),
-            new String(3, 3 / 5, "G", Note.fromName("G", 3)),
-            new String(4, 4 / 5, "B", Note.fromName("B", 4)),
-            new String(5, 5 / 5, "e", Note.fromName("E", 4)),
+            StringDeclaration.create("E", Note.fromName("E", 2)),
+            StringDeclaration.create("A", Note.fromName("A", 2)),
+            StringDeclaration.create("D", Note.fromName("D", 3)),
+            StringDeclaration.create("G", Note.fromName("G", 3)),
+            StringDeclaration.create("B", Note.fromName("B", 4)),
+            StringDeclaration.create("e", Note.fromName("E", 4)),
         ]
     })
 
@@ -75,12 +89,12 @@ export class Instrument {
         type: InstrumentType.Guitar,
         tuning: InstrumentTuning.DropD,
         strings: [
-            new String(0, 0 / 5, "D", Note.fromName("D", 2)),
-            new String(1, 1 / 5, "A", Note.fromName("A", 2)),
-            new String(2, 2 / 5, "d", Note.fromName("D", 3)),
-            new String(3, 3 / 5, "G", Note.fromName("G", 3)),
-            new String(4, 4 / 5, "B", Note.fromName("B", 4)),
-            new String(5, 5 / 5, "e", Note.fromName("E", 4)),
+            StringDeclaration.create("D", Note.fromName("D", 2)),
+            StringDeclaration.create("A", Note.fromName("A", 2)),
+            StringDeclaration.create("d", Note.fromName("D", 3)),
+            StringDeclaration.create("G", Note.fromName("G", 3)),
+            StringDeclaration.create("B", Note.fromName("B", 4)),
+            StringDeclaration.create("e", Note.fromName("E", 4)),
         ]
     })
 
@@ -116,11 +130,18 @@ export class Instrument {
     constructor(opts: {
         type: InstrumentType,
         tuning: InstrumentTuning,
-        strings: String[]
+        strings: StringDeclaration[]
     }) {
         this.type = opts.type
         this.tuning = opts.tuning
-        this.strings = opts.strings
+        this.strings = opts.strings.map((declaration, index) => {
+            return new String(
+                index, 
+                index / opts.strings.length - 1, 
+                declaration.name, 
+                declaration.note
+            )
+        })
     }
 
     get id() {
