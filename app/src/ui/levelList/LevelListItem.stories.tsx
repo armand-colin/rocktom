@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
 import { StringInput } from "../input/StringInput";
 import { NumberInput } from "../input/NumberInput";
@@ -16,12 +15,10 @@ const mockLevel: LevelEntity = {
     instrumentTypes: ["drums"],
 };
 
-const meta = {
+export default {
     title: "UI/LevelListItem",
     component: LevelListItem,
-} satisfies Meta<typeof LevelListItem>;
-
-export default meta;
+};
 
 export const Main = () => {
     const [name, setName] = useState(mockLevel.name);
