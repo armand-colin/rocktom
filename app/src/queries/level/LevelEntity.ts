@@ -6,4 +6,5 @@ export type LevelEntity = {
     name: string;
     serialized: string;
     duration: number;
+    instrumentTypes: string[];
 };

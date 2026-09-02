@@ -4,6 +4,7 @@ import { FormSchema } from "../../form/FormSchema";
 import { useForm } from "../../hooks/useForm";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
 import { LevelQueries } from "../../queries/level/LevelQueries";
+import { InstrumentType } from "../../sound/instrument/Instrument";
 import { Button, ButtonTheme } from "../button/Button";
 import { Form } from "../form/Form";
 import { FormInputField } from "../form/FormInputField";
@@ -24,7 +25,10 @@ export function CreateLevelPopup(props: Props) {
     const handler = useForm(schema)
 
     async function onSubmit(e: FormHandler.Result<typeof schema>) {
-        const result = await LevelQueries.create(e.json.name)
+        const result = await LevelQueries.create({
+            name: e.json.name,
+            instrumentTypes: [InstrumentType.Bass],
+        })
 
         if (result.ok) {
             props.onSuccess(result.value)

@@ -64,6 +64,10 @@ export class Level {
         return this.tempoTrack.secondsFromTicks(this.durationInTicks)
     }
 
+    getInstrumentTypes(): string[] {
+        return [this.noteTrack.instrument.type]
+    }
+
     clone(): Level {
         return new Level({
             id: nanoid(),

@@ -43,6 +43,7 @@ export function HomePage() {
       serialized: imported.serialized,
       duration: imported.duration,
       playbackId: imported.playbackId,
+      instrumentTypes: imported.instrumentTypes,
     })
 
     if (!result.ok) {

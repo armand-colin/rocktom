@@ -37,6 +37,9 @@ export class Level {
   @Column({ name: 'duration', type: 'integer' })
   duration!: number;
 
+  @Column({ name: 'instrument_types', type: 'text', array: true })
+  instrumentTypes!: string[];
+
   @Column({ name: 'playback_id', type: 'uuid', nullable: true })
   playbackId!: string | null;
 

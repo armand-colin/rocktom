@@ -3,11 +3,17 @@ import { Fetch } from "../../resources/fetch/Fetch";
 import { Body } from "../../resources/fetch/RestClient";
 import type { LevelEntity } from "./LevelEntity";
 
+type CreateLevel = {
+    name: string,
+    instrumentTypes: string[],
+}
+
 type UpdateLevel = {
     name: string,
     serialized: string,
     duration: number,
     playbackId: string | null,
+    instrumentTypes: string[],
 }
 
 export namespace LevelQueries {
@@ -17,9 +23,9 @@ export namespace LevelQueries {
         return fetch.apiAuth.get<LevelEntity[]>('/level');
     }
 
-    export function create(name: string) {
+    export function create(body: CreateLevel) {
         const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.post<LevelEntity>('/level', Body.json({ name }));
+        return fetch.apiAuth.post<LevelEntity>('/level', Body.json(body));
     }
 
     export function getById(id: string) {

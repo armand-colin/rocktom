@@ -16,6 +16,7 @@ export class LevelController {
     create(@Body() body: CreateLevelDto, @CurrentSession() session: Session) {
         return this.levelService.create({
             name: body.name,
+            instrumentTypes: body.instrumentTypes,
             userId: session.userId,
         });
     }

@@ -4,6 +4,7 @@ export type ImportedLevelTracks = {
     serialized: string,
     duration: number,
     playbackId: string | null,
+    instrumentTypes: string[],
 }
 
 export function parseImportedLevelTracks(content: string): ImportedLevelTracks {
@@ -19,5 +20,6 @@ export function parseImportedLevelTracks(content: string): ImportedLevelTracks {
         serialized: JSON.stringify(json),
         duration: Math.round(level.durationInSeconds),
         playbackId: null,
+        instrumentTypes: level.getInstrumentTypes(),
     }
 }
