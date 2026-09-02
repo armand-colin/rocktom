@@ -17,6 +17,7 @@ const SNAP_SEMITONES = 1
 
 export class Tuner extends Component {
 
+    private _liveInstrument: LiveInstrument
     private _instrument: Instrument
     private _analyser: SoundAnalyserNode
     private _detector = new McLeodPitchDetector()
@@ -28,11 +29,15 @@ export class Tuner extends Component {
 
     constructor(engine: Engine, instrument: LiveInstrument) {
         super(engine)
+        this._liveInstrument = instrument
         this._instrument = instrument.instrument
         this._analyser = engine.getResource(SoundEngine).createAnalyserNode(instrument.range)
         instrument.rawOutput.connect(this._analyser)
         this._targetString = this._instrument.lowestString
         this.startCoroutine(this._update())
+
+        instrument.onChange(this._onLiveInstrumentChange)
+
         Object.assign(window, { tuner: this })
     }
 
@@ -186,8 +191,19 @@ export class Tuner extends Component {
         return 2 ** mixed
     }
 
+    private _onLiveInstrumentChange = () => {
+        if (this._liveInstrument.instrument === this._instrument)
+            return
+
+        this._instrument = this._liveInstrument.instrument
+        this._targetString = this._instrument.lowestString
+
+        this.changed()
+    }
+
     destroy(): void {
         super.destroy()
+        this._liveInstrument.offChange(this._onLiveInstrumentChange)
         this._analyser.destroy()
     }
 
