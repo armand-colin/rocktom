@@ -1,14 +1,15 @@
 .TrackEditorView {
     display: grid;
     grid-template-columns: 300px 1fr;
-    outline: 1px solid var(--outline);
+    gap: var(--spacing-2);
     position: relative;
 
     >.TrackEditorHead {
         grid-column: 1;
-        border-right: 1px solid var(--outline);
         display: grid;
         position: relative;
+        background: var(--color-grey-800);
+        border-radius: var(--radius-sm);
 
         >.content {
             padding: 8px;
@@ -28,7 +29,7 @@
             background: var(--color-grey-500);
             width: min-content;
             white-space: nowrap;
-            border-radius: 0 0 var(--radius-xs) 0;
+            border-radius: var(--radius-sm) 0 var(--radius-sm) 0;
             height: min-content;
         }
     }
@@ -37,5 +38,7 @@
         grid-column: 2;
         position: relative;
         overflow: hidden;
+        background: var(--color-grey-800);
+        border-radius: var(--radius-sm);
     }
 }

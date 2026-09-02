@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type MouseEve
 import type { EditorPlayer } from "../../../components/editor/EditorPlayer";
 import type { TimeTransform } from "../../../components/editor/TimeTransform";
 import type { Time } from "../../../components/Time";
-import { TrackEditorContent, TrackEditorView } from "../TrackEditorView";
+import { TrackEditorContent, TrackEditorHead, TrackEditorView } from "../TrackEditorView";
 import "./TimeTransformView.scss";
 
 export const TimeTransformContainerId = "TimeTransformContainer";
@@ -68,6 +68,7 @@ export function TimeTransformView(props: {
         className="TimeTransformView"
         transform={props.transform}
     >
+        <TrackEditorHead></TrackEditorHead>
         <TrackEditorContent time={props.time}>
             <div
                 className="TimeTransformContainer"

@@ -143,7 +143,7 @@ export function LevelEditorView(props: {
             </div>
         </div>
 
-        <SongEditorView editor={props.editor} />
+        <LevelEditorTracksView editor={props.editor} />
     </div>
 }
 
@@ -206,7 +206,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
     </div>
 }
 
-function SongEditorView(props: { editor: LevelEditor }) {
+function LevelEditorTracksView(props: { editor: LevelEditor }) {
 
     function onEdit(pattern: TimedPattern) {
         props.editor.player.seekTicks(pattern.time)
@@ -214,7 +214,7 @@ function SongEditorView(props: { editor: LevelEditor }) {
     }
 
     return <div
-        className="SongEditorView"
+        className="LevelEditorTracksView"
         onWheel={e => props.editor.timeTransform.handleWheel(e.nativeEvent, e.currentTarget)}
     >
         <div className="head">

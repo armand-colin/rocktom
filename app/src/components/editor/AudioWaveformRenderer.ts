@@ -222,7 +222,7 @@ export class AudioWaveformRenderer extends Component {
         this._canvas.width = width
         this._canvas.height = height
 
-        this._context.fillStyle = "black"
+        this._context.fillStyle = "transparent"
         this._context.fillRect(0, 0, width, height)
 
         const startTicks = -this._transform.offset

@@ -15,9 +15,11 @@
         --note-height: 26px;
         display: grid;
         grid-template-rows: 0fr 1fr;
-        background: var(--surface);
         border-radius: 0 0 8px 8px;
         overflow: hidden;
+        padding: var(--spacing-2);
+        padding-top: 0;
+        gap: var(--spacing-2);
 
         >.TrackEditorView>.keyboard {
             position: relative;

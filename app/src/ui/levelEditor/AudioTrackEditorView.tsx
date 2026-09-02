@@ -120,7 +120,9 @@ function AudioView(props: {
         className="AudioView"
         ref={onRef}
     >
-        <ElementRenderer element={props.waveform.canvas} />
+        <ElementRenderer 
+            element={props.waveform.canvas} 
+        />
     </div>
 
 }
