@@ -56,11 +56,23 @@
         font: var(--font-body-xs);
 
         >span {
-            color: var(--color-blue-900);
-            background-color: var(--color-blue-300);
             border-radius: 10px;
             display: inline-block;
             padding: 0 var(--spacing-2);
+
+            &[data-type="bass"] {
+                color: var(--color-blue-900);
+                background-color: var(--color-blue-300);
+            }
+
+            &[data-type="guitar"] {
+                color: var(--color-orange-900);
+                background-color: var(--color-orange-300);
+            }
+
+            &:not(:last-child) {
+                margin-right: var(--spacing-2);
+            }
         }
     }
 }

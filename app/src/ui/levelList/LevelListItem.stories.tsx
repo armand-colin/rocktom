@@ -26,7 +26,7 @@ export const Main = () => {
 
     const level: LevelEntity = {
         ...mockLevel,
-        instrumentTypes: ["bass"],
+        instrumentTypes: ["bass", "guitar"],
         name,
         duration,
     };
