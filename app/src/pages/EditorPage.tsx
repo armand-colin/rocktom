@@ -7,13 +7,6 @@ import type { LevelEntity } from "../queries/level/LevelEntity"
 import { LevelEditor } from "../components/editor/LevelEditor"
 import { Level } from "../sound/Level"
 import { Instance } from "../Instance"
-import { NoteTrack } from "../sound/song/NoteTrack"
-import { Instrument } from "../sound/instrument/Instrument"
-import { Tempo } from "../sound/Tempo"
-import { AudioTrack } from "../sound/song/AudioTrack"
-import { TempoTrack } from "../sound/song/TempoTrack"
-import { FocusTrack } from "../sound/song/FocusTrack"
-import { Focus } from "../sound/song/Focus"
 
 export function EditorPage() {
 
@@ -49,27 +42,11 @@ function EditorView(props: { level: LevelEntity }) {
     useEffect(() => {
         let level;
         try {
-            if (props.level.serialized === "" || props.level.serialized === "{}") {
-                level = new Level({
-                    id: props.level.id,
-                    name: props.level.name,
-                    tracks: {
-                        note: new NoteTrack(Instrument.BassStandard, [], []),
-                        audio: new AudioTrack({ time: 0, playbackId: null }),
-                        tempo: new TempoTrack(new Tempo(120)),
-                        focus: new FocusTrack(Focus.default(), [])
-                    }
-                })
-            } else {
-                const json = JSON.parse(props.level.serialized)
-                const tracks = Level.deserializeTracks(json)
-
-                level = new Level({
-                    id: props.level.id,
-                    name: props.level.name,
-                    tracks: tracks
-                })
-            }
+            level = Level.deserialize({
+                serialized: props.level.serialized,
+                id: props.level.id,
+                name: props.level.name,
+            })
         } catch (error) {
             console.error(error)
             setEditor(null)

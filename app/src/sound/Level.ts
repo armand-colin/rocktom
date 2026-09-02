@@ -3,6 +3,9 @@ import { AudioTrack, type SerializedAudioTrack } from "./song/AudioTrack";
 import { FocusTrack, type SerializedFocusTrack } from "./song/FocusTrack";
 import { NoteTrack, type SerializedNoteTrack } from "./song/NoteTrack";
 import { TempoTrack, type SerializedTempoTrack } from "./song/TempoTrack";
+import { Instrument } from "./instrument/Instrument";
+import { Focus } from "./song/Focus";
+import { Tempo } from "./Tempo";
 
 type SerializedLevel = {
     id: string,
@@ -27,7 +30,41 @@ export class Level {
     readonly tempoTrack: TempoTrack
     readonly focusTrack: FocusTrack
 
-    constructor(opts: {
+    static default(opts: {
+        id: string,
+        name: string,
+    }): Level {
+        return new Level({
+            id: opts.id,
+            name: opts.name,
+            tracks: {
+                note: new NoteTrack(Instrument.BassStandard, [], []),
+                audio: new AudioTrack({ time: 0, playbackId: null }),
+                tempo: new TempoTrack(new Tempo(120)),
+                focus: new FocusTrack(Focus.default(), [])
+            }
+        })
+    }
+
+    static deserialize(opts: {
+        serialized: string,
+        id: string,
+        name: string,
+    }): Level {
+        if (opts.serialized === "" || opts.serialized === "{}") {
+            return Level.default(opts)
+        }
+
+        const tracks = Level.deserializeTracks(JSON.parse(opts.serialized))
+
+        return new Level({
+            id: opts.id,
+            name: opts.name,
+            tracks: tracks
+        })
+    }
+
+    private constructor(opts: {
         id: string,
         name: string,
         tracks: {
@@ -87,14 +124,6 @@ export class Level {
             name: this.name,
             tracks: this.serializeTracks()
         }
-    }
-
-    static deserialize(data: SerializedLevel): Level {
-        return new Level({
-            id: data.id,
-            name: data.name,
-            tracks: Level.deserializeTracks(data.tracks)
-        })
     }
 
     serializeTracks(): SerializedTracks {

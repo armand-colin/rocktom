@@ -8,16 +8,14 @@ export type ImportedLevelTracks = {
 }
 
 export function parseImportedLevelTracks(content: string): ImportedLevelTracks {
-    const json = JSON.parse(content)
-    const tracks = Level.deserializeTracks(json)
-    const level = new Level({
+    const level = Level.deserialize({
+        serialized: content,
         id: "import",
         name: "import",
-        tracks,
     })
 
     return {
-        serialized: JSON.stringify(json),
+        serialized: content,
         duration: Math.round(level.durationInSeconds),
         playbackId: null,
         instrumentTypes: level.getInstrumentTypes(),

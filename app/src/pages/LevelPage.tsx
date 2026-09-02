@@ -7,13 +7,6 @@ import type { LevelEntity } from "../queries/level/LevelEntity"
 import { Playback } from "../components/Playback"
 import { Level } from "../sound/Level"
 import { Instance } from "../Instance"
-import { NoteTrack } from "../sound/song/NoteTrack"
-import { Instrument } from "../sound/instrument/Instrument"
-import { Tempo } from "../sound/Tempo"
-import { TempoTrack } from "../sound/song/TempoTrack"
-import { AudioTrack } from "../sound/song/AudioTrack"
-import { FocusTrack } from "../sound/song/FocusTrack"
-import { Focus } from "../sound/song/Focus"
 import { LoadingScreen } from "../ui/loadingScreen/LoadingScreen"
 import { useComponent } from "@niloc/ecs-react"
 
@@ -60,27 +53,11 @@ function LevelView(props: { level: LevelEntity | null, fetching: boolean }) {
         }
 
         try {
-            let level;
-            if (props.level.serialized === "" || props.level.serialized === "{}") {
-                level = new Level({
-                    id: props.level.id,
-                    name: props.level.name,
-                    tracks: {
-                        note: new NoteTrack(Instrument.BassStandard, [], []),
-                        audio: new AudioTrack({ time: 0, playbackId: null }),
-                        tempo: new TempoTrack(new Tempo(120)),
-                        focus: new FocusTrack(Focus.default(), [])
-                    }
-                })
-            } else {
-                const json = JSON.parse(props.level.serialized)
-                const deserialized = Level.deserializeTracks(json)
-                level = new Level({
-                    id: props.level.id,
-                    name: props.level.name,
-                    tracks: deserialized
-                })
-            }
+            const level = Level.deserialize({
+                serialized: props.level.serialized,
+                id: props.level.id,
+                name: props.level.name,
+            })
 
             const playback = new Playback(Instance.engine, level)
             setPlayback(playback)
