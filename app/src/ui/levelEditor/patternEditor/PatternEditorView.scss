@@ -77,16 +77,16 @@
                 bottom: 0;
                 top: 0;
                 width: 1px;
-                background: var(--marker);
+                background: var(--color-grey-700);
                 left: calc((var(--ticks) + var(--offset)) * var(--ratio) * 1px - 1px);
 
                 &[data-type="bar"] {
-                    background: var(--marker-bar);
+                    background: var(--color-grey-300);
                     width: 1px;
                 }
 
                 &[data-type="beat"] {
-                    background: var(--marker-beat);
+                    background: var(--color-grey-500);
                 }
             }
         }
