@@ -36,7 +36,9 @@ function instrumentOption(instrument: Instrument): InstrumentOption {
 
 const instrumentOptions = [
     instrumentOption(Instrument.BassStandard),
-    instrumentOption(Instrument.BassDropD)
+    instrumentOption(Instrument.BassDropD),
+    instrumentOption(Instrument.GuitarStandard),
+    instrumentOption(Instrument.GuitarDropD)
 ]
 
 export function NoteTrackEditorView(props: {
