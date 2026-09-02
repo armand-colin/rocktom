@@ -20,26 +20,7 @@ import { PopupManager } from "../../resources/PopupManager";
 import { Instance } from "../../Instance";
 import { PromptPopup } from "../popup/promptPopup/PromptPopup";
 import { UiSize } from "../UiSize";
-import { Instrument } from "../../sound/instrument/Instrument";
-
-type InstrumentOption = Dropdown.Option & {
-    instrument: Instrument
-}
-
-function instrumentOption(instrument: Instrument): InstrumentOption {
-    return {
-        value: instrument.id,
-        label: instrument.name,
-        instrument: instrument
-    }
-}
-
-const instrumentOptions = [
-    instrumentOption(Instrument.BassStandard),
-    instrumentOption(Instrument.BassDropD),
-    instrumentOption(Instrument.GuitarStandard),
-    instrumentOption(Instrument.GuitarDropD)
-]
+import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
 
 export function NoteTrackEditorView(props: {
     editor: NoteTrackEditor,
@@ -91,15 +72,11 @@ export function NoteTrackEditorView(props: {
             contentClassName="grid gap-2 w-full"
         >
             <FormInputField label="Instrument">
-                <Dropdown
-                    value={instrument.id}
-                    onChange={option => {
-                        if (!option)
-                            return
-
-                        props.editor.setInstrument(option.instrument)
+                <InstrumentDropdown
+                    value={instrument}
+                    onChange={instrument => {
+                        props.editor.setInstrument(instrument)
                     }}
-                    options={instrumentOptions}
                 />
             </FormInputField>
 

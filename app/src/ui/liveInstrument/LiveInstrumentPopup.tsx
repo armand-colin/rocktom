@@ -15,6 +15,7 @@ import { Tuner } from "../../components/Tuner";
 import { TunerView } from "./TunerView";
 import { MixerChannelView } from "../mixerView/MixerChannelView";
 import { Mixer } from "../../resources/Mixer";
+import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
 
 type Props = {
     close: () => void
@@ -31,7 +32,7 @@ export function LiveInstrumentPopup(props: Props) {
             close={props.close}
         />
 
-        <InstrumentDropdown
+        <MediaStreamDropdown
             instrument={instrument}
         />
 
@@ -49,7 +50,7 @@ export function LiveInstrumentPopup(props: Props) {
     </Popup.BaseContainer>
 }
 
-function InstrumentDropdown(props: { instrument: LiveInstrument | null }) {
+function MediaStreamDropdown(props: { instrument: LiveInstrument | null }) {
     const mediaStreamList = useResource(MediaStreamList)
     const { loading } = mediaStreamList
 
@@ -114,6 +115,13 @@ function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
 
     return <div className="grid gap-2">
+        <h2>Instrument</h2>
+        <InstrumentDropdown
+            value={props.instrument.instrument}
+            onChange={instrument => {
+                props.instrument.setInstrument(instrument)
+            }}
+        />
         <h2>Tuner</h2>
         {
             tuner ?
