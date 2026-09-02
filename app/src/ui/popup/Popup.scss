@@ -5,6 +5,17 @@
     flex-direction: column;
     gap: var(--spacing-7);
     padding: var(--spacing-7);
+
+    @keyframes popIn {
+        from {
+            transform: scale(0.95);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+
+    animation: popIn 0.16s var(--curve-smooth);
 }
 
 .PopupBaseTitle {

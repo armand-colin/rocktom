@@ -12,6 +12,19 @@
     grid-template-rows: 0fr 1fr;
     z-index: 20;
 
+    @keyframes popIn {
+        from {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    animation: popIn 0.16s var(--curve-smooth);
+
     > .head {
         display: grid;
         grid-template-columns: 1fr 24px;
