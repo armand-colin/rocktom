@@ -69,20 +69,22 @@ function BaseTrigger<T extends Dropdown.Option>(props: Dropdown.TriggerProps<T>)
         onClick={() => props.onToggleOpen()}
         data-size={props.size ?? UiSize.M}
         data-empty={props.value === null}
+        title={props.value?.label ?? props.placeholder}
     >
-        <span>{props.value?.label ?? props.placeholder}</span>
+        <span className="truncate" >{props.value?.label ?? props.placeholder}</span>
         <Icon name="arrow_drop_down" />
     </div>
 }
 
 function BaseItem<T extends Dropdown.Option>(props: Dropdown.ItemProps<T>) {
     return <div
-        className="BaseItem"
+        className="BaseItem truncate"
         data-selected={props.selected}
         onClick={() => props.onSelect()}
         data-size={props.size ?? UiSize.M}
+        title={props.value.label}
     >
-        <span>{props.value.label}</span>
+        <span className="truncate">{props.value.label}</span>
     </div>
 }
 

@@ -1,9 +1,9 @@
-export const UiSize  = {
-    M: "md" as const,
-    S: "sm" as const,
-    XS: "xs" as const,
+import { Enum } from "../utils/Enum"
 
-    all: ["md", "sm", "xs"] as UiSize[],
-}
+export const UiSize = Enum.create({
+    M: "md",
+    S: "sm",
+    XS: "xs",
+} as const)
 
-export type UiSize = "md" | "sm" | "xs"
+export type UiSize = Enum.Infer<typeof UiSize>

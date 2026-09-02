@@ -1,33 +1,38 @@
+import { Enum } from "../../utils/Enum"
 import { Note } from "../note/Note"
 import { String } from "./String"
 
-export enum InstrumentType {
-    Bass = "bass",
-    Guitar = "guitar",
-}
-
-function InstrumentTypeName(type: InstrumentType) {
-    switch (type) {
-        case InstrumentType.Bass:
-            return "Bass"
-        case InstrumentType.Guitar:
-            return "Guitar"
+export const InstrumentType = Enum.create({
+    Bass: "bass",
+    Guitar: "guitar",
+} as const, {
+    getLabel(type: InstrumentType) {
+        switch (type) {
+            case InstrumentType.Bass:
+                return "Bass"
+            case InstrumentType.Guitar:
+                return "Guitar"
+        }
     }
-}
+})
 
-export enum InstrumentTuning {
-    Standard = "standard",
-    DropD = "drop-d",
-}
+export type InstrumentType = Enum.Infer<typeof InstrumentType>
 
-function InstrumentTuningName(tuning: InstrumentTuning) {
-    switch (tuning) {
-        case InstrumentTuning.Standard:
-            return "Standard"
-        case InstrumentTuning.DropD:
-            return "Drop D"
+export const InstrumentTuning = Enum.create({
+    Standard: "standard",
+    DropD: "drop-d",
+} as const, {
+    getLabel(tuning: InstrumentTuning) {
+        switch (tuning) {
+            case InstrumentTuning.Standard:
+                return "Standard"
+            case InstrumentTuning.DropD:
+                return "Drop D"
+        }
     }
-}
+})
+
+export type InstrumentTuning = Enum.Infer<typeof InstrumentTuning>
 
 export class Instrument {
 
@@ -78,8 +83,8 @@ export class Instrument {
             new String(5, 5 / 5, "e", Note.fromName("E", 4)),
         ]
     })
+
     static deserialize(type: InstrumentType, tuning: InstrumentTuning): Instrument {
-    
         switch (type) {
             case InstrumentType.Bass: {
                 switch (tuning) {
@@ -131,7 +136,7 @@ export class Instrument {
     }
 
     get name() {
-        return InstrumentTypeName(this.type) + " (" + InstrumentTuningName(this.tuning) + ")"
+        return InstrumentType.getLabel(this.type) + " (" + InstrumentTuning.getLabel(this.tuning) + ")"
     }
 
 }

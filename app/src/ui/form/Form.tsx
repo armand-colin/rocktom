@@ -9,6 +9,7 @@ type Props<S extends FormSchema.Schema> = {
     handler: FormHandler<S>,
     onSubmit: (result: FormHandler.Result<FormSchema<S>>) => void | Promise<void>,
     children?: ReactNode,
+    className?: string
 }
 
 export function Form<S extends FormSchema.Schema>(props: Props<S>) {
@@ -33,7 +34,7 @@ export function Form<S extends FormSchema.Schema>(props: Props<S>) {
     return <form
         onSubmit={onSubmit}
         data-loading={loading}
-        className="Form"
+        className={`Form ${props.className ?? ''}`}
         onKeyDown={onKeyDown}
         ref={ref}
     >

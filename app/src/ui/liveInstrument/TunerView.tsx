@@ -22,13 +22,7 @@ export function TunerView(props: { instrument: Instrument, tuner: Tuner }) {
             Math.abs(cents) > 10 ? TunerDialUtils.Status.Warn :
                 TunerDialUtils.Status.Success
 
-    return <div className="TunerView gap-2 grid">
-        <FormInputField label="Auto Detect">
-            <Toggle
-                value={props.tuner.autoDetect}
-                onChange={value => props.tuner.autoDetect = value}
-            />
-        </FormInputField>
+    return <div className="TunerView gap-4 grid">
 
         <div className="flex gap-2">
             {
@@ -42,6 +36,13 @@ export function TunerView(props: { instrument: Instrument, tuner: Tuner }) {
                 </Button>)
             }
         </div>
+
+        <FormInputField label="Auto Detect">
+            <Toggle
+                value={props.tuner.autoDetect}
+                onChange={value => props.tuner.autoDetect = value}
+            />
+        </FormInputField>
 
         <TunerDial
             height={200}

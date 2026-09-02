@@ -1,13 +1,16 @@
 import type { CSSProperties, MouseEvent, ReactNode } from "react"
 import './Button.scss'
 import { UiSize } from "../UiSize"
+import { Enum } from "../../utils/Enum"
 
-export enum ButtonTheme {
-    Default = "default",
-    Primary = "primary",
-    Danger = "danger",
-    Ghost = "ghost",
-}
+export const ButtonTheme = Enum.create({
+    Default: "default",
+    Primary: "primary",
+    Danger: "danger",
+    Ghost: "ghost",
+} as const)
+
+export type ButtonTheme = Enum.Infer<typeof ButtonTheme>
 
 type Props = {
     onClick?: (e: MouseEvent<HTMLElement>) => void

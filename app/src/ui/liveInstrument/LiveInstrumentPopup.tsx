@@ -16,6 +16,7 @@ import { TunerView } from "./TunerView";
 import { MixerChannelView } from "../mixerView/MixerChannelView";
 import { Mixer } from "../../resources/Mixer";
 import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
+import { FormInputField } from "../form/FormInputField";
 
 type Props = {
     close: () => void
@@ -26,7 +27,7 @@ export function LiveInstrumentPopup(props: Props) {
     const engine = Instance.engine
     const mixer = engine.getResource(Mixer)
 
-    return <Popup.BaseContainer className="w-150">
+    return <Popup.BaseContainer className="w-100">
         <Popup.BaseTitle
             title="Live Instrument"
             close={props.close}
@@ -36,9 +37,12 @@ export function LiveInstrumentPopup(props: Props) {
             instrument={instrument}
         />
 
-        <MixerChannelView
-            channel={mixer.feedback}
-        />
+        <FormInputField label="Feedback">
+            <MixerChannelView
+                channel={mixer.feedback}
+                hideLabel
+            />
+        </FormInputField>
 
         {
             instrument ?
@@ -93,6 +97,7 @@ function MediaStreamDropdown(props: { instrument: LiveInstrument | null }) {
             value={props.instrument?.streamId ?? null}
             onChange={setInstrument}
             placeholder={loading ? "Loading..." : "Select a microphone"}
+            className="flex-1"
         />
         {
             props.instrument && <Button
@@ -115,23 +120,27 @@ function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
     const { instrument } = useComponent(props.instrument)
 
-    return <div className="grid gap-2">
-        <h2>Instrument</h2>
-        <InstrumentDropdown
-            value={instrument}
-            onChange={instrument => {
-                props.instrument.setInstrument(instrument)
-            }}
-        />
-
-        <h2>Tuner</h2>
-        {
-            tuner ?
-                <TunerView
-                    tuner={tuner}
-                    instrument={props.instrument.instrument}
-                /> :
-                null
-        }
+    return <div className="grid gap-5">
+        <div className="grid gap-2">
+            <h2>Instrument</h2>
+            <InstrumentDropdown
+                value={instrument}
+                onChange={instrument => {
+                    props.instrument.setInstrument(instrument)
+                }}
+            />
+        </div>
+        
+        <div className="grid gap-2">
+            <h2>Tuner</h2>
+            {
+                tuner ?
+                    <TunerView
+                        tuner={tuner}
+                        instrument={props.instrument.instrument}
+                    /> :
+                    null
+            }
+        </div>
     </div>
 }

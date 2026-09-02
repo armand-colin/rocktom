@@ -4,7 +4,7 @@ import { FormSchema } from "../../form/FormSchema";
 import { useForm } from "../../hooks/useForm";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
 import { LevelQueries } from "../../queries/level/LevelQueries";
-import { Button } from "../button/Button";
+import { Button, ButtonTheme } from "../button/Button";
 import { Form } from "../form/Form";
 import { FormInputField } from "../form/FormInputField";
 import { StringInput } from "../input/StringInput";
@@ -25,6 +25,7 @@ export function CreateLevelPopup(props: Props) {
 
     async function onSubmit(e: FormHandler.Result<typeof schema>) {
         const result = await LevelQueries.create(e.json.name)
+
         if (result.ok) {
             props.onSuccess(result.value)
             props.close()
@@ -34,12 +35,24 @@ export function CreateLevelPopup(props: Props) {
     }
 
     return <Popup.BaseContainer>
-        <Popup.BaseTitle title="Create Level" close={props.close} />
-        <Form handler={handler} onSubmit={onSubmit}>
+        <Popup.BaseTitle
+            title="Create Level"
+            close={props.close}
+        />
+
+        <Form
+            handler={handler}
+            onSubmit={onSubmit}
+            className="grid gap-2"
+        >
             <FormInputField field={handler.fields.name} label="Name">
                 <StringInput field={handler.fields.name} placeholder="Level Name" />
             </FormInputField>
-            <Button>
+
+            <Button
+                className="justify-self-end"
+                theme={ButtonTheme.Primary}
+            >
                 {
                     handler.loading ?
                         <Spinner /> :
