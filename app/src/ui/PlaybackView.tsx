@@ -103,13 +103,11 @@ function PlaybackControls(props: { playback: Playback }) {
                     <FormInputField label="Playback volume">
                         <MixerChannelView
                             channel={mixer.audio}
-                            hideLabel
                         />
                     </FormInputField>
                     <FormInputField label="Metronome volume">
                         <MixerChannelView
                             channel={mixer.metronome}
-                            hideLabel
                         />
                     </FormInputField>
                 </div>
