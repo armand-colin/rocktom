@@ -15,7 +15,7 @@ type Oscillator = {
 
 export class VirtualBass extends Component {
 
-    private _instrument = Instrument.Bass
+    private _instrument = Instrument.BassStandard
     private _node: GainSoundNode
 
     private _oscillators: Oscillator[] = []

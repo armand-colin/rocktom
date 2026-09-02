@@ -8,9 +8,6 @@ import "./TunerPopup.scss"
 import { Popup } from "../popup/Popup"
 import { useComponentInstance } from "../../hooks/useComponentInstance"
 import { Spinner } from "../spinner/Spinner"
-import { Instrument } from "../../sound/instrument/Instrument"
-
-const bass = Instrument.Bass
 
 export function TunerPopup(props: { instrument: LiveInstrument, close: () => void }) {
     const tuner = useComponentInstance(Tuner, props.instrument)
@@ -51,7 +48,7 @@ function TunerPopupContent(props: { instrument: LiveInstrument, tuner: Tuner }) 
     return <>
         <div className="flex gap-2">
             {
-                bass.strings.map(s => {
+                props.instrument.instrument.strings.map(s => {
                     return <Button
                         onClick={() => props.tuner.targetString = s}
                         theme={props.tuner.targetString === s ? ButtonTheme.Primary : ButtonTheme.Default}

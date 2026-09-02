@@ -5,6 +5,7 @@ import type { NoteTrack } from "../../sound/song/NoteTrack";
 import { Pattern, TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
 import type { VirtualBass } from "../VirtualBass";
+import type { Instrument } from "../../sound/instrument/Instrument";
 
 export class NoteTrackEditor extends Component {
 
@@ -33,8 +34,21 @@ export class NoteTrackEditor extends Component {
         return Array.from(this.track.patterns.values())
     }
 
+    get instrument() {
+        return this.track.instrument
+    }
+
     setPattern(pattern: Pattern) {
         this._pattern = pattern
+        this.changed()
+    }
+
+    setInstrument(instrument: Instrument) {
+        if (instrument.id === this.track.instrument.id) {
+            return
+        }
+
+        this.track.setInstrument(instrument)
         this.changed()
     }
 

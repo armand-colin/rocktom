@@ -54,7 +54,7 @@ function EditorView(props: { level: LevelEntity }) {
                     id: props.level.id,
                     name: props.level.name,
                     tracks: {
-                        note: new NoteTrack(Instrument.Bass, [], []),
+                        note: new NoteTrack(Instrument.BassStandard, [], []),
                         audio: new AudioTrack({ time: 0, playbackId: null }),
                         tempo: new TempoTrack(new Tempo(120)),
                         focus: new FocusTrack(Focus.default(), [])

@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { Instrument, type InstrumentType } from "../instrument/Instrument";
+import { Instrument, InstrumentTuning, type InstrumentType } from "../instrument/Instrument";
 import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Marker } from "./Marker";
@@ -8,7 +8,8 @@ import type { TempoTrack } from "./TempoTrack";
 
 
 export type SerializedNoteTrack = {
-    instrument: InstrumentType,
+    instrumentType: InstrumentType,
+    instrumentTuning: InstrumentTuning,
     patterns: SerializedPattern[],
     timedPatterns: SerializedTimedPattern[],
     markers: Marker[]
@@ -16,7 +17,7 @@ export type SerializedNoteTrack = {
 
 export class NoteTrack {
 
-    readonly instrument: Instrument
+    private _instrument: Instrument
     readonly timedPatterns: TimedPattern[] = []
     readonly markers: Marker[] = []
     readonly patterns = new Map<string, Pattern>()
@@ -27,7 +28,7 @@ export class NoteTrack {
         markers: Marker[],
         patterns?: Map<string, Pattern>
     ) {
-        this.instrument = instrument
+        this._instrument = instrument
         this.timedPatterns = timedPatterns
         this.markers = markers
 
@@ -38,6 +39,22 @@ export class NoteTrack {
 
         for (const { pattern } of timedPatterns)
             this.patterns.set(pattern.id, pattern)
+    }
+
+    get instrument() {
+        return this._instrument
+    }
+
+    setInstrument(instrument: Instrument) {
+        if (instrument.id === this._instrument.id) {
+            return
+        }
+
+        this._instrument = instrument
+
+        for (const pattern of this.patterns.values()) {
+            pattern.setInstrument(instrument)
+        }
     }
 
     clone(): NoteTrack {
@@ -115,7 +132,8 @@ export class NoteTrack {
 
     serialize(): SerializedNoteTrack {
         return {
-            instrument: this.instrument.type,
+            instrumentType: this.instrument.type,
+            instrumentTuning: this.instrument.tuning,
             patterns: Array.from(this.patterns.values()).map(p => p.serialize()),
             markers: this.markers,
             timedPatterns: this.timedPatterns.map(tp => tp.serialize())
@@ -124,8 +142,10 @@ export class NoteTrack {
 
     static deserialize(data: SerializedNoteTrack): NoteTrack {
         const patternsMap = new Map<string, Pattern>()
+        const instrument = Instrument.deserialize(data.instrumentType, data.instrumentTuning)
+
         for (const patternData of data.patterns) {
-            const pattern = Pattern.deserialize(patternData)
+            const pattern = Pattern.deserialize(patternData, instrument)
             patternsMap.set(pattern.id, pattern)
         }
 
@@ -133,7 +153,7 @@ export class NoteTrack {
             .map(tpData => TimedPattern.deserialize(tpData, patternsMap))
 
         return new NoteTrack(
-            Instrument.fromType(data.instrument),
+            instrument,
             timedPatterns,
             data.markers
         )

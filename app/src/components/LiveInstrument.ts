@@ -14,7 +14,8 @@ type Opts = {
 
 export class LiveInstrument extends Component {
 
-    readonly instrument: Instrument = Instrument.Bass
+    readonly instrument: Instrument = Instrument.BassStandard
+    
     private _name: string
     private _mediaStream: MediaStream
     private _streamId: string

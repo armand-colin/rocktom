@@ -13,7 +13,6 @@ import { useEffect } from "react";
 import { useComponentInstance } from "../../hooks/useComponentInstance";
 import { Tuner } from "../../components/Tuner";
 import { TunerView } from "./TunerView";
-import { Instrument } from "../../sound/instrument/Instrument";
 import { MixerChannelView } from "../mixerView/MixerChannelView";
 import { Mixer } from "../../resources/Mixer";
 
@@ -120,7 +119,7 @@ function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
             tuner ?
                 <TunerView
                     tuner={tuner}
-                    instrument={Instrument.Bass}
+                    instrument={props.instrument.instrument}
                 /> :
                 null
         }

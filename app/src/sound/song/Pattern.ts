@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid"
-import { Instrument, type InstrumentType } from "../instrument/Instrument"
+import { Instrument } from "../instrument/Instrument"
 import type { String } from "../instrument/String"
 import { NoteEvent, type NoteSlide, type SerializedNoteEvent } from "./NoteEvent"
 
@@ -63,35 +63,38 @@ export type SerializedPattern = {
     id: string,
     name: string,
     notes: SerializedNoteEvent[],
-    instrument: InstrumentType,
 }
 
 export class Pattern {
 
     readonly id: string
     readonly notes: NoteEvent[]
-    readonly instrument: Instrument
+    private _instrument: Instrument
     
     name: string
 
     constructor(opts: {
         name: string,
-        instrument: Instrument,
         notes: NoteEvent[],
-        id?: string
+        id?: string,
+        instrument: Instrument
     }) {
         this.id = opts.id ?? nanoid()
         this.name = opts.name
         this.notes = opts.notes
-        this.instrument = opts.instrument
+        this._instrument = opts.instrument
     }
 
     clone(): Pattern {
         return new Pattern({
-            instrument: this.instrument,
             name: this.name,
-            notes: this.notes.map(note => ({ ...note, id: nanoid() }))
+            notes: this.notes.map(note => ({ ...note, id: nanoid() })),
+            instrument: this._instrument
         })
+    }
+
+    get instrument() {
+        return this._instrument
     }
 
     get duration() {
@@ -100,6 +103,13 @@ export class Pattern {
 
         const lastNote = this.notes[this.notes.length - 1]
         return lastNote.time + lastNote.duration
+    }
+
+    setInstrument(instrument: Instrument) {
+        this._instrument = instrument
+        for (const note of this.notes) {
+            note.string = instrument.strings[note.string.index] ?? instrument.strings[0]
+        }
     }
 
     remove(noteId: string) {
@@ -127,16 +137,15 @@ export class Pattern {
             id: this.id,
             name: this.name,
             notes: this.notes.map(n => NoteEvent.serialize(n)),
-            instrument: this.instrument.type
         }
     }
 
-    static deserialize(data: SerializedPattern): Pattern {
+    static deserialize(data: SerializedPattern, instrument: Instrument): Pattern {
         return new Pattern({
             id: data.id,
             name: data.name,
-            instrument: Instrument.fromType(data.instrument),
-            notes: data.notes.map(n => NoteEvent.deserialize(n, Instrument.fromType(data.instrument))),
+            notes: data.notes.map(n => NoteEvent.deserialize(n, instrument)),
+            instrument: instrument
         })
     }
 
@@ -204,9 +213,9 @@ export class PatternBuilder {
 
     build(): Pattern {
         return new Pattern({
-            instrument: this._instrument,
             name: this._name,
             notes: this._notes,
+            instrument: this._instrument
         })
     }
 

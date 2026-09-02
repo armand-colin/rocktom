@@ -7,7 +7,6 @@ import { AudioPlayerFactory } from "../core/AudioPlayerFactory";
 import { NoteWindow } from "../core/NoteWindow";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
 import { Renderer } from "../resources/Renderer";
-import { Instrument } from "../sound/instrument/Instrument";
 import { type Level } from "../sound/Level";
 import { CameraRig } from "./CameraRig";
 import { Metronome } from "./Metronome";
@@ -67,7 +66,7 @@ export class Playback extends Component {
 
         this._renderer = engine.getResource(Renderer)
 
-        const instrument = Instrument.Bass
+        const instrument = level.noteTrack.instrument
         this._neck = NeckMesh.create(instrument)
         this._renderer.add(this._neck)
 
