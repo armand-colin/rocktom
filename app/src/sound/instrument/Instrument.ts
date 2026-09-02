@@ -80,7 +80,7 @@ export class Instrument {
             StringDeclaration.create("A", Note.fromName("A", 2)),
             StringDeclaration.create("D", Note.fromName("D", 3)),
             StringDeclaration.create("G", Note.fromName("G", 3)),
-            StringDeclaration.create("B", Note.fromName("B", 4)),
+            StringDeclaration.create("B", Note.fromName("B", 3)),
             StringDeclaration.create("e", Note.fromName("E", 4)),
         ]
     })
@@ -93,7 +93,7 @@ export class Instrument {
             StringDeclaration.create("A", Note.fromName("A", 2)),
             StringDeclaration.create("d", Note.fromName("D", 3)),
             StringDeclaration.create("G", Note.fromName("G", 3)),
-            StringDeclaration.create("B", Note.fromName("B", 4)),
+            StringDeclaration.create("B", Note.fromName("B", 3)),
             StringDeclaration.create("e", Note.fromName("E", 4)),
         ]
     })
@@ -161,3 +161,5 @@ export class Instrument {
     }
 
 }
+
+console.log('instrument', Instrument.GuitarStandard)

@@ -4,11 +4,15 @@ import { Schedules } from "../Schedules";
 import { McLeodPitchDetector } from "../sound/pitch/McLeodPitchDetector";
 import type { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode";
 import type { LiveInstrument } from "./LiveInstrument";
-import type { Instrument } from "../sound/instrument/Instrument";
+import { InstrumentType, type Instrument } from "../sound/instrument/Instrument";
 import type { String } from "../sound/instrument/String";
 
-const BASS_MIN_FREQUENCY = 30
+const BASS_MIN_FREQUENCY = 20
 const BASS_MAX_FREQUENCY = 250
+
+const GUITAR_MIN_FREQUENCY = 60
+const GUITAR_MAX_FREQUENCY = 1300
+
 const TARGET_SEMITONE_WINDOW = 4
 const STRING_HYSTERESIS_SEMITONES = 1
 const CLARITY_THRESHOLD = 0.85
@@ -129,9 +133,23 @@ export class Tuner extends Component {
 
     private _instrumentRange() {
         const ratio = 2 ** (TARGET_SEMITONE_WINDOW / 12)
+
+        let minFrequency, maxFrequency;
+        switch (this._instrument.type) {
+            case InstrumentType.Bass:
+                minFrequency = BASS_MIN_FREQUENCY
+                maxFrequency = BASS_MAX_FREQUENCY
+                break
+
+            case InstrumentType.Guitar:
+                minFrequency = GUITAR_MIN_FREQUENCY
+                maxFrequency = GUITAR_MAX_FREQUENCY
+                break
+        }
+
         return {
-            minFrequency: Math.max(BASS_MIN_FREQUENCY, this._instrument.lowestString.note.frequency / ratio),
-            maxFrequency: Math.min(BASS_MAX_FREQUENCY, this._instrument.highestString.note.frequency * ratio)
+            minFrequency: Math.max(minFrequency, this._instrument.lowestString.note.frequency / ratio),
+            maxFrequency: Math.min(maxFrequency, this._instrument.highestString.note.frequency * ratio)
         }
     }
 
