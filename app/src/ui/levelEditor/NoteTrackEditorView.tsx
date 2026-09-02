@@ -286,7 +286,7 @@ function TimedPatternView(props: {
             </Button>
         </div>
         <div className="notes">
-            <div className="container">
+            <div className="wrapper">
                 {props.pattern.notes
                     .filter(note => note.time >= props.offset && note.time < props.offset + props.duration)
                     .map(note => <div
