@@ -27,7 +27,7 @@ export const Default = () => {
 
     return <div className="grid gap-2">
         {
-            UiSize.all.map(size => (
+            UiSize.values.map(size => (
                 <Dropdown<Dropdown.Option>
                     options={simpleOptions}
                     value={simpleValue?.value ?? null}

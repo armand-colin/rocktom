@@ -30,7 +30,7 @@ export const Main: Story = {
   render: (args) => (
     <div className="grid gap-4">
       {
-        UiSize.all.map(size => (<div
+        UiSize.values.map(size => (<div
           key={size}
           className="grid gap-4 grid-cols-[80px_100px_100px] items-start justify-items-start"
         >

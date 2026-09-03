@@ -36,7 +36,7 @@ export const Main: Story = {
     return (
       <div style={{ display: "grid", gap: 12, maxWidth: 360 }}>
         {
-          UiSize.all.map(size => <div
+          UiSize.values.map(size => <div
             key={size}
             className="grid gap-4 grid-cols-[200px_200px]"
           >

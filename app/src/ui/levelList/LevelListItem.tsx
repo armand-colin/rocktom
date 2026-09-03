@@ -62,7 +62,7 @@ export function LevelListItem(props: Props) {
 }
 
 function LevelInstruments(props: { instrumentTypes: string[] }) {
-    const instrumentTypes = props.instrumentTypes.map(type => InstrumentType.all.find(instrumentType => instrumentType === type))
+    const instrumentTypes = props.instrumentTypes.map(type => InstrumentType.values.find(instrumentType => instrumentType === type))
         .filter(instrumentType => instrumentType !== undefined)
 
     return <span className="LevelInstruments">

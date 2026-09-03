@@ -19,7 +19,7 @@ const meta = {
   argTypes: {
     size: {
       control: "radio",
-      options: UiSize.all,
+      options: UiSize.values,
     },
   },
 } satisfies Meta<typeof ColorInput>;
@@ -42,7 +42,7 @@ export const Main: Story = {
         <ContextualMenuView />
         <div style={{ display: "grid", gap: 16, maxWidth: 360 }}>
           {
-            UiSize.all.map(size => (
+            UiSize.values.map(size => (
               <ColorInput
                 key={size}
                 {...args}

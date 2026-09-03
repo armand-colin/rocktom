@@ -1,5 +1,7 @@
 export type Enum<T extends Record<string, string | number>, U> = T & U & {
-    all: T[keyof T][]
+    values: T[keyof T][],
+    keys: (keyof T)[],
+    entries: [keyof T, T[keyof T]][]
 }
 
 export namespace Enum {
@@ -8,11 +10,12 @@ export namespace Enum {
         return {
             ...enumerator,
             ...extend,
-            all: Object.values(enumerator),
+            values: Object.values(enumerator),
+            keys: Object.keys(enumerator),
+            entries: Object.entries(enumerator)
         } as Enum<T, U>
     }
 
     export type Infer<E extends Enum<any, any>> = E extends Enum<infer T, infer _U> ? T[keyof T] : never
 
 }
-
