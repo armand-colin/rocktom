@@ -1,4 +1,4 @@
-export type Enum<T extends Record<string, string | number>, U> = T & U & {
+export type Enum<T extends Record<string, any>, U> = T & U & {
     values: T[keyof T][],
     keys: (keyof T)[],
     entries: [keyof T, T[keyof T]][]
@@ -6,7 +6,7 @@ export type Enum<T extends Record<string, string | number>, U> = T & U & {
 
 export namespace Enum {
 
-    export function create<T extends Record<string, string | number>, U = {}>(enumerator: T, extend?: U): Enum<T, U> {
+    export function create<T extends Record<string, any>, U = {}>(enumerator: T, extend?: U): Enum<T, U> {
         return {
             ...enumerator,
             ...extend,
