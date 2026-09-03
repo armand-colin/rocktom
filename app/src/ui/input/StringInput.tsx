@@ -14,6 +14,7 @@ type Props = {
     size?: UiSize,
     placeholder?: string,
     onBlur?: () => void,
+    center?: boolean,
 }
 
 export function StringInput(props: Props) {
@@ -24,7 +25,11 @@ export function StringInput(props: Props) {
         }
     }
 
-    return <div className="StringInput" data-size={props.size ?? UiSize.M}>
+    return <div
+        className="StringInput"
+        data-size={props.size ?? UiSize.M}
+        data-center={!!props.center}
+    >
         <input
             type={props.type ?? 'text'}
             value={props.value}

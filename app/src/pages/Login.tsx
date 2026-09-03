@@ -14,6 +14,7 @@ import { FormField } from "../form/FormField"
 import type { FormHandler } from "../form/FormHandler"
 import { FormInputField } from '../ui/form/FormInputField'
 import { Spinner } from '../ui/spinner/Spinner'
+import { UiSize } from '../ui/UiSize'
 
 enum LoginStep {
     Email,
@@ -156,6 +157,8 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             field={formHandler.fields.code}
             name="code"
             placeholder="XXXXXX"
+            size={UiSize.L}
+            center
         />
 
         <Button disabled={formHandler.loading}>

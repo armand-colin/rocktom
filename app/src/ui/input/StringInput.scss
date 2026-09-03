@@ -1,8 +1,16 @@
 .StringInput {
     background: var(--surface);
-    border-radius: 4px;
     overflow: hidden;
     color: var(--color-grey-50);
+    border-radius: var(--radius-sm);
+
+    &[data-center="true"] {
+        text-align: center;
+
+        input {
+            text-align: center;
+        }
+    }
 
     input {
         background: none;
@@ -11,18 +19,31 @@
         min-width: 0;
     }
 
-    &[data-size="md"] input {
-        padding: var(--spacing-3) var(--spacing-4);
-        font: var(--font-body-md);
+    &[data-size="lg"] {
+        input {
+            padding: var(--spacing-4) var(--spacing-5);
+            font: var(--font-body-lg);
+        }
     }
 
-    &[data-size="sm"] input {
-        padding: var(--spacing-2) var(--spacing-3);
-        font: var(--font-body-sm);
+    &[data-size="md"] {
+        input {
+            padding: var(--spacing-3) var(--spacing-4);
+            font: var(--font-body-md);
+        }
     }
 
-    &[data-size="xs"] input {
-        padding: var(--spacing-1) var(--spacing-2);
-        font: var(--font-body-xs);
+    &[data-size="sm"] {
+        input {
+            padding: var(--spacing-2) var(--spacing-3);
+            font: var(--font-body-sm);
+        }
+    }
+
+    &[data-size="xs"] {
+        input {
+            padding: var(--spacing-1) var(--spacing-2);
+            font: var(--font-body-xs);
+        }
     }
 }
