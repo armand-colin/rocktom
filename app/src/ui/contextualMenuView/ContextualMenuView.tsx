@@ -4,7 +4,7 @@ import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
 import type { CSSProperties, MouseEvent } from "react";
 import { Icon } from "../icon/Icon";
 import type { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
-import { Button, ButtonVariant } from "../button/Button";
+import { Button, ButtonTheme, ButtonVariant } from "../button/Button";
 import { UiSize } from "../UiSize";
 
 export function ContextualMenuView() {
@@ -59,9 +59,9 @@ function Item(props: { item: ContextualMenuItem, close: () => void }) {
 	return <Button
 		className="item"
 		onClick={onClick}
-		data-theme={props.item.theme ?? "default"}
+		theme={props.item.theme ?? ButtonTheme.Default}
 		size={UiSize.S}
-		data-variant={ButtonVariant.Ghost}
+		variant={ButtonVariant.Ghost}
 	>
 		{
 			props.item.icon ?
