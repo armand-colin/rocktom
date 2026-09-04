@@ -61,7 +61,7 @@ function Item(props: { item: ContextualMenuItem, close: () => void }) {
 		onClick={onClick}
 		data-theme={props.item.theme ?? "default"}
 		size={UiSize.S}
-		data-variant={ButtonVariant.Default}
+		data-variant={ButtonVariant.Ghost}
 	>
 		{
 			props.item.icon ?
