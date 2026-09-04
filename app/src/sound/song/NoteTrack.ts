@@ -134,9 +134,12 @@ export class NoteTrack {
         return {
             instrumentType: this.instrument.type,
             instrumentTuning: this.instrument.tuning,
-            patterns: Array.from(this.patterns.values()).map(p => p.serialize()),
+            patterns: Array.from(this.patterns.values())
+                .map(p => p.serialize()),
             markers: this.markers,
-            timedPatterns: this.timedPatterns.map(tp => tp.serialize())
+            timedPatterns: this.timedPatterns
+                .sort((a, b) => a.time - b.time)
+                .map(tp => tp.serialize())
         }
     }
 
