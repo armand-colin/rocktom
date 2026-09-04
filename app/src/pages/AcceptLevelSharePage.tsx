@@ -15,6 +15,7 @@ import { InstrumentType } from "../sound/instrument/Instrument";
 import { FormSchema } from "../form/FormSchema";
 import { useForm } from "../hooks/useForm";
 import { Form } from "../ui/form/Form";
+import { Icon } from "../ui/icon/Icon";
 
 export function AcceptLevelSharePage() {
     const { token } = useParams()
@@ -46,13 +47,16 @@ function WithToken(props: { token: string }) {
                         token={props.token}
                         preview={data.value}
                     /> :
-                    <FetchErrorView
-                        error={data.error}
-                        statusCodes={{
-                            [StatusCode.NotFound]: () => <p>Share not found</p>,
-                        }}
-                        default={() => <p>An error has occured</p>}
-                    />
+                    <div className="text-red-600 text-center grid gap-2 items-center">
+                        <Icon name="error" />
+                        <FetchErrorView
+                            error={data.error}
+                            statusCodes={{
+                                [StatusCode.NotFound]: () => <p>Share not found</p>,
+                            }}
+                            default={() => <p>An error has occured</p>}
+                        />
+                    </div>
         }
     </Popup.BaseContainer>
 }

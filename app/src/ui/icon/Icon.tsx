@@ -56,7 +56,8 @@ export const icons = [
     "av_timer",
     "refresh",
     "share",
-    "content_copy"
+    "content_copy",
+    "error"
 ] as const;
 
 export type IconName = typeof icons[number];
