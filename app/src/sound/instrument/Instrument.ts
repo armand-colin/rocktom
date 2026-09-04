@@ -5,7 +5,7 @@ import { String } from "./String"
 export const InstrumentType = Enum.create({
     Bass: "bass",
     Guitar: "guitar",
-} as const, {
+}, {
     getLabel(type: InstrumentType) {
         switch (type) {
             case InstrumentType.Bass:
@@ -21,7 +21,7 @@ export type InstrumentType = Enum.Infer<typeof InstrumentType>
 export const InstrumentTuning = Enum.create({
     Standard: "standard",
     DropD: "drop-d",
-} as const, {
+}, {
     getLabel(tuning: InstrumentTuning) {
         switch (tuning) {
             case InstrumentTuning.Standard:

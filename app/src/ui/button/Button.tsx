@@ -8,7 +8,7 @@ export const ButtonTheme = Enum.create({
     Primary: "primary",
     Danger: "danger",
     Ghost: "ghost",
-} as const)
+})
 
 export type ButtonTheme = Enum.Infer<typeof ButtonTheme>
 

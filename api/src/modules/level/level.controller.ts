@@ -1,5 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { CreateLevelDto, UpdateLevelDto } from "./level.dto";
+import {
+    CreateLevelDto,
+    CreateLevelShareDto,
+    UpdateLevelDto,
+    UpdateLevelShareDto,
+} from "./level.dto";
 import { LevelService } from "./level.service";
 import { SessionGuard } from "../session/session.guard";
 import { CurrentSession } from "../session/current-session.decorator";
@@ -27,6 +32,20 @@ export class LevelController {
         return this.levelService.getAllFromUser(session.userId);
     }
 
+    @Get('share/:token')
+    previewShare(@Param('token') token: string) {
+        return this.levelService.previewShare(token);
+    }
+
+    @UseGuards(SessionGuard)
+    @Post('share/:token/accept')
+    acceptShare(
+        @Param('token') token: string,
+        @CurrentSession() session: Session,
+    ) {
+        return this.levelService.acceptShare(token, session.userId);
+    }
+
     @UseGuards(SessionGuard)
     @Get(':id')
     getById(@Param('id') id: string, @CurrentSession() session: Session) {
@@ -41,22 +60,36 @@ export class LevelController {
 
     @UseGuards(SessionGuard)
     @Post(':id/share')
-    share(@Param('id') id: string, @CurrentSession() session: Session) {
-        return this.levelService.share(id, session.userId);
+    createShare(
+        @Param('id') id: string,
+        @Body() body: CreateLevelShareDto,
+        @CurrentSession() session: Session,
+    ) {
+        return this.levelService.createShare(id, session.userId, body);
     }
 
-    @Post(':id/accept-share')
     @UseGuards(SessionGuard)
-    acceptShare(@Param('id') id: string, @CurrentSession() session: Session) {
-        return this.levelService.acceptShare(id, session.userId);
+    @Get(':id/share')
+    getShare(@Param('id') id: string, @CurrentSession() session: Session) {
+        return this.levelService.getShare(id, session.userId);
+    }
+
+    @UseGuards(SessionGuard)
+    @Put(':id/share')
+    updateShare(
+        @Param('id') id: string,
+        @Body() body: UpdateLevelShareDto,
+        @CurrentSession() session: Session,
+    ) {
+        return this.levelService.updateShare(id, session.userId, body);
     }
 
     @UseGuards(SessionGuard)
     @Put(':id')
     update(
-        @Param('id') id: string, 
-        @Body() body: UpdateLevelDto, 
-        @CurrentSession() session: Session
+        @Param('id') id: string,
+        @Body() body: UpdateLevelDto,
+        @CurrentSession() session: Session,
     ) {
         return this.levelService.update(id, session.userId, body);
     }

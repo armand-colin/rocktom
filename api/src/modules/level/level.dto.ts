@@ -1,4 +1,4 @@
-import { ArrayNotEmpty, IsArray, IsNotEmpty, IsNumber, IsString, MaxLength, Min, MinLength, ValidateIf, } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsBoolean, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength, ValidateIf, } from "class-validator";
 
 export class CreateLevelDto {
     @IsString()
@@ -37,4 +37,31 @@ export class UpdateLevelDto {
     @IsString({ each: true })
     @MinLength(1, { each: true })
     instrumentTypes!: string[];
+}
+
+export class CreateLevelShareDto {
+    @IsOptional()
+    @IsIn(['read', 'write'])
+    permission?: 'read' | 'write';
+}
+
+export class UpdateLevelShareDto {
+    @IsOptional()
+    @IsIn(['read', 'write'])
+    permission?: 'read' | 'write';
+
+    @IsOptional()
+    @IsBoolean()
+    enabled?: boolean;
+}
+
+export class LevelShareDto {
+    token!: string;
+    permission!: 'read' | 'write';
+    enabled!: boolean;
+}
+
+export class LevelSharePreviewDto {
+    name!: string;
+    permission!: 'read' | 'write';
 }
