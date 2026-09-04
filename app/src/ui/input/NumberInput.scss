@@ -11,7 +11,11 @@
         width: auto;
         display: block;
         min-width: 0;
-        &::-webkit-inner-spin-button {
+        appearance: textfield;
+        -moz-appearance: textfield;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
