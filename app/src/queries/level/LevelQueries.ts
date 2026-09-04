@@ -63,4 +63,9 @@ export namespace LevelQueries {
         return fetch.apiAuth.post<LevelEntity>(`/level/share/${token}/accept`);
     }
 
+    export function getSharePreview(token: string) {
+        const fetch = Instance.engine.getResource(Fetch);
+        return fetch.apiAuth.get<LevelEntity.SharePreview>(`/level/share/${token}`);
+    }
+
 }

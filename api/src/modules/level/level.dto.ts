@@ -63,5 +63,9 @@ export class LevelShareDto {
 
 export class LevelSharePreviewDto {
     name!: string;
-    permission!: 'read' | 'write';
+    instrumentTypes!: string[];
+    duration!: number;
+    share!: {
+        permission: 'read' | 'write';
+    }
 }

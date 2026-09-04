@@ -26,4 +26,12 @@ export namespace LevelEntity {
         enabled: boolean;
     }
 
+    export type SharePreview = {
+        name: string;
+        instrumentTypes: string[];
+        duration: number;
+        share: {
+            permission: SharePermission;
+        }
+    }
 }

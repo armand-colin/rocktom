@@ -31,7 +31,7 @@ export class LevelService {
         protected readonly levelShareRepository: Repository<LevelShare>,
         @InjectRepository(LevelAccess)
         protected readonly levelAccessRepository: Repository<LevelAccess>,
-    ) {}
+    ) { }
 
     async create(body: CreateLevelDto & {
         userId: string,
@@ -239,25 +239,38 @@ export class LevelService {
     }
 
     async previewShare(token: string): Promise<LevelSharePreviewDto> {
-        const share = await this.tryGetEnabledShareByToken(token);
         const level = await this.levelRepository.findOne({
-            where: { id: share.levelId },
+            where: {
+                share: {
+                    token: token,
+                    enabled: true,
+                }
+            },
+            select: {
+                name: true,
+                instrumentTypes: true,
+                duration: true,
+                share: {
+                    permission: true,
+                }
+            }
         });
 
         if (!level) {
             throw new NotFoundException('level_share_not_found');
         }
 
-        return {
-            name: level.name,
-            permission: share.permission,
-        };
+        return level as LevelSharePreviewDto;
     }
 
     async acceptShare(token: string, requestingUserId: string): Promise<Level> {
-        const share = await this.tryGetEnabledShareByToken(token);
         const level = await this.levelRepository.findOne({
-            where: { id: share.levelId },
+            where: {
+                share: {
+                    token: token,
+                    enabled: true,
+                }
+            },
         });
 
         if (!level) {
