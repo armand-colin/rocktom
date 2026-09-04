@@ -15,6 +15,12 @@ export class ShortcutManager extends Resource {
         super(engine)
 
         window.addEventListener('keydown', (event) => {
+            if (
+                event.target instanceof HTMLInputElement ||
+                event.target instanceof HTMLTextAreaElement
+            )
+                return
+
             let ctrl = event.ctrlKey
             if (OS.isMacOS)
                 ctrl = event.metaKey
@@ -22,12 +28,6 @@ export class ShortcutManager extends Resource {
             let prevented = false
 
             for (const { shortcut, action } of this._bindings.values()) {
-                if (
-                    event.target instanceof HTMLInputElement ||
-                    event.target instanceof HTMLTextAreaElement
-                )
-                    return
-
                 if (
                     event.code === KeyCode.toEventCode(shortcut.keyCode) &&
                     ctrl === shortcut.ctrl &&
@@ -44,6 +44,7 @@ export class ShortcutManager extends Resource {
             }
         })
     }
+
     private _bind(shortcut: Shortcut) {
         const action = new Action()
         this._bindings.set(shortcut, { shortcut, action })

@@ -29,7 +29,7 @@ export class Tuner extends Component {
     private _clarity: number = 0
     private _locked: boolean = false
     private _targetString: String | null = null
-    private _autoDetect = false
+    private _autoDetect = true
 
     constructor(engine: Engine, instrument: LiveInstrument) {
         super(engine)
