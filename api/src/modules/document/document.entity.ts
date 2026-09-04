@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Level } from '../level/level.entity';
 
 @Entity("document")
 export class Document {
@@ -32,5 +34,8 @@ export class Document {
 
   @Column({ type: 'integer' })
   size!: number;
+
+  @OneToMany(() => Level, level => level.playback)
+  levels!: Level[];
 }
 

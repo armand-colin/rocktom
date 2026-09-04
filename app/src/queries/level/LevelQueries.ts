@@ -1,6 +1,6 @@
 import { Instance } from "../../Instance";
+import { Body } from "../../resources/fetch/Body";
 import { Fetch } from "../../resources/fetch/Fetch";
-import { Body } from "../../resources/fetch/RestClient";
 import type { LevelEntity } from "./LevelEntity";
 
 type CreateLevel = {

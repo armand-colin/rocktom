@@ -246,10 +246,15 @@ export class LevelService {
                     enabled: true,
                 }
             },
+            relations: ["user", "share"],
             select: {
+                id: true,
                 name: true,
                 instrumentTypes: true,
                 duration: true,
+                user: {
+                    name: true,
+                },
                 share: {
                     permission: true,
                 }

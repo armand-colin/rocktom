@@ -1,5 +1,5 @@
 import { useResource } from "@niloc/ecs-react";
-import { useRef, type ChangeEvent, type MouseEvent } from "react";
+import { useMemo, useRef, type ChangeEvent, type MouseEvent } from "react";
 import { ContextualMenu } from "../../../resources/contextualMenu/ContextualMenu";
 import { LevelEntity } from "../../../queries/level/LevelEntity";
 // import { Download } from "../../../utils/download";
@@ -113,7 +113,22 @@ export function LevelList(props: {
         contextualMenu.open(e.nativeEvent, items)
     }
 
-    return <>
+    const { owned, shared } = useMemo(() => {
+        const owned = []
+        const shared = []
+
+        for (const level of props.levels) {
+            if (level.userId === props.userId) {
+                owned.push(level)
+            } else {
+                shared.push(level)
+            }
+        }
+
+        return { owned, shared }
+    }, [props.levels])
+
+    return <div className="LevelList">
         <input
             ref={fileInputRef}
             type="file"
@@ -121,17 +136,42 @@ export function LevelList(props: {
             hidden
             onChange={onFileSelected}
         />
-        <ul className="LevelList">
-            {
-                props.levels.map((level) => (
-                    <LevelListItem
-                        key={level.id}
-                        level={level}
-                        onSelect={props.onSelect}
-                        onMenuOpen={openLevelMenu}
-                    />
-                ))
-            }
-        </ul>
-    </>
+        {
+            owned.length > 0 && <div className="CategorizedLevelList">
+                <h2>Owned</h2>
+                <ul>
+                    {
+                        owned.map((level) => (
+                            <LevelListItem
+                                key={level.id}
+                                level={level}
+                                onSelect={props.onSelect}
+                                onMenuOpen={openLevelMenu}
+                                hideMenu={level.userId !== props.userId}
+                            />
+                        ))
+                    }
+                </ul>
+            </div>
+        }
+
+        {
+            shared.length > 0 && <div className="CategorizedLevelList">
+                <h2>Shared</h2>
+                <ul>
+                    {
+                        shared.map((level) => (
+                            <LevelListItem
+                                key={level.id}
+                                level={level}
+                                onSelect={props.onSelect}
+                                onMenuOpen={openLevelMenu}
+                                hideMenu={level.userId !== props.userId}
+                            />
+                        ))
+                    }
+                </ul>
+            </div>
+        }
+    </div>
 }

@@ -5,12 +5,14 @@ import { UiSize } from "../../UiSize";
 import type { LevelEntity } from "../../../queries/level/LevelEntity";
 import "./LevelListItem.scss";
 import { InstrumentType } from "../../../sound/instrument/Instrument";
+import { LevelInstrumentsView } from "../LevelInstrumentsView";
 
 type Props = {
     level: LevelEntity;
     onSelect: (level: LevelEntity) => void;
     onMenuOpen: (e: MouseEvent, level: LevelEntity) => void;
     className?: string;
+    hideMenu?: boolean
 };
 
 function formatSeconds(seconds: number) {
@@ -25,12 +27,18 @@ export function LevelListItem(props: Props) {
     return (
         <li
             className={`LevelListItem ${props.className}`}
-            onContextMenu={e => props.onMenuOpen(e, level)}
+            onContextMenu={e => {
+                if (!props.hideMenu) {
+                    props.onMenuOpen(e, level)
+                }
+            }}
         >
             <div className="LevelListItem-info">
                 <div className="name">
                     <p className="truncate">{level.name}</p>
-                    <LevelInstruments instrumentTypes={level.instrumentTypes} />
+                    <LevelInstrumentsView
+                        instrumentTypes={level.instrumentTypes.filter(InstrumentType.is)}
+                    />
                 </div>
                 <small className="LevelListItem-duration">
                     <span className="LevelListItem-durationLabel">Duration</span>
@@ -39,14 +47,16 @@ export function LevelListItem(props: Props) {
             </div>
 
             <div className="LevelListItem-actions">
-                <Button
-                    size={UiSize.S}
-                    onClick={(e) => props.onMenuOpen(e, level)}
-                    shape="square"
-                    variant={ButtonVariant.Ghost}
-                >
-                    <Icon name="more_vert" />
-                </Button>
+                {
+                    !props.hideMenu && <Button
+                        size={UiSize.S}
+                        onClick={(e) => props.onMenuOpen(e, level)}
+                        shape="square"
+                        variant={ButtonVariant.Ghost}
+                    >
+                        <Icon name="more_vert" />
+                    </Button>
+                }
                 <Button
                     className="LevelListItem-playButton"
                     size={UiSize.M}
@@ -59,20 +69,4 @@ export function LevelListItem(props: Props) {
             </div>
         </li >
     )
-}
-
-function LevelInstruments(props: { instrumentTypes: string[] }) {
-    const instrumentTypes = props.instrumentTypes.map(type => InstrumentType.values.find(instrumentType => instrumentType === type))
-        .filter(instrumentType => instrumentType !== undefined)
-
-    return <span className="LevelInstruments">
-        {
-            instrumentTypes.map(type => <span
-                key={type}
-                data-type={type}
-            >
-                {InstrumentType.getLabel(type)}
-            </span>)
-        }
-    </span>
 }

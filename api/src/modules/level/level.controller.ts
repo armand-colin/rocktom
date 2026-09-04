@@ -32,6 +32,7 @@ export class LevelController {
         return this.levelService.getAllFromUser(session.userId);
     }
 
+    @UseGuards(SessionGuard)
     @Get('share/:token')
     previewShare(@Param('token') token: string) {
         return this.levelService.previewShare(token);

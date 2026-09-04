@@ -27,6 +27,9 @@ export namespace LevelEntity {
     }
 
     export type SharePreview = {
+        user: {
+            name: string;
+        },
         name: string;
         instrumentTypes: string[];
         duration: number;

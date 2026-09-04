@@ -1,8 +1,15 @@
 .LevelList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: var(--spacing-5);
-    list-style: none;
     padding: var(--spacing-5) 0;
     margin: 0;
+
+    >.CategorizedLevelList {
+        display: grid;
+        gap: var(--spacing-2);
+        ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: var(--spacing-5);
+            list-style: none;
+        }
+    }
 }

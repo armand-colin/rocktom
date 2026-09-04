@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Document } from './document.entity';
 import { AppConfigService } from '../../config/config.service';
 import path from 'path';
-import {  writeFile } from 'fs/promises';
+import { writeFile } from 'fs/promises';
 import { uuid } from '../../utils/uuid';
 import { createReadStream, unlinkSync } from 'fs';
 
@@ -40,18 +40,27 @@ export class DocumentService {
 
   tryGetById(id: string, requestingUserId: string): Promise<Document | null> {
     return this.documentRepository.findOne({
-      where: {
+      where: [{
         id,
         user: { id: requestingUserId }
-      },
+      }, {
+        id,
+        levels: {
+          access: {
+            userId: requestingUserId
+          }
+        }
+      }],
     });
   }
 
   async getById(id: string, requestingUserId: string): Promise<Document> {
     const document = await this.tryGetById(id, requestingUserId);
+
     if (!document) {
       throw new NotFoundException('document_not_found');
     }
+
     return document;
   }
 
@@ -85,6 +94,7 @@ export class DocumentService {
     const document = await this.getById(id, requestingUserId);
     const filePath = path.join(this.directory, document.id);
     const file = await createReadStream(filePath);
+
     return new StreamableFile(file, {
       disposition: `inline; filename="${document.filename}"`,
       type: mimeTypeFromExtension(document.extension),
@@ -93,6 +103,11 @@ export class DocumentService {
 
   async remove(id: string, requestingUserId: string): Promise<void> {
     const document = await this.getById(id, requestingUserId);
+
+    if (document.userId !== requestingUserId) {
+      throw new ForbiddenException('not_document_owner');
+    }
+
     await this.documentRepository.delete(document.id);
     unlinkSync(path.join(this.directory, document.id));
   }

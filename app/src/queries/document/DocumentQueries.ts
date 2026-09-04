@@ -2,7 +2,7 @@ import { Result } from "@niloc/utils";
 import { Instance } from "../../Instance";
 import { Fetch } from "../../resources/fetch/Fetch";
 import type { DocumentEntity } from "./DocumentEntity";
-import { Body } from "../../resources/fetch/RestClient";
+import { Body } from "../../resources/fetch/Body";
 
 export namespace DocumentQueries {
 
