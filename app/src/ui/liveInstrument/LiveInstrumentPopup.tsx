@@ -94,7 +94,7 @@ function MediaStreamDropdown(props: { instrument: LiveInstrument | null }) {
             value={props.instrument?.streamId ?? null}
             onChange={setInstrument}
             placeholder={loading ? "Loading..." : "Select a microphone"}
-            className="flex-1"
+            className="flex-1 min-w-0"
         />
         {
             props.instrument && <Button
