@@ -1,3 +1,5 @@
+import { Enum } from "../../utils/Enum";
+
 export type LevelEntity = {
     id: string;
     userId: string;
@@ -12,11 +14,15 @@ export type LevelEntity = {
 
 export namespace LevelEntity {
 
-    export type LevelSharePermission = 'read' | 'write';
+    export const SharePermission = Enum.create({
+        Read: 'read',
+        Write: 'write',
+    })
+    export type SharePermission = Enum.Infer<typeof SharePermission>;
 
     export type Share = {
         token: string;
-        permission: LevelSharePermission;
+        permission: SharePermission;
         enabled: boolean;
     }
 

@@ -16,6 +16,11 @@ type UpdateLevel = {
     instrumentTypes: string[],
 }
 
+type UpdateLevelShare = {
+    permission: 'read' | 'write',
+    enabled: boolean,
+}
+
 export namespace LevelQueries {
 
     export function getAll() {
@@ -45,7 +50,17 @@ export namespace LevelQueries {
 
     export function share(id: string) {
         const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.post<string>(`/level/${id}/share`);
+        return fetch.apiAuth.post<LevelEntity.Share>(`/level/${id}/share`);
+    }
+
+    export function updateShare(id: string, options: UpdateLevelShare) {
+        const fetch = Instance.engine.getResource(Fetch);
+        return fetch.apiAuth.put<LevelEntity.Share>(`/level/${id}/share`, Body.json(options));
+    }
+
+    export function acceptShare(token: string) {
+        const fetch = Instance.engine.getResource(Fetch);
+        return fetch.apiAuth.post<LevelEntity>(`/level/share/${token}/accept`);
     }
 
 }

@@ -7,6 +7,8 @@ import { Mover } from "../../utils/handlers/Mover";
 import { EastResizer, NorthEastResizer, NorthResizer, NorthWestResizer, Resizer, SouthEastResizer, SouthResizer, SouthWestResizer, WestResizer, type ResizerOpts } from "../../utils/handlers/Resizer";
 import { Icon } from "../icon/Icon";
 import "./WindowView.scss";
+import { Button, ButtonTheme, ButtonVariant } from "../button/Button";
+import { UiSize } from "../UiSize";
 
 type Props = {
 	id: string,
@@ -83,13 +85,16 @@ export function WindowView(props: Props) {
 			onMouseDown={onHeadMouseDown}
 		>
 			<p>{props.name}</p>
-			<div
-				className="close"
+			<Button
 				onClick={props.close}
-				onMouseDown={e => e.preventDefault()}
+				shape="square"
+				theme={ButtonTheme.Default}
+				variant={ButtonVariant.Ghost}
+				size={UiSize.XS}
+				onMouseDown={e => e.stopPropagation()}
 			>
 				<Icon name="close" />
-			</div>
+			</Button>
 		</div>
 		<div className="content">
 			{props.children}

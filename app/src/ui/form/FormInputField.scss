@@ -6,8 +6,8 @@
         color: var(--text-secondary);
         font-size: 13px;
         line-height: 1.2;
-        font:var(--font-body-sm);
-        color:var(--color-grey-200);
+        font: var(--font-body-sm);
+        color: var(--color-grey-200);
     }
 
     .control {
@@ -17,4 +17,13 @@
     .error-slot {
         min-height: 0;
     }
+
+    &[data-disabled="true"] {
+        opacity: 0.5;
+
+        >* {
+            pointer-events: none;
+        }
+    }
+
 }

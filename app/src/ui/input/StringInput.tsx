@@ -2,6 +2,7 @@ import type { KeyboardEvent } from "react"
 import "./StringInput.scss"
 import type { FormField } from "../../form/FormField"
 import { UiSize } from "../UiSize"
+import { cn } from "../utils/cn"
 
 type Props = {
     name?: string,
@@ -15,6 +16,7 @@ type Props = {
     placeholder?: string,
     onBlur?: () => void,
     center?: boolean,
+    className?: string,
 }
 
 export function StringInput(props: Props) {
@@ -26,7 +28,7 @@ export function StringInput(props: Props) {
     }
 
     return <div
-        className="StringInput"
+        className={cn("StringInput", props.className)}
         data-size={props.size ?? UiSize.M}
         data-center={!!props.center}
     >

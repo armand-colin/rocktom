@@ -13,6 +13,7 @@ const mockLevel: LevelEntity = {
     serialized: "{}",
     duration: 185,
     instrumentTypes: ["drums"],
+    share: null,
 };
 
 export default {

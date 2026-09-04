@@ -32,6 +32,7 @@ type Props = {
     shape?: 'rectangle' | 'square',
     type?: 'button' | 'submit';
     title?: string;
+    onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
 }
 
 export function Button(props: Props) {
@@ -53,6 +54,7 @@ export function Button(props: Props) {
         htmlFor={props.htmlFor}
         type={props.type ?? "button"}
         title={props.title}
+        onMouseDown={props.onMouseDown}
     >
         {props.children}
     </Primitive>

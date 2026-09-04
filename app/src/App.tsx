@@ -11,6 +11,7 @@ import { LevelPage } from './pages/LevelPage'
 import { WindowManagerView } from './ui/window/WindowManagerView'
 import { EditorPage } from './pages/EditorPage'
 import "./App.css"
+import { AcceptLevelSharePage } from './pages/AcceptLevelSharePage'
 
 function App() {
   const authManager = useResource(AuthManager)
@@ -24,6 +25,7 @@ function App() {
           <>
             <Route path="/app/level/:id" element={<LevelPage />} />
             <Route path="/editor/level/:id" element={<EditorPage />} />
+            <Route path="/app/share/:token" element={<AcceptLevelSharePage />} />
             <Route path="/app" element={<HomePage />} />
             <Route path="*" element={<Navigate to="/app" replace />} />
           </> :

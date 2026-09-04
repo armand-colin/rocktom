@@ -11,6 +11,7 @@
 
     background: var(--background);
     color: var(--color);
+    transition: background 0.1s var(--curve-smooth);
 
     &[data-variant="default"] {
         &[data-theme="default"] {

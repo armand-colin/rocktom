@@ -15,14 +15,25 @@ import { LiveInstrumentButton } from '../ui/liveInstrument/LiveInstrumentButton'
 import { usePopupManager } from '../hooks/usePopupManager'
 import { DeleteLevelPopup } from '../ui/level/DeleteLevelPopup'
 import { LoadingPopup } from '../ui/loadingPopup/LoadingPopup'
+import { LevelSharePopup } from '../ui/level/levelShare/LevelSharePopup'
+import { useToastManager } from '../hooks/useToastManager'
+import { Toast } from '../ui/toast/Toast'
+import { UserQueries } from '../queries/user/UserQueries'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, data: levels, mutate: getAllLevels } = useMutation(LevelQueries.getAll)
   const popupManager = usePopupManager()
+  const toastManager = useToastManager()
   const navigate = useNavigate()
+  const { mutate: getUserInfo, data: userInfoResult } = useMutation(UserQueries.me)
+
+  const userId = userInfoResult?.ok ?
+    userInfoResult.value.id : 
+    null
 
   useEffect(() => {
     getAllLevels()
+    getUserInfo()
   }, [])
 
   async function onSelectLevel(level: LevelEntity) {
@@ -51,14 +62,31 @@ export function HomePage() {
   }
 
   async function onShare(level: LevelEntity) {
+    if (level.share) {
+      const share = level.share
+      popupManager.add(close => <LevelSharePopup
+        close={close}
+        level={level}
+        share={share}
+      />)
+      return
+    }
+
     const loading = popupManager.add(() => <LoadingPopup />)
 
     const result = await LevelQueries.share(level.id)
 
     if (result.ok) {
-
+      popupManager.add(close => <LevelSharePopup
+        close={close}
+        level={level}
+        share={result.value}
+      />)
     } else {
-
+      toastManager.add(close => <Toast.Simple
+        message={'Failed to share level (' + result.error.message + ')'}
+        close={close}
+      />)
     }
 
     loading.close()
@@ -111,6 +139,7 @@ export function HomePage() {
                 onRemove={onRemove}
                 onImport={onImport}
                 onShare={onShare}
+                userId={userId}
               /> :
               null
         }

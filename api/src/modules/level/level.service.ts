@@ -170,10 +170,15 @@ export class LevelService {
 
         const existing = await this.levelShareRepository.findOne({
             where: { levelId: id },
+            select: {
+                token: true,
+                permission: true,
+                enabled: true,
+            }
         });
 
         if (existing) {
-            return this.toShareDto(existing);
+            return existing;
         }
 
         const share = this.levelShareRepository.create({

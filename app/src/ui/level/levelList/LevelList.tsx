@@ -1,8 +1,8 @@
 import { useResource } from "@niloc/ecs-react";
 import { useRef, type ChangeEvent, type MouseEvent } from "react";
 import { ContextualMenu } from "../../../resources/contextualMenu/ContextualMenu";
-import type { LevelEntity } from "../../../queries/level/LevelEntity";
-import { Download } from "../../../utils/download";
+import { LevelEntity } from "../../../queries/level/LevelEntity";
+// import { Download } from "../../../utils/download";
 import { parseImportedLevelTracks, type ImportedLevelTracks } from "../../../utils/levelImport";
 import { useToastManager } from "../../../hooks/useToastManager";
 import { Toast } from "../../toast/Toast";
@@ -10,15 +10,15 @@ import "./LevelList.scss";
 import { ContextualMenuItem } from "../../../resources/contextualMenu/ContextualMenuItem";
 import { LevelListItem } from "./LevelListItem";
 
-function sanitizeFilename(name: string) {
-    return name.replace(/[^\w.-]+/g, "_").replace(/^_+|_+$/g, "") || "level"
-}
+// function sanitizeFilename(name: string) {
+//     return name.replace(/[^\w.-]+/g, "_").replace(/^_+|_+$/g, "") || "level"
+// }
 
-function exportLevelTracks(level: LevelEntity) {
-    const serialized = level.serialized === "" ? "{}" : level.serialized
-    const content = JSON.stringify(JSON.parse(serialized), null, 2)
-    Download.textFile(`${sanitizeFilename(level.name)}.json`, content)
-}
+// function exportLevelTracks(level: LevelEntity) {
+//     const serialized = level.serialized === "" ? "{}" : level.serialized
+//     const content = JSON.stringify(JSON.parse(serialized), null, 2)
+//     Download.textFile(`${sanitizeFilename(level.name)}.json`, content)
+// }
 
 function readFileAsText(file: File) {
     return new Promise<string>((resolve, reject) => {
@@ -37,16 +37,17 @@ export function LevelList(props: {
     onRemove: (level: LevelEntity) => void,
     onImport: (level: LevelEntity, data: ImportedLevelTracks) => Promise<void>,
     onShare: (level: LevelEntity) => void,
+    userId: string | null,
 }) {
     const contextualMenu = useResource(ContextualMenu)
     const toastManager = useToastManager()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const pendingImportLevelRef = useRef<LevelEntity | null>(null)
- 
-    function startImport(level: LevelEntity) {
-        pendingImportLevelRef.current = level
-        fileInputRef.current?.click()
-    }
+
+    // function startImport(level: LevelEntity) {
+    //     pendingImportLevelRef.current = level
+    //     fileInputRef.current?.click()
+    // }
 
     async function onFileSelected(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
@@ -77,34 +78,39 @@ export function LevelList(props: {
     }
 
     function openLevelMenu(e: MouseEvent, level: LevelEntity) {
-        contextualMenu.open(e.nativeEvent, [
-            ContextualMenuItem.action({
+        const items: ContextualMenuItem[] = []
+        console.log("poping", props.userId, level.userId)
+        if (
+            level.userId === props.userId ||
+            (
+                level.share &&
+                level.share.permission === LevelEntity.SharePermission.Write &&
+                level.share.enabled
+            )
+        ) {
+            items.push(ContextualMenuItem.action({
                 label: "Edit",
                 icon: "edit",
                 action: () => props.onEdit(level),
-            }),
-            ContextualMenuItem.action({
-                label: "Share",
+            }))
+        }
+
+        if (level.userId === props.userId) {
+            items.push(ContextualMenuItem.action({
+                label: level.share ? "Edit sharing" : "Share",
                 icon: "share",
                 action: () => props.onShare(level),
-            }),
-            ContextualMenuItem.action({
-                label: "Export JSON",
-                icon: "code",
-                action: () => exportLevelTracks(level),
-            }),
-            ContextualMenuItem.action({
-                label: "Import JSON",
-                icon: "arrow_downward",
-                action: () => startImport(level),
-            }),
-            ContextualMenuItem.action({
+            }))
+
+            items.push(ContextualMenuItem.action({
                 label: "Delete",
                 icon: "delete",
                 theme: 'danger',
                 action: () => props.onRemove(level),
-            }),
-        ])
+            }))
+        }
+
+        contextualMenu.open(e.nativeEvent, items)
     }
 
     return <>

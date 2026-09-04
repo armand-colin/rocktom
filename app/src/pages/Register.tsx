@@ -72,7 +72,9 @@ export function Register() {
                         placeholder="Email"
                     />
                 </FormInputField>
-                <Button>Register</Button>
+                <Button type="submit">
+                    Register
+                </Button>
                 <a href="/login">Login</a>
             </Form>
         </div>

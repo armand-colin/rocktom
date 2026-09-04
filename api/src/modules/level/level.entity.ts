@@ -3,8 +3,8 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -51,9 +51,9 @@ export class Level {
   @JoinColumn({ name: 'playback_id' })
   playback!: Document | null;
 
-  @OneToOne(() => LevelShare, share => share.levelId)
+  @OneToOne(() => LevelShare, share => share.level)
   share!: LevelShare | null;
 
-  @ManyToMany(() => LevelAccess, (access) => access.levelId)
+  @OneToMany(() => LevelAccess, (access) => access.level)
   access!: LevelAccess[];
 }

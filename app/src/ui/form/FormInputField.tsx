@@ -9,6 +9,7 @@ type Props = {
     children?: ReactNode,
     className?: string,
     controlClassName?: string,
+    disabled?: boolean,
 }
 
 export function FormInputField(props: Props) {
@@ -20,6 +21,7 @@ export function FormInputField(props: Props) {
             (props.className ? ` ${props.className}` : "")
         }
         data-has-error={Boolean(props.error)}
+        data-disabled={props.disabled}
     >
         {label && <div className="label">{label}</div>}
         <div className={`control ${props.controlClassName ?? ""}`}>
