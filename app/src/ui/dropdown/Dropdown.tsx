@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react"
 import "./Dropdown.scss"
 import { Icon } from "../icon/Icon"
 import { UiSize } from "../UiSize"
+import { Button, ButtonTheme } from "../button/Button"
 
 interface Props<T extends Dropdown.Option> {
     options: T[],
@@ -64,28 +65,28 @@ export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
 }
 
 function BaseTrigger<T extends Dropdown.Option>(props: Dropdown.TriggerProps<T>) {
-    return <div
+    return <Button
         className="BaseTrigger"
         onClick={() => props.onToggleOpen()}
-        data-size={props.size ?? UiSize.M}
+        size={props.size ?? UiSize.M}
         data-empty={props.value === null}
         title={props.value?.label ?? props.placeholder}
     >
-        <span className="truncate" >{props.value?.label ?? props.placeholder}</span>
+        <span className="truncate">{props.value?.label ?? props.placeholder}</span>
         <Icon name="arrow_drop_down" />
-    </div>
+    </Button>
 }
 
 function BaseItem<T extends Dropdown.Option>(props: Dropdown.ItemProps<T>) {
-    return <div
-        className="BaseItem truncate"
-        data-selected={props.selected}
+    return <Button
+        className="BaseItem"
+        theme={props.selected ? ButtonTheme.Primary : ButtonTheme.Default}
         onClick={() => props.onSelect()}
-        data-size={props.size ?? UiSize.M}
+        size={props.size ?? UiSize.M}
         title={props.value.label}
     >
         <span className="truncate">{props.value.label}</span>
-    </div>
+    </Button>
 }
 
 function BaseContent<T extends Dropdown.Option>(props: Dropdown.ContentProps<T>) {

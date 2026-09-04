@@ -25,6 +25,7 @@ type Props = {
     htmlFor?: string,
     shape?: 'rectangle' | 'square',
     type?: 'button' | 'submit';
+    title?: string;
 }
 
 export function Button(props: Props) {
@@ -45,6 +46,7 @@ export function Button(props: Props) {
         style={props.style}
         htmlFor={props.htmlFor}
         type={props.type}
+        title={props.title}
     >
         {props.children}
     </Primitive>
