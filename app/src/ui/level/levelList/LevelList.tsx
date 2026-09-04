@@ -41,7 +41,7 @@ export function LevelList(props: {
     const toastManager = useToastManager()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const pendingImportLevelRef = useRef<LevelEntity | null>(null)
-
+ 
     function startImport(level: LevelEntity) {
         pendingImportLevelRef.current = level
         fileInputRef.current?.click()
@@ -95,6 +95,7 @@ export function LevelList(props: {
             ContextualMenuItem.action({
                 label: "Delete",
                 icon: "delete",
+                theme: 'danger',
                 action: () => props.onRemove(level),
             }),
         ])
