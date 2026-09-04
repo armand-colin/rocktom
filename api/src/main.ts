@@ -26,7 +26,8 @@ async function bootstrap() {
 
   const port = config.port;
   await app.listen(port);
-  console.log(`API ready on http://localhost:${port}`);
+  
+  console.info(`API ready on http://localhost:${port}`);
 }
 
 void bootstrap();

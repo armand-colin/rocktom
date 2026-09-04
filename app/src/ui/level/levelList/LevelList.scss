@@ -1,6 +1,12 @@
 .LevelList {
     padding: var(--spacing-5) 0;
     margin: 0;
+    display: grid;
+    gap: var(--spacing-7);
+    
+    >.Button {
+        justify-self: start;
+    }
 
     >.CategorizedLevelList {
         display: grid;

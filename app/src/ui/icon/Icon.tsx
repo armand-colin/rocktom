@@ -57,7 +57,10 @@ export const icons = [
     "refresh",
     "share",
     "content_copy",
-    "error"
+    "error",
+    "account_circle",
+    "power",
+    "power_off",
 ] as const;
 
 export type IconName = typeof icons[number];

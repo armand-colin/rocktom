@@ -1,13 +1,6 @@
 .HomePage {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 1200px;
-    height: 100%;
-    margin: 0 auto;
-    padding-block: clamp(var(--spacing-5), 2.5vw, var(--spacing-7));
-    padding-inline: clamp(var(--spacing-m), 5vw, var(--spacing-3xl));
-    overflow: hidden;
 
     &-header {
         display: flex;

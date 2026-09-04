@@ -5,11 +5,9 @@ import { useMutation } from '../hooks/useMutation'
 import { useNavigate } from 'react-router-dom'
 import type { LevelEntity } from '../queries/level/LevelEntity'
 import type { ImportedLevelTracks } from '../utils/levelImport'
-import { Button, ButtonTheme } from '../ui/button/Button'
 import { Instance } from '../Instance'
 import { PopupManager } from '../resources/PopupManager'
 import { CreateLevelPopup } from '../ui/createLevelPopup/CreateLevelPopup'
-import { ProfileButton } from '../ui/profile/ProfileButton'
 import './HomePage.scss'
 import { LiveInstrumentButton } from '../ui/liveInstrument/LiveInstrumentButton'
 import { usePopupManager } from '../hooks/usePopupManager'
@@ -19,6 +17,7 @@ import { LevelSharePopup } from '../ui/level/levelShare/LevelSharePopup'
 import { useToastManager } from '../hooks/useToastManager'
 import { Toast } from '../ui/toast/Toast'
 import { UserQueries } from '../queries/user/UserQueries'
+import { Page } from '../ui/page/Page'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, data: levels, mutate: getAllLevels } = useMutation(LevelQueries.getAll)
@@ -28,7 +27,7 @@ export function HomePage() {
   const { mutate: getUserInfo, data: userInfoResult } = useMutation(UserQueries.me)
 
   const userId = userInfoResult?.ok ?
-    userInfoResult.value.id : 
+    userInfoResult.value.id :
     null
 
   useEffect(() => {
@@ -109,24 +108,17 @@ export function HomePage() {
   }
 
   return (
-    <div
+    <Page
       className="HomePage"
-      onContextMenu={e => e.preventDefault()}
     >
-      <header className="HomePage-header">
-        <h1 className="HomePage-title">Levels</h1>
-        <div className="HomePage-actions">
-          <ProfileButton />
-          <Button
-            theme={ButtonTheme.Primary}
-            onClick={onCreate}
-          >
-            Create Level
-          </Button>
+      <Page.ConnectedTitle
+        title="Levels"
+        beforeActions={<>
           <LiveInstrumentButton />
-        </div>
-      </header>
-      <main className="HomePage-content">
+        </>}
+      />
+
+      <Page.Content>
         {
           isLevelsLoading ?
             <div>Loading...</div> :
@@ -143,7 +135,7 @@ export function HomePage() {
               /> :
               null
         }
-      </main>
-    </div>
+      </Page.Content>
+    </Page>
   )
 }

@@ -1,0 +1,46 @@
+.Page {
+    width: 100svw;
+    height: 100svh;
+    padding: var(--spacing-2);
+}
+
+.PageConnectedTitle {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-4);
+
+    >div {
+        max-width: 1000px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: var(--spacing-4);
+
+        >h1 {
+            display: block;
+            flex: 1;
+            font: var(--font-heading-xl);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        >div {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+    }
+}
+
+.PageContent {
+    display: grid;
+    width: 100%;
+    place-items: center;
+
+    >div {
+        max-width: 1000px;
+        width: 100%;
+    }
+}

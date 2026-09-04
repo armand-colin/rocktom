@@ -161,5 +161,3 @@ export class Instrument {
     }
 
 }
-
-console.log('instrument', Instrument.GuitarStandard)

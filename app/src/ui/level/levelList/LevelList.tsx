@@ -9,6 +9,8 @@ import { Toast } from "../../toast/Toast";
 import "./LevelList.scss";
 import { ContextualMenuItem } from "../../../resources/contextualMenu/ContextualMenuItem";
 import { LevelListItem } from "./LevelListItem";
+import { Button, ButtonTheme } from "../../button/Button";
+import { Icon } from "../../icon/Icon";
 
 // function sanitizeFilename(name: string) {
 //     return name.replace(/[^\w.-]+/g, "_").replace(/^_+|_+$/g, "") || "level"
@@ -79,7 +81,7 @@ export function LevelList(props: {
 
     function openLevelMenu(e: MouseEvent, level: LevelEntity) {
         const items: ContextualMenuItem[] = []
-        console.log("poping", props.userId, level.userId)
+
         if (
             level.userId === props.userId ||
             (
@@ -126,7 +128,7 @@ export function LevelList(props: {
         }
 
         return { owned, shared }
-    }, [props.levels])
+    }, [props.levels, props.userId])
 
     return <div className="LevelList">
         <input
@@ -136,6 +138,17 @@ export function LevelList(props: {
             hidden
             onChange={onFileSelected}
         />
+
+        <Button
+            theme={ButtonTheme.Primary}
+            onClick={props.onCreate}
+        >
+            <Icon
+                name="add"
+            />
+            Create Level
+        </Button>
+
         {
             owned.length > 0 && <div className="CategorizedLevelList">
                 <h2>Owned</h2>

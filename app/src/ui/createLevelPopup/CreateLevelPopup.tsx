@@ -8,6 +8,7 @@ import { InstrumentType } from "../../sound/instrument/Instrument";
 import { Button, ButtonTheme } from "../button/Button";
 import { Form } from "../form/Form";
 import { FormInputField } from "../form/FormInputField";
+import { FormButtons } from "../formButtons/FormButtons";
 import { StringInput } from "../input/StringInput";
 import { Popup } from "../popup/Popup";
 import { Spinner } from "../spinner/Spinner";
@@ -47,22 +48,28 @@ export function CreateLevelPopup(props: Props) {
         <Form
             handler={handler}
             onSubmit={onSubmit}
-            className="grid gap-2"
+            className="grid gap-7"
         >
             <FormInputField field={handler.fields.name} label="Name">
-                <StringInput field={handler.fields.name} placeholder="Level Name" />
+                <StringInput
+                    field={handler.fields.name}
+                    placeholder="Level Name"
+                    autoFocus
+                />
             </FormInputField>
 
-            <Button
-                className="justify-self-end"
-                theme={ButtonTheme.Primary}
-            >
-                {
-                    handler.loading ?
-                        <Spinner /> :
-                        'Create'
-                }
-            </Button>
+            <FormButtons>
+                <Button
+                    theme={ButtonTheme.Primary}
+                    type="submit"
+                >
+                    {
+                        handler.loading ?
+                            <Spinner /> :
+                            'Create'
+                    }
+                </Button>
+            </FormButtons>
         </Form>
     </Popup.BaseContainer>
 }

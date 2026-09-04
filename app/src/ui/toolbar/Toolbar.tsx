@@ -17,10 +17,6 @@ export function Toolbar(props: Props) {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        console.log("path", path);
-    }, [path]);
-
-    useEffect(() => {
         function onClick(e: globalThis.MouseEvent) {
             if (!ref.current)
                 return
@@ -39,7 +35,6 @@ export function Toolbar(props: Props) {
     }, [])
 
     function onSetPath(path: number[]) {
-        console.log("onSetPath toolbar", path);
         setPath(path);
     }
 
@@ -67,20 +62,16 @@ function ToolbarTab(props: {
     const subpath = props.path.slice(1)
 
     function onSetPath(path: number[]) {
-        console.log("onSetPath", props.index, path, [props.index, ...path]);
         props.onSetPath([props.index, ...path]);
     }
 
     function onClose() {
-        console.log("onClose", props.index);
         props.onSetPath([]);
     }
 
     function onClick(e: MouseEvent) {
         e.stopPropagation();
         e.preventDefault();
-
-        console.log("onClick", props.index, open);
 
         if (open)
             props.onSetPath([]);
@@ -214,7 +205,6 @@ function ToolbarMenuItem(props: {
     const subpath = props.path.slice(1)
 
     function onSetPath(path: number[]) {
-        console.log("onSetPath", path);
         props.onSetPath([props.index, ...path]);
     }
 

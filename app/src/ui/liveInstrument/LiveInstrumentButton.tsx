@@ -4,6 +4,7 @@ import { Button } from "../button/Button";
 import { PopupManager } from "../../resources/PopupManager";
 import { LiveInstrumentPopup } from "./LiveInstrumentPopup";
 import { LED } from "../led/LED";
+import { Icon } from "../icon/Icon";
 
 function clampString(value: string, maxLength: number) {
     if (value.length <= maxLength)
@@ -27,13 +28,20 @@ export function LiveInstrumentButton() {
     >
         {
             instrument ?
-                <InstrumentLED /> :
-                null
+                <>
+                    <InstrumentLED />
+                    <Icon
+                        name="power"
+                    />
+                </> :
+                <Icon
+                    name="power_off"
+                />
         }
         {
             instrument ?
                 clampString(instrument.name, 20) :
-                "Instrument"
+                "Instrument (offline)"
         }
     </Button>
 }

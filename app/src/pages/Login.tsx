@@ -15,6 +15,7 @@ import type { FormHandler } from "../form/FormHandler"
 import { FormInputField } from '../ui/form/FormInputField'
 import { Spinner } from '../ui/spinner/Spinner'
 import { UiSize } from '../ui/UiSize'
+import { FormButtons } from '../ui/formButtons/FormButtons'
 
 enum LoginStep {
     Email,
@@ -97,14 +98,17 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
             />
         </FormInputField>
 
-        <Button
-            disabled={formHandler.loading}
-            theme={ButtonTheme.Primary}
-        >
-            {formHandler.loading ? <Spinner /> : 'Submit'}
-        </Button>
+        <FormButtons>
+            <Button
+                disabled={formHandler.loading}
+                theme={ButtonTheme.Primary}
+                type="submit"
+            >
+                {formHandler.loading ? <Spinner /> : 'Submit'}
+            </Button>
+        </FormButtons>
 
-        <a href='/register'>Register</a>
+        <a href='/register'>Don"t have an account yet ? Register</a>
     </Form>
 }
 
@@ -164,11 +168,14 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             center
         />
 
-        <Button
-            disabled={formHandler.loading}
-            theme={ButtonTheme.Primary}
-        >
-            {formHandler.loading ? <Spinner /> : 'Submit'}
-        </Button>
+        <FormButtons>
+            <Button
+                disabled={formHandler.loading}
+                theme={ButtonTheme.Primary}
+                type="submit"
+            >
+                {formHandler.loading ? <Spinner /> : 'Submit'}
+            </Button>
+        </FormButtons>
     </Form>
 }

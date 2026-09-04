@@ -28,7 +28,9 @@ function watchApiEnvFiles(): Plugin {
 export default defineConfig({
   root: apiRoot,
   envDir: apiRoot,
-  plugins: [watchApiEnvFiles()],
+  plugins: [
+    watchApiEnvFiles(),
+  ],
   build: {
     target: 'node20',
     ssr: 'src/main.ts',
