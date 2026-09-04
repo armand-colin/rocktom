@@ -1,7 +1,7 @@
 import './Login.scss'
 import { useState } from "react"
 import { StringInput } from "../ui/input/StringInput"
-import { Button } from "../ui/button/Button"
+import { Button, ButtonTheme } from "../ui/button/Button"
 import { usePopupManager } from "../hooks/usePopupManager"
 import { IconPopup } from "../ui/iconPopup/IconPopup"
 import { AuthManager } from "../resources/AuthManager"
@@ -97,7 +97,10 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
             />
         </FormInputField>
 
-        <Button disabled={formHandler.loading}>
+        <Button
+            disabled={formHandler.loading}
+            theme={ButtonTheme.Primary}
+        >
             {formHandler.loading ? <Spinner /> : 'Submit'}
         </Button>
 
@@ -161,7 +164,10 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             center
         />
 
-        <Button disabled={formHandler.loading}>
+        <Button
+            disabled={formHandler.loading}
+            theme={ButtonTheme.Primary}
+        >
             {formHandler.loading ? <Spinner /> : 'Submit'}
         </Button>
     </Form>
