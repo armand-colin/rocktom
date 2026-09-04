@@ -44,9 +44,10 @@ export function DeleteLevelPopup(props: Props) {
         <Form
             handler={formHandler}
             onSubmit={onSubmit}
+            className="gap-4"
         >
             <p>Are you sure you want to delete this level?</p>
-            <div>
+            <div className="flex items-end gap-2">
                 <Button theme={ButtonTheme.Default} onClick={props.close}>
                     Cancel
                 </Button>
