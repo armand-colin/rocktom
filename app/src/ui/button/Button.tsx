@@ -45,7 +45,7 @@ export function Button(props: Props) {
         disabled={props.disabled}
         style={props.style}
         htmlFor={props.htmlFor}
-        type={props.type}
+        type={props.type ?? "button"}
         title={props.title}
     >
         {props.children}
