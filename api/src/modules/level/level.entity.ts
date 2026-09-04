@@ -3,12 +3,16 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Document } from '../document/document.entity';
+import { LevelShare } from './level-share.entity';
+import { LevelAccess } from './level-access.entity';
 
 @Entity("level")
 export class Level {
@@ -46,4 +50,10 @@ export class Level {
   @ManyToOne(() => Document, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'playback_id' })
   playback!: Document | null;
+
+  @OneToOne(() => LevelShare, share => share.levelId)
+  share!: LevelShare | null;
+
+  @ManyToMany(() => LevelAccess, (access) => access.levelId)
+  access!: LevelAccess[];
 }

@@ -47,26 +47,32 @@ export class LevelService {
     }
 
     getAllFromUser(userId: string): Promise<Level[]> {
-        return this.levelRepository
-            .createQueryBuilder('level')
-            .where('level.userId = :userId', { userId })
-            .orWhere((qb) => {
-                const subQuery = qb
-                    .subQuery()
-                    .select('access.levelId')
-                    .from(LevelAccess, 'access')
-                    .innerJoin(
-                        LevelShare,
-                        'share',
-                        'share.levelId = access.levelId',
-                    )
-                    .where('access.userId = :userId')
-                    .andWhere('share.enabled = true')
-                    .getQuery();
-                return `level.id IN ${subQuery}`;
-            })
-            .orderBy('level.createdAt', 'DESC')
-            .getMany();
+        return this.levelRepository.find({
+            where: [
+                {
+                    userId: userId
+                },
+                {
+                    access: {
+                        userId: userId,
+                    },
+                    share: {
+                        enabled: true
+                    }
+                }
+            ],
+            order: {
+                createdAt: 'DESC',
+            },
+            relations: ['share'],
+            select: {
+                share: {
+                    token: true,
+                    enabled: true,
+                    permission: true,
+                }
+            }
+        })
     }
 
     async tryResolveAccess(
