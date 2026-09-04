@@ -1,13 +1,13 @@
 import { useResource } from "@niloc/ecs-react";
 import { useRef, type ChangeEvent, type MouseEvent } from "react";
-import { ContextualMenu } from "../../resources/contextualMenu/ContextualMenu";
-import type { LevelEntity } from "../../queries/level/LevelEntity";
-import { Download } from "../../utils/download";
-import { parseImportedLevelTracks, type ImportedLevelTracks } from "../../utils/levelImport";
-import { useToastManager } from "../../hooks/useToastManager";
-import { Toast } from "../toast/Toast";
+import { ContextualMenu } from "../../../resources/contextualMenu/ContextualMenu";
+import type { LevelEntity } from "../../../queries/level/LevelEntity";
+import { Download } from "../../../utils/download";
+import { parseImportedLevelTracks, type ImportedLevelTracks } from "../../../utils/levelImport";
+import { useToastManager } from "../../../hooks/useToastManager";
+import { Toast } from "../../toast/Toast";
 import "./LevelList.scss";
-import { ContextualMenuItem } from "../../resources/contextualMenu/ContextualMenuItem";
+import { ContextualMenuItem } from "../../../resources/contextualMenu/ContextualMenuItem";
 import { LevelListItem } from "./LevelListItem";
 
 function sanitizeFilename(name: string) {
@@ -34,6 +34,7 @@ export function LevelList(props: {
     onSelect: (level: LevelEntity) => void,
     onEdit: (level: LevelEntity) => void,
     onCreate: () => void,
+    onRemove: (level: LevelEntity) => void,
     onImport: (level: LevelEntity, data: ImportedLevelTracks) => Promise<void>,
 }) {
     const contextualMenu = useResource(ContextualMenu)
@@ -91,6 +92,11 @@ export function LevelList(props: {
                 icon: "arrow_downward",
                 action: () => startImport(level),
             }),
+            ContextualMenuItem.action({
+                label: "Delete",
+                icon: "delete",
+                action: () => props.onRemove(level),
+            }),
         ])
     }
 
@@ -103,16 +109,16 @@ export function LevelList(props: {
             onChange={onFileSelected}
         />
         <ul className="LevelList">
-        {
-            props.levels.map((level) => (
-                <LevelListItem
-                    key={level.id}
-                    level={level}
-                    onSelect={props.onSelect}
-                    onMenuOpen={openLevelMenu}
-                />
-            ))
-        }
-    </ul>
+            {
+                props.levels.map((level) => (
+                    <LevelListItem
+                        key={level.id}
+                        level={level}
+                        onSelect={props.onSelect}
+                        onMenuOpen={openLevelMenu}
+                    />
+                ))
+            }
+        </ul>
     </>
 }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { LevelList } from '../ui/levelList/LevelList'
+import { LevelList } from '../ui/level/levelList/LevelList'
 import { LevelQueries } from '../queries/level/LevelQueries'
 import { useMutation } from '../hooks/useMutation'
 import { useNavigate } from 'react-router-dom'
@@ -12,10 +12,12 @@ import { CreateLevelPopup } from '../ui/createLevelPopup/CreateLevelPopup'
 import { ProfileButton } from '../ui/profile/ProfileButton'
 import './HomePage.scss'
 import { LiveInstrumentButton } from '../ui/liveInstrument/LiveInstrumentButton'
+import { usePopupManager } from '../hooks/usePopupManager'
+import { DeleteLevelPopup } from '../ui/level/DeleteLevelPopup'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, data: levels, mutate: getAllLevels } = useMutation(LevelQueries.getAll)
-
+  const popupManager = usePopupManager()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -35,6 +37,16 @@ export function HomePage() {
 
   function onEdit(level: LevelEntity) {
     navigate('/editor/level/' + level.id)
+  }
+
+  function onRemove(level: LevelEntity) {
+    popupManager.add(close => <DeleteLevelPopup
+      close={close}
+      level={level}
+      onSuccess={() => {
+        getAllLevels()
+      }}
+    />)
   }
 
   async function onImport(level: LevelEntity, imported: ImportedLevelTracks) {
@@ -72,19 +84,20 @@ export function HomePage() {
         </div>
       </header>
       <main className="HomePage-content">
-      {
-        isLevelsLoading ?
-          <div>Loading...</div> :
-          levels && levels.ok ?
-            <LevelList
-              levels={levels.value}
-              onSelect={onSelectLevel}
-              onCreate={onCreate}
-              onEdit={onEdit}
-              onImport={onImport}
-            /> :
-            null
-      }
+        {
+          isLevelsLoading ?
+            <div>Loading...</div> :
+            levels && levels.ok ?
+              <LevelList
+                levels={levels.value}
+                onSelect={onSelectLevel}
+                onCreate={onCreate}
+                onEdit={onEdit}
+                onRemove={onRemove}
+                onImport={onImport}
+              /> :
+              null
+        }
       </main>
     </div>
   )

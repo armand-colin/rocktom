@@ -1,10 +1,10 @@
 import type { MouseEvent } from "react";
-import { Button, ButtonTheme } from "../button/Button";
-import { Icon } from "../icon/Icon";
-import { UiSize } from "../UiSize";
-import type { LevelEntity } from "../../queries/level/LevelEntity";
+import { Button, ButtonTheme } from "../../button/Button";
+import { Icon } from "../../icon/Icon";
+import { UiSize } from "../../UiSize";
+import type { LevelEntity } from "../../../queries/level/LevelEntity";
 import "./LevelListItem.scss";
-import { InstrumentType } from "../../sound/instrument/Instrument";
+import { InstrumentType } from "../../../sound/instrument/Instrument";
 
 type Props = {
     level: LevelEntity;

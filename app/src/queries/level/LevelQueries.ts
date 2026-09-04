@@ -38,4 +38,9 @@ export namespace LevelQueries {
         return fetch.apiAuth.put<LevelEntity>(`/level/${id}`, Body.json(level));
     }
 
+    export function remove(id: string) {
+        const fetch = Instance.engine.getResource(Fetch);
+        return fetch.apiAuth.delete<void>(`/level/${id}`);
+    }
+
 }

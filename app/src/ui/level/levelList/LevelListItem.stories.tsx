@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { LevelEntity } from "../../queries/level/LevelEntity";
-import { StringInput } from "../input/StringInput";
-import { NumberInput } from "../input/NumberInput";
+import type { LevelEntity } from "../../../queries/level/LevelEntity";
+import { StringInput } from "../../input/StringInput";
+import { NumberInput } from "../../input/NumberInput";
 import { LevelListItem } from "./LevelListItem";
 
 const mockLevel: LevelEntity = {
