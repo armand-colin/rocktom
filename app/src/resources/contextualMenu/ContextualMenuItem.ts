@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import type { IconName } from "../../ui/icon/Icon";
+import type { ButtonTheme } from "../../ui/button/Button";
 
 export type ContextualMenuItem = {
     type: 'action',
     icon?: IconName,
-    theme?: "danger",
+    theme?: ButtonTheme,
     label: string,
     action: () => void,
 } | {
@@ -18,7 +19,7 @@ export namespace ContextualMenuItem {
 
     export function action(options: {
         icon?: IconName,
-        theme?: "danger",
+        theme?: ButtonTheme,
         label: string,
         action: () => void,
     }): ContextualMenuItem {

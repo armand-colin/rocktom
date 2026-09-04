@@ -12,32 +12,50 @@
     background: var(--background);
     color: var(--color);
 
-    &[data-theme="default"] {
-        --background: var(--color-grey-500);
-        --hover-background: var(--color-grey-400);
-        --active-background: var(--color-grey-600);
-        --color: var(--color-grey-50);
+    &[data-variant="default"] {
+        &[data-theme="default"] {
+            --background: var(--color-grey-500);
+            --hover-background: var(--color-grey-400);
+            --active-background: var(--color-grey-600);
+            --color: var(--color-grey-50);
+        }
+
+        &[data-theme="primary"] {
+            --background: var(--color-blue-500);
+            --hover-background: var(--color-blue-400);
+            --active-background: var(--color-blue-600);
+            --color: var(--color-blue-50);
+        }
+
+        &[data-theme="danger"] {
+            --background: var(--color-red-500);
+            --hover-background: var(--color-red-400);
+            --active-background: var(--color-red-600);
+            --color: var(--color-red-50);
+        }
     }
 
-    &[data-theme="primary"] {
-        --background: var(--color-blue-500);
-        --hover-background: var(--color-blue-400);
-        --active-background: var(--color-blue-600);
-        --color: var(--color-blue-50);
-    }
+    &[data-variant="ghost"] {
+        &[data-theme="default"] {
+            --background: transparent;
+            --hover-background: var(--color-grey-400);
+            --active-background: var(--color-grey-600);
+            --color: var(--color-grey-50);
+        }
 
-    &[data-theme="danger"] {
-        --background: var(--color-red-500);
-        --hover-background: var(--color-red-400);
-        --active-background: var(--color-red-600);
-        --color: var(--color-red-50);
-    }
+        &[data-theme="primary"] {
+            --background: transparent;
+            --hover-background: var(--color-grey-400);
+            --active-background: var(--color-grey-600);
+            --color: var(--color-blue-500);
+        }
 
-    &[data-theme="ghost"] {
-        --background: transparent;
-        --hover-background: var(--color-grey-400);
-        --active-background: var(--color-grey-600);
-        --color: var(--color-grey-50);
+        &[data-theme="danger"] {
+            --background: transparent;
+            --hover-background: var(--color-grey-400);
+            --active-background: var(--color-grey-600);
+            --color: var(--color-red-500);
+        }
     }
 
     &[data-size="lg"] {
@@ -75,7 +93,7 @@
         }
     }
 
-    &[data-size="xs"]{
+    &[data-size="xs"] {
         padding: var(--spacing-1);
         gap: var(--spacing-2);
         font: var(--font-body-xs);

@@ -1,5 +1,5 @@
 import type { MouseEvent } from "react";
-import { Button, ButtonTheme } from "../../button/Button";
+import { Button, ButtonTheme, ButtonVariant } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { UiSize } from "../../UiSize";
 import type { LevelEntity } from "../../../queries/level/LevelEntity";
@@ -43,7 +43,7 @@ export function LevelListItem(props: Props) {
                     size={UiSize.S}
                     onClick={(e) => props.onMenuOpen(e, level)}
                     shape="square"
-                    theme={ButtonTheme.Ghost}
+                    variant={ButtonVariant.Ghost}
                 >
                     <Icon name="more_vert" />
                 </Button>

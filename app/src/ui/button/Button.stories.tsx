@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Button, ButtonTheme } from "./Button";
+import { Button, ButtonTheme, ButtonVariant } from "./Button";
 import { UiSize } from "../UiSize";
 import { Icon } from "../icon/Icon";
 
@@ -18,7 +18,11 @@ const meta = {
     },
     theme: {
       control: "radio",
-      options: [ButtonTheme.Default, ButtonTheme.Primary, ButtonTheme.Danger, ButtonTheme.Ghost],
+      options: ButtonTheme.values,
+    },
+    variant: {
+      control: "radio",
+      options: ButtonVariant.values,
     },
   },
 } satisfies Meta<typeof Button>;

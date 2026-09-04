@@ -7,10 +7,16 @@ export const ButtonTheme = Enum.create({
     Default: "default",
     Primary: "primary",
     Danger: "danger",
-    Ghost: "ghost",
 })
 
 export type ButtonTheme = Enum.Infer<typeof ButtonTheme>
+
+export const ButtonVariant = Enum.create({
+    Default: "default",
+    Ghost: "ghost",
+})
+
+export type ButtonVariant = Enum.Infer<typeof ButtonVariant>
 
 type Props = {
     onClick?: (e: MouseEvent<HTMLElement>) => void
@@ -18,7 +24,7 @@ type Props = {
     disabled?: boolean,
     size?: UiSize,
     theme?: ButtonTheme,
-    variant?: "default" | "ghost",
+    variant?: ButtonVariant,
     className?: string,
     style?: CSSProperties,
     primitive?: 'button' | 'label',
