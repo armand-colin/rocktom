@@ -43,4 +43,9 @@ export namespace LevelQueries {
         return fetch.apiAuth.delete<void>(`/level/${id}`);
     }
 
+    export function share(id: string) {
+        const fetch = Instance.engine.getResource(Fetch);
+        return fetch.apiAuth.post<string>(`/level/${id}/share`);
+    }
+
 }

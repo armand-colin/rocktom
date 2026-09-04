@@ -36,6 +36,7 @@ export function LevelList(props: {
     onCreate: () => void,
     onRemove: (level: LevelEntity) => void,
     onImport: (level: LevelEntity, data: ImportedLevelTracks) => Promise<void>,
+    onShare: (level: LevelEntity) => void,
 }) {
     const contextualMenu = useResource(ContextualMenu)
     const toastManager = useToastManager()
@@ -81,6 +82,11 @@ export function LevelList(props: {
                 label: "Edit",
                 icon: "edit",
                 action: () => props.onEdit(level),
+            }),
+            ContextualMenuItem.action({
+                label: "Share",
+                icon: "share",
+                action: () => props.onShare(level),
             }),
             ContextualMenuItem.action({
                 label: "Export JSON",

@@ -14,6 +14,7 @@ import './HomePage.scss'
 import { LiveInstrumentButton } from '../ui/liveInstrument/LiveInstrumentButton'
 import { usePopupManager } from '../hooks/usePopupManager'
 import { DeleteLevelPopup } from '../ui/level/DeleteLevelPopup'
+import { LoadingPopup } from '../ui/loadingPopup/LoadingPopup'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, data: levels, mutate: getAllLevels } = useMutation(LevelQueries.getAll)
@@ -47,6 +48,20 @@ export function HomePage() {
         getAllLevels()
       }}
     />)
+  }
+
+  async function onShare(level: LevelEntity) {
+    const loading = popupManager.add(() => <LoadingPopup />)
+
+    const result = await LevelQueries.share(level.id)
+
+    if (result.ok) {
+
+    } else {
+
+    }
+
+    loading.close()
   }
 
   async function onImport(level: LevelEntity, imported: ImportedLevelTracks) {
@@ -95,6 +110,7 @@ export function HomePage() {
                 onEdit={onEdit}
                 onRemove={onRemove}
                 onImport={onImport}
+                onShare={onShare}
               /> :
               null
         }

@@ -54,7 +54,8 @@ export const icons = [
     "add",
     "check",
     "av_timer",
-    "refresh"
+    "refresh",
+    "share"
 ] as const;
 
 export type IconName = typeof icons[number];

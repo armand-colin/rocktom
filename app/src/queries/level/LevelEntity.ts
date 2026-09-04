@@ -8,3 +8,9 @@ export type LevelEntity = {
     duration: number;
     instrumentTypes: string[];
 };
+
+export namespace LevelEntity {
+    export type Share = {
+        token: string;
+    }
+}
