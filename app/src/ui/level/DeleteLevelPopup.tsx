@@ -47,7 +47,7 @@ export function DeleteLevelPopup(props: Props) {
             className="grid gap-4"
         >
             <p>Are you sure you want to delete this level?</p>
-            <div className="flex items-end gap-2">
+            <div className="flex jutify-end gap-7">
                 <Button
                     theme={ButtonTheme.Default}
                     onClick={props.close}
