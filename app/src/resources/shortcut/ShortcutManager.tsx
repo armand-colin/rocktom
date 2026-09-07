@@ -28,6 +28,9 @@ export class ShortcutManager extends Resource {
             let prevented = false
 
             for (const { shortcut, action } of this._bindings.values()) {
+                if (action.getListenersCount() === 0)
+                    continue
+
                 if (
                     event.code === KeyCode.toEventCode(shortcut.keyCode) &&
                     ctrl === shortcut.ctrl &&
@@ -40,6 +43,7 @@ export class ShortcutManager extends Resource {
                     }
 
                     action.publish()
+                    break
                 }
             }
         })
