@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import "./Icon.scss";
+import { cn } from "../utils/cn";
 
 const ICONS_FONT = '1em Icons';
 
@@ -66,7 +67,8 @@ export const icons = [
 export type IconName = typeof icons[number];
 
 type Props = {
-    name: IconName
+    name: IconName,
+    className?: string;
 }
 
 export function Icon(props: Props) {
@@ -77,7 +79,7 @@ export function Icon(props: Props) {
     );
 
     return <i
-        className="Icon"
+        className={cn("Icon", props.className)}
         data-icon={props.name}
         data-loaded={loaded || undefined}
     >

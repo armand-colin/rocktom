@@ -2,7 +2,7 @@ import type { MouseEvent } from "react";
 import { Button, ButtonTheme, ButtonVariant } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { UiSize } from "../../UiSize";
-import type { LevelEntity } from "../../../queries/level/LevelEntity";
+import { LevelEntity } from "../../../queries/level/LevelEntity";
 import "./LevelListItem.scss";
 import { InstrumentType } from "../../../sound/instrument/Instrument";
 import { LevelInstrumentsView } from "../LevelInstrumentsView";
@@ -12,7 +12,8 @@ type Props = {
     onSelect: (level: LevelEntity) => void;
     onMenuOpen: (e: MouseEvent, level: LevelEntity) => void;
     className?: string;
-    hideMenu?: boolean
+    hideMenu?: boolean;
+    isShared?: boolean;
 };
 
 function formatSeconds(seconds: number) {
@@ -44,6 +45,18 @@ export function LevelListItem(props: Props) {
                     <span className="LevelListItem-durationLabel">Duration</span>
                     {formatSeconds(level.duration)}
                 </small>
+                {
+                    props.isShared && props.level.share ?
+                        <small className="text-grey-300 text-body-xs">
+                            by <i>{props.level.user.name}</i>
+                            {
+                                props.level.share.permission === LevelEntity.SharePermission.Write ?
+                                    <span className="ml-2 text-blue-300">can write</span> :
+                                    null
+                            }
+                        </small> :
+                        null
+                }
             </div>
 
             <div className="LevelListItem-actions">

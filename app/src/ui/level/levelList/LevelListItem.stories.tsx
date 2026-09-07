@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { LevelEntity } from "../../../queries/level/LevelEntity";
+import { LevelEntity } from "../../../queries/level/LevelEntity";
 import { StringInput } from "../../input/StringInput";
 import { NumberInput } from "../../input/NumberInput";
 import { LevelListItem } from "./LevelListItem";
@@ -12,8 +12,15 @@ const mockLevel: LevelEntity = {
     name: "Rock Session",
     serialized: "{}",
     duration: 185,
-    instrumentTypes: ["drums"],
-    share: null,
+    instrumentTypes: [],
+    share: {
+        enabled: true,
+        permission: LevelEntity.SharePermission.Write,
+        token: "sometoken",
+    },
+    user: {
+        name: "grandbecdelievre"
+    }
 };
 
 export default {
@@ -39,6 +46,7 @@ export const Main = () => {
                 level={level}
                 onSelect={() => { }}
                 onMenuOpen={() => { }}
+                isShared
             />
             <div className="grid gap-3">
                 <StringInput

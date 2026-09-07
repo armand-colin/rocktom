@@ -64,8 +64,11 @@ export class LevelService {
             order: {
                 createdAt: 'DESC',
             },
-            relations: ['share'],
+            relations: ['share', 'user'],
             select: {
+                user: {
+                    name: true,
+                },
                 share: {
                     token: true,
                     enabled: true,

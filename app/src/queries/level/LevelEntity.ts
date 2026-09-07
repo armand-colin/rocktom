@@ -3,6 +3,9 @@ import { Enum } from "../../utils/Enum";
 export type LevelEntity = {
     id: string;
     userId: string;
+    user: {
+        name: string,
+    }
     createdAt: string;
     updatedAt: string;
     name: string;
