@@ -2,18 +2,20 @@ import { Result } from "@niloc/utils";
 import { Path } from "./Path";
 import type { QueryClient } from "./QueryClient"
 import type { QuerySpecification } from "./QuerySpecification";
+import type { Body } from "./Body";
+import type { QueryMethod } from "./QueryMethod";
 
 export class Query<T extends QuerySpecification> {
 
-    private _specifications: T
     private _path: Path<string>
+    private _method: QueryMethod
 
     constructor(readonly queryClient: QueryClient, specifications: T) {
-        this._specifications = specifications
+        this._method = specifications.method
         this._path = new Path(specifications.path)
     }
 
-    async run(options: Query.RunArguments<T>): Promise<Result<QuerySpecification.Result<T>, Query.Error>> {
+    async run(options: Query.RunArguments<T>): Promise<Result<QuerySpecification.ResultOf<T>, Query.Error>> {
         const search = new URLSearchParams()
         for (const [key, value] of Object.entries(((options as any).search as Record<string, string | number>) ?? {})) {
             search.set(key, value.toString())
@@ -28,11 +30,12 @@ export class Query<T extends QuerySpecification> {
             const response = await fetch(url, {
                 body: (options as any).body,
                 headers: (options as any).headers,
-                method: this._specifications.method,
+                method: this._method,
             })
 
             if (response.ok) {
-                return Result.ok(true as QuerySpecification.Result<T>)
+                // TODO: add parsing of the response
+                return Result.ok(true as QuerySpecification.ResultOf<T>)
             } else {
                 return Result.error(new Query.CodeError(response))
             }
@@ -58,14 +61,14 @@ export namespace Query {
         false
 
     type _RunArguments<T extends QuerySpecification> =
-        (IsUndefined<QuerySpecification.Body<T>> extends true ? {} : {
-            body: QuerySpecification.Body<T>
-        }) & (IsUndefined<QuerySpecification.Search<T>> extends true ? {} : {
-            search: QuerySpecification.Search<T>
-        }) & (IsUndefined<Path.Arguments<QuerySpecification.Path<T>>> extends true ? {} : {
-            path: Path.Arguments<QuerySpecification.Path<T>>
-        }) & (IsUndefined<QuerySpecification.Headers<T>> extends true ? {} : {
-            headers: QuerySpecification.Headers<T>
+        (IsUndefined<QuerySpecification.BodyOf<T>> extends true ? {} : {
+            body: Body<QuerySpecification.BodyOf<T>>
+        }) & (IsUndefined<QuerySpecification.SearchOf<T>> extends true ? {} : {
+            search: QuerySpecification.SearchOf<T>
+        }) & (IsUndefined<Path.Arguments<QuerySpecification.PathOf<T>>> extends true ? {} : {
+            path: Path.Arguments<QuerySpecification.PathOf<T>>
+        }) & (IsUndefined<QuerySpecification.HeadersOf<T>> extends true ? {} : {
+            headers: QuerySpecification.HeadersOf<T>
         })
 
     export type RunArguments<T extends QuerySpecification> = Flatten<_RunArguments<T>>
