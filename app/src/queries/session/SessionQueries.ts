@@ -1,34 +1,26 @@
-import { Instance } from "../../Instance";
-import { Body } from "../../resources/fetch/Body";
-import { Fetch } from "../../resources/fetch/Fetch";
+import { QueryClient } from "../../resources/queryClient/QueryClient";
 import type { SessionTokensEntity } from "./SessionEntity";
 
 export namespace SessionQueries {
 
-    export function requestCode(username: string) {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.api.post('/session/code', Body.json({ username }));
-    }
+    const sessionClient = new QueryClient(import.meta.env.VITE_API_URL, [])
 
-    export function login(username: string, code: string) {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.api.post<SessionTokensEntity>('/session/login', Body.json({ username, code }));
-    }
+    export const requestCode = sessionClient.post('/session/code')
+        .body<{ username: string }>()
+        .build()
 
-    export function logout() {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.api.post('/session/logout');
-    }
+    export const login = sessionClient.post('/session/login')
+        .body<{ username: string, code: string }>()
+        .result<SessionTokensEntity>()
+        .build()
 
-    export function refresh(refreshToken?: string) {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.api.post<SessionTokensEntity>(
-            '/session/refresh',
-            undefined,
-            refreshToken ?
-                { 'Authorization': `Bearer ${refreshToken}` } :
-                undefined
-        );
-    }
+    export const logout = sessionClient.post('/session/logout')
+        .result<void>()
+        .build()
+    
+    export const refresh = sessionClient.post('/session/refresh')
+        .result<SessionTokensEntity>()
+        .header<'Authorization'>()
+        .build()
 
 }

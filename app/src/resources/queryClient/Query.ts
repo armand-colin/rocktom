@@ -91,14 +91,27 @@ export class Query<T extends QuerySpecification> {
                 body: body ? body.data : undefined,
                 headers: context.headers,
                 method: context.method,
+                credentials: 'include',
             })
 
-            if (response.ok) {
-                // TODO: add parsing of the response
-                return Result.ok(true as QuerySpecification.ResultOf<T>)
-            } else {
+            if (!response.ok) {
                 return Result.error(new Query.CodeError(response))
             }
+
+            const contentType = response.headers.get('Content-Type')
+
+            if (contentType?.startsWith('application/json')) {
+                return Result.ok(await response.json())
+            }
+
+            if (
+                contentType === "application/octet-stream" ||
+                contentType?.startsWith('audio/')
+            ) {
+                return Result.ok(await response.arrayBuffer())
+            }
+
+            return Result.ok(await response.text())
         } catch (error) {
             return Result.error(new Query.NetworkError(error))
         }
@@ -153,6 +166,14 @@ export namespace Query {
 
         constructor(readonly response: Response) {
             super("")
+        }
+
+    }
+
+    export class UnauthorizedError extends Error {
+
+        constructor() {
+            super("Unauthorized")
         }
 
     }

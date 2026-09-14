@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 import { Result } from "@niloc/utils";
 import { SessionQueries } from "../queries/session/SessionQueries";
 import { AuthStore, type Session } from "./AuthStore";
+import { Body } from "./queryClient/Body";
 
 type Tokens = {
     accessToken: string,
@@ -23,7 +24,7 @@ export class AuthManager extends Resource {
     }
 
     requestCode(username: string) {
-        return SessionQueries.requestCode(username)
+        return SessionQueries.requestCode.run({ body: Body.json({ username }) })
     }
 
     get isAuthenticated(): boolean {
@@ -52,7 +53,7 @@ export class AuthManager extends Resource {
 
     async login(username: string, code: string) {
         try {
-            const response = await SessionQueries.login(username, code)
+            const response = await SessionQueries.login.run({ body: Body.json({ username, code }) })
 
             if (!response.ok) {
                 return Result.error(response.error)
@@ -70,7 +71,7 @@ export class AuthManager extends Resource {
     }
 
     async logout() {
-        SessionQueries.logout()
+        SessionQueries.logout.run({ })
             .finally(() => {
                 this._store.setSession(null)
                 this.changed()
@@ -101,7 +102,11 @@ export class AuthManager extends Resource {
             return this._refreshPromise
 
         this._refreshPromise = new Promise<Result<Tokens, Error>>(async (resolve) => {
-            const response = await SessionQueries.refresh(refreshToken)
+            const response = await SessionQueries.refresh.run({
+                headers: {
+                    Authorization: `Bearer ${refreshToken}`
+                }
+            })
 
             if (response.ok) {
                 const session = this._parseTokens(response.value)

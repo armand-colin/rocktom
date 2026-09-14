@@ -1,4 +1,3 @@
-import { Body } from "./Body"
 import { Query } from "./Query"
 import type { QueryInterceptor } from "./QueryIntecteptor"
 import { QueryMethod } from "./QueryMethod"
@@ -101,7 +100,6 @@ class QueryBuilder<T extends {
 
 }
 
-
 export class QueryClient {
 
     private _baseUrl: string
@@ -127,6 +125,11 @@ export class QueryClient {
         return this._interceptors
     }
 
+    addInterceptor(interceptor: QueryInterceptor) {
+        this._interceptors.push(interceptor)
+        return this
+    }
+
     post<Path extends string = string>(path: Path) {
         return QueryBuilder.create(this, path, QueryMethod.Post)
     }
@@ -148,35 +151,3 @@ export class QueryClient {
     }
 
 }
-
-const client = new QueryClient("https://api.example.com", [])
-
-const query = client.post(':test')
-    .result<string>()
-    .body<{ foo: string }>()
-    .search<{ foo: string }>()
-    .build()
-
-const query2 = client.post(':test')
-    .body<string>()
-    .result<string>()
-    .search<{ foo: string }>()
-    .header<'Content-Type'>()
-    .header<'Authorization'>()
-    .build()
-
-query.run({
-    body: Body.json({ foo: 'bar' }),
-    path: { test: '123' },
-    search: { foo: 'bar' }
-})
-
-query2.run({
-    body: Body.text('foo'),
-    path: { test: '123' },
-    search: { foo: 'bar' },
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer 123'
-    }
-})

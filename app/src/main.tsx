@@ -8,12 +8,17 @@ import { PlaybackPreferences } from './resources/PlaybackPreferences.ts'
 import { TextureAtlas } from './3d/TextureAtlas.ts'
 import { Instance } from './Instance.ts'
 import { AuthManager } from './resources/AuthManager.ts'
+import { AuthInterceptor } from './resources/AuthInterceptor.ts'
 
 Instance.engine.getResource(LiveInstrumentPreferences).recover()
 Instance.engine.getResource(PlaybackPreferences).recover()
 
+const authManager = Instance.engine.getResource(AuthManager)
+
+Instance.queryClient.addInterceptor(AuthInterceptor.create(authManager))
+
 Promise.all([
-    Instance.engine.getResource(AuthManager).restore(),
+    authManager.restore(),
     TextureAtlas.load(Instance.engine).ready,
 ]).finally(() => {
     createRoot(document.getElementById('root')!).render(
