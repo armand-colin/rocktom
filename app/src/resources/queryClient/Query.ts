@@ -25,16 +25,6 @@ export class Query<T extends QuerySpecification> {
             search.set(key, value.toString())
         }
 
-        const compiledPath = this._path.compile((options as any).path ?? {})
-        if (!compiledPath.ok) {
-            return Result.error(new Query.PathError(this._path, compiledPath.error))
-        }
-
-        let url = this.queryClient.baseUrl + compiledPath.value
-        if (search.size > 0) {
-            url += `?${search.toString()}`
-        }
-
         const context = new QueryContext({
             queryClient: this.queryClient,
             body: (options as any).body,
@@ -85,7 +75,13 @@ export class Query<T extends QuerySpecification> {
             search.set(key, value.toString())
         }
 
-        let url = this.queryClient.baseUrl + this._path.compile(context.pathArguments)
+        const compiledPath = context.path.compile(context.pathArguments)
+
+        if (!compiledPath.ok) {
+            return Result.error(new Query.PathError(context.path, compiledPath.error))
+        }
+
+        let url = this.queryClient.baseUrl + compiledPath.value
         if (search.size > 0) {
             url += `?${search.toString()}`
         }
