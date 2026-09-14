@@ -1,4 +1,4 @@
-import { Result } from "@niloc/utils";
+import { Iter, Result } from "@niloc/utils";
 import { Path } from "./Path";
 import type { QueryClient } from "./QueryClient"
 import type { QuerySpecification } from "./QuerySpecification";
@@ -45,26 +45,16 @@ export class Query<T extends QuerySpecification> {
             return this._run(context)
         }
 
-        const reversedInterceptors = [...this.queryClient.interceptors]
-        reversedInterceptors.reverse()
+        const interceptors = this.queryClient.interceptors
 
-        // The first one would be
-        const interceptor = reversedInterceptors[0]
-        const lastRunner = runner
-        const newRunner: QueryRunner = (context) => {
-            return interceptor.handle(context, (context) => {
-                return lastRunner(context)
-            })
-        }
-
-        for (const interceptor of reversedInterceptors) {
+        for (let i = interceptors.length - 1; i >= 0; i--) {
+            const interceptor = interceptors[i]
             const lastRunner = runner
             const newRunner: QueryRunner = (context) => {
                 return interceptor.handle(context, (context) => {
                     return lastRunner(context)
                 })
             }
-
             runner = newRunner
         }
 
