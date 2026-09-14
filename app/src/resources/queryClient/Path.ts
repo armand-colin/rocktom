@@ -49,7 +49,7 @@ export class Path<P extends string> {
                     return Result.error(new Path.CompileError(this.path, segment.value))
                 }
 
-                compiled += "/" + value
+                compiled += "/" + encodeURI(value)
             } else {
                 compiled += "/" + segment.value
             }

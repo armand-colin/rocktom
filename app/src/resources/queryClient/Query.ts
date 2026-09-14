@@ -25,7 +25,7 @@ export class Query<T extends QuerySpecification> {
             search.set(key, value.toString())
         }
 
-        const compiledPath = this._path.compile(options)
+        const compiledPath = this._path.compile((options as any).path ?? {})
         if (!compiledPath.ok) {
             return Result.error(new Query.PathError(this._path, compiledPath.error))
         }
