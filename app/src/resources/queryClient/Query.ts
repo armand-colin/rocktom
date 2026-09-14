@@ -1,11 +1,11 @@
-import { Iter, Result } from "@niloc/utils";
+import { Result } from "@niloc/utils";
 import { Path } from "./Path";
 import type { QueryClient } from "./QueryClient"
 import type { QuerySpecification } from "./QuerySpecification";
 import type { Body } from "./Body";
 import type { QueryMethod } from "./QueryMethod";
 import { QueryContext } from "./QueryContext";
-import type { QueryHandler, QueryResult } from "./QueryHandler";
+import type { QueryResult } from "./QueryHandler";
 
 type QueryRunner = (context: QueryContext) => Promise<QueryResult>
 
