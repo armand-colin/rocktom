@@ -7,6 +7,8 @@ import type { QueryMethod } from "./QueryMethod";
 import { QueryContext } from "./QueryContext";
 import type { QueryHandler, QueryResult } from "./QueryHandler";
 
+type QueryRunner = (context: QueryContext) => Promise<QueryResult>
+
 export class Query<T extends QuerySpecification> {
 
     private _path: Path<string>
@@ -39,26 +41,38 @@ export class Query<T extends QuerySpecification> {
             retryCount: 0
         })
 
-        let handler: QueryHandler = (context, _) => {
+        let runner: QueryRunner = (context) => {
             return this._run(context)
         }
 
-        const reversedInterceptors = this.queryClient.interceptors
+        const reversedInterceptors = [...this.queryClient.interceptors]
         reversedInterceptors.reverse()
 
+        // The first one would be
+        const interceptor = reversedInterceptors[0]
+        const lastRunner = runner
+        const newRunner: QueryRunner = (context) => {
+            return interceptor.handle(context, (context) => {
+                return lastRunner(context)
+            })
+        }
+
         for (const interceptor of reversedInterceptors) {
-            handler = (context, next) => {
-                return interceptor.handle(context, next)
+            const lastRunner = runner
+            const newRunner: QueryRunner = (context) => {
+                return interceptor.handle(context, (context) => {
+                    return lastRunner(context)
+                })
             }
+
+            runner = newRunner
         }
 
         // Shall handle retries
         while (true) {
             const newContext = context.clone()
 
-            const result = await handler(newContext, () => {
-                throw new Error("No next handler")
-            })
+            const result = await runner(newContext)
 
             // TODO: maybe check for result.ok?
             if (newContext.shallRetry) {

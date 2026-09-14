@@ -59,6 +59,7 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
         const authManager = Instance.engine.getResource(AuthManager)
 
         const result = await authManager.requestCode(e.json.username)
+        console.log('code result', result)
 
         if (result.ok) {
             props.onSuccess(e.json.username)
