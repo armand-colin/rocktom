@@ -105,7 +105,7 @@ export class QueryClient {
     private _baseUrl: string
     private _interceptors: QueryInterceptor[]
 
-    readonly fetch: typeof globalThis.fetch = fetch
+    readonly fetch: typeof globalThis.fetch = (...args: Parameters<typeof globalThis.fetch>) => window.fetch(...args)
 
     constructor(
         baseUrl: string,
