@@ -3,10 +3,6 @@ import { Query } from "./Query"
 import type { QueryInterceptor } from "./QueryIntecteptor"
 import { QueryMethod } from "./QueryMethod"
 
-type Clean<T> = {
-    [K in keyof T]: T[K] extends undefined ? never : T[K]
-}
-
 class QueryBuilder<T extends {
     method: QueryMethod,
     path: string,
@@ -111,16 +107,24 @@ export class QueryClient {
     private _baseUrl: string
     private _interceptors: QueryInterceptor[]
 
+    readonly fetch: typeof globalThis.fetch = fetch
+
     constructor(
         baseUrl: string,
-        interceptors: QueryInterceptor[]
+        interceptors: QueryInterceptor[],
+        fetch?: typeof globalThis.fetch
     ) {
         this._baseUrl = baseUrl
         this._interceptors = interceptors
+        this.fetch = fetch ?? globalThis.fetch
     }
 
     get baseUrl() {
         return this._baseUrl
+    }
+
+    get interceptors() {
+        return this._interceptors
     }
 
     post<Path extends string = string>(path: Path) {

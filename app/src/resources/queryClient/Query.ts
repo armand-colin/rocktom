@@ -4,6 +4,8 @@ import type { QueryClient } from "./QueryClient"
 import type { QuerySpecification } from "./QuerySpecification";
 import type { Body } from "./Body";
 import type { QueryMethod } from "./QueryMethod";
+import { QueryContext } from "./QueryContext";
+import type { QueryHandler, QueryResult } from "./QueryHandler";
 
 export class Query<T extends QuerySpecification> {
 
@@ -26,11 +28,69 @@ export class Query<T extends QuerySpecification> {
             url += `?${search.toString()}`
         }
 
+        const context = new QueryContext({
+            queryClient: this.queryClient,
+            body: (options as any).body,
+            headers: (options as any).headers,
+            method: this._method,
+            path: this._path,
+            pathArguments: (options as any).path,
+            search: (options as any).search,
+            retryCount: 0
+        })
+
+        let handler: QueryHandler = (context, _) => {
+            return this._run(context)
+        }
+
+        const reversedInterceptors = this.queryClient.interceptors
+        reversedInterceptors.reverse()
+
+        for (const interceptor of reversedInterceptors) {
+            handler = (context, next) => {
+                return interceptor.handle(context, next)
+            }
+        }
+
+        // Shall handle retries
+        while (true) {
+            const newContext = context.clone()
+
+            const result = await handler(newContext, () => {
+                throw new Error("No next handler")
+            })
+
+            // TODO: maybe check for result.ok?
+            if (newContext.shallRetry) {
+                context.setRetryCount(context.retryCount + 1)
+                continue
+            }
+
+            return result
+        }
+    }
+
+    private async _run(context: QueryContext): Promise<QueryResult> {
+        const search = new URLSearchParams()
+        for (const [key, value] of Object.entries((context.search as Record<string, string | number>) ?? {})) {
+            search.set(key, value.toString())
+        }
+
+        let url = this.queryClient.baseUrl + this._path.compile(context.pathArguments)
+        if (search.size > 0) {
+            url += `?${search.toString()}`
+        }
+
+        const body = context.body
+        if (body) {
+            context.setHeaders(body.headers)
+        }
+
         try {
-            const response = await fetch(url, {
-                body: (options as any).body,
-                headers: (options as any).headers,
-                method: this._method,
+            const response = await context.queryClient.fetch(url, {
+                body: body ? body.data : undefined,
+                headers: context.headers,
+                method: context.method,
             })
 
             if (response.ok) {
@@ -78,7 +138,7 @@ export namespace Query {
         constructor(message: string) {
             super(message)
         }
-    
+
     }
 
     export class NetworkError extends Error {
