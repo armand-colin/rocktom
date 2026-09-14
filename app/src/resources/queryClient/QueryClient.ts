@@ -105,7 +105,7 @@ export class QueryClient {
     private _baseUrl: string
     private _interceptors: QueryInterceptor[]
 
-    readonly fetch: typeof globalThis.fetch = (...args: Parameters<typeof globalThis.fetch>) => window.fetch(...args)
+    readonly fetch: typeof globalThis.fetch 
 
     constructor(
         baseUrl: string,
@@ -114,7 +114,7 @@ export class QueryClient {
     ) {
         this._baseUrl = baseUrl
         this._interceptors = interceptors
-        this.fetch = fetch ?? globalThis.fetch
+        this.fetch = fetch ?? window.fetch.bind(window)
     }
 
     get baseUrl() {
