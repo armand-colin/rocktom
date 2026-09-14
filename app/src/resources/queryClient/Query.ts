@@ -25,7 +25,12 @@ export class Query<T extends QuerySpecification> {
             search.set(key, value.toString())
         }
 
-        let url = this.queryClient.baseUrl + this._path.compile(options)
+        const compiledPath = this._path.compile(options)
+        if (!compiledPath.ok) {
+            return Result.error(new Query.PathError(this._path, compiledPath.error))
+        }
+
+        let url = this.queryClient.baseUrl + compiledPath.value
         if (search.size > 0) {
             url += `?${search.toString()}`
         }
@@ -178,6 +183,14 @@ export namespace Query {
 
         constructor() {
             super("Unauthorized")
+        }
+
+    }
+
+    export class PathError extends Error {
+
+        constructor(readonly path: Path<string>, error: Path.CompileError) {
+            super(`Path ${path.path} could not compile: ${error.message}`)
         }
 
     }
