@@ -23,9 +23,12 @@ type UpdateLevelShare = {
 
 export namespace LevelQueries {
 
+    const getAllQuery = Instance.queryClient.get('/level')
+        .result<LevelEntity[]>()
+        .build();
+
     export function getAll() {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.get<LevelEntity[]>('/level');
+        return getAllQuery.run({ })
     }
 
     export function create(body: CreateLevel) {

@@ -37,7 +37,7 @@ export class Query<T extends QuerySpecification> {
         })
 
         let runner: QueryRunner = (context) => {
-            return this._run(context)
+            return Query.run(context)
         }
 
         const interceptors = this.queryClient.interceptors
@@ -53,7 +53,6 @@ export class Query<T extends QuerySpecification> {
             runner = newRunner
         }
 
-        // Shall handle retries
         while (true) {
             const newContext = context.clone()
 
@@ -69,7 +68,7 @@ export class Query<T extends QuerySpecification> {
         }
     }
 
-    private async _run(context: QueryContext): Promise<QueryResult> {
+    static async run(context: QueryContext): Promise<QueryResult> {
         const search = new URLSearchParams()
         for (const [key, value] of Object.entries((context.search as Record<string, string | number>) ?? {})) {
             search.set(key, value.toString())
@@ -81,7 +80,7 @@ export class Query<T extends QuerySpecification> {
             return Result.error(new Query.PathError(context.path, compiledPath.error))
         }
 
-        let url = this.queryClient.baseUrl + compiledPath.value
+        let url = context.queryClient.baseUrl + compiledPath.value
         if (search.size > 0) {
             url += `?${search.toString()}`
         }
