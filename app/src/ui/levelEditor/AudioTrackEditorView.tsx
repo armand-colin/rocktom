@@ -18,6 +18,8 @@ import type { DocumentEntity } from "../../queries/document/DocumentEntity";
 import { useThrottle } from "../../hooks/useThrottle";
 import { FormInputField } from "../form/FormInputField";
 import { MixerButton } from "../mixerButton/MixerButton";
+import { Icon } from "../icon/Icon";
+import { UiSize } from "../UiSize";
 
 export function AudioTrackEditorView(props: {
     transform: TimeTransform,
@@ -61,12 +63,18 @@ export function AudioTrackEditorView(props: {
             <FormInputField label="Playback">
                 {
                     playback ?
-                        <span className="whitespace-nowrap text-ellipsis overflow-hidden w-full block">{playback.filename}</span> :
-                        <span className="text-grey-200">No playback</span>
+                        <div className="flex items-center gap-2">
+                            <span className="whitespace-nowrap text-ellipsis overflow-hidden w-full block">{playback.filename}</span>
+                            <Button shape="square" size={UiSize.XS} onClick={onChoosePlayback} variant="ghost">
+                                <Icon name="swap_horiz" />
+                            </Button>
+                        </div> :
+                        <Button theme="primary" onClick={onChoosePlayback} className="w-full">
+                            <Icon name="add" />
+                            Add playback
+                        </Button>
                 }
             </FormInputField>
-            
-            <Button onClick={onChoosePlayback}>Choose playback</Button>
 
             <div className="absolute right-0 top-0 p-2">
                 <MixerButton channel={mixer.audio} />
@@ -121,8 +129,8 @@ function AudioView(props: {
         className="AudioView"
         ref={onRef}
     >
-        <ElementRenderer 
-            element={props.waveform.canvas} 
+        <ElementRenderer
+            element={props.waveform.canvas}
         />
     </div>
 

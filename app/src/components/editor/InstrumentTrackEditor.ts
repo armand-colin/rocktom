@@ -4,19 +4,22 @@ import type { VirtualBass } from "../VirtualBass"
 import { FocusTrackEditor } from "./FocusTrackEditor"
 import { NoteTrackEditor } from "./NoteTrackEditor"
 import type { Instrument } from "../../sound/instrument/Instrument"
+import { EditorPreferences } from "../../resources/EditorPreferences"
 
 export class InstrumentTrackEditor extends Component {
 
     readonly track: InstrumentTrack
     readonly noteTrack: NoteTrackEditor
     readonly focusTrack: FocusTrackEditor
-    private _open: boolean = false
+    
+    private _open: boolean
 
     constructor(engine: Engine, track: InstrumentTrack, virtualBass: VirtualBass) {
         super(engine)
         this.track = track
         this.noteTrack = engine.createComponent(NoteTrackEditor, track.noteTrack, virtualBass)
         this.focusTrack = engine.createComponent(FocusTrackEditor, track.focusTrack)
+        this._open = engine.getResource(EditorPreferences).openInstrumentTracks[track.id] ?? true
     }
 
     get instrument() {
@@ -34,6 +37,7 @@ export class InstrumentTrackEditor extends Component {
 
     setOpen(open: boolean) {
         this._open = open
+        this.engine.getResource(EditorPreferences).setOpenInstrumentTrack(this.track.id, open)
         this.changed()
     }
 
