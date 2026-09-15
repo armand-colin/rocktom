@@ -4,23 +4,20 @@ import type { Marker } from "../../sound/song/Marker";
 import type { NoteTrack } from "../../sound/song/NoteTrack";
 import { Pattern, TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
-import type { VirtualBass } from "../VirtualBass";
 import type { Instrument } from "../../sound/instrument/Instrument";
 
 export class NoteTrackEditor extends Component {
 
     readonly track: NoteTrack
-    readonly virtualBass: VirtualBass
 
     private _pattern: Pattern | null
     private _lastDuration: number = 0
 
     private _patterns: Pattern[] = []
 
-    constructor(engine: Engine, track: NoteTrack, virtualBass: VirtualBass) {
+    constructor(engine: Engine, track: NoteTrack) {
         super(engine)
         this.track = track
-        this.virtualBass = virtualBass
 
         this._patterns = Array.from(track.patterns.values())
         this._pattern = this._patterns[0] || null

@@ -4,7 +4,7 @@ import { NoteEvent, type NoteSlide } from "../../sound/song/NoteEvent";
 import type { Pattern, TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
 import { Selection } from "../Selection";
-import type { VirtualBass } from "../VirtualBass";
+import type { VirtualInstrument } from "../virtualInstrument/VirtualInstrument";
 import { TimeTransform } from "./TimeTransform";
 import { NoteTransform } from "./NoteTransform";
 import type { Note } from "../../sound/note/Note";
@@ -18,13 +18,14 @@ import { PatternCycleStringMouseDispatcher } from "./actions/PatternCycleStringM
 import { PatternGridMouseDispatcher } from "./actions/PatternGridMouseDispatcher";
 import { PatternKeyboardMouseDispatcher } from "./actions/PatternKeyboardMouseDispatcher";
 import { PatternNoteMouseDispatcher } from "./actions/PatternNoteMouseDispatcher";
+import type { InstrumentTrackEditor } from "./InstrumentTrackEditor";
 
 export class PatternEditor extends Component {
 
     readonly pattern: Pattern
     readonly transform: TimeTransform
     readonly noteTransform: NoteTransform
-    readonly virtualBass: VirtualBass
+    readonly trackEditor: InstrumentTrackEditor
     readonly selection: Selection<NoteEvent>
 
     private _selectionWindow: SelectionWindow | null = null
@@ -33,10 +34,10 @@ export class PatternEditor extends Component {
     private _string: String
     private _setDuration: number = Tempo.beats(1)
 
-    constructor(engine: Engine, pattern: TimedPattern, virtualBass: VirtualBass) {
+    constructor(engine: Engine, pattern: TimedPattern, trackEditor: InstrumentTrackEditor) {
         super(engine)
         this.pattern = pattern.pattern
-        this.virtualBass = virtualBass
+        this.trackEditor = trackEditor
         this.transform = engine.createComponent(TimeTransform)
         this.transform.setHardOffset(pattern.time)
         this.transform.setStep(Tempo.beats(1 / 4))
@@ -60,6 +61,10 @@ export class PatternEditor extends Component {
 
     get string() {
         return this._string
+    }
+
+    get virtualInstrument(): VirtualInstrument {
+        return this.trackEditor.virtualInstrument
     }
 
     get selectionWindow() {

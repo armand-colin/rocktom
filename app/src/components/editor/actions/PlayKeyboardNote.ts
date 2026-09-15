@@ -20,9 +20,9 @@ class PlayKeyboardNoteHandler extends MouseActionHandler {
         private _note: Note
     ) {
         super()
-        this._editor.virtualBass.playNote(this._note)
+        this._editor.virtualInstrument.playNote(this._note, this._editor.string)
         MouseActionHandler.onDispose(this, () => {
-            this._editor.virtualBass.stopNote(this._note)
+            this._editor.virtualInstrument.stopNote(this._note, this._editor.string)
         })
     }
 
@@ -40,9 +40,9 @@ class PlayKeyboardNoteHandler extends MouseActionHandler {
         if (target.note === this._note)
             return
 
-        this._editor.virtualBass.stopNote(this._note)
+        this._editor.virtualInstrument.stopNote(this._note, this._editor.string)
         this._note = target.note
-        this._editor.virtualBass.playNote(this._note)
+        this._editor.virtualInstrument.playNote(this._note, this._editor.string)
     }
 
     override onMouseOut(event: MouseEvent) {

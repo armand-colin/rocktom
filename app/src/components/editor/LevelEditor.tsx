@@ -8,7 +8,6 @@ import type { TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
 import { PatternEditorView } from "../../ui/levelEditor/patternEditor/PatternEditorView";
 import { MixerView } from "../../ui/mixerView/MixerView";
-import { VirtualBass } from "../VirtualBass";
 import { AudioTrackEditor } from "./AudioTrackEditor";
 import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
 import { EditorPlayer } from "./EditorPlayer";
@@ -27,8 +26,6 @@ export class LevelEditor extends Component {
     readonly instrumentTracks: InstrumentTrackEditor[]
     readonly audioWaveformRenderer: AudioWaveformRenderer
 
-    readonly virtualBass: VirtualBass
-
     private _pattern: PatternEditor | null = null
     private _patternWindow: Window | null = null
     private _mixerWindow: Window | null = null
@@ -41,11 +38,10 @@ export class LevelEditor extends Component {
         this.timeTransform.setStep(Tempo.beats(1))
 
         this.audioTrack = engine.createComponent(AudioTrackEditor, level.id, level.audioTrack)
-        this.virtualBass = engine.createComponent(VirtualBass)
-        this.player = engine.createComponent(EditorPlayer, level, this.virtualBass)
         this.instrumentTracks = level.instrumentTracks.map(track =>
-            engine.createComponent(InstrumentTrackEditor, track, this.virtualBass)
+            engine.createComponent(InstrumentTrackEditor, track)
         )
+        this.player = engine.createComponent(EditorPlayer, level, () => this.instrumentTracks)
 
         this.audioWaveformRenderer = engine.createComponent(AudioWaveformRenderer, {
             tempoTrack: this.tempoTrack,
@@ -75,7 +71,7 @@ export class LevelEditor extends Component {
 
         this.level.instrumentTracks.push(track)
         this.instrumentTracks.push(
-            this.engine.createComponent(InstrumentTrackEditor, track, this.virtualBass)
+            this.engine.createComponent(InstrumentTrackEditor, track)
         )
         this.changed()
     }
@@ -110,7 +106,13 @@ export class LevelEditor extends Component {
         this._pattern = null
 
         if (pattern) {
-            const editor = this.engine.createComponent(PatternEditor, pattern, this.virtualBass) as PatternEditor
+            const trackEditor = this.instrumentTracks.find(editor =>
+                editor.noteTrack.track.patterns.has(pattern.pattern.id)
+            )
+            if (!trackEditor)
+                return
+
+            const editor = this.engine.createComponent(PatternEditor, pattern, trackEditor) as PatternEditor
             this._pattern = editor
 
             const windowManager = this.engine.getResource(WindowManager)

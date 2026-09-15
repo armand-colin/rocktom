@@ -6,26 +6,32 @@ import { Schedules } from "../../Schedules";
 import type { Level } from "../../sound/Level";
 import { Metronome } from "../Metronome";
 import { Time } from "../Time";
-import type { VirtualBass } from "../VirtualBass";
+import type { InstrumentTrackEditor } from "./InstrumentTrackEditor";
+import { PatternNotePlayer } from "./PatternNotePlayer";
 
 export class EditorPlayer extends Component {
 
     readonly level: Level
     readonly time: Time
-    readonly virtualBass: VirtualBass
     readonly metronome: Metronome
 
+    private _getInstrumentTracks: () => readonly InstrumentTrackEditor[]
+    private _patternNotes = PatternNotePlayer.createState()
     private _updateCoroutine: Coroutine | null = null
     private _audioPlayer: AudioPlayer
     private _loaded: boolean = false
     private _previousSeek: number = 0
     private _speed = 1
 
-    constructor(engine: Engine, level: Level, virtualBass: VirtualBass) {
+    constructor(
+        engine: Engine,
+        level: Level,
+        getInstrumentTracks: () => readonly InstrumentTrackEditor[],
+    ) {
         super(engine)
         this.level = level
         this.time = engine.createComponent(Time, level.tempoTrack.getTempoAt(0))
-        this.virtualBass = virtualBass
+        this._getInstrumentTracks = getInstrumentTracks
 
         this.metronome = engine.createComponent(Metronome, level.tempoTrack)
 
@@ -66,6 +72,7 @@ export class EditorPlayer extends Component {
         if (this.playing)
             return
 
+        this._patternNotes = PatternNotePlayer.createState()
         this._updateCoroutine = this.startCoroutine(this._update())
         this.metronome.sync(this.time.seconds, this._speed)
 
@@ -80,6 +87,8 @@ export class EditorPlayer extends Component {
         this._updateCoroutine?.cancel()
         this._updateCoroutine = null
         this._audioPlayer.pause()
+        this.metronome.pause()
+        PatternNotePlayer.stopAll(this._patternNotes, this._getInstrumentTracks())
         this.changed()
     }
 
@@ -100,11 +109,14 @@ export class EditorPlayer extends Component {
             this._audioPlayer.seek(0)
         }
 
+        PatternNotePlayer.stopAll(this._patternNotes, this._getInstrumentTracks())
+
         // Re-arm play/schedule after seek so a pending initial delay is cancelled
         // and seeking into the audio region actually starts playback.
         if (this.playing) {
             this._playAudio()
             this.metronome.sync(seconds, this._speed)
+            PatternNotePlayer.update(this._patternNotes, ticks, this._getInstrumentTracks())
         }
     }
 
@@ -113,6 +125,7 @@ export class EditorPlayer extends Component {
         this._audioPlayer.seek(0)
         this._audioPlayer.pause()
         this.metronome.reset()
+        PatternNotePlayer.stopAll(this._patternNotes, this._getInstrumentTracks())
 
         if (this._updateCoroutine !== null) {
             this.metronome.sync(0, this._speed)
@@ -144,7 +157,6 @@ export class EditorPlayer extends Component {
         super.destroy()
         this.pause()
         this._audioPlayer.clear()
-        this.virtualBass.destroy()
     }
 
 
@@ -176,6 +188,7 @@ export class EditorPlayer extends Component {
             this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
 
             this.metronome.update(ticks, this._speed)
+            PatternNotePlayer.update(this._patternNotes, ticks, this._getInstrumentTracks())
 
             lastUpdate = now
 
