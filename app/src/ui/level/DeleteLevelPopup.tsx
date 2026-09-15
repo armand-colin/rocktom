@@ -22,7 +22,7 @@ export function DeleteLevelPopup(props: Props) {
     const toastManager = useToastManager()
 
     async function onSubmit() {
-        const result = await LevelQueries.remove(props.level.id)
+        const result = await LevelQueries.remove.run({ path: { id: props.level.id } })
         if (result.ok) {
             props.onSuccess()
             props.close()

@@ -10,8 +10,9 @@ import type { FormHandler } from "../form/FormHandler"
 import { FormInputField } from "../ui/form/FormInputField"
 import { usePopupManager } from "../hooks/usePopupManager"
 import { IconPopup } from "../ui/iconPopup/IconPopup"
-import { StatusCodeError } from "../resources/fetch/StatusCodeError"
 import { UserQueries } from "../queries/user/UserQueries"
+import { Body } from '../resources/queryClient/Body'
+import { Query } from '../resources/queryClient/Query'
 
 const RegisterFormSchema = new FormSchema({
     email: FormField.email(),
@@ -24,7 +25,12 @@ export function Register() {
     const formHandler = useForm(RegisterFormSchema)
 
     async function onSubmit(e: FormHandler.Result<typeof RegisterFormSchema>) {
-        const result = await UserQueries.register(e.json.email, e.json.username)
+        const result = await UserQueries.register.run({
+            body: Body.json({
+                email: e.json.email,
+                username: e.json.username
+            })
+        })
 
         if (result.ok) {
             navigate('/login')
@@ -34,7 +40,7 @@ export function Register() {
         let errorMessage = 'Failed to register user'
         const error = result.error
 
-        if (error instanceof StatusCodeError) {
+        if (error instanceof Query.CodeError) {
             const code = (await error.response.json()).message
 
             switch (code) {

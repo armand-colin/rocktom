@@ -1,3 +1,4 @@
+import { Body } from "../../resources/queryClient/Body";
 import { QueryClient } from "../../resources/queryClient/QueryClient";
 import type { SessionTokensEntity } from "./SessionEntity";
 
@@ -6,11 +7,11 @@ export namespace SessionQueries {
     const sessionClient = new QueryClient(import.meta.env.VITE_API_URL, [])
 
     export const requestCode = sessionClient.post('/session/code')
-        .body<{ username: string }>()
+        .body<Body.Json<{ username: string }>>()
         .build()
 
     export const login = sessionClient.post('/session/login')
-        .body<{ username: string, code: string }>()
+        .body<Body.Json<{ username: string, code: string }>>()
         .result<SessionTokensEntity>()
         .build()
 
@@ -20,7 +21,7 @@ export namespace SessionQueries {
     
     export const refresh = sessionClient.post('/session/refresh')
         .result<SessionTokensEntity>()
-        .header<'Authorization'>()
+        .headers<{ Authorization?: string }>()
         .build()
 
 }

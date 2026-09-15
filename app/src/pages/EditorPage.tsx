@@ -1,5 +1,4 @@
-import { useParams } from "react-router-dom"
-import { useMutation } from "../hooks/useMutation"
+import { Navigate, useParams } from "react-router-dom"
 import { LevelQueries } from "../queries/level/LevelQueries"
 import { useEffect, useState } from "react"
 import { LevelEditorView } from "../ui/levelEditor/LevelEditorView"
@@ -7,32 +6,33 @@ import type { LevelEntity } from "../queries/level/LevelEntity"
 import { LevelEditor } from "../components/editor/LevelEditor"
 import { Level } from "../sound/Level"
 import { Instance } from "../Instance"
+import { useQuery } from "../hooks/useQuery"
 
 export function EditorPage() {
 
     const { id } = useParams()
-    const { data, isLoading, error, mutate: getLevel } = useMutation(LevelQueries.getById)
-    useEffect(() => {
-        if (!id) {
-            return
+
+    if (!id) {
+        return <Navigate to="/" />
+    }
+
+    const { result, isLoading } = useQuery(LevelQueries.getById, {
+        arguments: {
+            path: {
+                id: id
+            }
         }
+    })
 
-        getLevel(id)
-    }, [id])
-
-    if (isLoading || !data) {
+    if (isLoading || !result) {
         return <div>Loading...</div>
     }
 
-    if (error) {
-        return <div>Error: {error.message}</div>
+    if (!result.ok) {
+        return <div>Error: {result.error.message}</div>
     }
 
-    if (!data.ok) {
-        return <div>Loading...</div>
-    }
-
-    return <EditorView level={data.value} />
+    return <EditorView level={result.value} />
 
 }
 

@@ -1,7 +1,5 @@
-import { useEffect } from 'react'
 import { LevelList } from '../ui/level/levelList/LevelList'
 import { LevelQueries } from '../queries/level/LevelQueries'
-import { useMutation } from '../hooks/useMutation'
 import { useNavigate } from 'react-router-dom'
 import type { LevelEntity } from '../queries/level/LevelEntity'
 import type { ImportedLevelTracks } from '../utils/levelImport'
@@ -18,22 +16,20 @@ import { useToastManager } from '../hooks/useToastManager'
 import { Toast } from '../ui/toast/Toast'
 import { UserQueries } from '../queries/user/UserQueries'
 import { Page } from '../ui/page/Page'
+import { useQuery } from '../hooks/useQuery'
+import { Body } from '../resources/queryClient/Body'
 
 export function HomePage() {
-  const { isLoading: isLevelsLoading, data: levels, mutate: getAllLevels } = useMutation(LevelQueries.getAll)
+  const { isLoading: isLevelsLoading, result: levels, refresh: refreshLevels } = useQuery(LevelQueries.getAll, { arguments: {} })
+  const { result: userInfoResult } = useQuery(UserQueries.me, { arguments: {} })
+
   const popupManager = usePopupManager()
   const toastManager = useToastManager()
   const navigate = useNavigate()
-  const { mutate: getUserInfo, data: userInfoResult } = useMutation(UserQueries.me)
 
   const userId = userInfoResult?.ok ?
     userInfoResult.value.id :
     null
-
-  useEffect(() => {
-    getAllLevels()
-    getUserInfo()
-  }, [])
 
   async function onSelectLevel(level: LevelEntity) {
     navigate('/app/level/' + level.id)
@@ -55,7 +51,7 @@ export function HomePage() {
       close={close}
       level={level}
       onSuccess={() => {
-        getAllLevels()
+        refreshLevels()
       }}
     />)
   }
@@ -73,7 +69,7 @@ export function HomePage() {
 
     const loading = popupManager.add(() => <LoadingPopup />)
 
-    const result = await LevelQueries.share(level.id)
+    const result = await LevelQueries.share.run({ path: { id: level.id } })
 
     if (result.ok) {
       popupManager.add(close => <LevelSharePopup
@@ -92,19 +88,22 @@ export function HomePage() {
   }
 
   async function onImport(level: LevelEntity, imported: ImportedLevelTracks) {
-    const result = await LevelQueries.update(level.id, {
-      name: level.name,
-      serialized: imported.serialized,
-      duration: imported.duration,
-      playbackId: imported.playbackId,
-      instrumentTypes: imported.instrumentTypes,
+    const result = await LevelQueries.update.run({
+      path: { id: level.id },
+      body: Body.json({
+        name: level.name,
+        serialized: imported.serialized,
+        duration: imported.duration,
+        playbackId: imported.playbackId,
+        instrumentTypes: imported.instrumentTypes,
+      }),
     })
 
-    if (!result.ok) {
-      throw result.error
-    }
+    if(!result.ok) {
+        throw result.error
+      }
 
-    getAllLevels()
+    refreshLevels()
   }
 
   return (

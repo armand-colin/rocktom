@@ -4,18 +4,17 @@ import { LevelQueries } from "../queries/level/LevelQueries";
 import { useToastManager } from "../hooks/useToastManager";
 import { Toast } from "../ui/toast/Toast";
 import { Popup } from "../ui/popup/Popup";
-import { useMutation } from "../hooks/useMutation";
-import { useEffect } from "react";
 import { Spinner } from "../ui/spinner/Spinner";
 import { FetchErrorView } from "../ui/fetchError/FetchErrorView";
 import type { LevelEntity } from "../queries/level/LevelEntity";
-import { StatusCode } from "../resources/fetch/StatusCode";
 import { LevelInstrumentsView } from "../ui/level/LevelInstrumentsView";
 import { InstrumentType } from "../sound/instrument/Instrument";
 import { FormSchema } from "../form/FormSchema";
 import { useForm } from "../hooks/useForm";
 import { Form } from "../ui/form/Form";
 import { Icon } from "../ui/icon/Icon";
+import { StatusCode } from "../resources/queryClient/StatusCode";
+import { useQuery } from "../hooks/useQuery";
 
 export function AcceptLevelSharePage() {
     const { token } = useParams()
@@ -30,27 +29,23 @@ export function AcceptLevelSharePage() {
 }
 
 function WithToken(props: { token: string }) {
-    const { mutate: getSharePreview, isLoading, data } = useMutation(LevelQueries.getSharePreview)
-
-    useEffect(() => {
-        getSharePreview(props.token)
-    }, [props.token])
+    const { isLoading, result } = useQuery(LevelQueries.getSharePreview, { arguments: { path: { token: props.token } } })
 
     return <Popup.BaseContainer className="w-full max-w-100">
         {
-            (isLoading || !data) ?
+            (isLoading || !result) ?
                 <div className="flex justify-center items-center w-full h-50">
                     <Spinner />
                 </div> :
-                data.ok ?
+                result.ok ?
                     <WithPreview
                         token={props.token}
-                        preview={data.value}
+                        preview={result.value}
                     /> :
                     <div className="text-red-600 text-center grid gap-2 items-center">
                         <Icon name="error" />
                         <FetchErrorView
-                            error={data.error}
+                            error={result.error}
                             statusCodes={{
                                 [StatusCode.NotFound]: () => <p>Share not found</p>,
                             }}
@@ -69,7 +64,7 @@ function WithPreview(props: { token: string, preview: LevelEntity.SharePreview }
     const handler = useForm(schema)
 
     async function onAccept() {
-        const result = await LevelQueries.acceptShare(props.token)
+        const result = await LevelQueries.acceptShare.run({ path: { token: props.token } })
 
         if (result.ok) {
             navigate('/app')

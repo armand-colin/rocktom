@@ -6,6 +6,7 @@ import { JwtService } from './jwt.service';
 import { Session } from './session.entity';
 import { UserService } from '../user/user.service';
 import { MailerService } from '../mailer/mailer.service';
+import { LoginCodeTemplate } from '../mailer/templates/login-code.tempalte';
 
 const SESSION_EXPIRATION_DAYS = 7;
 const NUMERICS = '0123456789';
@@ -62,7 +63,7 @@ export class SessionService {
         await this.mailerService.sendMail({
             to: user.email,
             subject: 'Your Rocktom login code',
-            text: `Your login code is: ${code}`,
+            html: LoginCodeTemplate({ code }),
         });
     }
 

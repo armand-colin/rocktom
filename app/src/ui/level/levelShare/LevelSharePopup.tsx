@@ -10,6 +10,7 @@ import { FormInputField } from "../../form/FormInputField"
 import { StringInput } from "../../input/StringInput"
 import { Toast } from "../../toast/Toast"
 import { useToastManager } from "../../../hooks/useToastManager"
+import { Body } from "../../../resources/queryClient/Body"
 
 type Props = {
     close: () => void,
@@ -18,7 +19,7 @@ type Props = {
 }
 
 export function LevelSharePopup(props: Props) {
-    const { mutate: updateShare, isLoading: isUpdatePending } = useMutation(LevelQueries.updateShare)
+    const { mutate: updateShare, isLoading: isUpdatePending } = useMutation(LevelQueries.updateShare.run)
     const toastManager = useToastManager()
 
     const [permission, setPermission] = useState<LevelEntity.SharePermission>(props.share.permission)
@@ -68,9 +69,12 @@ export function LevelSharePopup(props: Props) {
     }
 
     function onEnableSharingChange(value: boolean) {
-        updateShare(props.level.id, {
-            enabled: value,
-            permission: props.share.permission,
+        updateShare({
+            path: { id: props.level.id },
+            body: Body.json({
+                enabled: value,
+                permission: props.share.permission,
+            }),
         })
             .then(() => {
                 // TODO: store value in level storage
@@ -89,9 +93,12 @@ export function LevelSharePopup(props: Props) {
     }
 
     function onPermissionChange(value: LevelEntity.SharePermission) {
-        updateShare(props.level.id, {
-            enabled: enabled,
-            permission: value,
+        updateShare({
+            path: { id: props.level.id },
+            body: Body.json({
+                enabled: enabled,
+                permission: value,
+            }),
         })
             .then(() => {
                 // TODO: store value in level storage

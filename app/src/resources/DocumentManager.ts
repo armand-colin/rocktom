@@ -22,7 +22,7 @@ export class DocumentManager extends Resource {
             return this._fileRequests[documentId]
         }
 
-        this._fileRequests[documentId] = DocumentQueries.download(documentId)
+        this._fileRequests[documentId] = DocumentQueries.download.run({ path: { id: documentId } })
             .then(result => {
                 if (result.ok) {
                     this._files[documentId] = result.value

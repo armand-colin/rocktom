@@ -1,22 +1,16 @@
 import { Instance } from "../../Instance";
-import { Body } from "../../resources/fetch/Body";
-import { Fetch } from "../../resources/fetch/Fetch";
+import type { Body } from "../../resources/queryClient/Body";
 import type { UserEntity } from "./UserEntity";
 
 export namespace UserQueries {
 
-    const fetch = Instance.engine.getResource(Fetch);
+    export const register = Instance.queryClient.post('/user/register')
+        .body<Body.Json<{ email: string, username: string }>>()
+        .result<UserEntity>()
+        .build()
 
-    export function register(email: string, username: string) {
-        return fetch.api.post<UserEntity>('/user/register', Body.json({ email, username }));
-    }
-
-    export function login(email: string) {
-        return fetch.api.post<UserEntity>('/user/login', Body.json({ email }));
-    }
-
-    export function me() {
-        return fetch.apiAuth.get<UserEntity>('/user/me');
-    }
+    export const me = Instance.queryClient.get('/user/me')
+        .result<UserEntity>()
+        .build()
 
 }

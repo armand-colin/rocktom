@@ -5,7 +5,6 @@ import { Button, ButtonTheme } from "../ui/button/Button"
 import { usePopupManager } from "../hooks/usePopupManager"
 import { IconPopup } from "../ui/iconPopup/IconPopup"
 import { AuthManager } from "../resources/AuthManager"
-import { StatusCodeError } from "../resources/fetch/StatusCodeError"
 import { Instance } from "../Instance"
 import { FormSchema } from "../form/FormSchema"
 import { useForm } from "../hooks/useForm"
@@ -16,6 +15,7 @@ import { FormInputField } from '../ui/form/FormInputField'
 import { Spinner } from '../ui/spinner/Spinner'
 import { UiSize } from '../ui/UiSize'
 import { FormButtons } from '../ui/formButtons/FormButtons'
+import { Query } from '../resources/queryClient/Query'
 
 enum LoginStep {
     Email,
@@ -59,7 +59,6 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
         const authManager = Instance.engine.getResource(AuthManager)
 
         const result = await authManager.requestCode(e.json.username)
-        console.log('code result', result)
 
         if (result.ok) {
             props.onSuccess(e.json.username)
@@ -70,7 +69,7 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
 
         let errorMessage = 'Failed to ask for code'
 
-        if (error instanceof StatusCodeError) {
+        if (error instanceof Query.CodeError) {
             const code = (await error.response.json()).message
 
             switch (code) {
@@ -135,7 +134,7 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
 
         let errorMessage = 'Failed to login'
 
-        if (error instanceof StatusCodeError) {
+        if (error instanceof Query.CodeError) {
             const code = (await error.response.json()).message
 
             switch (code) {

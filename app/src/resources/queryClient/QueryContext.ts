@@ -12,9 +12,10 @@ export class QueryContext {
     private _path: Path<string>
     private _pathArguments: Record<string, string> = {}
     private _search: Record<string, string | number | boolean> = {}
-    private _body: Body<any> | null
+    private _body: Body | null
     private _retryCount: number = 0
     private _shallRetry: boolean = false
+    private _signal: AbortSignal | null = null
 
     constructor(options: {
         queryClient: QueryClient,
@@ -23,8 +24,9 @@ export class QueryContext {
         pathArguments: Record<string, string>,
         search: Record<string, string | number | boolean>,
         method: QueryMethod,
-        body: Body<any> | null,
-        retryCount: number
+        body: Body | null,
+        retryCount: number,
+        signal: AbortSignal | null
     }) {
         this.queryClient = options.queryClient
 
@@ -35,6 +37,7 @@ export class QueryContext {
         this._headers = options.headers
         this._body = options.body
         this._retryCount = options.retryCount
+        this._signal = options.signal
     }
 
     get shallRetry() {
@@ -69,6 +72,10 @@ export class QueryContext {
         return this._body
     }
 
+    get signal() {
+        return this._signal
+    }
+
     retry() {
         this._shallRetry = true
         return this
@@ -93,7 +100,8 @@ export class QueryContext {
             method: this._method,
             body: this._body,
             headers: {...this._headers},
-            retryCount: this._retryCount
+            retryCount: this._retryCount,
+            signal: this._signal
         })
     }
 

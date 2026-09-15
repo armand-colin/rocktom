@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { useMutation } from "../../hooks/useMutation";
 import { UserQueries } from "../../queries/user/UserQueries";
 import { Instance } from "../../Instance";
 import { AuthManager } from "../../resources/AuthManager";
@@ -8,17 +6,14 @@ import { Popup } from "../popup/Popup";
 import { Spinner } from "../spinner/Spinner";
 import "./ProfilePopup.scss";
 import { FormInputField } from "../form/FormInputField";
+import { useQuery } from "../../hooks/useQuery";
 
 type Props = {
     close: () => void,
 }
 
 export function ProfilePopup(props: Props) {
-    const { data: user, mutate: getUser, isLoading } = useMutation(UserQueries.me)
-
-    useEffect(() => {
-        getUser()
-    }, [])
+    const { result: user, isLoading } = useQuery(UserQueries.me, { arguments: {} })
 
     function onLogout() {
         Instance.engine.getResource(AuthManager).logout()

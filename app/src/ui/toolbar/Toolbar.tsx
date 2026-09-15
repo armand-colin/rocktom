@@ -45,6 +45,7 @@ export function Toolbar(props: Props) {
                     tab={tab}
                     path={path}
                     index={index}
+                    key={index}
                     onSetPath={onSetPath}
                 />
             })
@@ -96,6 +97,7 @@ function ToolbarTab(props: {
                         item={item}
                         path={subpath}
                         index={index}
+                        key={index}
                         onSetPath={onSetPath}
                         onClose={onClose}
                     />
@@ -233,6 +235,7 @@ function ToolbarMenuItem(props: {
                         item={item}
                         path={subpath}
                         index={index}
+                        key={index}
                         onSetPath={onSetPath}
                         onClose={props.onClose}
                     />
@@ -254,6 +257,7 @@ function ToolbarSectionItem(props: {
 
         {props.items.map((item, index) => {
             return <ToolbarItem
+                key={index}
                 item={item}
                 path={props.path}
                 index={index}

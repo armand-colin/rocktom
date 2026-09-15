@@ -26,6 +26,7 @@ import { FormInputField } from "../form/FormInputField";
 import { usePopupManager } from "../../hooks/usePopupManager";
 import { TapTempoPopup } from "./tapTempo/TapTempoPopup";
 import { Slider } from "../slider/Slider";
+import { Body } from "../../resources/queryClient/Body";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
@@ -50,7 +51,7 @@ export function LevelEditorView(props: {
     editor: LevelEditor
 }) {
     const { level } = useComponent(props.editor)
-    const { mutate: updateLevel, isLoading: isUpdating } = useMutation(LevelQueries.update)
+    const { mutate: updateLevel, isLoading: isUpdating } = useMutation(LevelQueries.update.run)
     const navigate = useNavigate()
     const toastManager = useToastManager()
     const popupManager = usePopupManager()
@@ -78,12 +79,15 @@ export function LevelEditorView(props: {
         if (isUpdating)
             return
 
-        updateLevel(level.id, {
-            name: level.name,
-            serialized: JSON.stringify(level.serializeTracks()),
-            duration: Math.round(level.durationInSeconds),
-            playbackId: level.audioTrack.playbackId,
-            instrumentTypes: level.getInstrumentTypes(),
+        updateLevel({
+            path: { id: level.id },
+            body: Body.json({
+                name: level.name,
+                serialized: JSON.stringify(level.serializeTracks()),
+                duration: Math.round(level.durationInSeconds),
+                playbackId: level.audioTrack.playbackId,
+                instrumentTypes: level.getInstrumentTypes(),
+            })
         }).then(() => {
             toastManager.add(close => <Toast.Simple
                 message="Level saved successfully"

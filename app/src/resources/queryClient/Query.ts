@@ -2,12 +2,30 @@ import { Result } from "@niloc/utils";
 import { Path } from "./Path";
 import type { QueryClient } from "./QueryClient"
 import type { QuerySpecification } from "./QuerySpecification";
-import type { Body } from "./Body";
 import type { QueryMethod } from "./QueryMethod";
 import { QueryContext } from "./QueryContext";
 import type { QueryResult } from "./QueryHandler";
+import type { StatusCode } from "./StatusCode";
 
-type QueryRunner = (context: QueryContext) => Promise<QueryResult>
+function cleanup<T>(object: T): T {
+    const copy = { ...object }
+
+    const keysToDelete = []
+
+    for (const key in copy) {
+        if (copy[key] === undefined) {
+            keysToDelete.push(key)
+        }
+    }
+
+    for (const key of keysToDelete) {
+        delete copy[key]
+    }
+
+    return copy
+}
+
+type QueryRunner<T> = (context: QueryContext) => Promise<QueryResult<T>>
 
 export class Query<T extends QuerySpecification> {
 
@@ -19,12 +37,7 @@ export class Query<T extends QuerySpecification> {
         this._path = new Path(specifications.path)
     }
 
-    async run(options: Query.RunArguments<T>): Promise<Result<QuerySpecification.ResultOf<T>, Query.Error>> {
-        const search = new URLSearchParams()
-        for (const [key, value] of Object.entries(((options as any).search as Record<string, string | number>) ?? {})) {
-            search.set(key, value.toString())
-        }
-
+    run = async (options: Query.RunArguments<T>): Promise<QueryResult<QuerySpecification.ResultOf<T>>> => {
         const context = new QueryContext({
             queryClient: this.queryClient,
             body: (options as any).body,
@@ -33,10 +46,11 @@ export class Query<T extends QuerySpecification> {
             path: this._path,
             pathArguments: (options as any).path,
             search: (options as any).search,
-            retryCount: 0
+            retryCount: 0,
+            signal: (options as any).signal ?? null
         })
 
-        let runner: QueryRunner = (context) => {
+        let runner: QueryRunner<T> = (context) => {
             return Query.run(context)
         }
 
@@ -45,7 +59,7 @@ export class Query<T extends QuerySpecification> {
         for (let i = interceptors.length - 1; i >= 0; i--) {
             const interceptor = interceptors[i]
             const lastRunner = runner
-            const newRunner: QueryRunner = (context) => {
+            const newRunner: QueryRunner<T> = (context) => {
                 return interceptor.handle(context, (context) => {
                     return lastRunner(context)
                 })
@@ -58,6 +72,14 @@ export class Query<T extends QuerySpecification> {
 
             const result = await runner(newContext)
 
+            if (!result.ok && newContext.signal?.aborted) {
+                return Result.error(new Query.AbortedError(result.error))
+            }
+
+            if (result.ok && newContext.signal?.aborted) {
+                return Result.error(new Query.AbortedError(result.value))
+            }
+
             // TODO: maybe check for result.ok?
             if (newContext.shallRetry) {
                 context.setRetryCount(context.retryCount + 1)
@@ -68,9 +90,11 @@ export class Query<T extends QuerySpecification> {
         }
     }
 
-    static async run(context: QueryContext): Promise<QueryResult> {
+    static async run<T extends QuerySpecification>(context: QueryContext): Promise<QueryResult<QuerySpecification.ResultOf<T>>> {
         const search = new URLSearchParams()
-        for (const [key, value] of Object.entries((context.search as Record<string, string | number>) ?? {})) {
+        const searchParams = cleanup((context.search as Record<string, string | number>) ?? {})
+
+        for (const [key, value] of Object.entries(searchParams)) {
             search.set(key, value.toString())
         }
 
@@ -93,7 +117,7 @@ export class Query<T extends QuerySpecification> {
         try {
             const response = await context.queryClient.fetch(url, {
                 body: body ? body.data : undefined,
-                headers: context.headers,
+                headers: cleanup({ ...context.headers }),
                 method: context.method,
                 credentials: 'include',
             })
@@ -105,17 +129,17 @@ export class Query<T extends QuerySpecification> {
             const contentType = response.headers.get('Content-Type')
 
             if (contentType?.startsWith('application/json')) {
-                return Result.ok(await response.json())
+                return Result.ok(await response.json() as QuerySpecification.ResultOf<T>)
             }
 
             if (
                 contentType === "application/octet-stream" ||
                 contentType?.startsWith('audio/')
             ) {
-                return Result.ok(await response.arrayBuffer())
+                return Result.ok(await response.arrayBuffer() as QuerySpecification.ResultOf<T>)
             }
 
-            return Result.ok(await response.text())
+            return Result.ok(await response.text() as QuerySpecification.ResultOf<T>)
         } catch (error) {
             return Result.error(new Query.NetworkError(error))
         }
@@ -137,9 +161,11 @@ export namespace Query {
         true :
         false
 
-    type _RunArguments<T extends QuerySpecification> =
+    type _RunArguments<T extends QuerySpecification> = {
+        signal?: AbortSignal,
+    } &
         (IsUndefined<QuerySpecification.BodyOf<T>> extends true ? {} : {
-            body: Body<QuerySpecification.BodyOf<T>>
+            body: QuerySpecification.BodyOf<T>
         }) & (IsUndefined<QuerySpecification.SearchOf<T>> extends true ? {} : {
             search: QuerySpecification.SearchOf<T>
         }) & (IsUndefined<Path.Arguments<QuerySpecification.PathOf<T>>> extends true ? {} : {
@@ -168,8 +194,11 @@ export namespace Query {
 
     export class CodeError extends Error {
 
+        readonly statusCode: StatusCode
+
         constructor(readonly response: Response) {
             super("")
+            this.statusCode = response.status as StatusCode
         }
 
     }
@@ -186,6 +215,14 @@ export namespace Query {
 
         constructor(readonly path: Path<string>, error: Path.CompileError) {
             super(`Path ${path.path} could not compile: ${error.message}`)
+        }
+
+    }
+
+    export class AbortedError extends Error {
+
+        constructor(readonly native: unknown) {
+            super("Aborted")
         }
 
     }

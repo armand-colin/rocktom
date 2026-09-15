@@ -44,7 +44,7 @@ export class AudioTrackEditor extends Component {
             return
         }
 
-        DocumentQueries.get(playbackId)
+        DocumentQueries.get.run({ path: { id: playbackId } })
             .then(result => {
                 if (!result.ok) {
                     // TODO: handle error

@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { useMutation } from "../../hooks/useMutation";
 import { DocumentQueries } from "../../queries/document/DocumentQueries";
 import { Popup } from "../popup/Popup";
 import type { DocumentEntity } from "../../queries/document/DocumentEntity";
@@ -12,6 +10,8 @@ import { ConfirmPopup } from "../popup/confirmPopup/ConfirmPopup";
 import { Instance } from "../../Instance";
 import { UiSize } from "../UiSize";
 import { Spinner } from "../spinner/Spinner";
+import { useQuery } from "../../hooks/useQuery";
+import { Body } from "../../resources/queryClient/Body";
 
 export interface Props {
     close: () => void,
@@ -20,26 +20,20 @@ export interface Props {
 }
 
 export function SelectDocumentPopup(props: Props) {
-    const { data: documents, mutate: getAllDocuments } = useMutation(DocumentQueries.getAll)
-    const { mutate: uploadDocument } = useMutation(DocumentQueries.upload)
-    const { mutate: deleteDocument } = useMutation(DocumentQueries.remove)
-
-    useEffect(() => {
-        getAllDocuments()
-    }, [])
+    const { result: documents, refresh: refreshDocuments } = useQuery(DocumentQueries.getAll, { arguments: { } })
 
     function onFileSelected(file: File | null) {
         if (!file) {
             return
         }
 
-        uploadDocument(file)
-            .then(() => getAllDocuments())
+        DocumentQueries.upload.run({ body: Body.multipart({ file }) })
+            .then(() => refreshDocuments())
     }
 
     async function onDeleteDocument(document: DocumentEntity) {
-        await deleteDocument(document.id)
-            .then(() => getAllDocuments())
+        await DocumentQueries.remove.run({ path: { id: document.id } })
+            .then(() => refreshDocuments())
             .catch(() => {
                 // TODO: do something
             })

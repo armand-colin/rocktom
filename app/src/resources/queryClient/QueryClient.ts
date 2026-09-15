@@ -16,7 +16,7 @@ class QueryBuilder<T extends {
     static create<Path extends string = string, Method extends QueryMethod = QueryMethod>(client: QueryClient, path: Path, method: Method): QueryBuilder<{
         method: Method,
         path: Path,
-        body: void,
+        body: null,
         search: {},
         result: void,
         headers: {}
@@ -24,7 +24,7 @@ class QueryBuilder<T extends {
         return new QueryBuilder(client, {
             method,
             path,
-            body: undefined,
+            body: null,
             search: {},
             result: undefined,
             headers: {}
@@ -88,6 +88,20 @@ class QueryBuilder<T extends {
         return new QueryBuilder(this.client, {
             ...this._options,
             headers: {} as { [key in (H | (keyof T['headers']))]: string }
+        })
+    }
+
+    headers<H extends Record<string, string>>(): QueryBuilder<{
+        method: T['method'],
+        path: T['path'],
+        body: T['body'],
+        search: T['search'],
+        result: T['result'],
+        headers: H & T['headers']
+    }> {
+        return new QueryBuilder(this.client, {
+            ...this._options,
+            headers: {} as H
         })
     }
 

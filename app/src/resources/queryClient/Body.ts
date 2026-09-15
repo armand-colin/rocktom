@@ -1,19 +1,6 @@
-export type Body<T> = {
-    [Body.Marker]: T,
-    type: 'json',
-    readonly data: string,
-    readonly headers: Record<string, string>
-} | {
-    [Body.Marker]: T,
-    type: 'text',
-    readonly data: string,
-    readonly headers: Record<string, string>
-} | {
-    [Body.Marker]: T,
-    type: 'multipart',
-    readonly data: FormData,
-    readonly headers: Record<string, string>
-}
+export type Body = Body.Json<any> |
+    Body.Text |
+    Body.Multipart<any>
 
 export namespace Body {
 
@@ -22,57 +9,65 @@ export namespace Body {
     const JSONHeaders = {
         'Content-Type': 'application/json'
     }
+
     const TextHeaders = {
         'Content-Type': 'text/plain'
     }
 
-    export function json<T>(data: T): Body<T> {
-        return {
-            type: 'json',
-            [Marker]: null as T,
-            data: JSON.stringify(data),
-            headers: JSONHeaders
-        }
-    }
+    export class Json<T> {
 
-    export function text(data: string): Body<string> {
-        return {
-            type: 'text',
-            [Marker]: "",
-            data,
-            headers: TextHeaders
-        }
-    }
+        readonly type = 'json'
+        readonly data: string
+        readonly headers = JSONHeaders
+        readonly [Marker]: T
 
-    function createFormData(data: Record<string, FormDataEntryValue>): FormData {
-        const formData = new FormData()
-
-        for (const key in data) {
-            formData.append(key, data[key])
+        constructor(data: T) {
+            this[Marker] = null as any as T
+            this.data = JSON.stringify(data)
         }
 
-        return formData
     }
 
-    export function multipart(data: FormData | Record<string, FormDataEntryValue>): Body<any> {
-        let formData;
-        if (data instanceof FormData) {
-            formData = data
-        } else {
-            formData = new FormData()
+    export class Text {
+
+        readonly type = 'text'
+        readonly data: string
+        readonly headers = TextHeaders
+
+        constructor(data: string) {
+            this.data = data
+        }
+
+    }
+
+    export class Multipart<T extends Record<string, FormDataEntryValue>> {
+
+        readonly type = 'multipart'
+        readonly data: FormData
+        readonly headers = {}
+
+        readonly [Marker]: T
+
+        constructor(data: T) {
+            this[Marker] = null as any as T
+            this.data = new FormData()
             for (const key in data) {
-                formData.append(key, data[key])
+                this.data.append(key, data[key] as string)
             }
         }
 
-        return {
-            type: 'multipart',
-            [Marker]: null as any,
-            data: data instanceof FormData ?
-                data :
-                createFormData(data),
-            headers: {}
-        }
+    }
+
+    export function json<T>(data: T): Json<T> {
+        return new Json(data)
+    }
+
+    export function text(data: string): Text {
+        return new Text(data)
+    }
+
+    export function multipart<T extends Record<string, FormDataEntryValue>>(data: T): Multipart<T> {
+        return new Multipart(data)
     }
 
 }

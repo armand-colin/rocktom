@@ -1,3 +1,4 @@
+import type { Body } from "./Body"
 import type { QueryMethod } from "./QueryMethod"
 
 export type QuerySpecification = {
@@ -5,7 +6,7 @@ export type QuerySpecification = {
     method: QueryMethod,
     result?: any,
     headers?: Record<string, string>,
-    body?: any,
+    body?: Body | null,
     search?: Record<string, string | number>,
 }
 

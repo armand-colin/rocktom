@@ -12,6 +12,7 @@
     "migration:revert": "vite-node src/database/revert-migration.ts"
   },
   "dependencies": {
+    "@nestjs/cli": "^12.0.1",
     "@nestjs/common": "^11.1.19",
     "@nestjs/core": "^11.1.19",
     "@nestjs/platform-express": "^11.1.19",

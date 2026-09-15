@@ -1,33 +1,28 @@
-import { Result } from "@niloc/utils";
 import { Instance } from "../../Instance";
-import { Fetch } from "../../resources/fetch/Fetch";
 import type { DocumentEntity } from "./DocumentEntity";
-import { Body } from "../../resources/fetch/Body";
+import type { Body } from "../../resources/queryClient/Body";
 
 export namespace DocumentQueries {
 
-    export function get(id: string): Promise<Result<DocumentEntity, Error>> {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.apiAuth.get<DocumentEntity>('/document/' + id)
-    }
+    export const get = Instance.queryClient.get('/document/:id')
+        .result<DocumentEntity>()
+        .build()
 
-    export function getAll(): Promise<Result<DocumentEntity[], Error>> {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.apiAuth.get<DocumentEntity[]>('/document')
-    }
+    export const getAll = Instance.queryClient.get('/document')
+        .result<DocumentEntity[]>()
+        .build()
 
-    export function upload(file: File): Promise<Result<DocumentEntity, Error>> {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.apiAuth.post<DocumentEntity>('/document/upload', Body.multipart({ file: file }))
-    }
+    export const upload = Instance.queryClient.post('/document/upload')
+        .result<DocumentEntity>()
+        .body<Body.Multipart<{ file: File }>>()
+        .build()
 
-    export function download(documentId: string): Promise<Result<ArrayBuffer, Error>> {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.apiAuth.get<ArrayBuffer>('/document/' + documentId + '/download')
-    }
+    export const download = Instance.queryClient.get('/document/:id/download')
+        .result<ArrayBuffer>()
+        .build()
 
-    export function remove(documentId: string): Promise<Result<void, Error>> {
-        const fetch = Instance.engine.getResource(Fetch)
-        return fetch.apiAuth.delete<void>('/document/' + documentId)
-    }
+    export const remove = Instance.queryClient.delete('/document/:id')
+        .result<void>()
+        .build()
+
 }

@@ -71,7 +71,7 @@ export class AuthManager extends Resource {
     }
 
     async logout() {
-        SessionQueries.logout.run({ })
+        SessionQueries.logout.run({})
             .finally(() => {
                 this._store.setSession(null)
                 this.changed()
@@ -104,7 +104,9 @@ export class AuthManager extends Resource {
         this._refreshPromise = new Promise<Result<Tokens, Error>>(async (resolve) => {
             const response = await SessionQueries.refresh.run({
                 headers: {
-                    Authorization: `Bearer ${refreshToken}`
+                    Authorization: refreshToken ?
+                        `Bearer ${refreshToken}` :
+                        undefined
                 }
             })
 

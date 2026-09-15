@@ -1,6 +1,5 @@
 import { Instance } from "../../Instance";
-import { Body } from "../../resources/fetch/Body";
-import { Fetch } from "../../resources/fetch/Fetch";
+import type { Body } from "../../resources/queryClient/Body";
 import type { LevelEntity } from "./LevelEntity";
 
 type CreateLevel = {
@@ -23,52 +22,43 @@ type UpdateLevelShare = {
 
 export namespace LevelQueries {
 
-    const getAllQuery = Instance.queryClient.get('/level')
+    export const getAll = Instance.queryClient.get('/level')
         .result<LevelEntity[]>()
         .build();
 
-    export function getAll() {
-        return getAllQuery.run({ })
-    }
+    export const create = Instance.queryClient.post('/level')
+        .result<LevelEntity>()
+        .body<Body.Json<CreateLevel>>()
+        .build()
 
-    export function create(body: CreateLevel) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.post<LevelEntity>('/level', Body.json(body));
-    }
+    export const getById = Instance.queryClient.get('/level/:id')
+        .result<LevelEntity>()
+        .build()
 
-    export function getById(id: string) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.get<LevelEntity>(`/level/${id}`);
-    }
+    export const update = Instance.queryClient.put('/level/:id')
+        .result<LevelEntity>()
+        .body<Body.Json<UpdateLevel>>()
+        .build()
 
-    export function update(id: string, level: UpdateLevel) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.put<LevelEntity>(`/level/${id}`, Body.json(level));
-    }
+    export const remove = Instance.queryClient.delete('/level/:id')
+        .result<void>()
+        .build()
 
-    export function remove(id: string) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.delete<void>(`/level/${id}`);
-    }
+    export const share = Instance.queryClient.post('/level/:id/share')
+        .result<LevelEntity.Share>()
+        .build()
 
-    export function share(id: string) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.post<LevelEntity.Share>(`/level/${id}/share`);
-    }
+    export const updateShare = Instance.queryClient.put('/level/:id/share')
+        .result<LevelEntity.Share>()
+        .body<Body.Json<UpdateLevelShare>>()
+        .build()
 
-    export function updateShare(id: string, options: UpdateLevelShare) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.put<LevelEntity.Share>(`/level/${id}/share`, Body.json(options));
-    }
+    export const acceptShare = Instance.queryClient.post('/level/share/:token/accept')
+        .result<LevelEntity>()
+        .build()
 
-    export function acceptShare(token: string) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.post<LevelEntity>(`/level/share/${token}/accept`);
-    }
-
-    export function getSharePreview(token: string) {
-        const fetch = Instance.engine.getResource(Fetch);
-        return fetch.apiAuth.get<LevelEntity.SharePreview>(`/level/share/${token}`);
-    }
+    export const getSharePreview = Instance.queryClient.get('/level/share/:token')
+        .result<LevelEntity.SharePreview>()
+        .build()
 
 }
