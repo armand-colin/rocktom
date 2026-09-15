@@ -11,6 +11,7 @@ import { AddDuration } from './migrations/20260603-add-duration';
 import { AddInstrumentTypes } from './migrations/20260902-add-instrument-types';
 import { AddLevelShare } from './migrations/20260904-add-level-share';
 import { NoteTracksArray } from './migrations/20260915-note-tracks-array';
+import { InstrumentTracks } from './migrations/20260915-instrument-tracks';
 
 export namespace TypeOrmConfig {
 
@@ -30,7 +31,7 @@ export namespace TypeOrmConfig {
         LevelShare,
         LevelAccess,
       ],
-      migrations: [InitialSchema, AddDuration, AddInstrumentTypes, AddLevelShare, NoteTracksArray],
+      migrations: [InitialSchema, AddDuration, AddInstrumentTypes, AddLevelShare, NoteTracksArray, InstrumentTracks],
       synchronize: false,
       migrationsRun: true,
     };

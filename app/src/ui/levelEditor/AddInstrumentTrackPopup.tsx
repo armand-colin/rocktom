@@ -1,7 +1,6 @@
 import { useState } from "react"
 import type { LevelEditor } from "../../components/editor/LevelEditor"
 import type { Instrument } from "../../sound/instrument/Instrument"
-import type { NoteTrack } from "../../sound/song/NoteTrack"
 import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown"
 import { Popup } from "../popup/Popup"
 import { FormButtons } from "../formButtons/FormButtons"
@@ -10,11 +9,13 @@ import { Form } from "../form/Form"
 import { FormSchema } from "../../form/FormSchema"
 import { useForm } from "../../hooks/useForm"
 import { FormInputField } from "../form/FormInputField"
+import type { InstrumentTrack } from "../../sound/song/InstrumentTrack"
 
 const schema = FormSchema.default()
-export function AddNoteTrackPopup(props: {
+
+export function AddInstrumentTrackPopup(props: {
     close: () => void,
-    placeAfter?: NoteTrack,
+    placeAfter?: InstrumentTrack,
     editor: LevelEditor,
 }) {
     const [instrument, setInstrument] = useState<Instrument | null>(null)
@@ -24,9 +25,10 @@ export function AddNoteTrackPopup(props: {
         if (!instrument)
             return
 
-        props.editor.addNoteTrack(instrument)
+        props.editor.addInstrumentTrack(instrument)
         props.close()
     }
+
     return <Popup.BaseContainer className="w-svw max-w-80">
         <Popup.BaseTitle title="Add note track" close={props.close} />
         <Form handler={handler} onSubmit={onSubmit} className="grid gap-7">

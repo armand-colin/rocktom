@@ -1,9 +1,9 @@
 import { nanoid } from "nanoid";
 import { AudioTrack, type SerializedAudioTrack } from "./song/AudioTrack";
 import { FocusTrack, type SerializedFocusTrack } from "./song/FocusTrack";
+import { InstrumentTrack, type SerializedInstrumentTrack } from "./song/InstrumentTrack";
 import { NoteTrack, type SerializedNoteTrack } from "./song/NoteTrack";
 import { TempoTrack, type SerializedTempoTrack } from "./song/TempoTrack";
-import { Instrument } from "./instrument/Instrument";
 import { Focus } from "./song/Focus";
 import { Tempo } from "./Tempo";
 
@@ -14,18 +14,18 @@ type SerializedLevel = {
 }
 
 type SerializedTracks = {
-    noteTracks: SerializedNoteTrack[],
+    instrumentTracks: SerializedInstrumentTrack[],
     audio: SerializedAudioTrack,
     tempo: SerializedTempoTrack,
-    focus: SerializedFocusTrack
 }
 
 type SerializedTracksInput = {
+    instrumentTracks?: SerializedInstrumentTrack[],
     noteTracks?: SerializedNoteTrack[],
     note?: SerializedNoteTrack,
     audio: SerializedAudioTrack,
     tempo: SerializedTempoTrack,
-    focus: SerializedFocusTrack
+    focus?: SerializedFocusTrack
 }
 
 export class Level {
@@ -33,10 +33,9 @@ export class Level {
     readonly id: string
     name: string
 
-    readonly noteTracks: NoteTrack[]
+    readonly instrumentTracks: InstrumentTrack[]
     readonly audioTrack: AudioTrack
     readonly tempoTrack: TempoTrack
-    readonly focusTrack: FocusTrack
 
     static default(opts: {
         id: string,
@@ -46,10 +45,9 @@ export class Level {
             id: opts.id,
             name: opts.name,
             tracks: {
-                noteTracks: [Level.defaultNoteTrack()],
+                instrumentTracks: [InstrumentTrack.default()],
                 audio: new AudioTrack({ time: 0, playbackId: null }),
                 tempo: new TempoTrack(new Tempo(120)),
-                focus: new FocusTrack(Focus.default(), [])
             }
         })
     }
@@ -76,30 +74,28 @@ export class Level {
         id: string,
         name: string,
         tracks: {
-            noteTracks: NoteTrack[],
+            instrumentTracks: InstrumentTrack[],
             audio: AudioTrack,
             tempo: TempoTrack,
-            focus: FocusTrack
         }
     }) {
         this.id = opts.id
         this.name = opts.name
 
-        this.noteTracks = opts.tracks.noteTracks
+        this.instrumentTracks = opts.tracks.instrumentTracks
         this.audioTrack = opts.tracks.audio
         this.tempoTrack = opts.tracks.tempo
-        this.focusTrack = opts.tracks.focus
     }
 
     get durationInTicks() {
         let end = 0
 
-        for (const noteTrack of this.noteTracks) {
-            for (const timedPattern of noteTrack.timedPatterns) {
+        for (const instrumentTrack of this.instrumentTracks) {
+            for (const timedPattern of instrumentTrack.noteTrack.timedPatterns) {
                 end = Math.max(end, timedPattern.time + timedPattern.duration)
             }
 
-            for (const note of noteTrack.notes()) {
+            for (const note of instrumentTrack.noteTrack.notes()) {
                 end = Math.max(end, note.time + note.duration)
             }
         }
@@ -114,8 +110,8 @@ export class Level {
     getInstrumentTypes(): string[] {
         const types: string[] = []
 
-        for (const noteTrack of this.noteTracks) {
-            const type = noteTrack.instrument.type
+        for (const instrumentTrack of this.instrumentTracks) {
+            const type = instrumentTrack.instrument.type
             if (!types.includes(type))
                 types.push(type)
         }
@@ -129,8 +125,7 @@ export class Level {
             name: this.name + " (cloned)",
             tracks: {
                 audio: this.audioTrack.clone(),
-                focus: this.focusTrack.clone(),
-                noteTracks: this.noteTracks.map(track => track.clone()),
+                instrumentTracks: this.instrumentTracks.map(track => track.clone()),
                 tempo: this.tempoTrack.clone()
             }
         })
@@ -146,48 +141,51 @@ export class Level {
 
     serializeTracks(): SerializedTracks {
         return {
-            noteTracks: this.noteTracks.map(track => track.serialize()),
+            instrumentTracks: this.instrumentTracks.map(track => track.serialize()),
             audio: this.audioTrack.serialize(),
             tempo: this.tempoTrack.serialize(),
-            focus: this.focusTrack.serialize()
         }
     }
 
     static deserializeTracks(data: SerializedTracksInput): {
-        noteTracks: NoteTrack[],
+        instrumentTracks: InstrumentTrack[],
         audio: AudioTrack,
         tempo: TempoTrack,
-        focus: FocusTrack
     } {
         return {
-            noteTracks: Level.deserializeNoteTracks(data),
+            instrumentTracks: Level.deserializeInstrumentTracks(data),
             audio: AudioTrack.deserialize(data.audio),
             tempo: TempoTrack.deserialize(data.tempo),
-            focus: FocusTrack.deserialize(data.focus)
         }
     }
 
-    private static defaultNoteTrack(): NoteTrack {
-        return new NoteTrack({
-            instrument: Instrument.BassStandard,
-            timedPatterns: [],
-            markers: [],
-        })
-    }
+    private static deserializeInstrumentTracks(data: SerializedTracksInput): InstrumentTrack[] {
+        if (Array.isArray(data.instrumentTracks)) {
+            const tracks = data.instrumentTracks.map(track => InstrumentTrack.deserialize(track))
+            if (tracks.length === 0)
+                tracks.push(InstrumentTrack.default())
+            return tracks
+        }
 
-    private static deserializeNoteTracks(data: SerializedTracksInput): NoteTrack[] {
-        const serializedTracks = Array.isArray(data.noteTracks)
+        const serializedNotes = Array.isArray(data.noteTracks)
             ? data.noteTracks
             : data.note
                 ? [data.note]
                 : []
 
-        const noteTracks = serializedTracks.map(track => NoteTrack.deserialize(track))
+        const sharedFocus = data.focus
+            ? FocusTrack.deserialize(data.focus)
+            : new FocusTrack(Focus.default(), [])
 
-        if (noteTracks.length === 0)
-            noteTracks.push(Level.defaultNoteTrack())
+        const tracks = serializedNotes.map(note => new InstrumentTrack({
+            noteTrack: NoteTrack.deserialize(note),
+            focusTrack: sharedFocus.clone(),
+        }))
 
-        return noteTracks
+        if (tracks.length === 0)
+            tracks.push(InstrumentTrack.default())
+
+        return tracks
     }
 
 }

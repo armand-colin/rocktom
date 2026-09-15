@@ -3,7 +3,7 @@ import { Vec2 } from "@niloc/utils";
 import { WindowManager, WindowPosition, WindowSize, type Window } from "../../resources/WindowManager";
 import type { Level } from "../../sound/Level";
 import type { Instrument } from "../../sound/instrument/Instrument";
-import { NoteTrack } from "../../sound/song/NoteTrack";
+import { InstrumentTrack } from "../../sound/song/InstrumentTrack";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
 import { PatternEditorView } from "../../ui/levelEditor/patternEditor/PatternEditorView";
@@ -12,8 +12,7 @@ import { VirtualBass } from "../VirtualBass";
 import { AudioTrackEditor } from "./AudioTrackEditor";
 import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
 import { EditorPlayer } from "./EditorPlayer";
-import { FocusTrackEditor } from "./FocusTrackEditor";
-import { NoteTrackEditor } from "./NoteTrackEditor";
+import { InstrumentTrackEditor } from "./InstrumentTrackEditor";
 import { PatternEditor } from "./PatternEditor";
 import { TempoTrackEditor } from "./TempoTrackEditor";
 import { TimeTransform } from "./TimeTransform";
@@ -25,8 +24,7 @@ export class LevelEditor extends Component {
     readonly audioTrack: AudioTrackEditor
     readonly timeTransform: TimeTransform
     readonly player: EditorPlayer
-    readonly noteTracks: NoteTrackEditor[]
-    readonly focusTrack: FocusTrackEditor
+    readonly instrumentTracks: InstrumentTrackEditor[]
     readonly audioWaveformRenderer: AudioWaveformRenderer
 
     readonly virtualBass: VirtualBass
@@ -43,11 +41,10 @@ export class LevelEditor extends Component {
         this.timeTransform.setStep(Tempo.beats(1))
 
         this.audioTrack = engine.createComponent(AudioTrackEditor, level.id, level.audioTrack)
-        this.focusTrack = engine.createComponent(FocusTrackEditor, level.focusTrack)
         this.virtualBass = engine.createComponent(VirtualBass)
         this.player = engine.createComponent(EditorPlayer, level, this.virtualBass)
-        this.noteTracks = level.noteTracks.map(track =>
-            engine.createComponent(NoteTrackEditor, track, this.virtualBass)
+        this.instrumentTracks = level.instrumentTracks.map(track =>
+            engine.createComponent(InstrumentTrackEditor, track, this.virtualBass)
         )
 
         this.audioWaveformRenderer = engine.createComponent(AudioWaveformRenderer, {
@@ -73,36 +70,32 @@ export class LevelEditor extends Component {
         this.changed()
     }
 
-    addNoteTrack(instrument: Instrument) {
-        const track = new NoteTrack({
-            instrument,
-            timedPatterns: [],
-            markers: [],
-        })
+    addInstrumentTrack(instrument: Instrument) {
+        const track = InstrumentTrack.default(instrument)
 
-        this.level.noteTracks.push(track)
-        this.noteTracks.push(
-            this.engine.createComponent(NoteTrackEditor, track, this.virtualBass)
+        this.level.instrumentTracks.push(track)
+        this.instrumentTracks.push(
+            this.engine.createComponent(InstrumentTrackEditor, track, this.virtualBass)
         )
         this.changed()
     }
 
-    removeNoteTrack(id: string) {
-        if (this.noteTracks.length <= 1)
+    removeInstrumentTrack(id: string) {
+        if (this.instrumentTracks.length <= 1)
             return
 
-        const editorIndex = this.noteTracks.findIndex(editor => editor.track.id === id)
+        const editorIndex = this.instrumentTracks.findIndex(editor => editor.track.id === id)
         if (editorIndex === -1)
             return
 
-        const editor = this.noteTracks[editorIndex]
-        const shouldClosePattern = this._pattern && editor.track.patterns.has(this._pattern.pattern.id)
+        const editor = this.instrumentTracks[editorIndex]
+        const shouldClosePattern = this._pattern && editor.noteTrack.track.patterns.has(this._pattern.pattern.id)
 
-        this.noteTracks.splice(editorIndex, 1)
+        this.instrumentTracks.splice(editorIndex, 1)
 
-        const trackIndex = this.level.noteTracks.findIndex(track => track.id === id)
+        const trackIndex = this.level.instrumentTracks.findIndex(track => track.id === id)
         if (trackIndex !== -1)
-            this.level.noteTracks.splice(trackIndex, 1)
+            this.level.instrumentTracks.splice(trackIndex, 1)
 
         if (shouldClosePattern)
             this.editPattern(null)
@@ -200,8 +193,8 @@ export class LevelEditor extends Component {
 
     destroy() {
         super.destroy()
-        for (const noteTrack of this.noteTracks)
-            noteTrack.destroy()
+        for (const instrumentTrack of this.instrumentTracks)
+            instrumentTrack.destroy()
         this.player.destroy()
         this._pattern?.destroy()
         this._pattern = null

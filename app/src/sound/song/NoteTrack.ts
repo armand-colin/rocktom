@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid";
 import { Instrument, InstrumentTuning, InstrumentType } from "../instrument/Instrument";
 import { Tempo } from "../Tempo";
-import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Marker } from "./Marker";
 import { Pattern, TimedPattern, type SerializedPattern, type SerializedTimedPattern } from "./Pattern";
 import type { TempoTrack } from "./TempoTrack";
@@ -225,16 +224,6 @@ export class NoteTrackBuilder {
             time: this._time,
             name: name
         })
-        return this
-    }
-
-    addFocus(focus: [number, number], track: FocusTrackBuilder, duration: number, forward: boolean = false): this {
-        if (forward) {
-            track.add(this._time, duration, focus)
-        } else {
-            track.add(this._time - duration, duration, focus)
-        }
-
         return this
     }
 

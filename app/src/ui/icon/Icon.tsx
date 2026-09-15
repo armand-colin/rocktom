@@ -63,6 +63,8 @@ export const icons = [
     "power",
     "power_off",
     "swap_horiz",
+    "visibility",
+    "visibility_off",
 ] as const;
 
 export type IconName = typeof icons[number];

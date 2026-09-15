@@ -16,6 +16,7 @@ import { Schedules } from "../Schedules";
 import { DeltaTime } from "./DeltaTime";
 import type { Object3D } from "three";
 import { LiveInstrumentPreferences } from "../resources/LiveInstrumentPreferences";
+import type { InstrumentTrack } from "../sound/song/InstrumentTrack";
 import type { NoteTrack } from "../sound/song/NoteTrack";
 
 export class Playback extends Component {
@@ -37,6 +38,7 @@ export class Playback extends Component {
 
     private _audioPlayerVolume: number = 1.0
     private _audioPlayer: AudioPlayer
+    private _instrumentTrack: InstrumentTrack
     private _noteTrack: NoteTrack
 
     readonly deltaTime: DeltaTime
@@ -71,10 +73,12 @@ export class Playback extends Component {
 
         const liveInstrumentPreferences = engine.getResource(LiveInstrumentPreferences)
 
-        this._noteTrack = level.noteTracks.find(track => {
+        this._instrumentTrack = level.instrumentTracks.find(track => {
             return track.instrument.id === liveInstrumentPreferences.instrument.id
         }) ??
-            level.noteTracks[0]
+            level.instrumentTracks[0]
+
+        this._noteTrack = this._instrumentTrack.noteTrack
 
         const instrument = this._noteTrack.instrument
         this._neck = NeckMesh.create(instrument)
@@ -91,7 +95,7 @@ export class Playback extends Component {
         this._window = new NoteWindow(this._notes, this._renderer)
         this._updateWindow()
 
-        this._rig.focus(level.focusTrack.initialFocus)
+        this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
 
         Object.assign(window, { playback: this })
     }
@@ -169,9 +173,9 @@ export class Playback extends Component {
         this._updateWindow()
 
         // Find correct focus event
-        const focusEvent = this.level.focusTrack.getEventAtTicks(ticks)
+        const focusEvent = this._instrumentTrack.focusTrack.getEventAtTicks(ticks)
         if (!focusEvent) {
-            this._rig.focus(this.level.focusTrack.initialFocus)
+            this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
         } else {
             this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
         }
@@ -233,7 +237,7 @@ export class Playback extends Component {
             }
         }
 
-        const focusEvent = this.level.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
+        const focusEvent = this._instrumentTrack.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
 
         if (focusEvent)
             this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
@@ -258,7 +262,7 @@ export class Playback extends Component {
         this.time.set(0, 0, this.level.tempoTrack.getTempoAt(0))
         this._audioPlayer.pause()
         this._audioPlayer.seek(0)
-        this._rig.focus(this.level.focusTrack.initialFocus)
+        this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
         this._rig.update(0)
         this._playingNotes.update(0)
         this._metronome.reset()

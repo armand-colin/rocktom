@@ -1,5 +1,6 @@
 import { Instrument } from "../../sound/instrument/Instrument"
 import { Dropdown } from "../dropdown/Dropdown"
+import type { UiSize } from "../UiSize"
 
 type InstrumentOption = Dropdown.Option & {
     instrument: Instrument
@@ -22,7 +23,9 @@ const instrumentOptions = [
 
 export function InstrumentDropdown<I extends Instrument | null>(props: {
     value: I,
-    onChange: (instrument: I) => void
+    onChange: (instrument: I) => void,
+    className?: string,
+    size?: UiSize
 }) {
     function onChange(option: InstrumentOption | null) {
         if (!option)
@@ -36,5 +39,7 @@ export function InstrumentDropdown<I extends Instrument | null>(props: {
         onChange={onChange}
         options={instrumentOptions}
         placeholder="Select an instrument"
+        className={props.className}
+        size={props.size}
     />
 }

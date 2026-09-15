@@ -20,11 +20,7 @@ import { PopupManager } from "../../resources/PopupManager";
 import { Instance } from "../../Instance";
 import { PromptPopup } from "../popup/promptPopup/PromptPopup";
 import { UiSize } from "../UiSize";
-import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
-import { EditableText } from "../editableText/EditableText";
 import type { LevelEditor } from "../../components/editor/LevelEditor";
-import { AddNoteTrackPopup } from "./AddNoteTrackPopup";
-import { ConfirmPopup } from "../popup/confirmPopup/ConfirmPopup";
 
 export function NoteTrackEditorView(props: {
     editor: LevelEditor,
@@ -32,13 +28,9 @@ export function NoteTrackEditorView(props: {
     transform: TimeTransform,
     time: Time,
     onEdit: (pattern: TimedPattern) => void
-    canRemove?: boolean
-    onRemove?: () => void
 }) {
-    const { track, pattern, patterns, instrument } = useComponent(props.trackEditor)
+    const { track, pattern, patterns } = useComponent(props.trackEditor)
     const ref = useRef<HTMLDivElement | null>(null)
-    const contextualMenu = Instance.engine.getResource(ContextualMenu)
-    const popupManager = Instance.engine.getResource(PopupManager)
 
     function onSelectPattern(patternId: string) {
         const selectedPattern = patterns.find(p => p.id === patternId)
@@ -61,42 +53,7 @@ export function NoteTrackEditorView(props: {
         props.trackEditor.addTimedPattern(ticks)
     }
 
-    function onCreateTrack(e: MouseEvent) {
-        contextualMenu.open(e.nativeEvent, [
-            ContextualMenuItem.action({
-                label: "Create track after",
-                icon: "add",
-                action: () => {
-                    popupManager.add(close => <AddNoteTrackPopup
-                        close={close}
-                        editor={props.editor}
-                        placeAfter={track}
-                    />)
-                }
-            }),
-            ContextualMenuItem.action({
-                label: "Remove this track",
-                icon: "delete",
-                theme: ButtonTheme.Danger,
-                action: () => {
-                    popupManager.add(close => <ConfirmPopup
-
-                        title="Are you sure to delete this track?"
-                        theme="danger"
-                        text="This action cannot be undone."
-                        onConfirm={() => {
-                            props.editor.removeNoteTrack(track.id)
-                        }}
-                        close={close}
-                    />)
-                }
-            }),
-        ])
-
-    }
-
-    function onContextualClick() {
-
+    function onAddPattern() {
         Instance.engine.getResource(PopupManager).add(close => <PromptPopup
             close={close}
             text="Pattern name"
@@ -107,57 +64,14 @@ export function NoteTrackEditorView(props: {
         />)
     }
 
-    function onTrackContextMenu(e: MouseEvent) {
-        if (!props.canRemove)
-            return
-
-        e.preventDefault()
-        e.stopPropagation()
-
-        const contextualMenu = Instance.engine.getResource(ContextualMenu)
-        contextualMenu.open(e.nativeEvent, [
-            ContextualMenuItem.action({
-                label: "Delete track",
-                icon: "delete",
-                theme: ButtonTheme.Danger,
-                action: () => {
-                    props.onRemove?.()
-                },
-            })
-        ])
-    }
-
     return <TrackEditorView
         className="NoteTrackEditorView"
         transform={props.transform}
     >
         <TrackEditorHead
-            title={<EditableText
-                value={track.name}
-                onChange={name => props.trackEditor.setName(name)}
-            />}
+            title={"Notes"}
             contentClassName="grid gap-2 w-full"
         >
-            <div className="absolute top-0 right-0 p-2">
-                <Button
-                    shape="square"
-                    variant="ghost"
-                    size={UiSize.S}
-                    onClick={onCreateTrack}
-                >
-                    <Icon name="more_vert" />
-                </Button>
-            </div>
-
-            <FormInputField label="Instrument">
-                <InstrumentDropdown
-                    value={instrument}
-                    onChange={instrument => {
-                        props.trackEditor.setInstrument(instrument)
-                    }}
-                />
-            </FormInputField>
-
             <FormInputField
                 label="Pattern"
                 controlClassName="flex gap-2"
@@ -178,21 +92,12 @@ export function NoteTrackEditorView(props: {
                 />
                 <Button
                     shape="square"
-                    onClick={onContextualClick}
+                    onClick={onAddPattern}
                     theme={ButtonTheme.Primary}
                     size={UiSize.S}
                 >
                     <Icon name="add" />
                 </Button>
-                {props.canRemove && (
-                    <Button
-                        shape="square"
-                        onClick={onTrackContextMenu}
-                        size={UiSize.S}
-                    >
-                        <Icon name="more_vert" />
-                    </Button>
-                )}
             </FormInputField>
 
         </TrackEditorHead>

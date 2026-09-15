@@ -2,17 +2,13 @@ import { useComponent } from "@niloc/ecs-react";
 import { useMemo } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import { LevelEditor } from "../../components/editor/LevelEditor";
-import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button, ButtonTheme } from "../button/Button";
 import { FormInputField } from "../form/FormInputField";
 import { Icon } from "../icon/Icon";
 import { StringInput } from "../input/StringInput";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
-import { FocusTrackEditorView } from "./FocusTrackEditorView";
 import "./LevelEditorView.scss";
 import { MagnetizationView } from "./magnetizationView/MagnetizationView";
-import { MarkerEditorView } from "./MarkerEditorView";
-import { NoteTrackEditorView } from "./NoteTrackEditorView";
 import { TempoTrackEditorView } from "./TempoTrackEditorView";
 import { TimeTransformView } from "./timeTransform/TimeTransformView";
 import { LevelQueries } from "../../queries/level/LevelQueries";
@@ -27,6 +23,7 @@ import { usePopupManager } from "../../hooks/usePopupManager";
 import { TapTempoPopup } from "./tapTempo/TapTempoPopup";
 import { Slider } from "../slider/Slider";
 import { Body } from "../../resources/queryClient/Body";
+import { InstrumentTrackEditorView } from "./InstrumentTrackEditorView";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
@@ -186,12 +183,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
 }
 
 function LevelEditorTracksView(props: { editor: LevelEditor }) {
-    const { noteTracks } = useComponent(props.editor)
-
-    function onEdit(pattern: TimedPattern) {
-        props.editor.player.seekTicks(pattern.time)
-        props.editor.editPattern(pattern)
-    }
+    const { instrumentTracks } = useComponent(props.editor)
 
     return <div
         className="LevelEditorTracksView"
@@ -232,35 +224,12 @@ function LevelEditorTracksView(props: { editor: LevelEditor }) {
                 editor={props.editor.tempoTrack}
             />
         </div>
-        <div className="markers">
-            {noteTracks[0] && (
-                <MarkerEditorView
-                    time={props.editor.player.time}
-                    transform={props.editor.timeTransform}
-                    editor={noteTracks[0]}
-                />
-            )}
-        </div>
-        {noteTracks.map(editor => (
-            <div className="note" key={editor.track.id}>
-                <NoteTrackEditorView
-                    onEdit={onEdit}
-                    time={props.editor.player.time}
-                    transform={props.editor.timeTransform}
-                    trackEditor={editor}
-                    canRemove={noteTracks.length > 1}
-                    onRemove={() => props.editor.removeNoteTrack(editor.track.id)}
-                    editor={props.editor}
-                />
-            </div>
-        ))}
-        <div className="focus">
-            <FocusTrackEditorView
-                time={props.editor.player.time}
-                transform={props.editor.timeTransform}
-                editor={props.editor.focusTrack}
+        {instrumentTracks.map(editor => (
+            <InstrumentTrackEditorView
+                editor={props.editor}
+                trackEditor={editor}
             />
-        </div>
+        ))}
     </div>
 }
 
