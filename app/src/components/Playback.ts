@@ -17,7 +17,6 @@ import { DeltaTime } from "./DeltaTime";
 import type { Object3D } from "three";
 import { LiveInstrumentPreferences } from "../resources/LiveInstrumentPreferences";
 import type { InstrumentTrack } from "../sound/song/InstrumentTrack";
-import type { NoteTrack } from "../sound/song/NoteTrack";
 
 export class Playback extends Component {
 
@@ -39,7 +38,6 @@ export class Playback extends Component {
     private _audioPlayerVolume: number = 1.0
     private _audioPlayer: AudioPlayer
     private _instrumentTrack: InstrumentTrack
-    private _noteTrack: NoteTrack
 
     readonly deltaTime: DeltaTime
 
@@ -78,9 +76,8 @@ export class Playback extends Component {
         }) ??
             level.instrumentTracks[0]
 
-        this._noteTrack = this._instrumentTrack.noteTrack
 
-        const instrument = this._noteTrack.instrument
+        const instrument = this._instrumentTrack.noteTrack.instrument
         this._neck = NeckMesh.create(instrument)
         this._renderer.add(this._neck)
 
@@ -89,7 +86,7 @@ export class Playback extends Component {
 
         this._notes = []
 
-        for (const note of this._noteTrack.notes())
+        for (const note of this._instrumentTrack.noteTrack.notes())
             this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
 
         this._window = new NoteWindow(this._notes, this._renderer)
@@ -109,7 +106,7 @@ export class Playback extends Component {
     }
 
     get noteTrack() {
-        return this._noteTrack
+        return this._instrumentTrack.noteTrack
     }
 
     private _getTimeWindow() {
@@ -202,6 +199,39 @@ export class Playback extends Component {
         this.changed()
     }
 
+    setInstrumentTrack(track: InstrumentTrack) {
+        console.log("setInstrumentTrack", {
+            selected: track,
+            current: this._instrumentTrack
+        })
+
+        if (track.id === this._instrumentTrack.id)
+            return
+
+        // Cleanup everything
+        for (const note of this._notes)
+            note.destroy()
+
+        this._notes = []
+        this._window.clear()
+        this._playingNotes.clear()
+        this._renderer.remove(this._neck)
+
+        // Then setup the new track
+        this._instrumentTrack = track
+        const instrument = this._instrumentTrack.noteTrack.instrument
+
+        for (const note of this._instrumentTrack.noteTrack.notes())
+            this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
+
+        this._neck = NeckMesh.create(instrument)
+        this._renderer.add(this._neck)
+
+        this._window = new NoteWindow(this._notes, this._renderer)
+        this._updateWindow()
+        this.changed()
+    }
+
     private *_play() {
         let lastUpdate = Date.now() / 1000
         while (true) {
@@ -264,6 +294,7 @@ export class Playback extends Component {
         this._audioPlayer.seek(0)
         this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
         this._rig.update(0)
+
         this._playingNotes.update(0)
         this._metronome.reset()
         if (this.playing)

@@ -20,6 +20,8 @@ import { UiSize } from "./UiSize";
 import { Button, ButtonTheme } from "./button/Button";
 import { Slider } from "./slider/Slider";
 import { LiveInstrumentButton } from "./liveInstrument/LiveInstrumentButton";
+import { usePopupManager } from "../hooks/usePopupManager";
+import { SelectInstrumentTrackPopup } from "./selectInstrumentTrackPopup/SelectInstrumentTrackPopup";
 
 export function PlaybackView(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
@@ -68,13 +70,20 @@ function PlaybackControls(props: { playback: Playback }) {
     const navigate = useNavigate()
 
     const { playing, speed, noteTrack } = useComponent(props.playback)
+    const popupManager = usePopupManager()
 
     function onSwapTrack() {
-        // TODO
+        popupManager.add(close => <SelectInstrumentTrackPopup
+            level={props.playback.level}
+            onSelect={track => {
+                props.playback.setInstrumentTrack(track)
+            }}
+            close={close}
+        />)
     }
 
     return (
-        <div className="PlaybackControls flex flex-col gap-3">
+        <div className="PlaybackControls flex flex-col gap-3 w-80">
             <div>
                 <button
                     className="BackButton"

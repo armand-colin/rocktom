@@ -160,4 +160,12 @@ export class PlayingNotes3D extends Object3D {
         }
     }
 
+    clear() {
+        super.clear()
+        this._active.clear()
+        // We can keep the poll
+        
+        return this
+    }
+
 }

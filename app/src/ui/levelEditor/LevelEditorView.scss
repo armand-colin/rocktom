@@ -9,6 +9,8 @@
         display: grid;
         gap: var(--spacing-2);
         padding: var(--spacing-2);
+        align-items: start;
+        align-content: start;
 
         >.head {
             display: flex;

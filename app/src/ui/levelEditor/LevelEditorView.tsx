@@ -112,7 +112,9 @@ export function LevelEditorView(props: {
 
     return <div className="LevelEditorView">
         <div className="head grid gap-2 p-2">
-            <Toolbar tabs={toolbarTabs} />
+            <Toolbar
+                tabs={toolbarTabs}
+            />
             <div className="flex gap-2 items-center">
                 <Button
                     onClick={onBack}
@@ -146,7 +148,9 @@ export function LevelEditorView(props: {
             </div>
         </div>
 
-        <LevelEditorTracksView editor={props.editor} />
+        <LevelEditorTracksView
+            editor={props.editor}
+        />
     </div>
 }
 
@@ -186,7 +190,7 @@ function LevelEditorTracksView(props: { editor: LevelEditor }) {
     const { instrumentTracks } = useComponent(props.editor)
 
     return <div
-        className="LevelEditorTracksView"
+        className="LevelEditorTracksView max-h-[calc(100svh-90px)] overflow-y-auto h-svh"
         onWheel={e => props.editor.timeTransform.handleWheel(e.nativeEvent, e.currentTarget)}
     >
         <div className="head">

@@ -20,7 +20,7 @@ export type ButtonVariant = Enum.Infer<typeof ButtonVariant>
 
 type Props = {
     onClick?: (e: MouseEvent<HTMLElement>) => void
-    children: ReactNode,
+    children?: ReactNode,
     disabled?: boolean,
     size?: UiSize,
     theme?: ButtonTheme,
