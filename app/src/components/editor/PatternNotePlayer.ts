@@ -12,11 +12,13 @@ export namespace PatternNotePlayer {
 
     export type State = {
         activeByTrack: Map<string, Map<number, ActiveVoice>>
+        lastTicks: number
     }
 
-    export function createState(): State {
+    export function createState(lastTicks: number = Number.NEGATIVE_INFINITY): State {
         return {
             activeByTrack: new Map(),
+            lastTicks,
         }
     }
 
@@ -34,6 +36,8 @@ export namespace PatternNotePlayer {
                 state.activeByTrack.delete(trackId)
             }
         }
+
+        state.lastTicks = ticks
     }
 
     export function stopAll(
@@ -43,6 +47,7 @@ export namespace PatternNotePlayer {
         for (const trackEditor of trackEditors)
             trackEditor.virtualInstrument.stopAll()
         state.activeByTrack.clear()
+        state.lastTicks = Number.NEGATIVE_INFINITY
     }
 
     function updateTrack(
@@ -61,7 +66,7 @@ export namespace PatternNotePlayer {
             return
         }
 
-        const desired = collectActiveNotes(ticks, trackEditor)
+        const desired = collectActiveNotes(state.lastTicks, ticks, trackEditor)
         let active = state.activeByTrack.get(trackId)
         if (!active) {
             active = new Map()
@@ -87,6 +92,7 @@ export namespace PatternNotePlayer {
     }
 
     function collectActiveNotes(
+        lastTicks: number,
         ticks: number,
         trackEditor: InstrumentTrackEditor,
     ): Map<number, ActiveVoice> {
@@ -104,6 +110,25 @@ export namespace PatternNotePlayer {
                     continue
 
                 const absStart = timedPattern.time - timedPattern.offset + note.time
+
+                if (note.duration === 0) {
+                    // Skip historical edges after createState/stopAll (lastTicks = -∞).
+                    // Sync lastTicks→ticks without firing; only real forward crossings trigger.
+                    if (
+                        Number.isFinite(lastTicks)
+                        && lastTicks < absStart
+                        && ticks >= absStart
+                        && absStart < windowEnd
+                    ) {
+                        result.set(note.string.index, {
+                            noteId: note.id,
+                            note: note.string.fret(note.fret),
+                            string: note.string,
+                        })
+                    }
+                    continue
+                }
+
                 const absEnd = Math.min(absStart + note.duration, windowEnd)
 
                 if (ticks < absStart || ticks >= absEnd)

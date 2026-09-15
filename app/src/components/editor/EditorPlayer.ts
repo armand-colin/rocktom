@@ -72,7 +72,7 @@ export class EditorPlayer extends Component {
         if (this.playing)
             return
 
-        this._patternNotes = PatternNotePlayer.createState()
+        this._patternNotes = PatternNotePlayer.createState(this.time.ticks)
         this._updateCoroutine = this.startCoroutine(this._update())
         this.metronome.sync(this.time.seconds, this._speed)
 

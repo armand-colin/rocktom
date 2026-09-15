@@ -20,6 +20,14 @@ export class GainSoundNode extends SoundNode<GainNode> {
         this.node.gain.value = value
     }
 
+    setGainSmooth(value: number, timeConstant = 0.01): void {
+        this._gain = value
+        const param = this.node.gain
+        const now = this.audioContext.currentTime
+        param.cancelAndHoldAtTime(now)
+        param.setTargetAtTime(value, now, timeConstant)
+    }
+
     protected build(): GainNode {
         const node = this.audioContext.createGain()
         // in case of first construction, this is undefined

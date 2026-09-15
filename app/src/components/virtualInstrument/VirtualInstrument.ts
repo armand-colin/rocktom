@@ -1,6 +1,8 @@
 import { Component, Engine } from "@niloc/ecs"
 import type { MixerChannel } from "../../resources/Mixer"
 import { SoundEngine } from "../../resources/SoundEngine"
+import { Schedules } from "../../Schedules"
+import { Adsr, type AdsrParams } from "../../sound/envelope/Adsr"
 import type { Instrument } from "../../sound/instrument/Instrument"
 import type { String } from "../../sound/instrument/String"
 import type { GainSoundNode } from "../../sound/node/GainSoundNode"
@@ -22,6 +24,23 @@ type Oscillator = {
     gain: GainSoundNode
     playing: boolean
     note: Note | null
+    envelope: Adsr | null
+}
+
+const DEFAULT_ADSR: AdsrParams = {
+    attack: 0.008,
+    decay: 0.12,
+    sustain: 0.55,
+    release: 0.14,
+}
+
+export type VoiceTimbre = {
+    /** Harmonic amplitudes: index 0 = fundamental, 1 = 2nd harmonic, etc. */
+    harmonics: readonly number[]
+}
+
+const DEFAULT_TIMBRE: VoiceTimbre = {
+    harmonics: [1],
 }
 
 export abstract class VirtualInstrumentBase extends Component implements VirtualInstrument {
@@ -30,27 +49,42 @@ export abstract class VirtualInstrumentBase extends Component implements Virtual
 
     protected _node: GainSoundNode
     protected _oscillators: Oscillator[]
+    private readonly _soundEngine: SoundEngine
 
     constructor(engine: Engine, instrument: Instrument, channel: MixerChannel) {
         super(engine)
         this.instrument = instrument
 
-        const soundEngine = engine.getResource(SoundEngine)
-        this._node = soundEngine.createGainNode()
+        this._soundEngine = engine.getResource(SoundEngine)
+        this._node = this._soundEngine.createGainNode()
         channel.connect(this._node)
 
+        const harmonics = this.voiceTimbre.harmonics
+
         this._oscillators = instrument.strings.map(() => ({
-            node: soundEngine.createOscillatorNode(),
-            gain: soundEngine.createGainNode(),
+            node: this._soundEngine.createOscillatorNode(),
+            gain: this._soundEngine.createGainNode(),
             playing: false,
             note: null,
+            envelope: null,
         }))
 
         for (const osc of this._oscillators) {
             osc.gain.gain = 0
+            osc.node.setHarmonics(harmonics)
             osc.node.connect(osc.gain)
             osc.gain.connect(this._node)
         }
+
+        this.startCoroutine(this._updateEnvelopes())
+    }
+
+    protected get adsrParams(): AdsrParams {
+        return DEFAULT_ADSR
+    }
+
+    protected get voiceTimbre(): VoiceTimbre {
+        return DEFAULT_TIMBRE
     }
 
     playNote(note: Note, string: String): void {
@@ -58,8 +92,12 @@ export abstract class VirtualInstrumentBase extends Component implements Virtual
         if (!osc)
             return
 
+        const now = this._soundEngine.currentTime
         osc.node.frequency = note.frequency
-        osc.gain.gain = 1.0
+        osc.envelope = new Adsr(this.adsrParams)
+        osc.envelope.noteOn(now)
+        osc.envelope.setTime(now)
+        osc.gain.setGainSmooth(osc.envelope.value)
         osc.note = note
         osc.playing = true
     }
@@ -69,26 +107,43 @@ export abstract class VirtualInstrumentBase extends Component implements Virtual
         if (!osc)
             return
 
-        if (osc.playing && osc.note?.index === note.index) {
-            osc.gain.gain = 0.0
-            osc.playing = false
-            osc.note = null
-        }
+        if (osc.envelope && osc.note?.index === note.index)
+            osc.envelope.noteOff(this._soundEngine.currentTime)
     }
 
     stopAll(): void {
+        const now = this._soundEngine.currentTime
         for (const osc of this._oscillators) {
-            if (!osc.playing)
+            if (!osc.envelope)
                 continue
-            osc.gain.gain = 0.0
-            osc.playing = false
-            osc.note = null
+            osc.envelope.noteOff(now)
         }
     }
 
     destroy(): void {
         this.stopAll()
         super.destroy()
+    }
+
+    private *_updateEnvelopes() {
+        while (true) {
+            const now = this._soundEngine.currentTime
+            for (const osc of this._oscillators) {
+                if (!osc.envelope)
+                    continue
+
+                osc.envelope.setTime(now)
+                osc.gain.setGainSmooth(osc.envelope.value)
+
+                if (osc.envelope.finished) {
+                    osc.gain.setGainSmooth(0)
+                    osc.envelope = null
+                    osc.playing = false
+                    osc.note = null
+                }
+            }
+            yield Schedules.Frame
+        }
     }
 
 }
