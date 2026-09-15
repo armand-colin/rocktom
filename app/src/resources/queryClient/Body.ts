@@ -1,32 +1,37 @@
 export type Body<T> = {
     [Body.Marker]: T,
     type: 'json',
-    data: string,
-    headers: Record<string, string>
+    readonly data: string,
+    readonly headers: Record<string, string>
 } | {
     [Body.Marker]: T,
     type: 'text',
-    data: string,
-    headers: Record<string, string>
+    readonly data: string,
+    readonly headers: Record<string, string>
 } | {
     [Body.Marker]: T,
     type: 'multipart',
-    data: FormData,
-    headers: Record<string, string>
+    readonly data: FormData,
+    readonly headers: Record<string, string>
 }
 
 export namespace Body {
 
     export const Marker = Symbol('BodyType')
 
+    const JSONHeaders = {
+        'Content-Type': 'application/json'
+    }
+    const TextHeaders = {
+        'Content-Type': 'text/plain'
+    }
+
     export function json<T>(data: T): Body<T> {
         return {
             type: 'json',
             [Marker]: null as T,
             data: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: JSONHeaders
         }
     }
 
@@ -35,7 +40,7 @@ export namespace Body {
             type: 'text',
             [Marker]: "",
             data,
-            headers: {}
+            headers: TextHeaders
         }
     }
 
