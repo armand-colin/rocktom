@@ -1,9 +1,13 @@
 import { Component, Engine } from "@niloc/ecs";
+import { Vec2 } from "@niloc/utils";
 import { WindowManager, WindowPosition, WindowSize, type Window } from "../../resources/WindowManager";
 import type { Level } from "../../sound/Level";
+import type { Instrument } from "../../sound/instrument/Instrument";
+import { NoteTrack } from "../../sound/song/NoteTrack";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Tempo } from "../../sound/Tempo";
 import { PatternEditorView } from "../../ui/levelEditor/patternEditor/PatternEditorView";
+import { MixerView } from "../../ui/mixerView/MixerView";
 import { VirtualBass } from "../VirtualBass";
 import { AudioTrackEditor } from "./AudioTrackEditor";
 import { AudioWaveformRenderer } from "./AudioWaveformRenderer";
@@ -13,8 +17,6 @@ import { NoteTrackEditor } from "./NoteTrackEditor";
 import { PatternEditor } from "./PatternEditor";
 import { TempoTrackEditor } from "./TempoTrackEditor";
 import { TimeTransform } from "./TimeTransform";
-import { MixerView } from "../../ui/mixerView/MixerView";
-import { Vec2 } from "@niloc/utils";
 
 export class LevelEditor extends Component {
 
@@ -23,7 +25,7 @@ export class LevelEditor extends Component {
     readonly audioTrack: AudioTrackEditor
     readonly timeTransform: TimeTransform
     readonly player: EditorPlayer
-    readonly noteTrack: NoteTrackEditor
+    readonly noteTracks: NoteTrackEditor[]
     readonly focusTrack: FocusTrackEditor
     readonly audioWaveformRenderer: AudioWaveformRenderer
 
@@ -44,7 +46,9 @@ export class LevelEditor extends Component {
         this.focusTrack = engine.createComponent(FocusTrackEditor, level.focusTrack)
         this.virtualBass = engine.createComponent(VirtualBass)
         this.player = engine.createComponent(EditorPlayer, level, this.virtualBass)
-        this.noteTrack = engine.createComponent(NoteTrackEditor, level.noteTrack, this.virtualBass)
+        this.noteTracks = level.noteTracks.map(track =>
+            engine.createComponent(NoteTrackEditor, track, this.virtualBass)
+        )
 
         this.audioWaveformRenderer = engine.createComponent(AudioWaveformRenderer, {
             tempoTrack: this.tempoTrack,
@@ -67,6 +71,45 @@ export class LevelEditor extends Component {
     setName(name: string) {
         this.level.name = name
         this.changed()
+    }
+
+    addNoteTrack(instrument: Instrument) {
+        const track = new NoteTrack({
+            instrument,
+            timedPatterns: [],
+            markers: [],
+        })
+
+        this.level.noteTracks.push(track)
+        this.noteTracks.push(
+            this.engine.createComponent(NoteTrackEditor, track, this.virtualBass)
+        )
+        this.changed()
+    }
+
+    removeNoteTrack(id: string) {
+        if (this.noteTracks.length <= 1)
+            return
+
+        const editorIndex = this.noteTracks.findIndex(editor => editor.track.id === id)
+        if (editorIndex === -1)
+            return
+
+        const editor = this.noteTracks[editorIndex]
+        const shouldClosePattern = this._pattern && editor.track.patterns.has(this._pattern.pattern.id)
+
+        this.noteTracks.splice(editorIndex, 1)
+
+        const trackIndex = this.level.noteTracks.findIndex(track => track.id === id)
+        if (trackIndex !== -1)
+            this.level.noteTracks.splice(trackIndex, 1)
+
+        if (shouldClosePattern)
+            this.editPattern(null)
+        else
+            this.changed()
+
+        editor.destroy()
     }
 
     editPattern(pattern: TimedPattern | null) {
@@ -157,6 +200,8 @@ export class LevelEditor extends Component {
 
     destroy() {
         super.destroy()
+        for (const noteTrack of this.noteTracks)
+            noteTrack.destroy()
         this.player.destroy()
         this._pattern?.destroy()
         this._pattern = null

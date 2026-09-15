@@ -23,35 +23,47 @@ type Props = {
 }
 
 export function LiveInstrumentPopup(props: Props) {
-    const { instrument } = useResource(State)
+    const { liveInstrument } = useResource(State)
     const engine = Instance.engine
     const mixer = engine.getResource(Mixer)
+    const preferences = useResource(LiveInstrumentPreferences)
 
-    return <Popup.BaseContainer className="w-100">
+    return <Popup.BaseContainer className="w-100 gap-4">
         <Popup.BaseTitle
             title="Live Instrument"
             close={props.close}
         />
 
-        <MediaStreamDropdown
-            instrument={instrument}
-        />
+        <FormInputField label="Instrument">
+            <InstrumentDropdown
+                value={preferences.instrument}
+                onChange={instrument => {
+                    preferences.instrument = instrument
+                }}
+            />
+        </FormInputField>
+
+        <FormInputField label="Audio stream">
+            <MediaStreamDropdown
+                liveInstrument={liveInstrument}
+            />
+        </FormInputField>
 
         <FormInputField label="Feedback">
             <MixerChannelView channel={mixer.feedback} />
         </FormInputField>
 
         {
-            instrument ?
+            liveInstrument ?
                 <LiveInstrumentPreview
-                    instrument={instrument}
+                    liveInstrument={liveInstrument}
                 /> :
                 null
         }
     </Popup.BaseContainer>
 }
 
-function MediaStreamDropdown(props: { instrument: LiveInstrument | null }) {
+function MediaStreamDropdown(props: { liveInstrument: LiveInstrument | null }) {
     const mediaStreamList = useResource(MediaStreamList)
     const { loading } = mediaStreamList
 
@@ -91,17 +103,17 @@ function MediaStreamDropdown(props: { instrument: LiveInstrument | null }) {
                 label: stream.label,
                 value: stream.deviceId,
             }))}
-            value={props.instrument?.streamId ?? null}
+            value={props.liveInstrument?.streamId ?? null}
             onChange={setInstrument}
             placeholder={loading ? "Loading..." : "Select a microphone"}
             className="flex-1 min-w-0"
         />
         {
-            props.instrument && <Button
+            props.liveInstrument && <Button
                 shape="square"
                 onClick={() => setInstrument(null)}
             >
-                <Icon name="close" />
+                <Icon name="power_off" />
             </Button>
         }
         <Button
@@ -113,28 +125,18 @@ function MediaStreamDropdown(props: { instrument: LiveInstrument | null }) {
     </div>
 }
 
-function LiveInstrumentPreview(props: { instrument: LiveInstrument }) {
-    const tuner = useComponentInstance(Tuner, props.instrument)
-    const { instrument } = useComponent(props.instrument)
+function LiveInstrumentPreview(props: { liveInstrument: LiveInstrument }) {
+    const tuner = useComponentInstance(Tuner, props.liveInstrument)
+    const { instrument } = useComponent(props.liveInstrument)
 
     return <div className="grid gap-5">
-        <div className="grid gap-2">
-            <h2>Instrument</h2>
-            <InstrumentDropdown
-                value={instrument}
-                onChange={instrument => {
-                    props.instrument.setInstrument(instrument)
-                }}
-            />
-        </div>
-
         <div className="grid gap-2">
             <h2>Tuner</h2>
             {
                 tuner ?
                     <TunerView
                         tuner={tuner}
-                        instrument={props.instrument.instrument}
+                        instrument={instrument}
                     /> :
                     null
             }

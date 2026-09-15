@@ -4,6 +4,7 @@ import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import { LevelEditor } from "../../components/editor/LevelEditor";
 import type { TimedPattern } from "../../sound/song/Pattern";
 import { Button, ButtonTheme } from "../button/Button";
+import { FormInputField } from "../form/FormInputField";
 import { Icon } from "../icon/Icon";
 import { StringInput } from "../input/StringInput";
 import { AudioTrackEditorView } from "./AudioTrackEditorView";
@@ -22,7 +23,6 @@ import { Toast } from "../toast/Toast";
 import { useShortcut } from "../../hooks/useShortcut";
 import { Shortcuts } from "../../resources/shortcut/Shortcuts";
 import { Toolbar } from "../toolbar/Toolbar";
-import { FormInputField } from "../form/FormInputField";
 import { usePopupManager } from "../../hooks/usePopupManager";
 import { TapTempoPopup } from "./tapTempo/TapTempoPopup";
 import { Slider } from "../slider/Slider";
@@ -186,6 +186,7 @@ function PlayerControls(props: { player: EditorPlayer }) {
 }
 
 function LevelEditorTracksView(props: { editor: LevelEditor }) {
+    const { noteTracks } = useComponent(props.editor)
 
     function onEdit(pattern: TimedPattern) {
         props.editor.player.seekTicks(pattern.time)
@@ -232,20 +233,27 @@ function LevelEditorTracksView(props: { editor: LevelEditor }) {
             />
         </div>
         <div className="markers">
-            <MarkerEditorView
-                time={props.editor.player.time}
-                transform={props.editor.timeTransform}
-                editor={props.editor.noteTrack}
-            />
+            {noteTracks[0] && (
+                <MarkerEditorView
+                    time={props.editor.player.time}
+                    transform={props.editor.timeTransform}
+                    editor={noteTracks[0]}
+                />
+            )}
         </div>
-        <div className="note">
-            <NoteTrackEditorView
-                onEdit={onEdit}
-                time={props.editor.player.time}
-                transform={props.editor.timeTransform}
-                editor={props.editor.noteTrack}
-            />
-        </div>
+        {noteTracks.map(editor => (
+            <div className="note" key={editor.track.id}>
+                <NoteTrackEditorView
+                    onEdit={onEdit}
+                    time={props.editor.player.time}
+                    transform={props.editor.timeTransform}
+                    trackEditor={editor}
+                    canRemove={noteTracks.length > 1}
+                    onRemove={() => props.editor.removeNoteTrack(editor.track.id)}
+                    editor={props.editor}
+                />
+            </div>
+        ))}
         <div className="focus">
             <FocusTrackEditorView
                 time={props.editor.player.time}

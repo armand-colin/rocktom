@@ -98,7 +98,9 @@ export class Instrument {
         ]
     })
 
-    static deserialize(type: InstrumentType, tuning: InstrumentTuning): Instrument {
+    static Default = Instrument.BassStandard
+
+    static deserialize(type: InstrumentType, tuning: InstrumentTuning): Instrument | null {
         switch (type) {
             case InstrumentType.Bass: {
                 switch (tuning) {
@@ -118,8 +120,7 @@ export class Instrument {
             }
 
             default:
-                // Fallback for older songs
-                return Instrument.BassStandard;
+                return null
         }
     }
 
@@ -157,7 +158,7 @@ export class Instrument {
     }
 
     get name() {
-        return InstrumentType.getLabel(this.type) + " (" + InstrumentTuning.getLabel(this.tuning) + ")"
+        return InstrumentType.getLabel(this.type) + " " + InstrumentTuning.getLabel(this.tuning)
     }
 
 }

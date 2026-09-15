@@ -5,16 +5,12 @@ import { PopupManager } from "../../resources/PopupManager";
 import { LiveInstrumentPopup } from "./LiveInstrumentPopup";
 import { LED } from "../led/LED";
 import { Icon } from "../icon/Icon";
-
-function clampString(value: string, maxLength: number) {
-    if (value.length <= maxLength)
-        return value
-    return value.slice(0, maxLength) + "..."
-}
+import { LiveInstrumentPreferences } from "../../resources/LiveInstrumentPreferences";
 
 export function LiveInstrumentButton() {
-    const { instrument } = useResource(State)
+    const { liveInstrument: instrument } = useResource(State)
     const popupManager = useResource(PopupManager)
+    const preferences = useResource(LiveInstrumentPreferences)
 
     function onClick() {
         popupManager.add(close => <LiveInstrumentPopup
@@ -38,11 +34,7 @@ export function LiveInstrumentButton() {
                     name="power_off"
                 />
         }
-        {
-            instrument ?
-                clampString(instrument.name, 20) :
-                "Instrument (offline)"
-        }
+        {preferences.instrument.name}
     </Button>
 }
 

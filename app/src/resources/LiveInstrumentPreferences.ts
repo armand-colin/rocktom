@@ -1,6 +1,7 @@
 import { Engine, Resource } from "@niloc/ecs"
 import type { AudioRange } from "../sound/AudioRange"
 import { LiveAudioConstraints } from "../sound/LiveAudioConstraints"
+import { Instrument } from "../sound/instrument/Instrument"
 
 export class LiveInstrumentPreferences extends Resource {
 
@@ -9,6 +10,7 @@ export class LiveInstrumentPreferences extends Resource {
     private _range: AudioRange | null = null
     private _enablePlayback: boolean = true
     private _octaverEnabled: boolean = false
+    private _instrument: Instrument = Instrument.Default
 
     constructor(engine: Engine) {
         super(engine)
@@ -64,6 +66,16 @@ export class LiveInstrumentPreferences extends Resource {
         this.changed()
     }
 
+    get instrument() {
+        return this._instrument
+    }
+
+    set instrument(instrument: Instrument) {
+        this._instrument = instrument
+        this.save()
+        this.changed()
+    }
+
     getMediaStream(): Promise<MediaStream> {
         return LiveAudioConstraints.requestMediaStream(this._deviceId)
     }
@@ -75,6 +87,10 @@ export class LiveInstrumentPreferences extends Resource {
             volume: this._volume,
             range: this._range,
             enablePlayback: this._enablePlayback,
+            instrument: this._instrument ? {
+                type: this._instrument.type,
+                tuning: this._instrument.tuning
+            } : null
         }))
     }
 
@@ -83,13 +99,14 @@ export class LiveInstrumentPreferences extends Resource {
         if (entry === null)
             return
 
-        const { octaverEnabled, deviceId, volume, range, enablePlayback } = JSON.parse(entry)
+        const { octaverEnabled, deviceId, volume, range, enablePlayback, instrument } = JSON.parse(entry)
 
         this._octaverEnabled = octaverEnabled ?? false
         this._deviceId = deviceId ?? null
         this._volume = volume ?? 1.0
         this._range = range ?? null
         this._enablePlayback = enablePlayback ?? true
+        this._instrument = Instrument.deserialize(instrument?.type, instrument?.tuning) ?? Instrument.Default
 
         this.changed()
     }

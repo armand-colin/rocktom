@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { Instrument, InstrumentTuning, type InstrumentType } from "../instrument/Instrument";
+import { Instrument, InstrumentTuning, InstrumentType } from "../instrument/Instrument";
 import { Tempo } from "../Tempo";
 import type { FocusTrackBuilder } from "./FocusTrack";
 import type { Marker } from "./Marker";
@@ -8,6 +8,8 @@ import type { TempoTrack } from "./TempoTrack";
 
 
 export type SerializedNoteTrack = {
+    id: string,
+    name: string,
     instrumentType: InstrumentType,
     instrumentTuning: InstrumentTuning,
     patterns: SerializedPattern[],
@@ -17,27 +19,34 @@ export type SerializedNoteTrack = {
 
 export class NoteTrack {
 
+    readonly id: string
+    name: string
+
     private _instrument: Instrument
     readonly timedPatterns: TimedPattern[] = []
     readonly markers: Marker[] = []
     readonly patterns = new Map<string, Pattern>()
 
-    constructor(
+    constructor(opts: {
         instrument: Instrument,
         timedPatterns: TimedPattern[],
         markers: Marker[],
-        patterns?: Map<string, Pattern>
-    ) {
-        this._instrument = instrument
-        this.timedPatterns = timedPatterns
-        this.markers = markers
+        patterns?: Map<string, Pattern>,
+        id?: string,
+        name?: string,
+    }) {
+        this.id = opts.id || nanoid()
+        this.name = opts.name || InstrumentType.getLabel(opts.instrument.type)
+        this._instrument = opts.instrument
+        this.timedPatterns = opts.timedPatterns
+        this.markers = opts.markers
 
-        if (patterns) {
-            for (const [id, pattern] of patterns)
+        if (opts.patterns) {
+            for (const [id, pattern] of opts.patterns)
                 this.patterns.set(id, pattern)
         }
 
-        for (const { pattern } of timedPatterns)
+        for (const { pattern } of opts.timedPatterns)
             this.patterns.set(pattern.id, pattern)
     }
 
@@ -64,7 +73,7 @@ export class NoteTrack {
         for (const pattern of this.patterns.values()) {
             const newPattern = pattern.clone()
             idMap.set(pattern.id, newPattern.id)
-            patterns.set(newPattern.id, pattern)
+            patterns.set(newPattern.id, newPattern)
         }
 
         const timedPatterns = this.timedPatterns.map(tp => {
@@ -78,12 +87,13 @@ export class NoteTrack {
             })
         })
 
-        return new NoteTrack(
-            this.instrument,
+        return new NoteTrack({
+            instrument: this.instrument,
             timedPatterns,
-            this.markers.map(marker => ({ ...marker })),
-            patterns
-        )
+            markers: this.markers.map(marker => ({ ...marker })),
+            patterns,
+            name: this.name,
+        })
     }
 
     get lastNote() {
@@ -132,6 +142,8 @@ export class NoteTrack {
 
     serialize(): SerializedNoteTrack {
         return {
+            id: this.id,
+            name: this.name,
             instrumentType: this.instrument.type,
             instrumentTuning: this.instrument.tuning,
             patterns: Array.from(this.patterns.values())
@@ -145,21 +157,24 @@ export class NoteTrack {
 
     static deserialize(data: SerializedNoteTrack): NoteTrack {
         const patternsMap = new Map<string, Pattern>()
-        const instrument = Instrument.deserialize(data.instrumentType, data.instrumentTuning)
+        const instrument = Instrument.deserialize(data.instrumentType, data.instrumentTuning) ?? Instrument.BassStandard
 
-        for (const patternData of data.patterns) {
+        for (const patternData of data.patterns ?? []) {
             const pattern = Pattern.deserialize(patternData, instrument)
             patternsMap.set(pattern.id, pattern)
         }
 
-        const timedPatterns = data.timedPatterns
+        const timedPatterns = (data.timedPatterns ?? [])
             .map(tpData => TimedPattern.deserialize(tpData, patternsMap))
 
-        return new NoteTrack(
+        return new NoteTrack({
             instrument,
             timedPatterns,
-            data.markers
-        )
+            markers: data.markers ?? [],
+            patterns: patternsMap,
+            id: data.id,
+            name: data.name,
+        })
     }
 
 }
@@ -197,11 +212,11 @@ export class NoteTrackBuilder {
     }
 
     build(): NoteTrack {
-        return new NoteTrack(
-            this._instrument,
-            this._patterns,
-            this._markers
-        )
+        return new NoteTrack({
+            instrument: this._instrument,
+            timedPatterns: this._patterns,
+            markers: this._markers,
+        })
     }
 
     marker(name: string): this {

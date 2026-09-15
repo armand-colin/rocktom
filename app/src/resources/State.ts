@@ -6,7 +6,7 @@ import { Level } from "../sound/Level";
 
 export class State extends Resource {
 
-    private _instrument: LiveInstrument | null = null
+    private _liveInstrument: LiveInstrument | null = null
     private _editor: LevelEditor | null = null
     private _playback: Playback | null = null
 
@@ -22,8 +22,8 @@ export class State extends Resource {
         return this._playback
     }
 
-    get instrument() {
-        return this._instrument
+    get liveInstrument() {
+        return this._liveInstrument
     }
 
     editLevel(level: Level | null) {
@@ -43,11 +43,11 @@ export class State extends Resource {
         this.editLevel(cloned)
     }
 
-    setInstrument(instrument: LiveInstrument | null) {
-        if (this._instrument)
-            this._instrument.destroy()
+    setInstrument(liveInstrument: LiveInstrument | null) {
+        if (this._liveInstrument)
+            this._liveInstrument.destroy()
 
-        this._instrument = instrument
+        this._liveInstrument = liveInstrument
 
         this.changed()
     }

@@ -15,6 +15,8 @@ import { Time } from "./Time";
 import { Schedules } from "../Schedules";
 import { DeltaTime } from "./DeltaTime";
 import type { Object3D } from "three";
+import { LiveInstrumentPreferences } from "../resources/LiveInstrumentPreferences";
+import type { NoteTrack } from "../sound/song/NoteTrack";
 
 export class Playback extends Component {
 
@@ -35,6 +37,7 @@ export class Playback extends Component {
 
     private _audioPlayerVolume: number = 1.0
     private _audioPlayer: AudioPlayer
+    private _noteTrack: NoteTrack
 
     readonly deltaTime: DeltaTime
 
@@ -66,7 +69,14 @@ export class Playback extends Component {
 
         this._renderer = engine.getResource(Renderer)
 
-        const instrument = level.noteTrack.instrument
+        const liveInstrumentPreferences = engine.getResource(LiveInstrumentPreferences)
+
+        this._noteTrack = level.noteTracks.find(track => {
+            return track.instrument.id === liveInstrumentPreferences.instrument.id
+        }) ??
+            level.noteTracks[0]
+
+        const instrument = this._noteTrack.instrument
         this._neck = NeckMesh.create(instrument)
         this._renderer.add(this._neck)
 
@@ -75,7 +85,7 @@ export class Playback extends Component {
 
         this._notes = []
 
-        for (const note of level.noteTrack.notes())
+        for (const note of this._noteTrack.notes())
             this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
 
         this._window = new NoteWindow(this._notes, this._renderer)
@@ -87,11 +97,15 @@ export class Playback extends Component {
     }
 
     get loading() {
-        return this._loading 
+        return this._loading
     }
 
     get playing() {
         return this._playingCoroutine !== null
+    }
+
+    get noteTrack() {
+        return this._noteTrack
     }
 
     private _getTimeWindow() {
@@ -209,7 +223,7 @@ export class Playback extends Component {
         const seconds = this.time.seconds + deltaTime
         const ticks = this.level.tempoTrack.ticksFromSeconds(seconds)
         this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
-        
+
         this._metronome.update(ticks, this._speed)
 
         this._updateWindow()
@@ -255,7 +269,7 @@ export class Playback extends Component {
 
         if (this.playing)
             this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time))
-        
+
         this.changed()
     }
 

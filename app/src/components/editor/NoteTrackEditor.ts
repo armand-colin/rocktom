@@ -1,4 +1,4 @@
-    import { Component, Engine } from "@niloc/ecs";
+import { Component, Engine } from "@niloc/ecs";
 import { nanoid } from "nanoid";
 import type { Marker } from "../../sound/song/Marker";
 import type { NoteTrack } from "../../sound/song/NoteTrack";
@@ -49,6 +49,11 @@ export class NoteTrackEditor extends Component {
         }
 
         this.track.setInstrument(instrument)
+        this.changed()
+    }
+
+    setName(name: string) {
+        this.track.name = name
         this.changed()
     }
 

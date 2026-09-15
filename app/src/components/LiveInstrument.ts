@@ -14,8 +14,8 @@ type Opts = {
 
 export class LiveInstrument extends Component {
 
-    private _instrument: Instrument = Instrument.BassStandard
-    
+    private _instrument: Instrument
+
     private _name: string
     private _mediaStream: MediaStream
     private _streamId: string
@@ -40,8 +40,12 @@ export class LiveInstrument extends Component {
         this._range = preferences.range ?? AudioRange.default()
         this._octaverEnabled = preferences.octaverEnabled
 
+        this._instrument = preferences.instrument ?? Instrument.BassStandard
+
         const mixer = engine.getResource(Mixer)
         mixer.feedback.connect(this._streamNode)
+
+        preferences.on('change', this._onPreferencesChanged)
     }
 
     get instrument() {
@@ -78,6 +82,16 @@ export class LiveInstrument extends Component {
         this._octaverEnabled = value
         this.engine.getResource(LiveInstrumentPreferences).octaverEnabled = value
         this.changed()
+    }
+
+    private _onPreferencesChanged = () => {
+        const preferences = this.engine.getResource(LiveInstrumentPreferences)
+        const instrument = preferences.instrument
+        
+        if (!instrument || instrument.id === this._instrument.id)
+            return
+
+        this.setInstrument(instrument)
     }
 
     setInstrument(instrument: Instrument) {

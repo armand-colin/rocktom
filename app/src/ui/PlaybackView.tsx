@@ -46,7 +46,9 @@ export function PlaybackView(props: { playback: Playback }) {
             <ElementRenderer element={renderer.element} />
         </div>
 
-        <PlaybackControls playback={props.playback} />
+        <PlaybackControls
+            playback={props.playback}
+        />
 
         <InactiveHiderFn enabled={playing} timeout={3000}>
             {({ state }) => (
@@ -65,7 +67,11 @@ function PlaybackControls(props: { playback: Playback }) {
     const mixer = engine.getResource(Mixer)
     const navigate = useNavigate()
 
-    const { playing, speed } = useComponent(props.playback)
+    const { playing, speed, noteTrack } = useComponent(props.playback)
+
+    function onSwapTrack() {
+        // TODO
+    }
 
     return (
         <div className="PlaybackControls flex flex-col gap-3">
@@ -78,6 +84,18 @@ function PlaybackControls(props: { playback: Playback }) {
                 </button>
 
                 <h1>{props.playback.level.name}</h1>
+
+                <div className="flex gap-2 items-center py-2">
+                    {noteTrack.instrument.name}
+                    <Button
+                        shape="square"
+                        onClick={onSwapTrack}
+                        size={UiSize.XS}
+                        variant="ghost"
+                    >
+                        <Icon name="swap_horiz" />
+                    </Button>
+                </div>
             </div>
 
             <div className="buttons">

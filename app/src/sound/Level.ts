@@ -14,7 +14,15 @@ type SerializedLevel = {
 }
 
 type SerializedTracks = {
-    note: SerializedNoteTrack,
+    noteTracks: SerializedNoteTrack[],
+    audio: SerializedAudioTrack,
+    tempo: SerializedTempoTrack,
+    focus: SerializedFocusTrack
+}
+
+type SerializedTracksInput = {
+    noteTracks?: SerializedNoteTrack[],
+    note?: SerializedNoteTrack,
     audio: SerializedAudioTrack,
     tempo: SerializedTempoTrack,
     focus: SerializedFocusTrack
@@ -25,7 +33,7 @@ export class Level {
     readonly id: string
     name: string
 
-    readonly noteTrack: NoteTrack
+    readonly noteTracks: NoteTrack[]
     readonly audioTrack: AudioTrack
     readonly tempoTrack: TempoTrack
     readonly focusTrack: FocusTrack
@@ -38,7 +46,7 @@ export class Level {
             id: opts.id,
             name: opts.name,
             tracks: {
-                note: new NoteTrack(Instrument.BassStandard, [], []),
+                noteTracks: [Level.defaultNoteTrack()],
                 audio: new AudioTrack({ time: 0, playbackId: null }),
                 tempo: new TempoTrack(new Tempo(120)),
                 focus: new FocusTrack(Focus.default(), [])
@@ -68,7 +76,7 @@ export class Level {
         id: string,
         name: string,
         tracks: {
-            note: NoteTrack,
+            noteTracks: NoteTrack[],
             audio: AudioTrack,
             tempo: TempoTrack,
             focus: FocusTrack
@@ -77,21 +85,23 @@ export class Level {
         this.id = opts.id
         this.name = opts.name
 
-        this.noteTrack = opts.tracks?.note
-        this.audioTrack = opts.tracks?.audio
-        this.tempoTrack = opts.tracks?.tempo
-        this.focusTrack = opts.tracks?.focus
+        this.noteTracks = opts.tracks.noteTracks
+        this.audioTrack = opts.tracks.audio
+        this.tempoTrack = opts.tracks.tempo
+        this.focusTrack = opts.tracks.focus
     }
 
     get durationInTicks() {
         let end = 0
 
-        for (const timedPattern of this.noteTrack.timedPatterns) {
-            end = Math.max(end, timedPattern.time + timedPattern.duration)
-        }
+        for (const noteTrack of this.noteTracks) {
+            for (const timedPattern of noteTrack.timedPatterns) {
+                end = Math.max(end, timedPattern.time + timedPattern.duration)
+            }
 
-        for (const note of this.noteTrack.notes()) {
-            end = Math.max(end, note.time + note.duration)
+            for (const note of noteTrack.notes()) {
+                end = Math.max(end, note.time + note.duration)
+            }
         }
 
         return end
@@ -102,7 +112,15 @@ export class Level {
     }
 
     getInstrumentTypes(): string[] {
-        return [this.noteTrack.instrument.type]
+        const types: string[] = []
+
+        for (const noteTrack of this.noteTracks) {
+            const type = noteTrack.instrument.type
+            if (!types.includes(type))
+                types.push(type)
+        }
+
+        return types
     }
 
     clone(): Level {
@@ -112,7 +130,7 @@ export class Level {
             tracks: {
                 audio: this.audioTrack.clone(),
                 focus: this.focusTrack.clone(),
-                note: this.noteTrack.clone(),
+                noteTracks: this.noteTracks.map(track => track.clone()),
                 tempo: this.tempoTrack.clone()
             }
         })
@@ -128,25 +146,48 @@ export class Level {
 
     serializeTracks(): SerializedTracks {
         return {
-            note: this.noteTrack.serialize(),
+            noteTracks: this.noteTracks.map(track => track.serialize()),
             audio: this.audioTrack.serialize(),
             tempo: this.tempoTrack.serialize(),
             focus: this.focusTrack.serialize()
         }
     }
 
-    static deserializeTracks(data: SerializedTracks): {
-        note: NoteTrack,
+    static deserializeTracks(data: SerializedTracksInput): {
+        noteTracks: NoteTrack[],
         audio: AudioTrack,
         tempo: TempoTrack,
         focus: FocusTrack
     } {
         return {
-            note: NoteTrack.deserialize(data.note),
+            noteTracks: Level.deserializeNoteTracks(data),
             audio: AudioTrack.deserialize(data.audio),
             tempo: TempoTrack.deserialize(data.tempo),
             focus: FocusTrack.deserialize(data.focus)
         }
+    }
+
+    private static defaultNoteTrack(): NoteTrack {
+        return new NoteTrack({
+            instrument: Instrument.BassStandard,
+            timedPatterns: [],
+            markers: [],
+        })
+    }
+
+    private static deserializeNoteTracks(data: SerializedTracksInput): NoteTrack[] {
+        const serializedTracks = Array.isArray(data.noteTracks)
+            ? data.noteTracks
+            : data.note
+                ? [data.note]
+                : []
+
+        const noteTracks = serializedTracks.map(track => NoteTrack.deserialize(track))
+
+        if (noteTracks.length === 0)
+            noteTracks.push(Level.defaultNoteTrack())
+
+        return noteTracks
     }
 
 }

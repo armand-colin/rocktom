@@ -16,7 +16,7 @@ export function PlaybackProgressView(props: {
 }) {
     const { ticks } = useComponent(props.playback.time)
     const duration = props.playback.level.durationInTicks
-    const markersList = props.playback.level.noteTrack.markers
+    const markersList = props.playback.level.noteTracks[0].markers
 
     const nextMarker = useMemo(
         () => markersList.find(marker => marker.time > ticks),
@@ -25,7 +25,7 @@ export function PlaybackProgressView(props: {
 
     function onSkip() {
         const currentTicks = props.playback.time.ticks
-        const next = props.playback.level.noteTrack.markers.find(
+        const next = props.playback.level.noteTracks[0].markers.find(
             marker => marker.time > currentTicks
         )
         if (!next)

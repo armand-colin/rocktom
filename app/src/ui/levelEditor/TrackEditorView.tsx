@@ -30,7 +30,7 @@ export function TrackEditorHead(props: {
     className?: string,
     contentClassName?: string,
     noPadding?: boolean,
-    title?: string
+    title?: ReactNode
 }) {
     const className = "TrackEditorHead" + (props.className ? ` ${props.className}` : "")
 
