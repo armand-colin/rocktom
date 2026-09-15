@@ -4,6 +4,7 @@ import { FormSchema } from "../../../form/FormSchema";
 import { useForm } from "../../../hooks/useForm";
 import { Button, ButtonTheme } from "../../button/Button";
 import { Form } from "../../form/Form";
+import { FormButtons } from "../../formButtons/FormButtons";
 import { StringInput } from "../../input/StringInput";
 import { Popup } from "../Popup";
 
@@ -41,19 +42,15 @@ export function PromptPopup(props: Props) {
         }
         <p>{props.text}</p>
 
-        <Form handler={handler} onSubmit={onSubmit}>
+        <Form handler={handler} onSubmit={onSubmit} className="grid gap-7">
             <StringInput
                 field={handler.fields.value}
                 defaultValue={props.defaultValue}
                 autoFocus
                 placeholder={props.placeholder}
             />
-
-            <div className="flex justify-end gap-3">
-                <Button
-                    type="button"
-                    onClick={props.close}
-                >
+            <FormButtons>
+                <Button onClick={props.close}>
                     {props.cancelLabel || "Cancel"}
                 </Button>
                 <Button
@@ -62,7 +59,7 @@ export function PromptPopup(props: Props) {
                 >
                     {props.confirmLabel || "Confirm"}
                 </Button>
-            </div>
+            </FormButtons>
         </Form>
-    </Popup.BaseContainer>
+    </Popup.BaseContainer >
 }

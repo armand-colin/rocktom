@@ -152,19 +152,20 @@ function FocusEventView(props: {
             "--time": props.time
         } as CSSProperties}
     >
-        <div className="tail"
+        <div
+            className="content"
             onContextMenu={onContextMenu}
             onMouseDown={onMouseDown}
         >
-            <div className="resizer-left" onMouseDown={onLeftMouseDown}></div>
-            <div className="resizer-right" onMouseDown={onRightMouseDown}></div>
+            <div className="event">
+                <FocusEditor
+                    value={props.focus}
+                    onChange={value => props.editor.setFocus(props.id, value)}
+                    size={UiSize.XS}
+                />
+            </div>
         </div>
-        <div className="event">
-            <FocusEditor
-                value={props.focus}
-                onChange={value => props.editor.setFocus(props.id, value)}
-				size={UiSize.XS}
-            />
-        </div>
+        <div className="resizer-left" onMouseDown={onLeftMouseDown}></div>
+        <div className="resizer-right" onMouseDown={onRightMouseDown}></div>
     </div>
 }
