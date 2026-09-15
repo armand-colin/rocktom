@@ -8,7 +8,7 @@ RUN yarn install --frozen-lockfile 2>/dev/null || yarn install
 COPY . .
 RUN yarn build
 
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
