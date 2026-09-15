@@ -56,6 +56,9 @@ export class LevelEditor extends Component {
         this.audioTrack.onChange(() => {
             this.player.refreshAudioPlayer()
         })
+
+        window.addEventListener("wheel", this._onWheel, { passive: false })
+        window.addEventListener("scroll", this._onScroll, { passive: false })
     }
 
     get pattern() {
@@ -180,6 +183,14 @@ export class LevelEditor extends Component {
         }
     }
 
+    private _onScroll = (event: Event) => {
+        event.preventDefault()
+    }
+
+    private _onWheel = (event: WheelEvent) => {
+        event.preventDefault()
+    }
+
     destroy() {
         super.destroy()
         for (const instrumentTrack of this.instrumentTracks)
@@ -191,6 +202,8 @@ export class LevelEditor extends Component {
         this._patternWindow = null
         this._mixerWindow?.close()
         this._mixerWindow = null
+        window.removeEventListener("wheel", this._onWheel)
+        window.removeEventListener("scroll", this._onScroll)
     }
 
 }
