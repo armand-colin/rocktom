@@ -28,7 +28,7 @@ type Oscillator = {
 }
 
 const DEFAULT_ADSR: AdsrParams = {
-    attack: 0.008,
+    attack: 0.006,
     decay: 0.12,
     sustain: 0.55,
     release: 0.14,
