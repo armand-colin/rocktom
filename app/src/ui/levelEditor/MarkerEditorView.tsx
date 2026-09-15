@@ -83,15 +83,13 @@ function MarkerView(props: {
 
         const markers = props.editor.track.markers
         const index = markers.findIndex(marker => marker.id === props.id)
-        const prevMarker = index > 0 ? markers[index - 1] : null
-        const nextMarker = index < markers.length - 1 ? markers[index + 1] : null
+        // const prevMarker = index > 0 ? markers[index - 1] : null
+        // const nextMarker = index < markers.length - 1 ? markers[index + 1] : null
 
         const mover = new TimeMover({
             event: e.nativeEvent,
             startTicks: props.time,
             transform: props.transform,
-            minTicks: prevMarker ? prevMarker.time + 0.01 : 0,
-            maxTicks: nextMarker ? nextMarker.time - 0.01 : Infinity
         })
 
         mover.events.on("change", ticks => {

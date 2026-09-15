@@ -176,15 +176,6 @@ export class NoteTrackEditor extends Component {
         if (index === -1)
             return
 
-        const prevMarker = index > 0 ? this.track.markers[index - 1] : null
-        const nextMarker = index < this.track.markers.length - 1 ? this.track.markers[index + 1] : null
-
-        if (prevMarker && time <= prevMarker.time)
-            return
-
-        if (nextMarker && time >= nextMarker.time)
-            return
-
         this.track.markers[index].time = time
         this._sortMarkers()
         this.changed()
