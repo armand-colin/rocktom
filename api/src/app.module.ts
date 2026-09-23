@@ -9,8 +9,7 @@ import { LevelModule } from './modules/level/level.module';
 import { SessionModule } from './modules/session/session.module';
 import { UserModule } from './modules/user/user.module';
 import { TypeOrmConfig } from './database/typeorm.config';
-import { AuthorizationService } from './authorization/authorization.service';
-import { AuthorizationModule } from './authorization/authorization.module';
+import { AuthorizationModule } from './modules/authorization/authorization.module';
 
 @Module({
   imports: [
