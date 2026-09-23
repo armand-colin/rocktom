@@ -1,8 +1,8 @@
-import { Body, Controller, Headers, Post, Req, Request, Res, Response, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Headers, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { SessionService } from './session.service';
 import { CodeDto, LoginDto } from './session.dto';
 import { Authorization } from '../../common/authorization';
-import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
+import { type Request as ExpressRequest, type Response as ExpressResponse } from 'express';
 
 const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken';
 

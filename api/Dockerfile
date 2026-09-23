@@ -23,4 +23,4 @@ RUN mkdir -p /app/storage
 
 EXPOSE 3000
 
-CMD ["node", "dist/main.cjs"]
+CMD ["node", "dist/main.js"]

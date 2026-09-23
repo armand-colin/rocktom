@@ -9,6 +9,8 @@ import { LevelModule } from './modules/level/level.module';
 import { SessionModule } from './modules/session/session.module';
 import { UserModule } from './modules/user/user.module';
 import { TypeOrmConfig } from './database/typeorm.config';
+import { AuthorizationService } from './authorization/authorization.service';
+import { AuthorizationModule } from './authorization/authorization.module';
 
 @Module({
   imports: [
@@ -22,7 +24,9 @@ import { TypeOrmConfig } from './database/typeorm.config';
     LevelModule,
     UserModule,
     SessionModule,
+    AuthorizationModule,
   ],
   controllers: [AppController],
+  providers: [],
 })
 export class AppModule {}
