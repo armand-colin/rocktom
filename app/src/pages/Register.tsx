@@ -78,9 +78,14 @@ export function Register() {
                         placeholder="Email"
                     />
                 </FormInputField>
-                <Button type="submit">
+
+                <Button
+                    type="submit"
+                    theme="primary"
+                >
                     Register
                 </Button>
+
                 <a href="/login">Login</a>
             </Form>
         </div>

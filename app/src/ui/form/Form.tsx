@@ -4,6 +4,7 @@ import type { FormSchema } from "../../form/FormSchema"
 import type { FormHandler } from "../../form/FormHandler"
 import { useComponent } from "@niloc/ecs-react"
 import { OS } from '../../utils/OS'
+import { FormContext } from './FormContext'
 
 type Props<S extends FormSchema.Schema> = {
     handler: FormHandler<S>,
@@ -23,7 +24,7 @@ export function Form<S extends FormSchema.Schema>(props: Props<S>) {
 
     function onKeyDown(e: KeyboardEvent<HTMLFormElement>) {
         if (
-            e.key === 'Enter' && 
+            e.key === 'Enter' &&
             OS.isCtrl(e.nativeEvent)
         ) {
             e.preventDefault()
@@ -38,6 +39,10 @@ export function Form<S extends FormSchema.Schema>(props: Props<S>) {
         onKeyDown={onKeyDown}
         ref={ref}
     >
-        {props.children}
+        <FormContext.Provider value={{
+            loading,
+        }}>
+            {props.children}
+        </FormContext.Provider>
     </form>
 }

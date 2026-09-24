@@ -19,8 +19,6 @@ import {
 } from "./level.dto";
 import { randomUUID } from "crypto";
 
-type LevelAccessRole = 'owner' | 'write' | 'read';
-
 @Injectable()
 export class LevelService {
 
@@ -78,55 +76,18 @@ export class LevelService {
         })
     }
 
-    async tryResolveAccess(
-        id: string,
-        requestingUserId: string,
-    ): Promise<{ level: Level; role: LevelAccessRole } | null> {
-        const level = await this.levelRepository.findOne({
-            where: { id },
-        });
-
-        if (!level) {
-            return null;
-        }
-
-        if (level.userId === requestingUserId) {
-            return { level, role: 'owner' };
-        }
-
-        const access = await this.levelAccessRepository.findOne({
+    async getById(id: string): Promise<Level> {
+        const level = await await this.levelRepository.findOne({
             where: {
-                levelId: id,
-                userId: requestingUserId,
+                id: id,
             },
         });
 
-        if (!access) {
-            return null;
-        }
-
-        const share = await this.levelShareRepository.findOne({
-            where: { levelId: id },
-        });
-
-        if (!share?.enabled) {
-            return null;
-        }
-
-        return {
-            level,
-            role: share.permission === 'write' ? 'write' : 'read',
-        };
-    }
-
-    async getById(id: string, requestingUserId: string): Promise<Level> {
-        const resolved = await this.tryResolveAccess(id, requestingUserId);
-
-        if (!resolved) {
+        if (!level) {
             throw new NotFoundException('level_not_found');
         }
 
-        return resolved.level;
+        return level;
     }
 
     async delete(id: string): Promise<void> {
@@ -135,20 +96,10 @@ export class LevelService {
 
     async update(
         id: string,
-        requestingUserId: string,
         body: UpdateLevelDto,
     ): Promise<Level> {
-        const resolved = await this.tryResolveAccess(id, requestingUserId);
+        const level = await this.getById(id)
 
-        if (!resolved) {
-            throw new NotFoundException('level_not_found');
-        }
-
-        if (resolved.role === 'read') {
-            throw new ForbiddenException('level_read_only');
-        }
-
-        const level = resolved.level;
         level.name = body.name;
         level.serialized = body.serialized;
         level.duration = body.duration | 0; // Convert to integer in case of
@@ -160,48 +111,33 @@ export class LevelService {
 
     async createShare(
         id: string,
-        requestingUserId: string,
         body: CreateLevelShareDto,
     ): Promise<LevelShareDto> {
-        await this.getOwnedLevel(id, requestingUserId);
-
         const existing = await this.levelShareRepository.findOne({
-            where: { levelId: id },
-            select: {
-                token: true,
-                permission: true,
-                enabled: true,
+            where: {
+                levelId: id,
             }
-        });
+        })
 
         if (existing) {
-            return existing;
+            return this.toShareDto(existing);
         }
 
-        const share = this.levelShareRepository.create({
+        const share = await this.levelShareRepository.create({
             levelId: id,
             token: randomUUID(),
             permission: body.permission ?? 'read',
             enabled: true,
         });
 
-        return this.toShareDto(await this.levelShareRepository.save(share));
+        return this.toShareDto(share);
     }
 
     async updateShare(
         id: string,
-        requestingUserId: string,
         body: UpdateLevelShareDto,
     ): Promise<LevelShareDto> {
-        await this.getOwnedLevel(id, requestingUserId);
-
-        const share = await this.levelShareRepository.findOne({
-            where: { levelId: id },
-        });
-
-        if (!share) {
-            throw new NotFoundException('level_share_not_found');
-        }
+        const share = await this._getShare(id);
 
         if (body.permission === undefined && body.enabled === undefined) {
             throw new BadRequestException('no_share_updates');
@@ -218,19 +154,24 @@ export class LevelService {
         return this.toShareDto(await this.levelShareRepository.save(share));
     }
 
-    async getShare(
-        id: string,
-        requestingUserId: string,
-    ): Promise<LevelShareDto> {
-        await this.getOwnedLevel(id, requestingUserId);
-
+    private async _getShare(id: string): Promise<LevelShare> {
         const share = await this.levelShareRepository.findOne({
-            where: { levelId: id },
-        });
+            where: {
+                levelId: id,
+            }
+        })
 
         if (!share) {
             throw new NotFoundException('level_share_not_found');
         }
+
+        return share;
+    }
+
+    async getShare(
+        id: string,
+    ): Promise<LevelShareDto> {
+        const share = await this._getShare(id);
 
         return this.toShareDto(share);
     }

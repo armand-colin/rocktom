@@ -1,0 +1,23 @@
+.SubmitButton {
+
+    &[data-loading="false"] {
+        >div {
+            display: none
+        }
+    }
+
+    &[data-loading="true"] {
+        >span {
+            opacity: 0;
+        }
+
+        >div {
+            display: flex;
+            position: absolute;
+            inset: 0;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+}

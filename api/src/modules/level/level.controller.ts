@@ -53,8 +53,9 @@ export class LevelController {
 
     @UseGuards(SessionGuard)
     @Get(':id')
-    getById(@Param('id') id: string, @CurrentSession() session: Session) {
-        return this.levelService.getById(id, session.userId);
+    async getById(@Param('id') id: string, @CurrentSession() session: Session) {
+        await this.authorizationService.level.read({ levelId: id, userId: session.userId }).assert();
+        return this.levelService.getById(id);
     }
 
     @UseGuards(SessionGuard)
@@ -71,34 +72,37 @@ export class LevelController {
         @Body() body: CreateLevelShareDto,
         @CurrentSession() session: Session,
     ) {
-        await this.authorizationService.level.delete({ levelId: id, userId: session.userId }).assert();
-        return this.levelService.createShare(id, session.userId, body);
+        await this.authorizationService.level.share({ levelId: id, userId: session.userId }).assert();
+        return this.levelService.createShare(id, body);
     }
 
     @UseGuards(SessionGuard)
     @Get(':id/share')
-    getShare(@Param('id') id: string, @CurrentSession() session: Session) {
-        return this.levelService.getShare(id, session.userId);
+    async getShare(@Param('id') id: string, @CurrentSession() session: Session) {
+        await this.authorizationService.level.share({ levelId: id, userId: session.userId }).assert();
+        return this.levelService.getShare(id);
     }
 
     @UseGuards(SessionGuard)
     @Put(':id/share')
-    updateShare(
+    async updateShare(
         @Param('id') id: string,
         @Body() body: UpdateLevelShareDto,
         @CurrentSession() session: Session,
     ) {
-        return this.levelService.updateShare(id, session.userId, body);
+        await this.authorizationService.level.share({ levelId: id, userId: session.userId }).assert();
+        return this.levelService.updateShare(id, body);
     }
 
     @UseGuards(SessionGuard)
     @Put(':id')
-    update(
+    async update(
         @Param('id') id: string,
         @Body() body: UpdateLevelDto,
         @CurrentSession() session: Session,
     ) {
-        return this.levelService.update(id, session.userId, body);
+        await this.authorizationService.level.write({ levelId: id, userId: session.userId }).assert();
+        return this.levelService.update(id, body);
     }
 
 }
