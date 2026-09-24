@@ -129,13 +129,7 @@ export class LevelService {
         return resolved.level;
     }
 
-    async delete(id: string, requestingUserId: string): Promise<void> {
-        const resolved = await this.tryResolveAccess(id, requestingUserId);
-
-        if (!resolved || resolved.role !== 'owner') {
-            throw new NotFoundException('level_not_found');
-        }
-
+    async delete(id: string): Promise<void> {
         await this.levelRepository.delete({ id });
     }
 

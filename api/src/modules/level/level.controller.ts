@@ -10,11 +10,15 @@ import { SessionGuard } from "../session/session.guard";
 import { CurrentSession } from "../session/current-session.decorator";
 import { Session } from "../session/session.entity";
 import "multer";
+import { AuthorizationService } from "../authorization/authorization.service";
 
 @Controller('level')
 export class LevelController {
 
-    constructor(protected readonly levelService: LevelService) {}
+    constructor(
+        protected readonly levelService: LevelService,
+        protected readonly authorizationService: AuthorizationService,
+    ) {}
 
     @UseGuards(SessionGuard)
     @Post()
@@ -55,17 +59,19 @@ export class LevelController {
 
     @UseGuards(SessionGuard)
     @Delete(':id')
-    delete(@Param('id') id: string, @CurrentSession() session: Session) {
-        return this.levelService.delete(id, session.userId);
+    async delete(@Param('id') id: string, @CurrentSession() session: Session) {
+        await this.authorizationService.level.delete({ levelId: id, userId: session.userId }).assert();
+        return this.levelService.delete(id);
     }
 
     @UseGuards(SessionGuard)
     @Post(':id/share')
-    createShare(
+    async createShare(
         @Param('id') id: string,
         @Body() body: CreateLevelShareDto,
         @CurrentSession() session: Session,
     ) {
+        await this.authorizationService.level.delete({ levelId: id, userId: session.userId }).assert();
         return this.levelService.createShare(id, session.userId, body);
     }
 
