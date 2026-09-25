@@ -38,24 +38,14 @@ export class DocumentService {
     return this.documentRepository.save(document);
   }
 
-  tryGetById(id: string, requestingUserId: string): Promise<Document | null> {
+  tryGetById(id: string): Promise<Document | null> {
     return this.documentRepository.findOne({
-      where: [{
-        id,
-        user: { id: requestingUserId }
-      }, {
-        id,
-        levels: {
-          access: {
-            userId: requestingUserId
-          }
-        }
-      }],
+      where: { id },
     });
   }
 
-  async getById(id: string, requestingUserId: string): Promise<Document> {
-    const document = await this.tryGetById(id, requestingUserId);
+  async getById(id: string): Promise<Document> {
+    const document = await this.tryGetById(id);
 
     if (!document) {
       throw new NotFoundException('document_not_found');
@@ -90,8 +80,8 @@ export class DocumentService {
     return await this.documentRepository.save(document);
   }
 
-  async download(id: string, requestingUserId: string): Promise<StreamableFile> {
-    const document = await this.getById(id, requestingUserId);
+  async download(id: string): Promise<StreamableFile> {
+    const document = await this.getById(id);
     const filePath = path.join(this.directory, document.id);
     const file = await createReadStream(filePath);
 
@@ -101,15 +91,9 @@ export class DocumentService {
     });
   }
 
-  async remove(id: string, requestingUserId: string): Promise<void> {
-    const document = await this.getById(id, requestingUserId);
-
-    if (document.userId !== requestingUserId) {
-      throw new ForbiddenException('not_document_owner');
-    }
-
-    await this.documentRepository.delete(document.id);
-    unlinkSync(path.join(this.directory, document.id));
+  async remove(id: string): Promise<void> {
+    await this.documentRepository.delete({ id: id });
+    unlinkSync(path.join(this.directory, id));
   }
 
 }

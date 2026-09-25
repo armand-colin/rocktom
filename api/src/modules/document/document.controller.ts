@@ -4,19 +4,24 @@ import { Session } from "../session/session.entity";
 import { SessionGuard } from "../session/session.guard";
 import { DocumentService } from "./document.service";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { AuthorizationService } from "../authorization/authorization.service";
 
 @Controller('document')
 export class DocumentController {
 
-    constructor(protected readonly documentService: DocumentService) {}
+    constructor(
+        protected readonly documentService: DocumentService,
+        protected readonly authorizationService: AuthorizationService
+    ) {}
     
     @UseGuards(SessionGuard)
     @Get(':id')
-    getById(
+    async getById(
         @Param('id') id: string,
         @CurrentSession() session: Session
     ) {
-        return this.documentService.getById(id, session.userId);
+        await this.authorizationService.document.read({ documentId: id, userId: session.userId }).assert();
+        return this.documentService.getById(id);
     }
 
     @UseGuards(SessionGuard)
@@ -37,20 +42,22 @@ export class DocumentController {
 
     @Get(':id/download')
     @UseGuards(SessionGuard)
-    download(
+    async download(
         @Param('id') id: string,
         @CurrentSession() session: Session
     ) {
-        return this.documentService.download(id, session.userId);
+        await this.authorizationService.document.read({ documentId: id, userId: session.userId }).assert();
+        return this.documentService.download(id);
     }
 
     @Delete(':id')
     @UseGuards(SessionGuard)
-    remove(
+    async delete(
         @Param('id') id: string,
         @CurrentSession() session: Session
     ) {
-        return this.documentService.remove(id, session.userId);
+        await this.authorizationService.document.delete({ documentId: id, userId: session.userId }).assert();
+        return this.documentService.remove(id);
     }
 
 }
