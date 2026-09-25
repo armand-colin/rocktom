@@ -2,6 +2,7 @@ import type { CSSProperties, MouseEvent, ReactNode } from "react"
 import './Button.scss'
 import { UiSize } from "../UiSize"
 import { Enum } from "../../utils/Enum"
+import { DataProps } from "../data/DataProp"
 
 export const ButtonTheme = Enum.create({
     Default: "default",
@@ -33,6 +34,7 @@ type Props = {
     type?: 'button' | 'submit';
     title?: string;
     onMouseDown?: (e: MouseEvent<HTMLElement>) => void;
+    data?: DataProps
 }
 
 export function Button(props: Props) {
@@ -55,6 +57,7 @@ export function Button(props: Props) {
         type={props.type ?? "button"}
         title={props.title}
         onMouseDown={props.onMouseDown}
+        {...DataProps.toNativeProps(props.data ?? {})}
     >
         {props.children}
     </Primitive>

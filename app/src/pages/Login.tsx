@@ -16,6 +16,7 @@ import { Spinner } from '../ui/spinner/Spinner'
 import { UiSize } from '../ui/UiSize'
 import { FormButtons } from '../ui/formButtons/FormButtons'
 import { Query } from '../resources/queryClient/Query'
+import { SubmitButton } from '../ui/button/SubmitButton'
 
 enum LoginStep {
     Email,
@@ -99,13 +100,9 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
         </FormInputField>
 
         <FormButtons>
-            <Button
-                disabled={formHandler.loading}
-                theme={ButtonTheme.Primary}
-                type="submit"
-            >
-                {formHandler.loading ? <Spinner /> : 'Submit'}
-            </Button>
+            <SubmitButton
+                label="Submit"
+            />
         </FormButtons>
 
         <a href='/register'>Don"t have an account yet ? Register</a>
