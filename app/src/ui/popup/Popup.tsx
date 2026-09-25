@@ -6,6 +6,7 @@ import { Icon } from "../icon/Icon";
 import { UiSize } from "../UiSize";
 
 export namespace Popup {
+
     export function BaseContainer(props: { children?: ReactNode, className?: string }) {
         return <div className={cn("PopupBaseContainer", props.className)}>
             {props.children}
@@ -19,8 +20,9 @@ export namespace Popup {
                 props.close ?
                     <Button
                         onClick={props.close}
-                        size={UiSize.XS}
+                        size={UiSize.S}
                         shape="square"
+                        variant="ghost"
                     >
                         <Icon name="close" />
                     </Button> :
@@ -28,4 +30,11 @@ export namespace Popup {
             }
         </div>
     }
+
+    export function BaseButtons(props: { children?: ReactNode }) {
+        return <div className="PopupBaseButtons">
+            {props.children}
+        </div>
+    }
+
 }

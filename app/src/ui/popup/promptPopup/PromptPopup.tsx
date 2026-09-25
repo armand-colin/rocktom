@@ -2,7 +2,8 @@ import { FormField } from "../../../form/FormField";
 import type { FormHandler } from "../../../form/FormHandler";
 import { FormSchema } from "../../../form/FormSchema";
 import { useForm } from "../../../hooks/useForm";
-import { Button, ButtonTheme } from "../../button/Button";
+import { Button } from "../../button/Button";
+import { SubmitButton } from "../../button/SubmitButton";
 import { Form } from "../../form/Form";
 import { FormButtons } from "../../formButtons/FormButtons";
 import { StringInput } from "../../input/StringInput";
@@ -10,9 +11,9 @@ import { Popup } from "../Popup";
 
 interface Props {
     close: () => void,
-    text: string,
+    text?: string,
     defaultValue?: string,
-    onConfirm: (value: string) => void,
+    onConfirm: (value: string) => void | Promise<void>,
     title?: string,
     placeholder?: string,
     confirmLabel?: string,
@@ -26,8 +27,8 @@ const schema = new FormSchema({
 export function PromptPopup(props: Props) {
     const handler = useForm(schema)
 
-    function onSubmit(e: FormHandler.Result<typeof schema>) {
-        props.onConfirm(e.json.value)
+    async function onSubmit(e: FormHandler.Result<typeof schema>) {
+        await props.onConfirm(e.json.value)
         props.close()
     }
 
@@ -40,7 +41,10 @@ export function PromptPopup(props: Props) {
                 /> :
                 null
         }
-        <p>{props.text}</p>
+
+        {
+            props.text && <p>{props.text}</p>
+        }
 
         <Form handler={handler} onSubmit={onSubmit} className="grid gap-7">
             <StringInput
@@ -53,12 +57,9 @@ export function PromptPopup(props: Props) {
                 <Button onClick={props.close}>
                     {props.cancelLabel || "Cancel"}
                 </Button>
-                <Button
-                    type="submit"
-                    theme={ButtonTheme.Primary}
-                >
-                    {props.confirmLabel || "Confirm"}
-                </Button>
+                <SubmitButton
+                    label={props.confirmLabel || "Confirm"}
+                />
             </FormButtons>
         </Form>
     </Popup.BaseContainer >

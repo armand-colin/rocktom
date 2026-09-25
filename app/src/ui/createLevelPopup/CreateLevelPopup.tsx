@@ -1,35 +1,19 @@
-import { FormField } from "../../form/FormField";
-import type { FormHandler } from "../../form/FormHandler";
-import { FormSchema } from "../../form/FormSchema";
-import { useForm } from "../../hooks/useForm";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
 import { LevelQueries } from "../../queries/level/LevelQueries";
 import { Body } from "../../resources/queryClient/Body";
 import { InstrumentType } from "../../sound/instrument/Instrument";
-import { Button, ButtonTheme } from "../button/Button";
-import { Form } from "../form/Form";
-import { FormInputField } from "../form/FormInputField";
-import { FormButtons } from "../formButtons/FormButtons";
-import { StringInput } from "../input/StringInput";
-import { Popup } from "../popup/Popup";
-import { Spinner } from "../spinner/Spinner";
+import { PromptPopup } from "../popup/promptPopup/PromptPopup";
 
 type Props = {
     onSuccess: (level: LevelEntity) => void,
     close: () => void,
 }
 
-const schema = new FormSchema({
-    name: FormField.string().min(1).max(100),
-})
-
 export function CreateLevelPopup(props: Props) {
-    const handler = useForm(schema)
-
-    async function onSubmit(e: FormHandler.Result<typeof schema>) {
+    async function onSubmit(name: string) {
         const result = await LevelQueries.create.run({
             body: Body.json({
-                name: e.json.name,
+                name: name,
                 instrumentTypes: [InstrumentType.Bass],
             }),
         })
@@ -42,37 +26,11 @@ export function CreateLevelPopup(props: Props) {
         }
     }
 
-    return <Popup.BaseContainer>
-        <Popup.BaseTitle
-            title="Create Level"
-            close={props.close}
-        />
-
-        <Form
-            handler={handler}
-            onSubmit={onSubmit}
-            className="grid gap-7"
-        >
-            <FormInputField field={handler.fields.name} label="Name">
-                <StringInput
-                    field={handler.fields.name}
-                    placeholder="Level Name"
-                    autoFocus
-                />
-            </FormInputField>
-
-            <FormButtons>
-                <Button
-                    theme={ButtonTheme.Primary}
-                    type="submit"
-                >
-                    {
-                        handler.loading ?
-                            <Spinner /> :
-                            'Create'
-                    }
-                </Button>
-            </FormButtons>
-        </Form>
-    </Popup.BaseContainer>
+    return <PromptPopup
+        close={props.close}
+        title="Create Level"
+        onConfirm={onSubmit}
+        confirmLabel="Create"
+        placeholder="Level Name"
+    />
 }

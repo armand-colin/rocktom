@@ -1,7 +1,6 @@
 import './Login.scss'
 import { useState } from "react"
 import { StringInput } from "../ui/input/StringInput"
-import { Button, ButtonTheme } from "../ui/button/Button"
 import { usePopupManager } from "../hooks/usePopupManager"
 import { IconPopup } from "../ui/iconPopup/IconPopup"
 import { AuthManager } from "../resources/AuthManager"
@@ -12,7 +11,6 @@ import { Form } from "../ui/form/Form"
 import { FormField } from "../form/FormField"
 import type { FormHandler } from "../form/FormHandler"
 import { FormInputField } from '../ui/form/FormInputField'
-import { Spinner } from '../ui/spinner/Spinner'
 import { UiSize } from '../ui/UiSize'
 import { FormButtons } from '../ui/formButtons/FormButtons'
 import { Query } from '../resources/queryClient/Query'
@@ -102,6 +100,7 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
         <FormButtons>
             <SubmitButton
                 label="Submit"
+                className="w-full max-w-25"
             />
         </FormButtons>
 
@@ -115,7 +114,7 @@ const CodeFormSchema = new FormSchema({
 
 function CodeForm(props: { username: string, onSuccess: () => void }) {
     const popupManager = usePopupManager()
-    const formHandler = useForm(CodeFormSchema)
+    const handler = useForm(CodeFormSchema)
 
     async function onSubmit(e: FormHandler.Result<typeof CodeFormSchema>) {
         const authManager = Instance.engine.getResource(AuthManager)
@@ -154,11 +153,11 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
         />)
     }
 
-    return <Form handler={formHandler} onSubmit={onSubmit}>
+    return <Form handler={handler} onSubmit={onSubmit}>
         <p>Enter the code sent to your email</p>
 
         <StringInput
-            field={formHandler.fields.code}
+            field={handler.fields.code}
             name="code"
             placeholder="XXXXXX"
             size={UiSize.L}
@@ -166,13 +165,10 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
         />
 
         <FormButtons>
-            <Button
-                disabled={formHandler.loading}
-                theme={ButtonTheme.Primary}
-                type="submit"
-            >
-                {formHandler.loading ? <Spinner /> : 'Submit'}
-            </Button>
+            <SubmitButton
+                label='Submit'
+                className='max-w-25 w-full'
+            />
         </FormButtons>
     </Form>
 }

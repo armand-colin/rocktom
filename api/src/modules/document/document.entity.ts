@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  RelationId,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Level } from '../level/level.entity';
@@ -16,7 +15,7 @@ export class Document {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @RelationId((document: Document) => document.user)
+  @Column({ name: 'user_id', type: 'uuid', nullable: true })
   userId!: string | null;
 
   @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })

@@ -27,7 +27,16 @@
     >h3 {
         font:var(--font-heading-md);
     }
+
     >.Button {
         flex-shrink: 0;
+        margin-top: -4px;
+        margin-right: -4px;
     }
+}
+
+.PopupBaseButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-3);
 }
