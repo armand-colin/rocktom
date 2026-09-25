@@ -14,7 +14,7 @@ export class AuthorizationService {
 
     constructor(
         @InjectRepository(Document)
-        private readonly documentRepository: Repository<Document>
+        private readonly documentRepository: Repository<Document>,
         @InjectRepository(Level)
         private readonly levelRepository: Repository<Level>
     ) {
