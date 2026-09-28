@@ -5,6 +5,9 @@ export function AlertPopup(props: {
     title: string,
 }) {
     return <Popup.BaseContainer>
-
+        <Popup.BaseTitle
+            title={props.title}
+            close={props.close}
+        />
     </Popup.BaseContainer>
 }

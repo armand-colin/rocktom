@@ -2,3 +2,4 @@
 .env.prod
 .env.local
 .env
+api/tsconfig.build.tsbuildinfo
