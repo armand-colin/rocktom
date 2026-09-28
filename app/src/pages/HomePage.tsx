@@ -111,7 +111,7 @@ export function HomePage() {
       className="HomePage"
     >
       <Page.ConnectedTitle
-        title="Levels"
+        title="Rocktom"
         beforeActions={<>
           <LiveInstrumentButton />
         </>}
