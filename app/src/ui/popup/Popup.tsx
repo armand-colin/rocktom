@@ -8,7 +8,16 @@ import { UiSize } from "../UiSize";
 export namespace Popup {
 
     export function BaseContainer(props: { children?: ReactNode, className?: string }) {
-        return <div className={cn("PopupBaseContainer", props.className)}>
+        return <div
+            className={cn("PopupBaseContainer", props.className)}
+            onClick={(e) => e.stopPropagation()}
+        >
+            {props.children}
+        </div>
+    }
+
+    export function BaseContent(props: { children?: ReactNode, className?: string }) {
+        return <div className={cn("PopupBaseContent", props.className)}>
             {props.children}
         </div>
     }

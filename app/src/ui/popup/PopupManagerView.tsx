@@ -34,7 +34,6 @@ function Popup(props: { state: "open" | "closing", content: ReactNode, close: ()
     >
         <div
             className="body"
-            onClick={(e) => e.stopPropagation()}
         >
             {props.content}
         </div>

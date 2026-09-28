@@ -1,3 +1,58 @@
+.Popup {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 0;
+    overflow: hidden;
+
+    @keyframes fadeout {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    @keyframes fadein {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    &[data-state="closing"] {
+        animation: fadeout 0.2s ease forwards;
+        pointer-events: none;
+    }
+
+    &[data-state="open"] {
+        animation: fadein 0.2s ease forwards;
+    }
+
+    >.body {
+        max-width: calc(100vw - 2rem);
+        height: calc(100vh - 2rem);
+        min-height: 0;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+}
+
 .PopupBaseContainer {
     background: var(--container);
     border-radius: var(--radius-md);
@@ -5,12 +60,17 @@
     flex-direction: column;
     gap: var(--spacing-7);
     padding: var(--spacing-7);
-    box-shadow: var(--shadow-lg);
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+    max-height: 100%;
+    pointer-events: auto;
 
     @keyframes popIn {
         from {
             transform: scale(0.95);
         }
+
         to {
             transform: scale(1);
         }
@@ -25,7 +85,7 @@
     gap: var(--spacing-3);
 
     >h3 {
-        font:var(--font-heading-md);
+        font: var(--font-heading-md);
     }
 
     >.Button {
@@ -39,4 +99,11 @@
     display: flex;
     justify-content: flex-end;
     gap: var(--spacing-3);
+    flex-shrink: 0;
+}
+
+.PopupBaseContent {
+    overflow-y: auto;
+    max-height: 100%;
+    flex: 1;
 }

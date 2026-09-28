@@ -33,33 +33,34 @@ export function LiveInstrumentPopup(props: Props) {
             title="Live Instrument"
             close={props.close}
         />
+        <Popup.BaseContent>
+            <FormInputField label="Instrument">
+                <InstrumentDropdown
+                    value={preferences.instrument}
+                    onChange={instrument => {
+                        preferences.instrument = instrument
+                    }}
+                />
+            </FormInputField>
 
-        <FormInputField label="Instrument">
-            <InstrumentDropdown
-                value={preferences.instrument}
-                onChange={instrument => {
-                    preferences.instrument = instrument
-                }}
-            />
-        </FormInputField>
-
-        <FormInputField label="Audio stream">
-            <MediaStreamDropdown
-                liveInstrument={liveInstrument}
-            />
-        </FormInputField>
-
-        <FormInputField label="Feedback">
-            <MixerChannelView channel={mixer.feedback} />
-        </FormInputField>
-
-        {
-            liveInstrument ?
-                <LiveInstrumentPreview
+            <FormInputField label="Audio stream">
+                <MediaStreamDropdown
                     liveInstrument={liveInstrument}
-                /> :
-                null
-        }
+                />
+            </FormInputField>
+
+            <FormInputField label="Feedback">
+                <MixerChannelView channel={mixer.feedback} />
+            </FormInputField>
+
+            {
+                liveInstrument ?
+                    <LiveInstrumentPreview
+                        liveInstrument={liveInstrument}
+                    /> :
+                    null
+            }
+        </Popup.BaseContent>
     </Popup.BaseContainer>
 }
 
