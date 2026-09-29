@@ -7,11 +7,15 @@
     pointer-events: none;
     z-index: 1000;
 
+    @media screen and (max-width: var(--breakpoint-md)) {
+        inset: 12px;
+    }
+
     .Toast {
         pointer-events: auto;
         animation: toast-in 0.2s ease;
         max-width: 100%;
-        
+
         &[data-state="closing"] {
             animation: toast-out 0.3s ease forwards;
         }

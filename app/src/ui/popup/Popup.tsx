@@ -7,9 +7,9 @@ import { UiSize } from "../UiSize";
 import { Enum } from "@niloc/utils";
 
 export const PopupSize = Enum.create({
-    Small: "small",
-    Medium: "medium",
-    Large: "large",
+    Small: "sm",
+    Medium: "md",
+    Large: "lg",
 })
 
 export type PopupSize = Enum.Infer<typeof PopupSize>
