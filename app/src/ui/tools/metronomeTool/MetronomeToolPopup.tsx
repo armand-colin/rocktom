@@ -1,5 +1,5 @@
 import { useComponent, useResource } from "@niloc/ecs-react"
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { MetronomeTool } from "../../../components/MetronomeTool"
 import { useComponentInstance } from "../../../hooks/useComponentInstance"
 import { Instance } from "../../../Instance"
@@ -12,6 +12,7 @@ import { NumberInput } from "../../input/NumberInput"
 import { MixerChannelView } from "../../mixerView/MixerChannelView"
 import { Popup } from "../../popup/Popup"
 import "./MetronomeToolPopup.scss"
+import { StringInput } from "../../input/StringInput"
 
 const MAX_TAPS = 8
 const RESET_GAP_MS = 2000
@@ -45,6 +46,7 @@ function MetronomeToolPopupContent(props: {
 }) {
     const { playing, bpm } = useComponent(props.tool)
     const taps = useRef<number[]>([])
+    const [inputBpm, setInputBpm] = useState<string>(bpm.toString())
 
     function onTap() {
         props.tool.click()
@@ -74,14 +76,42 @@ function MetronomeToolPopupContent(props: {
         taps.current = []
     }
 
-    function onBpmChange(value: number) {
+    function onBpmChange(value: string) {
         // Shall check if input is valid
-        console.log(value)
-        const clamped = MetronomeToolPreferences.clamp(value)
+        const parsed = parseInt(value)
+
+        if (isNaN(parsed)) {
+            setInputBpm(value)
+            return
+        }
+
+        const clamped = MetronomeToolPreferences.clamp(parsed)
+
+        if (parsed !== clamped) {
+            setInputBpm(value)
+            return
+        }
+
         props.tool.setBpm(clamped)
         props.preferences.bpm = clamped
         taps.current = []
     }
+
+    function onInputBlur() {
+        const parsed = parseInt(inputBpm)
+        if (isNaN(parsed)) {
+            setInputBpm(bpm.toString())
+            return
+        }
+
+        const clamped = MetronomeToolPreferences.clamp(parsed)
+        setInputBpm(clamped.toString())
+        props.tool.setBpm(clamped)
+    }
+
+    useEffect(() => {
+        setInputBpm(bpm.toString())
+    }, [bpm])
 
     return <Popup.BaseContainer
         className="MetronomeToolPopup gap-4"
@@ -98,26 +128,23 @@ function MetronomeToolPopupContent(props: {
                         shape="square"
                         onClick={() => onAddBpm(-1)}
                         theme="primary"
-                        disabled={bpm === MetronomeToolPreferences.minBpm}
+                        disabled={bpm <= MetronomeToolPreferences.minBpm}
                     >
                         <Icon name="remove" />
                     </Button>
-                    <NumberInput
-                        hideSlider
+                    <StringInput
                         name="bpm"
-                        value={bpm}
-                        min={MetronomeToolPreferences.minBpm}
-                        max={MetronomeToolPreferences.maxBpm}
-                        step={1}
+                        value={inputBpm}
                         onChange={onBpmChange}
                         className="flex-1"
                         inputClassName="text-center"
+                        onBlur={onInputBlur}
                     />
                     <Button
                         shape="square"
                         onClick={() => onAddBpm(1)}
                         theme="primary"
-                        disabled={bpm === MetronomeToolPreferences.maxBpm}
+                        disabled={bpm >= MetronomeToolPreferences.maxBpm}
                     >
                         <Icon name="add" />
                     </Button>

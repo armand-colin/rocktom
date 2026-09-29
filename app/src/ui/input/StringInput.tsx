@@ -18,6 +18,7 @@ type Props = {
     center?: boolean,
     className?: string,
     inputMode?: 'text' | 'email' | 'numeric' | 'tel' | 'url' | 'search',
+    inputClassName?: string,
 }
 
 export function StringInput(props: Props) {
@@ -44,6 +45,7 @@ export function StringInput(props: Props) {
             placeholder={props.placeholder}
             onKeyDown={onKeyDown}
             inputMode={props.inputMode ? props.inputMode : props.type === "email" ? "email" : "text"}
+            className={props.inputClassName}
         />
     </div>
 }
