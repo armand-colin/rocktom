@@ -17,7 +17,7 @@ type Props = {
     onBlur?: () => void,
     center?: boolean,
     className?: string,
-    inputMode?: 'text' | 'email' | 'numeric' | 'tel' | 'url' | 'search',
+    inputMode?: 'text' | 'email' | 'numeric' | 'tel' | 'url' | 'search' | 'decimal',
     inputClassName?: string,
 }
 
