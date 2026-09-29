@@ -118,6 +118,7 @@ export class Metronome extends Component {
 
         const source = node.playAt(when)
         this._scheduledSources.push(source)
+
         source.onended = () => {
             source.disconnect()
             const index = this._scheduledSources.indexOf(source)

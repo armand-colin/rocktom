@@ -1,9 +1,11 @@
 .ToastSimple {
-    background: var(--container);
+    background: var(--color-grey-300);
     padding: var(--spacing-4);
     min-width: 200px;
     border-radius: var(--radius-sm);
     display: flex;
     gap: var(--spacing-3);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-grey-400);
+    align-items: center;
 }
