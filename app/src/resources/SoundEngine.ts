@@ -11,12 +11,27 @@ import { OscillatorSoundNode } from "../sound/node/OscillatorSoundNode"
 import { SoundAnalyserNode } from "../sound/node/SoundAnalyserNode"
 import { SoundNode } from "../sound/node/SoundNode"
 
+const UNLOCK_GESTURE_EVENTS = [
+    'touchstart',
+    'touchend',
+    'pointerdown',
+    'mousedown',
+    'keydown',
+    'click',
+] as const
+
+type AudioSessionNavigator = Navigator & {
+    audioSession?: { type: string }
+}
+
 export class SoundEngine extends Resource {
 
     private _audioContext: AudioContext
     private _nodes: SoundNode[] = []
     private _soundTouchReady: Promise<void> | null = null
     private _soundTouchContext: AudioContext | null = null
+    /** iOS may report "running" while still muted until a gesture unlock. */
+    private _needsUnlock = true
 
     readonly output: DestinationSoundNode
 
@@ -28,18 +43,64 @@ export class SoundEngine extends Resource {
         this.output = new DestinationSoundNode(this._audioContext)
         this._nodes.push(this.output)
 
-        this._audioContext.resume()
         this._audioContext.addEventListener('statechange', this._onStateChange)
+        this._configureAudioSession()
+        this._installUnlockListeners()
     }
 
     get currentTime() {
         return this._audioContext.currentTime
     }
 
-    private _onStateChange = () => { }
+    private _onStateChange = () => {
+        if (this._audioContext.state !== 'running')
+            this._needsUnlock = true
+    }
 
     private _createAudioContext() {
         return new AudioContext({ latencyHint: 'interactive' })
+    }
+
+    private _configureAudioSession() {
+        try {
+            const session = (navigator as AudioSessionNavigator).audioSession
+            if (session)
+                session.type = 'playback'
+        } catch {
+            // Unsupported browsers ignore audioSession.
+        }
+    }
+
+    private _installUnlockListeners() {
+        for (const event of UNLOCK_GESTURE_EVENTS) {
+            document.addEventListener(event, this._onUnlockGesture, {
+                capture: true,
+                passive: true,
+            })
+        }
+
+        document.addEventListener('visibilitychange', this._onVisibilityChange)
+        window.addEventListener('pageshow', this._onPageShow)
+    }
+
+    private _onUnlockGesture = () => {
+        if (this._needsUnlock || this._audioContext.state !== 'running')
+            this.unlock()
+    }
+
+    private _onVisibilityChange = () => {
+        if (document.hidden) {
+            this._needsUnlock = true
+            return
+        }
+
+        this._needsUnlock = true
+        this.unlock()
+    }
+
+    private _onPageShow = () => {
+        this._needsUnlock = true
+        this.unlock()
     }
 
     /**
@@ -61,6 +122,7 @@ export class SoundEngine extends Resource {
 
         this._audioContext = this._createAudioContext()
         this._audioContext.addEventListener('statechange', this._onStateChange)
+        this._needsUnlock = true
 
         this._soundTouchReady = null
         this._soundTouchContext = null
@@ -133,8 +195,36 @@ export class SoundEngine extends Resource {
         return node
     }
 
+    /**
+     * Unlocks Web Audio on iOS / PWA: resume must happen in a user gesture, and a
+     * real buffer must start during that same gesture or playback stays silent.
+     */
+    unlock() {
+        this._playSilentUnlockBuffer()
+
+        const resume = this._audioContext.resume()
+        void resume.then(() => {
+            if (this._audioContext.state === 'running')
+                this._needsUnlock = false
+        }).catch(() => {
+            this._needsUnlock = true
+        })
+    }
+
     resume() {
-        this._audioContext.resume()
+        this.unlock()
+    }
+
+    private _playSilentUnlockBuffer() {
+        try {
+            const buffer = this._audioContext.createBuffer(1, 1, this._audioContext.sampleRate)
+            const source = this._audioContext.createBufferSource()
+            source.buffer = buffer
+            source.connect(this._audioContext.destination)
+            source.start(0)
+        } catch {
+            this._needsUnlock = true
+        }
     }
 
 }

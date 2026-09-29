@@ -77,6 +77,22 @@
     }
 
     animation: popIn 0.1s var(--curve-smooth);
+
+    &[data-size="sm"] {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    &[data-size="md"] {
+        width: 100%;
+        max-width: 500px;
+    }
+
+    &[data-size="lg"] {
+        width: 100%;
+        max-width: 700px;
+    }
+
 }
 
 .PopupBaseTitle {

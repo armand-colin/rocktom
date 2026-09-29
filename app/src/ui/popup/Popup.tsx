@@ -4,13 +4,23 @@ import "./Popup.scss";
 import { cn } from "../utils/cn";
 import { Icon } from "../icon/Icon";
 import { UiSize } from "../UiSize";
+import { Enum } from "@niloc/utils";
+
+export const PopupSize = Enum.create({
+    Small: "small",
+    Medium: "medium",
+    Large: "large",
+})
+
+export type PopupSize = Enum.Infer<typeof PopupSize>
 
 export namespace Popup {
 
-    export function BaseContainer(props: { children?: ReactNode, className?: string }) {
+    export function BaseContainer(props: { children?: ReactNode, className?: string, size?: PopupSize }) {
         return <div
             className={cn("PopupBaseContainer", props.className)}
             onClick={(e) => e.stopPropagation()}
+            data-size={props.size}
         >
             {props.children}
         </div>

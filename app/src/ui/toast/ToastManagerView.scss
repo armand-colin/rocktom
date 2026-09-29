@@ -1,7 +1,6 @@
 .ToastManagerView {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    inset: 24px;
     display: flex;
     flex-direction: column-reverse;
     gap: 8px;
@@ -11,7 +10,8 @@
     .Toast {
         pointer-events: auto;
         animation: toast-in 0.2s ease;
-
+        max-width: 100%;
+        
         &[data-state="closing"] {
             animation: toast-out 0.3s ease forwards;
         }

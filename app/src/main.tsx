@@ -7,12 +7,16 @@ import './index.css'
 import { LiveInstrumentPreferences } from './resources/LiveInstrumentPreferences.ts'
 import { MetronomeToolPreferences } from './resources/MetronomeToolPreferences.ts'
 import { PlaybackPreferences } from './resources/PlaybackPreferences.ts'
+import { SoundEngine } from './resources/SoundEngine.ts'
 import { TextureAtlas } from './3d/TextureAtlas.ts'
 import { Instance } from './Instance.ts'
 import { AuthManager } from './resources/AuthManager.ts'
 import { AuthInterceptor } from './resources/AuthInterceptor.ts'
 import { ToastManager } from './resources/ToastManager.ts'
 import { Toast } from './ui/toast/Toast.tsx'
+
+// Eager init so iOS / PWA unlock listeners are armed before the first tap.
+Instance.engine.getResource(SoundEngine)
 
 Instance.engine.getResource(LiveInstrumentPreferences).recover()
 Instance.engine.getResource(MetronomeToolPreferences).recover()

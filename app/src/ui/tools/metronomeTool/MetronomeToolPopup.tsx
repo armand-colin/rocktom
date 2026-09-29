@@ -83,7 +83,7 @@ function MetronomeToolPopupContent(props: {
         props.close()
     }
 
-    return <Popup.BaseContainer className="MetronomeToolPopup max-w-100 w-full gap-4">
+    return <Popup.BaseContainer className="MetronomeToolPopup gap-4" size="small">
         <Popup.BaseTitle
             title="Metronome"
             close={onClose}
