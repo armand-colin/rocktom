@@ -7,7 +7,7 @@
     pointer-events: none;
     z-index: 1000;
 
-    @media screen and (max-width: var(--breakpoint-md)) {
+    @media screen and (max-width: 450px) {
         inset: 12px;
     }
 
