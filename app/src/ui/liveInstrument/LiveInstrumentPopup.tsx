@@ -28,7 +28,7 @@ export function LiveInstrumentPopup(props: Props) {
     const mixer = engine.getResource(Mixer)
     const preferences = useResource(LiveInstrumentPreferences)
 
-    return <Popup.BaseContainer className="max-w-100 w-full gap-4">
+    return <Popup.BaseContainer size="sm" className="gap-4 min-h-90!">
         <Popup.BaseTitle
             title="Live Instrument"
             close={props.close}

@@ -65,6 +65,8 @@ export const icons = [
     "swap_horiz",
     "visibility",
     "visibility_off",
+    "remove",
+    "add"
 ] as const;
 
 export type IconName = typeof icons[number];

@@ -17,6 +17,8 @@ type Props = {
     onBlur?: () => void,
     disabled?: boolean,
     className?: string,
+    inputClassName?: string,
+    hideSlider?: boolean,
 }
 
 export function NumberInput(props: Props) {
@@ -85,9 +87,14 @@ export function NumberInput(props: Props) {
             autoFocus={props.autoFocus}
             onKeyDown={onKeyDown}
             disabled={props.disabled}
+            className={props.inputClassName}
         />
-        <div className="slider" onMouseDown={onMouseDown}>
-            <Icon name="code" />
-        </div>
+        {
+            !props.hideSlider && (
+                <div className="slider" onMouseDown={onMouseDown}>
+                    <Icon name="code" />
+                </div>
+            )
+        }
     </div>
 }

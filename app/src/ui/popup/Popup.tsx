@@ -26,8 +26,12 @@ export namespace Popup {
         </div>
     }
 
-    export function BaseContent(props: { children?: ReactNode, className?: string }) {
-        return <div className={cn("PopupBaseContent", props.className)}>
+    export function BaseContent(props: { 
+        children?: ReactNode, 
+        className?: string, 
+        gap?: number,
+    }) {
+        return <div className={cn("PopupBaseContent", props.className, props.gap ? `gap-${props.gap}` : "gap-7")}>
             {props.children}
         </div>
     }
