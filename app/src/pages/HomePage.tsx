@@ -18,6 +18,7 @@ import { UserQueries } from '../queries/user/UserQueries'
 import { Page } from '../ui/page/Page'
 import { useQuery } from '../hooks/useQuery'
 import { Body } from '../resources/queryClient/Body'
+import { ToolList } from '../ui/tools/ToolList'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, result: levels, refresh: refreshLevels } = useQuery(LevelQueries.getAll, { arguments: {} })
@@ -118,6 +119,8 @@ export function HomePage() {
       />
 
       <Page.Content>
+        <ToolList />
+        
         {
           isLevelsLoading ?
             <div>Loading...</div> :

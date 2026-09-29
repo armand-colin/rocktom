@@ -1,6 +1,7 @@
 import { Component, Engine } from "@niloc/ecs";
 import { Tempo } from "../sound/Tempo";
-import sound from "../assets/sounds/metronome-click.mp3"
+import clickSound from "../assets/sounds/metronome-click.mp3"
+import accentSound from "../assets/sounds/metronome-accent.mp3"
 import { SoundEngine } from "../resources/SoundEngine";
 import type { TempoTrack } from "../sound/song/TempoTrack";
 import type { AudioBufferSoundNode } from "../sound/node/AudioBufferSoundNode";
@@ -9,10 +10,12 @@ import { Mixer } from "../resources/Mixer";
 export class Metronome extends Component {
 
     static lookAheadSeconds = 0.5
+    static beatsPerMeasure = 4
 
     private _tempoTrack: TempoTrack
     private _soundEngine: SoundEngine
-    private _node: AudioBufferSoundNode | null = null
+    private _clickNode: AudioBufferSoundNode | null = null
+    private _accentNode: AudioBufferSoundNode | null = null
     private _scheduledSources: AudioBufferSourceNode[] = []
     private _lastScheduledBeat = -1
     private _songAnchor = 0
@@ -24,14 +27,8 @@ export class Metronome extends Component {
         this._tempoTrack = tempoTrack
         this._soundEngine = this.engine.getResource(SoundEngine)
 
-        fetch(sound)
-            .then(response => response.arrayBuffer())
-            .then(buffer => this._soundEngine.createAudioBuffer(buffer))
-            .then(async audioBuffer => {
-                this._node = await this._soundEngine.createAudioBufferNode(audioBuffer)
-                const mixer = this.engine.getResource(Mixer)
-                mixer.metronome.connect(this._node)
-            })
+        this._loadNode(clickSound, node => { this._clickNode = node })
+        this._loadNode(accentSound, node => { this._accentNode = node })
     }
 
     sync(songSeconds: number, speed: number) {
@@ -43,7 +40,7 @@ export class Metronome extends Component {
     }
 
     update(ticks: number, speed: number) {
-        if (!this._node)
+        if (!this._clickNode || !this._accentNode)
             return
 
         if (speed !== this._speed)
@@ -56,17 +53,20 @@ export class Metronome extends Component {
 
         let beatTick = this._lastScheduledBeat >= 0
             ? this._lastScheduledBeat + Tempo.PPQ
-            : ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
+            : ticks % Tempo.PPQ === 0
+                ? ticks
+                : ticks - (ticks % Tempo.PPQ) + Tempo.PPQ
 
         while (beatTick <= maxBeatTick) {
             const beatSeconds = this._tempoTrack.secondsFromTicks(beatTick)
             const audioWhen = this._audioAnchor + (beatSeconds - this._songAnchor) / this._speed
+            const accent = this._isDownbeat(beatTick)
 
             if (audioWhen >= minAudioTime) {
-                this._scheduleClick(audioWhen)
+                this._scheduleClick(audioWhen, accent)
                 this._lastScheduledBeat = beatTick
             } else if (beatSeconds >= currentSeconds - Metronome.lookAheadSeconds) {
-                this._scheduleClick(minAudioTime)
+                this._scheduleClick(minAudioTime, accent)
                 this._lastScheduledBeat = beatTick
             }
 
@@ -87,20 +87,27 @@ export class Metronome extends Component {
     }
 
     click() {
-        if (!this._node)
-            return
-
-        this._scheduleClick(this._soundEngine.currentTime)
+        this._scheduleClick(this._soundEngine.currentTime, false)
     }
 
     destroy(): void {
         super.destroy()
         this._cancelScheduled()
-        this._node?.dispose()
+        this._clickNode?.dispose()
+        this._accentNode?.dispose()
     }
 
-    private _scheduleClick(when: number) {
-        const source = this._node!.playAt(when)
+    private _isDownbeat(beatTick: number): boolean {
+        const beatIndex = Math.round(beatTick / Tempo.PPQ)
+        return beatIndex % Metronome.beatsPerMeasure === 0
+    }
+
+    private _scheduleClick(when: number, accent: boolean) {
+        const node = accent ? this._accentNode : this._clickNode
+        if (!node)
+            return
+
+        const source = node.playAt(when)
         this._scheduledSources.push(source)
         source.onended = () => {
             source.disconnect()
@@ -120,6 +127,18 @@ export class Metronome extends Component {
             source.disconnect()
         }
         this._scheduledSources = []
+    }
+
+    private _loadNode(url: string, assign: (node: AudioBufferSoundNode) => void) {
+        fetch(url)
+            .then(response => response.arrayBuffer())
+            .then(buffer => this._soundEngine.createAudioBuffer(buffer))
+            .then(async audioBuffer => {
+                const node = await this._soundEngine.createAudioBufferNode(audioBuffer)
+                const mixer = this.engine.getResource(Mixer)
+                mixer.metronome.connect(node)
+                assign(node)
+            })
     }
 
 }

@@ -17,7 +17,7 @@ export namespace Page {
     }) {
         return <header className="PageConnectedTitle">
             <div>
-                <h1>Levels</h1>
+                <h1>{props.title}</h1>
                 <div>
                     {props.beforeActions}
                     <ProfileButton />

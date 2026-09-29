@@ -5,6 +5,7 @@ import { registerSW } from 'virtual:pwa-register'
 import App from './App.tsx'
 import './index.css'
 import { LiveInstrumentPreferences } from './resources/LiveInstrumentPreferences.ts'
+import { MetronomeToolPreferences } from './resources/MetronomeToolPreferences.ts'
 import { PlaybackPreferences } from './resources/PlaybackPreferences.ts'
 import { TextureAtlas } from './3d/TextureAtlas.ts'
 import { Instance } from './Instance.ts'
@@ -14,6 +15,7 @@ import { ToastManager } from './resources/ToastManager.ts'
 import { Toast } from './ui/toast/Toast.tsx'
 
 Instance.engine.getResource(LiveInstrumentPreferences).recover()
+Instance.engine.getResource(MetronomeToolPreferences).recover()
 Instance.engine.getResource(PlaybackPreferences).recover()
 
 const authManager = Instance.engine.getResource(AuthManager)
