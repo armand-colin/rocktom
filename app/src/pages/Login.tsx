@@ -15,6 +15,7 @@ import { UiSize } from '../ui/UiSize'
 import { FormButtons } from '../ui/formButtons/FormButtons'
 import { Query } from '../resources/queryClient/Query'
 import { SubmitButton } from '../ui/button/SubmitButton'
+import { NumberInput } from '../ui/input/NumberInput'
 
 enum LoginStep {
     Email,
@@ -161,6 +162,7 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             name="code"
             placeholder="XXXXXX"
             size={UiSize.L}
+            inputMode="decimal"
             center
         />
 

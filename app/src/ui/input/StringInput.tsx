@@ -17,6 +17,7 @@ type Props = {
     onBlur?: () => void,
     center?: boolean,
     className?: string,
+    inputMode?: 'text' | 'email' | 'numeric' | 'tel' | 'url' | 'search',
 }
 
 export function StringInput(props: Props) {
@@ -42,6 +43,7 @@ export function StringInput(props: Props) {
             name={props.field?.name ?? props.name}
             placeholder={props.placeholder}
             onKeyDown={onKeyDown}
+            inputMode={props.inputMode ? props.inputMode : props.type === "email" ? "email" : "text"}
         />
     </div>
 }

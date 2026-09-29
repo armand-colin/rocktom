@@ -88,6 +88,7 @@ export function NumberInput(props: Props) {
             onKeyDown={onKeyDown}
             disabled={props.disabled}
             className={props.inputClassName}
+            inputMode="numeric"
         />
         {
             !props.hideSlider && (

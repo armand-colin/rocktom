@@ -12,6 +12,9 @@ export class Metronome extends Component {
     static lookAheadSeconds = 0.5
     static beatsPerMeasure = 4
 
+    static clickDelaySeconds = 0.000
+    static accentDelaySeconds = 0.04
+
     private _tempoTrack: TempoTrack
     private _soundEngine: SoundEngine
     private _clickNode: AudioBufferSoundNode | null = null
@@ -77,7 +80,7 @@ export class Metronome extends Component {
     pause() {
         this._cancelScheduled()
     }
-    
+
     reset() {
         this._cancelScheduled()
         this._lastScheduledBeat = -1
@@ -103,6 +106,12 @@ export class Metronome extends Component {
     }
 
     private _scheduleClick(when: number, accent: boolean) {
+        if (accent) {
+            when -= Metronome.accentDelaySeconds
+        } else {
+            when -= Metronome.clickDelaySeconds
+        }
+
         const node = accent ? this._accentNode : this._clickNode
         if (!node)
             return
