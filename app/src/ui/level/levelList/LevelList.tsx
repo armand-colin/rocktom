@@ -131,25 +131,27 @@ export function LevelList(props: {
     }, [props.levels, props.userId])
 
     return <div className="LevelList">
-        <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json,application/json"
-            hidden
-            onChange={onFileSelected}
-        />
-
-        <h1>Levels</h1>
-
-        <Button
-            theme={ButtonTheme.Primary}
-            onClick={props.onCreate}
-        >
-            <Icon
-                name="add"
+        <div className="flex flex-col gap-3 items-start">
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json,application/json"
+                hidden
+                onChange={onFileSelected}
             />
-            Create Level
-        </Button>
+
+            <h1 className="text-body-lg">Levels</h1>
+
+            <Button
+                theme={ButtonTheme.Primary}
+                onClick={props.onCreate}
+            >
+                <Icon
+                    name="add"
+                />
+                Create Level
+            </Button>
+        </div>
 
         {
             owned.length > 0 && <div className="CategorizedLevelList">

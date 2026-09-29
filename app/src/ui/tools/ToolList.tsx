@@ -1,6 +1,6 @@
 import { useResource } from "@niloc/ecs-react"
 import { PopupManager } from "../../resources/PopupManager"
-import { Button, ButtonTheme } from "../button/Button"
+import { Button } from "../button/Button"
 import { Icon } from "../icon/Icon"
 import { MetronomeToolPopup } from "./metronomeTool/MetronomeToolPopup"
 import "./ToolList.scss"
@@ -17,7 +17,6 @@ export function ToolList() {
         <ul>
             <li>
                 <Button
-                    theme={ButtonTheme.Primary}
                     onClick={openMetronome}
                 >
                     <Icon name="av_timer" />

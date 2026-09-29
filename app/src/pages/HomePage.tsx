@@ -19,6 +19,7 @@ import { Page } from '../ui/page/Page'
 import { useQuery } from '../hooks/useQuery'
 import { Body } from '../resources/queryClient/Body'
 import { ToolList } from '../ui/tools/ToolList'
+import { LevelPopup } from '../ui/level/LevelPopup'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, result: levels, refresh: refreshLevels } = useQuery(LevelQueries.getAll, { arguments: {} })
@@ -33,7 +34,10 @@ export function HomePage() {
     null
 
   async function onSelectLevel(level: LevelEntity) {
-    navigate('/app/level/' + level.id)
+    popupManager.add(close => <LevelPopup
+      close={close}
+      level={level}
+    />)
   }
 
   function onCreate() {

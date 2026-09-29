@@ -11,10 +11,21 @@ import { useComponent } from "@niloc/ecs-react"
 import { useQuery } from "../hooks/useQuery"
 
 export function LevelPage() {
-    const { id } = useParams()
+    const { id, index } = useParams()
 
     if (!id) {
         return <Navigate to="/app" />
+    }
+
+    let parsedIndex: number | undefined = undefined
+
+    if (index) {
+        try {
+            const parsed = parseInt(index)
+            if (!isNaN(parsed)) {
+                parsedIndex = parsed
+            }
+        } catch (_) { }
     }
 
     const { result, isLoading } = useQuery(LevelQueries.getById, {
@@ -28,10 +39,15 @@ export function LevelPage() {
     return <LevelView
         fetching={isLoading || !result}
         level={result && result.ok ? result.value : null}
+        trackIndex={parsedIndex}
     />
 }
 
-function LevelView(props: { level: LevelEntity | null, fetching: boolean }) {
+function LevelView(props: {
+    level: LevelEntity | null,
+    fetching: boolean,
+    trackIndex?: number
+}) {
     const [playback, setPlayback] = useState<Playback | null>(null)
     const [audioLoading, setAudioLoading] = useState(true)
 
@@ -49,7 +65,7 @@ function LevelView(props: { level: LevelEntity | null, fetching: boolean }) {
                 name: props.level.name,
             })
 
-            const playback = new Playback(Instance.engine, level)
+            const playback = new Playback(Instance.engine, level, props.trackIndex ?? 0)
             setPlayback(playback)
             setAudioLoading(playback.loading)
         } catch (error) {

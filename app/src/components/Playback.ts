@@ -15,7 +15,6 @@ import { Time } from "./Time";
 import { Schedules } from "../Schedules";
 import { DeltaTime } from "./DeltaTime";
 import type { Object3D } from "three";
-import { LiveInstrumentPreferences } from "../resources/LiveInstrumentPreferences";
 import type { InstrumentTrack } from "../sound/song/InstrumentTrack";
 
 export class Playback extends Component {
@@ -44,6 +43,7 @@ export class Playback extends Component {
     constructor(
         engine: Engine,
         readonly level: Level,
+        trackIndex: number
     ) {
         super(engine)
 
@@ -69,13 +69,7 @@ export class Playback extends Component {
 
         this._renderer = engine.getResource(Renderer)
 
-        const liveInstrumentPreferences = engine.getResource(LiveInstrumentPreferences)
-
-        this._instrumentTrack = level.instrumentTracks.find(track => {
-            return track.instrument.id === liveInstrumentPreferences.instrument.id
-        }) ??
-            level.instrumentTracks[0]
-
+        this._instrumentTrack = level.instrumentTracks[trackIndex]
 
         const instrument = this._instrumentTrack.noteTrack.instrument
         this._neck = NeckMesh.create(instrument)

@@ -1,0 +1,22 @@
+.Card {
+    list-style: none;
+    position: relative;
+
+    .CardContent {
+        background: var(--color-grey-700);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-grey-600);
+
+        &[data-clickable="true"] {
+            cursor: pointer;
+
+            &:hover {
+                background: var(--color-grey-600);
+            }
+
+            &:active {
+                background: var(--color-grey-800);
+            }
+        }
+    }
+}

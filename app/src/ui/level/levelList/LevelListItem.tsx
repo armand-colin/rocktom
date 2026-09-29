@@ -1,11 +1,12 @@
 import type { MouseEvent } from "react";
-import { Button, ButtonTheme, ButtonVariant } from "../../button/Button";
+import { Button, ButtonVariant } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { UiSize } from "../../UiSize";
 import { LevelEntity } from "../../../queries/level/LevelEntity";
 import "./LevelListItem.scss";
 import { InstrumentType } from "../../../sound/instrument/Instrument";
 import { LevelInstrumentsView } from "../LevelInstrumentsView";
+import { Card } from "../../button/Card";
 
 type Props = {
     level: LevelEntity;
@@ -26,13 +27,26 @@ export function LevelListItem(props: Props) {
     const { level } = props
 
     return (
-        <li
+        <Card
+            primitive="li"
             className={`LevelListItem ${props.className}`}
             onContextMenu={e => {
                 if (!props.hideMenu) {
                     props.onMenuOpen(e, level)
                 }
             }}
+            containerClassName="LevelListItemContainer"
+            onClick={() => props.onSelect(level)}
+            fixtures={props.hideMenu ? null : <div className="LevelListItemFixtures">
+                <Button
+                    size={UiSize.S}
+                    onClick={(e) => props.onMenuOpen(e, level)}
+                    shape="square"
+                    variant={ButtonVariant.Ghost}
+                >
+                    <Icon name="more_vert" />
+                </Button>
+            </div>}
         >
             <div className="LevelListItem-info">
                 <div className="name">
@@ -58,28 +72,6 @@ export function LevelListItem(props: Props) {
                         null
                 }
             </div>
-
-            <div className="LevelListItem-actions">
-                {
-                    !props.hideMenu && <Button
-                        size={UiSize.S}
-                        onClick={(e) => props.onMenuOpen(e, level)}
-                        shape="square"
-                        variant={ButtonVariant.Ghost}
-                    >
-                        <Icon name="more_vert" />
-                    </Button>
-                }
-                <Button
-                    className="LevelListItem-playButton"
-                    size={UiSize.M}
-                    shape="square"
-                    theme={ButtonTheme.Primary}
-                    onClick={() => props.onSelect(level)}
-                >
-                    <Icon name="play_arrow" />
-                </Button>
-            </div>
-        </li >
+        </Card>
     )
 }

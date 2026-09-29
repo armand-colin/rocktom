@@ -1,12 +1,22 @@
 .LevelListItem {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-3);
-    border-radius: var(--radius-sm);
-    padding: var(--spacing-4) var(--spacing-5)  var(--spacing-4) var(--spacing-5);
-    background: var(--container);
-    list-style: none;
+
+    .LevelListItemContainer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-3);
+        padding: var(--spacing-4) var(--spacing-16) var(--spacing-4) var(--spacing-5);
+    }
+
+    .LevelListItemFixtures {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        padding-right: var(--spacing-6);
+    }
 
     &-info {
         display: flex;

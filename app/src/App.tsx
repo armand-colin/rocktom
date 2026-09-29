@@ -23,6 +23,7 @@ function App() {
       {
         isAuthenticated ?
           <>
+            <Route path="/app/level/:id/:index" element={<LevelPage />} />
             <Route path="/app/level/:id" element={<LevelPage />} />
             <Route path="/editor/level/:id" element={<EditorPage />} />
             <Route path="/app/share/:token" element={<AcceptLevelSharePage />} />
