@@ -106,6 +106,7 @@ function BaseItem<T extends Dropdown.Option>(props: Dropdown.ItemProps<T>) {
         onClick={() => props.onSelect()}
         size={props.size ?? UiSize.M}
         title={props.value.label}
+        variant="ghost"
     >
         <span className="truncate">{props.value.label}</span>
     </Button>
