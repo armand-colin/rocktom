@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react"
+import { createPortal } from "react-dom"
+import { useAnchoredFixedRect } from "../../hooks/useAnchoredFixedRect"
 import "./Dropdown.scss"
 import { Icon } from "../icon/Icon"
 import { UiSize } from "../UiSize"
@@ -18,7 +20,9 @@ interface Props<T extends Dropdown.Option> {
 
 export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
     const [isOpen, setIsOpen] = useState(false)
-    const ref = useRef<HTMLDivElement | null>(null)
+    const triggerRef = useRef<HTMLDivElement | null>(null)
+    const portalRef = useRef<HTMLDivElement | null>(null)
+    const anchorStyle = useAnchoredFixedRect(triggerRef, isOpen)
 
     const value = props.options.find(option => option.value === props.value) ?? null
 
@@ -31,7 +35,9 @@ export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
             return;
 
         function onClick(e: MouseEvent) {
-            if (ref.current?.contains(e.target as Node))
+            if (triggerRef.current?.contains(e.target as Node))
+                return;
+            if (portalRef.current?.contains(e.target as Node))
                 return;
             setIsOpen(false)
         }
@@ -41,26 +47,42 @@ export function Dropdown<T extends Dropdown.Option>(props: Props<T>) {
         return () => window.removeEventListener("click", onClick)
     }, [isOpen])
 
+    const content = <Content
+        isOpen={isOpen}
+        item={Item}
+        options={props.options}
+        onSelect={value => props.onChange(value)}
+        onToggleOpen={(isOpen) => setIsOpen(isOpen ?? !isOpen)}
+        selected={props.value ?? null}
+        size={props.size}
+    />
+
     return <div
         className={`Dropdown ${props.className ?? ""}`}
-        ref={ref}
     >
-        <Trigger
-            value={value}
-            isOpen={isOpen}
-            onToggleOpen={() => setIsOpen(!isOpen)}
-            size={props.size}
-            placeholder={props.placeholder}
-        />
-        <Content
-            isOpen={isOpen}
-            item={Item}
-            options={props.options}
-            onSelect={value => props.onChange(value)}
-            onToggleOpen={(isOpen) => setIsOpen(isOpen ?? !isOpen)}
-            selected={props.value ?? null}
-            size={props.size}
-        />
+        <div className="DropdownTrigger" ref={triggerRef}>
+            <Trigger
+                value={value}
+                isOpen={isOpen}
+                onToggleOpen={() => setIsOpen(!isOpen)}
+                size={props.size}
+                placeholder={props.placeholder}
+            />
+        </div>
+        {
+            isOpen ?
+                createPortal(
+                    <div
+                        className="DropdownAnchor"
+                        ref={portalRef}
+                        style={anchorStyle}
+                    >
+                        {content}
+                    </div>,
+                    document.body,
+                ) :
+                null
+        }
     </div>
 }
 

@@ -1,6 +1,35 @@
 .Dropdown {
     position: relative;
 
+    .DropdownTrigger {
+        width: 100%;
+    }
+
+    .BaseTrigger {
+        width: 100%;
+        justify-content: space-between;
+        overflow: hidden;
+
+        &[data-empty="true"] {
+            >span {
+                color: var(--color-grey-200);
+            }
+        }
+    }
+}
+
+.DropdownAnchor {
+    position: fixed;
+    top: calc(var(--anchor-y) * 1px);
+    left: calc(var(--anchor-x) * 1px);
+    width: calc(var(--anchor-w) * 1px);
+    height: calc(var(--anchor-h) * 1px);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.Dropdown,
+.DropdownAnchor {
     .BaseItem {
         justify-content: flex-start;
         width: 100%;
@@ -24,6 +53,7 @@
         padding: var(--spacing-2);
         outline: 1px solid var(--color-grey-400);
         box-shadow: var(--shadow-lg);
+        pointer-events: auto;
 
         &[data-open="false"] {
             display: none;
@@ -43,18 +73,6 @@
 
         &[data-size="xs"] {
             padding: var(--spacing-1) var(--spacing-1);
-        }
-    }
-
-    .BaseTrigger {
-        width: 100%;
-        justify-content: space-between;
-        overflow: hidden;
-
-        &[data-empty="true"] {
-            >span {
-                color: var(--color-grey-200);
-            }
         }
     }
 }
