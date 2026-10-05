@@ -66,7 +66,7 @@ export function LiveInstrumentPopup(props: Props) {
 
 function MediaStreamDropdown(props: { liveInstrument: LiveInstrument | null }) {
     const mediaStreamList = useResource(MediaStreamList)
-    const { loading } = mediaStreamList
+    const { loading, error } = mediaStreamList
 
     function onRefresh() {
         mediaStreamList.refresh()
@@ -98,6 +98,12 @@ function MediaStreamDropdown(props: { liveInstrument: LiveInstrument | null }) {
         state.setInstrument(liveInstrument)
     }
 
+    const placeholder = loading
+        ? "Loading..."
+        : error
+            ? error
+            : "Select a microphone"
+
     return <div className="flex gap-2">
         <Dropdown
             options={mediaStreamList.streams.map<Dropdown.Option>(stream => ({
@@ -106,7 +112,7 @@ function MediaStreamDropdown(props: { liveInstrument: LiveInstrument | null }) {
             }))}
             value={props.liveInstrument?.streamId ?? null}
             onChange={setInstrument}
-            placeholder={loading ? "Loading..." : "Select a microphone"}
+            placeholder={placeholder}
             className="flex-1 min-w-0"
         />
         {

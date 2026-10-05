@@ -1,5 +1,5 @@
 import { Emitter } from "@niloc/utils"
-import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react"
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react"
 import "./Slider.scss"
 
 export type SliderScale = {
@@ -34,7 +34,7 @@ type Props = {
 }
 
 type HandlerOpts = {
-    event: MouseEvent,
+    event: PointerEvent,
     min: number,
     max: number,
     value: number,
@@ -53,9 +53,10 @@ class SliderHandler extends Emitter<{ change: number, end: void }> {
     private _scale: SliderScale
     private _container: HTMLElement
     private _step?: number
+    private _pointerId: number
 
     static fromHarshTransition(opts: HandlerOpts) {
-        // Shall get the knob to the mouse position immediately.
+        // Shall get the knob to the pointer position immediately.
         const rect = opts.container.getBoundingClientRect()
         const deltaX = opts.event.clientX - rect.left
         const t = deltaX / rect.width
@@ -80,9 +81,13 @@ class SliderHandler extends Emitter<{ change: number, end: void }> {
         this._scale = opts.scale
         this._container = opts.container
         this._step = opts.step
+        this._pointerId = opts.event.pointerId
 
-        window.addEventListener("mousemove", this._onMouseMove)
-        window.addEventListener("mouseup", this._onMouseUp)
+        this._container.setPointerCapture(this._pointerId)
+
+        window.addEventListener("pointermove", this._onPointerMove)
+        window.addEventListener("pointerup", this._onPointerUp)
+        window.addEventListener("pointercancel", this._onPointerUp)
     }
 
     get value() {
@@ -90,12 +95,19 @@ class SliderHandler extends Emitter<{ change: number, end: void }> {
     }
 
     destroy() {
-        window.removeEventListener("mousemove", this._onMouseMove)
-        window.removeEventListener("mouseup", this._onMouseUp)
+        if (this._container.hasPointerCapture(this._pointerId))
+            this._container.releasePointerCapture(this._pointerId)
+
+        window.removeEventListener("pointermove", this._onPointerMove)
+        window.removeEventListener("pointerup", this._onPointerUp)
+        window.removeEventListener("pointercancel", this._onPointerUp)
         this.removeAllListeners()
     }
 
-    private _onMouseMove = (event: globalThis.MouseEvent) => {
+    private _onPointerMove = (event: globalThis.PointerEvent) => {
+        if (event.pointerId !== this._pointerId)
+            return
+
         // Go from value to t: use scale.
         const deltaX = event.clientX - this._startX
         const rect = this._container.getBoundingClientRect()
@@ -116,7 +128,10 @@ class SliderHandler extends Emitter<{ change: number, end: void }> {
         this.emit("change", value)
     }
 
-    private _onMouseUp = () => {
+    private _onPointerUp = (event: globalThis.PointerEvent) => {
+        if (event.pointerId !== this._pointerId)
+            return
+
         this.emit("end")
         this.destroy()
     }
@@ -130,8 +145,9 @@ export function Slider(props: Props) {
     const container = useRef<HTMLDivElement | null>(null)
     const [active, setActive] = useState(false)
 
-    function onKnobMouseDown(event: MouseEvent) {
+    function onKnobPointerDown(event: PointerEvent) {
         event.stopPropagation()
+        event.preventDefault()
 
         if (handler.current)
             handler.current.destroy()
@@ -154,8 +170,9 @@ export function Slider(props: Props) {
         handler.current.on("end", () => setActive(false))
     }
     
-    function onMouseDown(event: MouseEvent) {
+    function onPointerDown(event: PointerEvent) {
         event.stopPropagation()
+        event.preventDefault()
         
         if (handler.current)
             handler.current.destroy()
@@ -195,12 +212,12 @@ export function Slider(props: Props) {
         ref={container}
         aria-disabled={props.disabled}
         data-active={active}
-        onMouseDown={onMouseDown}
+        onPointerDown={onPointerDown}
     >
         <div className="before"></div>
         <div
             className="knob"
-            onMouseDown={onKnobMouseDown}
+            onPointerDown={onKnobPointerDown}
         ></div>
     </div>
 }

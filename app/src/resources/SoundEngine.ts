@@ -32,6 +32,11 @@ export class SoundEngine extends Resource {
     private _soundTouchContext: AudioContext | null = null
     /** iOS may report "running" while still muted until a gesture unlock. */
     private _needsUnlock = true
+    /**
+     * Nested holds for mic capture. `playback` is restored only when this
+     * reaches 0 — Safari rejects getUserMedia while the session is `playback`.
+     */
+    private _captureHolders = 0
 
     readonly output: DestinationSoundNode
 
@@ -44,7 +49,7 @@ export class SoundEngine extends Resource {
         this._nodes.push(this.output)
 
         this._audioContext.addEventListener('statechange', this._onStateChange)
-        this._configureAudioSession()
+        this.restorePlaybackSession(true)
         this._installUnlockListeners()
     }
 
@@ -61,14 +66,47 @@ export class SoundEngine extends Resource {
         return new AudioContext({ latencyHint: 'interactive' })
     }
 
-    private _configureAudioSession() {
+    private _setAudioSessionType(type: string) {
         try {
             const session = (navigator as AudioSessionNavigator).audioSession
             if (session)
-                session.type = 'playback'
+                session.type = type
         } catch {
             // Unsupported browsers ignore audioSession.
         }
+    }
+
+    /**
+     * Leave `playback` before getUserMedia. Must run before the request —
+     * Safari iOS rejects capture while the session type is `playback`.
+     */
+    prepareForCapture() {
+        this._captureHolders++
+        this._setAudioSessionType('auto')
+    }
+
+    /** Prefer play-and-record once a mic stream will stay open with playback. */
+    enterPlayAndRecordSession() {
+        if (this._captureHolders > 0)
+            this._setAudioSessionType('play-and-record')
+    }
+
+    /**
+     * Drop one capture hold. Restores `playback` (silent-switch workaround)
+     * when no mic is needed anymore; otherwise keeps play-and-record.
+     */
+    restorePlaybackSession(force = false) {
+        if (force) {
+            this._captureHolders = 0
+            this._setAudioSessionType('playback')
+            return
+        }
+
+        this._captureHolders = Math.max(0, this._captureHolders - 1)
+        if (this._captureHolders === 0)
+            this._setAudioSessionType('playback')
+        else
+            this._setAudioSessionType('play-and-record')
     }
 
     private _installUnlockListeners() {

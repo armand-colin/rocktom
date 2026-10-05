@@ -102,6 +102,7 @@ export class LiveInstrument extends Component {
     destroy() {
         this._mediaStream.getTracks().forEach(track => track.stop())
         this._streamNode.dispose()
+        this.engine.getResource(SoundEngine).restorePlaybackSession()
     }
 
 }

@@ -2,6 +2,7 @@ import { Engine, Resource } from "@niloc/ecs"
 import type { AudioRange } from "../sound/AudioRange"
 import { LiveAudioConstraints } from "../sound/LiveAudioConstraints"
 import { Instrument } from "../sound/instrument/Instrument"
+import { SoundEngine } from "./SoundEngine"
 
 export class LiveInstrumentPreferences extends Resource {
 
@@ -76,8 +77,18 @@ export class LiveInstrumentPreferences extends Resource {
         this.changed()
     }
 
-    getMediaStream(): Promise<MediaStream> {
-        return LiveAudioConstraints.requestMediaStream(this._deviceId)
+    async getMediaStream(): Promise<MediaStream> {
+        const soundEngine = this.engine.getResource(SoundEngine)
+        soundEngine.prepareForCapture()
+
+        try {
+            const stream = await LiveAudioConstraints.requestMediaStream(this._deviceId)
+            soundEngine.enterPlayAndRecordSession()
+            return stream
+        } catch (error) {
+            soundEngine.restorePlaybackSession()
+            throw error
+        }
     }
 
     save() {
