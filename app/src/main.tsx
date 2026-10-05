@@ -41,9 +41,9 @@ Promise.all([
     const updateSW = registerSW({
         onNeedRefresh() {
             Instance.engine.getResource(ToastManager).add((close) => <Toast.Simple
-                message="Une nouvelle version est disponible."
+                message="A new version is available !"
                 action={{
-                    label: "Mettre à jour",
+                    label: "Update",
                     onClick: () => {
                         close()
                         void updateSW(true)

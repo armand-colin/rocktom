@@ -58,7 +58,7 @@ export const Default = () => {
         />
         {
             UiSize.values.map(size => (
-                <Dropdown<Dropdown.Option>
+                <Dropdown
                     key={size}
                     options={simpleOptions}
                     value={simpleValue?.value ?? null}

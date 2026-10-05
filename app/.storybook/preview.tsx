@@ -4,6 +4,7 @@ import { EngineContext } from "@niloc/ecs-react";
 import { Instance } from "../src/Instance";
 import "../src/index.css";
 import { PopupManagerView } from "../src/ui/popup/PopupManagerView";
+import { ToastManagerView } from "../src/ui/toast/ToastManagerView";
 
 const preview: Preview = {
   decorators: [
@@ -11,6 +12,7 @@ const preview: Preview = {
       <EngineContext.Provider value={{ engine: Instance.engine }}>
         <Story />
         <PopupManagerView />
+        <ToastManagerView />
       </EngineContext.Provider>
     ),
   ],

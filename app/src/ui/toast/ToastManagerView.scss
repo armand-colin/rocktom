@@ -5,6 +5,7 @@
     flex-direction: column-reverse;
     gap: 8px;
     pointer-events: none;
+    align-items: flex-end;
     z-index: 1000;
 
     @media screen and (max-width: 450px) {
@@ -18,24 +19,6 @@
 
         &[data-state="closing"] {
             animation: toast-out 0.3s ease forwards;
-        }
-
-        .ToastContent {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 6px;
-            background: var(--container);
-            border: 1px solid var(--outline);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            min-width: 240px;
-            max-width: 360px;
-            font: var(--font-m);
-
-            > .body {
-                flex: 1;
-            }
         }
     }
 }
