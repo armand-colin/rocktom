@@ -68,6 +68,15 @@
             color: var(--contrast);
             pointer-events: none;
             font: var(--font-body-sm);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-width: 0;
+
+            .chord-label {
+                opacity: 0.75;
+                font-weight: 600;
+            }
         }
 
         &:hover>.fret-hint {

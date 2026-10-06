@@ -86,7 +86,10 @@ export function PatternEditorNoteView(props: {
             className="main"
             {...MouseTarget.props(noteTarget)}
         >
-            <p>{note.name}{note.octave}</p>
+            <p>
+                {note.name}{note.octave}
+                {props.note.chord !== null && <span className="chord-label">{props.note.chord.getLabel()}</span>}
+            </p>
             <div className="fret-hint">{props.fret}</div>
             <div
                 className="resizer-right"

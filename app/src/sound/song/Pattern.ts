@@ -88,7 +88,7 @@ export class Pattern {
     clone(): Pattern {
         return new Pattern({
             name: this.name,
-            notes: this.notes.map(note => ({ ...note, id: nanoid() })),
+            notes: this.notes.map(note => NoteEvent.clone(note)),
             instrument: this._instrument
         })
     }
