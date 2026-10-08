@@ -1,5 +1,5 @@
 import { useComponent } from "@niloc/ecs-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { EditorPlayer } from "../../components/editor/EditorPlayer";
 import { LevelEditor } from "../../components/editor/LevelEditor";
 import { Button, ButtonTheme } from "../button/Button";
@@ -24,6 +24,7 @@ import { TapTempoPopup } from "./tapTempo/TapTempoPopup";
 import { Slider } from "../slider/Slider";
 import { Body } from "../../resources/queryClient/Body";
 import { InstrumentTrackEditorView } from "./InstrumentTrackEditorView";
+import { TimeTransformPanner } from "../../utils/handlers/TimeTransformPanner";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
@@ -188,10 +189,30 @@ function PlayerControls(props: { player: EditorPlayer }) {
 
 function LevelEditorTracksView(props: { editor: LevelEditor }) {
     const { instrumentTracks } = useComponent(props.editor)
+    const pannerRef = useRef<TimeTransformPanner | null>(null)
+
+    useEffect(() => {
+        return () => {
+            pannerRef.current?.destroy()
+            pannerRef.current = null
+        }
+    }, [])
 
     return <div
         className="LevelEditorTracksView max-h-[calc(100svh-90px)] overflow-y-auto h-svh"
         onWheel={e => props.editor.timeTransform.handleWheel(e.nativeEvent, e.currentTarget)}
+        onPointerDown={e => {
+            if (e.pointerType !== "touch")
+                return
+
+            if (!pannerRef.current) {
+                pannerRef.current = new TimeTransformPanner({
+                    timeTransform: props.editor.timeTransform,
+                })
+            }
+
+            pannerRef.current.addPointer(e.nativeEvent)
+        }}
     >
         <div className="head">
             <FormInputField label="Magnetization" className="max-w-50 flex-1">

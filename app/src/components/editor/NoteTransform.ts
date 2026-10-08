@@ -33,9 +33,17 @@ export class NoteTransform extends Component {
         this.changed()
     }
 
+    panByPixels(deltaY: number) {
+        let offset = this.offset
+        offset = offset + deltaY / this.ratio
+
+        this._offset = offset
+        this.changed()
+    }
+
     handleWheel(event: WheelEvent) {
         if (!OS.isCtrl(event)) {
-            this._handlePan(event)
+            this.panByPixels(event.deltaY)
         }
     }
 
@@ -50,16 +58,6 @@ export class NoteTransform extends Component {
         const rawNoteIndex = (offset / this.ratio) + this.offset
         const noteIndex = maxNote.index - Math.ceil(rawNoteIndex)
         return Note.fromIndex(noteIndex)
-    }
-
-    private _handlePan(event: WheelEvent) {
-        const delta = event.deltaY
-
-        let offset = this.offset
-        offset = offset + delta / this.ratio
-
-        this._offset = offset
-        this.changed()
     }
 
 }

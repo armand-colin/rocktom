@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent } from "react"
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent, type TouchEvent } from "react"
 import { Slider } from "../../utils/Slider"
 import { Icon } from "../icon/Icon"
 import { UiSize } from "../UiSize"
@@ -39,13 +39,13 @@ export function NumberInput(props: Props) {
         }
     }
 
-    function onMouseDown(e: MouseEvent) {
-        e.preventDefault()
+    function startSlider(event: MouseEvent | TouchEvent) {
+        event.preventDefault()
         if (props.value === null)
             return
 
         const slider = new Slider({
-            event: e.nativeEvent,
+            event: event.nativeEvent,
             value: props.value,
             step: props.step,
             min: props.min,
@@ -92,7 +92,7 @@ export function NumberInput(props: Props) {
         />
         {
             !props.hideSlider && (
-                <div className="slider" onMouseDown={onMouseDown}>
+                <div className="slider" onMouseDown={startSlider} onTouchStart={startSlider}>
                     <Icon name="code" />
                 </div>
             )

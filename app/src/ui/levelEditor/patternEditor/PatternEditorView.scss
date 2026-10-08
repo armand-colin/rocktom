@@ -20,6 +20,7 @@
         padding: var(--spacing-2);
         padding-top: 0;
         gap: var(--spacing-2);
+        touch-action: none;
 
         >.TrackEditorView>.keyboard {
             position: relative;

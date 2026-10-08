@@ -11,6 +11,7 @@
         padding: var(--spacing-2);
         align-items: start;
         align-content: start;
+        touch-action: pan-y;
 
         >.head {
             display: flex;

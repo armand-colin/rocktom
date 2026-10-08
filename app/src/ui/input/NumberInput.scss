@@ -1,7 +1,7 @@
 .NumberInput {
     background: var(--surface);
     border-radius: 4px;
-    display: flex;
+    display: grid;
     overflow: hidden;
     color: var(--color-grey-50);
 
@@ -21,7 +21,7 @@
         }
     }
 
-    .slider {
+    > .slider {
         background: var(--surface-hover);
         flex-shrink: 0;
         display: flex;
@@ -29,6 +29,7 @@
         justify-content: center;
         cursor: ew-resize;
         user-select: none;
+        touch-action: none;
     }
 
 

@@ -26,6 +26,7 @@ import { MagnetizationView } from "../magnetizationView/MagnetizationView";
 import { KeyboardNotesView } from "./KeyboardNotesView";
 import { MouseTarget } from "../../../mouse/MouseTarget";
 import { MouseTargetType } from "../../../mouse/MouseTargetType";
+import { TimeTransformPanner } from "../../../utils/handlers/TimeTransformPanner";
 
 const toolbarTabs: Toolbar.Tab[] = [
     Toolbar.Tab.create("Edit", [
@@ -129,6 +130,15 @@ export function PatternEditorView(props: {
         editor: props.editor,
     }
 
+    const pannerRef = useRef<TimeTransformPanner | null>(null)
+
+    useEffect(() => {
+        return () => {
+            pannerRef.current?.destroy()
+            pannerRef.current = null
+        }
+    }, [])
+
     return <div
         className="PatternEditorView"
         {...MouseTarget.props(editorTarget)}
@@ -187,6 +197,19 @@ export function PatternEditorView(props: {
             onWheel={e => {
                 props.editor.transform.handleWheel(e.nativeEvent, e.currentTarget);
                 props.editor.noteTransform.handleWheel(e.nativeEvent);
+            }}
+            onPointerDown={e => {
+                if (e.pointerType !== "touch")
+                    return
+
+                if (!pannerRef.current) {
+                    pannerRef.current = new TimeTransformPanner({
+                        timeTransform: props.editor.transform,
+                        noteTransform: props.editor.noteTransform,
+                    })
+                }
+
+                pannerRef.current.addPointer(e.nativeEvent)
             }}
             onContextMenu={e => {
                 e.preventDefault()

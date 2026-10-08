@@ -157,11 +157,20 @@ export class TimeTransform extends Component {
         this.changed()
     }
 
+    panByPixels(deltaX: number) {
+        let offset = this.offset
+        offset = offset + deltaX / this.ratio
+        offset = Math.min(0, offset)
+
+        this._offset = offset
+        this.changed()
+    }
+
     handleWheel(event: WheelEvent, container: HTMLElement) {
         if (OS.isCtrl(event)) {
             this._handleZoom(event, container)
         } else {
-            this._handlePan(event)
+            this.panByPixels(-event.deltaX)
         }
     }
 
@@ -190,17 +199,6 @@ export class TimeTransform extends Component {
 
         this._offset = offset
         this._ratio = ratio
-        this.changed()
-    }
-
-    private _handlePan(event: WheelEvent) {
-        const delta = -event.deltaX
-
-        let offset = this.offset
-        offset = offset + delta / this.ratio
-        offset = Math.min(0, offset)
-
-        this._offset = offset
         this.changed()
     }
 
