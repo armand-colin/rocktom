@@ -170,20 +170,7 @@ export class WindowManager extends Resource {
             return
 
         const window = this._windows[index]
-
-        if (window.fullscreen) {
-            window.position = window.restorePosition ?? window.position
-            window.size = window.restoreSize ?? window.size
-            window.restorePosition = null
-            window.restoreSize = null
-            window.fullscreen = false
-        } else {
-            window.restorePosition = Vec2.create(window.position.x, window.position.y)
-            window.restoreSize = Vec2.create(window.size.x, window.size.y)
-            window.position = Vec2.create(0, 0)
-            window.size = Vec2.create(this._windowSize.x, this._windowSize.y)
-            window.fullscreen = true
-        }
+        window.fullscreen = !window.fullscreen
 
         this.changed()
     }

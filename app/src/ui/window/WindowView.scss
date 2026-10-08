@@ -1,9 +1,6 @@
 .WindowView {
     position: fixed;
-    left: calc(var(--x) * 1px);
-    top: calc(var(--y) * 1px);
-    width: calc(var(--width) * 1px);
-    height: calc(var(--height) * 1px);
+
     background: var(--color-grey-700);
     border-radius: var(--radius-md);
     pointer-events: auto;
@@ -29,10 +26,18 @@
         border-radius: 0;
         box-shadow: none;
         z-index: 30;
-
+        inset: 0;
+        
         > .head {
             border-radius: 0;
         }
+    }
+
+    &[data-fullscreen="false"] {
+        left: calc(var(--x) * 1px);
+        top: calc(var(--y) * 1px);
+        width: calc(var(--width) * 1px);
+        height: calc(var(--height) * 1px);
     }
 
     > .head {
