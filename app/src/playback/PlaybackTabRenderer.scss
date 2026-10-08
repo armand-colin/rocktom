@@ -1,0 +1,35 @@
+.PlaybackTabRenderer {
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+    padding: 120px 48px 96px;
+    overflow: auto;
+    color: white;
+    font: var(--font-m);
+
+    .timeline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 24px;
+        align-items: flex-start;
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    .chord {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 64px;
+
+        .position {
+            font-size: 0.75rem;
+            opacity: 0.45;
+        }
+
+        .label {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+    }
+}

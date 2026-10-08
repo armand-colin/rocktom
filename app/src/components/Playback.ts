@@ -4,6 +4,8 @@ import { AudioPlayer } from "../core/AudioPlayer";
 import { AudioPlayerFactory } from "../core/AudioPlayerFactory";
 import { Playback3DRenderer } from "../playback/Playback3DRenderer";
 import type { PlaybackRenderer } from "../playback/PlaybackRenderer";
+import { PlaybackTabRenderer } from "../playback/PlaybackTabRenderer";
+import { PlaybackVisualMode } from "../playback/PlaybackVisualMode";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
 import { type Level } from "../sound/Level";
 import type { InstrumentTrack } from "../sound/song/InstrumentTrack";
@@ -31,7 +33,8 @@ export class Playback extends Component {
     constructor(
         engine: Engine,
         readonly level: Level,
-        trackIndex: number
+        trackIndex: number,
+        visualMode: PlaybackVisualMode = PlaybackVisualMode.ThreeD,
     ) {
         super(engine)
 
@@ -56,7 +59,9 @@ export class Playback extends Component {
 
         this._instrumentTrack = level.instrumentTracks[trackIndex]
 
-        this.visual = new Playback3DRenderer(engine)
+        this.visual = visualMode === PlaybackVisualMode.Tab
+            ? new PlaybackTabRenderer()
+            : new Playback3DRenderer(engine)
         this._setVisualTrack(this._instrumentTrack)
         this.visual.sync(this.time.ticks, this.time.seconds, true)
 

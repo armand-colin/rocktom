@@ -1,4 +1,4 @@
-import { Navigate, useParams } from "react-router-dom"
+import { Navigate, useParams, useSearchParams } from "react-router-dom"
 import { LevelQueries } from "../queries/level/LevelQueries"
 import { useEffect, useState } from "react"
 import { PlaybackView } from "../ui/PlaybackView"
@@ -9,9 +9,11 @@ import { Instance } from "../Instance"
 import { LoadingScreen } from "../ui/loadingScreen/LoadingScreen"
 import { useComponent } from "@niloc/ecs-react"
 import { useQuery } from "../hooks/useQuery"
+import { PlaybackVisualMode } from "../playback/PlaybackVisualMode"
 
 export function LevelPage() {
     const { id, index } = useParams()
+    const [searchParams] = useSearchParams()
 
     if (!id) {
         return <Navigate to="/app" />
@@ -28,6 +30,8 @@ export function LevelPage() {
         } catch (_) { }
     }
 
+    const visualMode = PlaybackVisualMode.fromSearchParam(searchParams.get("mode"))
+
     const { result, isLoading } = useQuery(LevelQueries.getById, {
         arguments: {
             path: {
@@ -40,13 +44,15 @@ export function LevelPage() {
         fetching={isLoading || !result}
         level={result && result.ok ? result.value : null}
         trackIndex={parsedIndex}
+        visualMode={visualMode}
     />
 }
 
 function LevelView(props: {
     level: LevelEntity | null,
     fetching: boolean,
-    trackIndex?: number
+    trackIndex?: number,
+    visualMode: PlaybackVisualMode,
 }) {
     const [playback, setPlayback] = useState<Playback | null>(null)
     const [audioLoading, setAudioLoading] = useState(true)
@@ -65,7 +71,12 @@ function LevelView(props: {
                 name: props.level.name,
             })
 
-            const playback = new Playback(Instance.engine, level, props.trackIndex ?? 0)
+            const playback = new Playback(
+                Instance.engine,
+                level,
+                props.trackIndex ?? 0,
+                props.visualMode,
+            )
             setPlayback(playback)
             setAudioLoading(playback.loading)
         } catch (error) {
@@ -73,7 +84,7 @@ function LevelView(props: {
             setPlayback(null)
             setAudioLoading(true)
         }
-    }, [props.level])
+    }, [props.level, props.visualMode])
 
     useEffect(() => {
         if (playback) {
