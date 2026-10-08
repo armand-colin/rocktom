@@ -138,71 +138,72 @@ export function NoteEventPopup(props: {
 
     const activeChord = chord.value
 
-    return <Popup.BaseContainer className="NoteEventPopup w-[300px]">
+    return <Popup.BaseContainer className="NoteEventPopup" size="sm">
         <Popup.BaseTitle title={title} />
-
-        <FormInputField label="Finger position">
-            <NumberInput
-                name="fingerPosition"
-                onChange={value => setFingerPosition({ value, dirty: true })}
-                value={fingerPosition.value}
-                min={0}
-                max={Rules.maxFret}
-                step={1}
-            />
-        </FormInputField>
-        {
-            allHaveSlide && <FormInputField label="Slide connects">
-                <Toggle
-                    value={slideConnects.value}
-                    onChange={value => setSlideConnects({ value, dirty: true })}
+        <Popup.BaseContent>
+            <FormInputField label="Finger position">
+                <NumberInput
+                    name="fingerPosition"
+                    onChange={value => setFingerPosition({ value, dirty: true })}
+                    value={fingerPosition.value}
+                    min={0}
+                    max={Rules.maxFret}
+                    step={1}
                 />
             </FormInputField>
-        }
-
-        <FormInputField label="Chord">
-            <Toggle
-                value={chordEnabled}
-                onChange={setChordEnabled}
-            />
-        </FormInputField>
-
-        {
-            activeChord !== null && <>
-                <FormInputField label="Root">
-                    <PitchClassPicker
-                        value={activeChord.root}
-                        onChange={root => updateChord(new Chord(root, activeChord.quality, activeChord.bass))}
+            {
+                allHaveSlide && <FormInputField label="Slide connects">
+                    <Toggle
+                        value={slideConnects.value}
+                        onChange={value => setSlideConnects({ value, dirty: true })}
                     />
                 </FormInputField>
+            }
 
-                <FormInputField label="Quality">
-                    <Dropdown
-                        options={qualityOptions}
-                        value={activeChord.quality}
-                        onChange={option => {
-                            if (option === null)
-                                return
-                            updateChord(new Chord(activeChord.root, ChordQuality.parse(option.value), activeChord.bass))
-                        }}
-                        size={UiSize.S}
-                    />
-                </FormInputField>
+            <FormInputField label="Chord">
+                <Toggle
+                    value={chordEnabled}
+                    onChange={setChordEnabled}
+                />
+            </FormInputField>
 
-                <FormInputField label="Bass">
-                    <PitchClassPicker
-                        value={activeChord.bass}
-                        allowNone
-                        noneSelected={activeChord.bass === null}
-                        onNone={() => updateChord(new Chord(activeChord.root, activeChord.quality, null))}
-                        onChange={bass => updateChord(new Chord(activeChord.root, activeChord.quality, bass))}
-                    />
-                </FormInputField>
+            {
+                activeChord !== null && <>
+                    <FormInputField label="Root">
+                        <PitchClassPicker
+                            value={activeChord.root}
+                            onChange={root => updateChord(new Chord(root, activeChord.quality, activeChord.bass))}
+                        />
+                    </FormInputField>
 
-                <p className="chord-preview">{activeChord.getLabel()}</p>
-            </>
-        }
+                    <FormInputField label="Quality">
+                        <Dropdown
+                            options={qualityOptions}
+                            value={activeChord.quality}
+                            onChange={option => {
+                                if (option === null)
+                                    return
+                                updateChord(new Chord(activeChord.root, ChordQuality.parse(option.value), activeChord.bass))
+                            }}
+                            size={UiSize.S}
+                        />
+                    </FormInputField>
 
-        <Button type="submit" onClick={onSave}>Save</Button>
+                    <FormInputField label="Bass">
+                        <PitchClassPicker
+                            value={activeChord.bass}
+                            allowNone
+                            noneSelected={activeChord.bass === null}
+                            onNone={() => updateChord(new Chord(activeChord.root, activeChord.quality, null))}
+                            onChange={bass => updateChord(new Chord(activeChord.root, activeChord.quality, bass))}
+                        />
+                    </FormInputField>
+
+                    <p className="chord-preview">{activeChord.getLabel()}</p>
+                </>
+            }
+
+            <Button type="submit" onClick={onSave}>Save</Button>
+        </Popup.BaseContent>
     </Popup.BaseContainer>
 }
