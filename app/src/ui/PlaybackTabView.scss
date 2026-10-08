@@ -1,11 +1,8 @@
 .PlaybackTabView {
-    padding: var(--spacing-10);
     display: flex;
     justify-content: center;
 
-    >main {
-        max-width: 1800px;
-        width: 100%;
+    .PlaybackTabViewBody {
         display: flex;
         flex-direction: column;
         gap: var(--spacing-5);

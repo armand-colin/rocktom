@@ -13,6 +13,7 @@ import { Mixer } from "../resources/Mixer"
 import { FormInputField } from "./form/FormInputField"
 import { useShortcut } from "../hooks/useShortcut"
 import { Shortcuts } from "../resources/shortcut/Shortcuts"
+import { Page } from "./page/Page"
 
 type Bar = {
     startTicks: number,
@@ -71,9 +72,12 @@ export function PlaybackTabView(props: {
         props.playback.seekTicks(ticks)
     }
 
-    return <div className="PlaybackTabView">
-        <main>
-            <h1 className="text-body-lg">{props.playback.level.name}</h1>
+    return <Page className="PlaybackTabView">
+        <Page.ConnectedTitle 
+            title={props.playback.level.name}
+        />
+
+        <Page.Body containerClassName="PlaybackTabViewBody">
             <div className="flex gap-2 w-full gap-3">
                 <Button
                     theme="primary"
@@ -111,8 +115,8 @@ export function PlaybackTabView(props: {
                     />)
                 }
             </div>
-        </main>
-    </div>
+        </Page.Body>
+    </Page>
 }
 
 function BarView(props: {

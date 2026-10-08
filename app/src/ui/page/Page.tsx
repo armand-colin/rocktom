@@ -3,6 +3,10 @@ import { cn } from "../utils/cn";
 import "./Page.scss";
 import { ProfileButton } from "../profile/ProfileButton";
 import { SettingsButton } from "../settings/SettingsButton";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Routes } from "../../Routes";
+import { Button } from "../button/Button";
+import { Icon } from "../icon/Icon";
 
 export function Page(props: { children?: ReactNode, className?: string }) {
     return <div className={cn("Page", props.className)}>
@@ -16,9 +20,30 @@ export namespace Page {
         title: string,
         beforeActions?: ReactNode
     }) {
+        const path = useLocation().pathname
+        const isHome = path === Routes.Home.compile({})
+        const navigate = useNavigate()
+
+        function onBack() {
+            navigate(-1)
+        }
+
         return <header className="PageConnectedTitle">
             <div>
-                <h1>{props.title}</h1>
+                <h1>
+                    {
+                        !isHome && <Button
+                            shape="square"
+                            onClick={onBack}
+                            variant="ghost"
+                        >
+                            <Icon
+                                name="arrow_back"
+                            />
+                        </Button>
+                    }
+                    {props.title}
+                </h1>
                 <div>
                     {props.beforeActions}
                     <SettingsButton />

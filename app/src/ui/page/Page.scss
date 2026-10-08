@@ -12,7 +12,11 @@
     justify-content: center;
     margin-bottom: var(--spacing-4);
     flex-shrink: 0;
-    padding: var(--spacing-4);
+    padding: var(--spacing-10);
+
+    @media screen and (max-width: 600px) {
+        padding: var(--spacing-4);
+    }
 
     >div {
         max-width: 1000px;
@@ -29,6 +33,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+
+            .Button {
+                display: inline-flex;
+                margin-right: var(--spacing-4);
+            }
         }
 
         >div {
@@ -43,12 +52,16 @@
     display: grid;
     width: 100%;
     place-items: center;
-    padding: var(--spacing-4);
-    padding-bottom: var(--spacing-10);
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     align-items: start;
+    padding: var(--spacing-10);
+
+    @media screen and (max-width: 600px) {
+        padding: var(--spacing-4);
+        padding-bottom: var(--spacing-10);
+    }
 
     >div {
         max-width: 1000px;
