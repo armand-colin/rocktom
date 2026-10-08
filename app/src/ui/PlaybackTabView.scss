@@ -43,6 +43,16 @@
         border-radius: var(--radius-sm);
         top: 50%;
         transform: translateY(-50%);
+
+        &[data-connects-end="true"] {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &[data-connects-start="true"] {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
     }
 
     .Head {

@@ -15,10 +15,15 @@ import { useShortcut } from "../hooks/useShortcut"
 import { Shortcuts } from "../resources/shortcut/Shortcuts"
 import { Page } from "./page/Page"
 
+type CustomChordEvent = ChordEvent & {
+    connectsEnd: boolean,
+    connectsStart: boolean,
+}
+
 type Bar = {
     startTicks: number,
     endTicks: number,
-    events: ChordEvent[]
+    events: CustomChordEvent[],
 }
 
 export function PlaybackTabView(props: {
@@ -41,7 +46,7 @@ export function PlaybackTabView(props: {
         }
 
         for (const event of props.renderer.chordEvents) {
-            if (event.ticks >= bar.endTicks) {
+            while (event.ticks >= bar.endTicks) {
                 bars.push(bar)
                 bar = {
                     startTicks: Tempo.BAR * bars.length,
@@ -49,7 +54,30 @@ export function PlaybackTabView(props: {
                     events: []
                 }
             }
-            bar.events.push(event)
+
+            if (event.ticks + event.duration > bar.endTicks) {
+                bar.events.push({
+                    ...event,
+                    duration: bar.endTicks - event.ticks,
+                    connectsEnd: true,
+                    connectsStart: false,
+                })
+                bars.push(bar)
+                bar = {
+                    startTicks: Tempo.BAR * bars.length,
+                    endTicks: Tempo.BAR * (bars.length + 1),
+                    events: []
+                }
+                bar.events.push({
+                    ...event,
+                    ticks: bar.startTicks,
+                    duration: event.duration - (bar.endTicks - event.ticks),
+                    connectsEnd: false,
+                    connectsStart: true,
+                })
+            } else {
+                bar.events.push({ ...event, connectsEnd: false, connectsStart: false })
+            }
         }
 
         bars.push(bar)
@@ -73,7 +101,7 @@ export function PlaybackTabView(props: {
     }
 
     return <Page className="PlaybackTabView">
-        <Page.ConnectedTitle 
+        <Page.ConnectedTitle
             title={props.playback.level.name}
         />
 
@@ -152,13 +180,15 @@ function BarView(props: {
     </div>
 }
 
-function ChordEventView(props: { event: ChordEvent }) {
+function ChordEventView(props: { event: CustomChordEvent }) {
     return <div
         className="ChordEventView"
         style={{
             "--event-start-ticks": props.event.ticks,
             "--event-duration": props.event.duration,
         } as CSSProperties}
+        data-connects-end={props.event.connectsEnd}
+        data-connects-start={props.event.connectsStart}
     >
         {props.event.chord.getLabel()}
     </div>
