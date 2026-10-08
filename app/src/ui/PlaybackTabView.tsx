@@ -28,6 +28,8 @@ type Bar = {
     events: CustomChordEvent[],
 }
 
+const TAP_MOVE_THRESHOLD_PX = 10
+
 export function PlaybackTabView(props: {
     playback: Playback,
     renderer: PlaybackTabRenderer
@@ -75,7 +77,7 @@ export function PlaybackTabView(props: {
                 bar.events.push({
                     ...event,
                     ticks: bar.startTicks,
-                    duration: event.duration - (bar.endTicks - event.ticks),
+                    duration: event.duration - (bar.startTicks - event.ticks),
                     connectsEnd: false,
                     connectsStart: true,
                 })
@@ -169,11 +171,72 @@ function BarView(props: {
     onScroll: (element: HTMLElement) => void
 }) {
     const scrollAnchorRef = useRef<HTMLDivElement>(null)
+    const gestureCleanupRef = useRef<(() => void) | null>(null)
+
+    useEffect(() => {
+        return () => gestureCleanupRef.current?.()
+    }, [])
 
     function onPointerDown(event: PointerEvent<HTMLDivElement>) {
-        const bounds = event.currentTarget.getBoundingClientRect()
-        const ticks = (event.clientX - bounds.left) / bounds.width * (props.bar.endTicks - props.bar.startTicks) + props.bar.startTicks
-        props.onSeek(Math.round(ticks))
+        if (event.button !== 0) {
+            return
+        }
+
+        const element = event.currentTarget
+        const pointerId = event.pointerId
+        const startX = event.clientX
+        const startY = event.clientY
+        const bounds = element.getBoundingClientRect()
+        let slid = false
+
+        function onPointerMove(moveEvent: globalThis.PointerEvent) {
+            if (moveEvent.pointerId !== pointerId) {
+                return
+            }
+
+            const dx = moveEvent.clientX - startX
+            const dy = moveEvent.clientY - startY
+            if (dx * dx + dy * dy > TAP_MOVE_THRESHOLD_PX * TAP_MOVE_THRESHOLD_PX) {
+                slid = true
+            }
+        }
+
+        function onPointerUp(upEvent: globalThis.PointerEvent) {
+            if (upEvent.pointerId !== pointerId) {
+                return
+            }
+
+            endGesture()
+            if (slid || bounds.width === 0) {
+                return
+            }
+
+            const ticks = (startX - bounds.left) / bounds.width * (props.bar.endTicks - props.bar.startTicks) + props.bar.startTicks
+            props.onSeek(Math.round(ticks))
+        }
+
+        function onPointerCancel(cancelEvent: globalThis.PointerEvent) {
+            if (cancelEvent.pointerId !== pointerId) {
+                return
+            }
+
+            endGesture()
+        }
+
+        function endGesture() {
+            window.removeEventListener("pointermove", onPointerMove)
+            window.removeEventListener("pointerup", onPointerUp)
+            window.removeEventListener("pointercancel", onPointerCancel)
+            if (gestureCleanupRef.current === endGesture) {
+                gestureCleanupRef.current = null
+            }
+        }
+
+        gestureCleanupRef.current?.()
+        gestureCleanupRef.current = endGesture
+        window.addEventListener("pointermove", onPointerMove)
+        window.addEventListener("pointerup", onPointerUp)
+        window.addEventListener("pointercancel", onPointerCancel)
     }
 
     function onScroll() {
