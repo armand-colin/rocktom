@@ -7,14 +7,25 @@ type UpdateSW = (reloadPage?: boolean) => Promise<void>
 
 export class AppUpdateManager extends Resource {
 
+    private _firstCheck = true
     private _needsRefresh = false
     private _updateSW: UpdateSW | null = null
+    private _checking = false
+
+    private _url: string | null = null
+    private _registration: ServiceWorkerRegistration | null = null
 
     initialize() {
         const updateSW = registerSW({
             onNeedRefresh: () => {
                 this._needsRefresh = true
                 this.changed()
+                
+                if (!this._firstCheck) {
+                    return;
+                }
+
+                this._firstCheck = false
 
                 this.engine.getResource(ToastManager).add((close) => <Toast.Simple
                     message="A new version is available !"
@@ -27,6 +38,10 @@ export class AppUpdateManager extends Resource {
                     }}
                 />, 60_000)
             },
+            onRegisteredSW: (url, registration) => {
+                this._url = url ?? null
+                this._registration = registration ?? null
+            }
         })
 
         this._updateSW = updateSW
@@ -36,11 +51,27 @@ export class AppUpdateManager extends Resource {
         return this._needsRefresh
     }
 
-    applyUpdate() {
+    async check() {
+        if (this._checking)
+            return
+
+        if (!this._url || !this._registration)
+            return
+
+        this._checking = true
+
+        await fetch(this._url, { cache: "no-store" })
+
+        const registration = await this._registration.update()
+        this._registration = registration ?? null
+        this._checking = false
+    }
+
+    async applyUpdate() {
         if (!this._updateSW)
             return
 
-        void this._updateSW(true)
+        return this._updateSW(true)
     }
 
 }
