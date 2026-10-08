@@ -1,4 +1,4 @@
-import { useMemo, type CSSProperties, type PointerEvent } from "react"
+import { useEffect, useMemo, useRef, type CSSProperties, type PointerEvent } from "react"
 import type { Playback } from "../components/Playback"
 import type { ChordEvent, PlaybackTabRenderer } from "../playback/PlaybackTabRenderer"
 import { Button } from "./button/Button"
@@ -100,6 +100,10 @@ export function PlaybackTabView(props: {
         props.playback.seekTicks(ticks)
     }
 
+    function onScroll(element: HTMLElement) {
+        element.scrollIntoView({ behavior: "smooth" })
+    }
+    
     return <Page className="PlaybackTabView">
         <Page.ConnectedTitle
             title={props.playback.level.name}
@@ -140,6 +144,7 @@ export function PlaybackTabView(props: {
                         bar={bar}
                         time={props.playback.time}
                         onSeek={onSeek}
+                        onScroll={onScroll}
                     />)
                 }
             </div>
@@ -150,12 +155,21 @@ export function PlaybackTabView(props: {
 function BarView(props: {
     bar: Bar,
     time: Time,
-    onSeek: (ticks: number) => void
+    onSeek: (ticks: number) => void,
+    onScroll: (element: HTMLElement) => void
 }) {
+    const ref = useRef<HTMLDivElement>(null)
+
     function onPointerDown(event: PointerEvent<HTMLDivElement>) {
         const bounds = event.currentTarget.getBoundingClientRect()
         const ticks = (event.clientX - bounds.left) / bounds.width * (props.bar.endTicks - props.bar.startTicks) + props.bar.startTicks
         props.onSeek(Math.round(ticks))
+    }
+
+    function onScroll() {
+        if (ref.current) {
+            props.onScroll(ref.current)
+        }
     }
 
     return <div
@@ -165,6 +179,7 @@ function BarView(props: {
             "--bar-duration": Tempo.BAR,
         } as CSSProperties}
         onPointerDown={onPointerDown}
+        ref={ref}
     >
         {
             props.bar.events.map((event, index) => <ChordEventView
@@ -176,6 +191,7 @@ function BarView(props: {
             minTicks={props.bar.startTicks}
             maxTicks={props.bar.endTicks}
             time={props.time}
+            onEnter={onScroll}
         />
     </div>
 }
@@ -198,8 +214,22 @@ function Head(props: {
     minTicks: number,
     maxTicks: number,
     time: Time,
+    onEnter: () => void,
 }) {
     const { ticks } = useComponent(props.time)
+    const scrolled = useRef<boolean>(false)
+
+    useEffect(() => {
+        if (ticks > props.minTicks && ticks < props.maxTicks) {
+            if (scrolled.current) {
+                return;
+            }
+            props.onEnter()
+            scrolled.current = true
+        } else {
+            scrolled.current = false
+        }
+    }, [ticks, props.minTicks, props.maxTicks, props.onEnter])
 
     if (ticks > props.maxTicks || ticks < props.minTicks) {
         return null
