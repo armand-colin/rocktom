@@ -1,7 +1,7 @@
 import { Navigate, useParams, useSearchParams } from "react-router-dom"
 import { LevelQueries } from "../queries/level/LevelQueries"
 import { useEffect, useState } from "react"
-import { PlaybackView } from "../ui/PlaybackView"
+import { Playback3DView } from "../ui/Playback3DView"
 import type { LevelEntity } from "../queries/level/LevelEntity"
 import { Playback } from "../components/Playback"
 import { Level } from "../sound/Level"
@@ -10,6 +10,9 @@ import { LoadingScreen } from "../ui/loadingScreen/LoadingScreen"
 import { useComponent } from "@niloc/ecs-react"
 import { useQuery } from "../hooks/useQuery"
 import { PlaybackVisualMode } from "../playback/PlaybackVisualMode"
+import { Playback3DRenderer } from "../playback/Playback3DRenderer"
+import { PlaybackTabRenderer } from "../playback/PlaybackTabRenderer"
+import { PlaybackTabView } from "../ui/PlaybackTabView"
 
 export function LevelPage() {
     const { id, index } = useParams()
@@ -104,7 +107,19 @@ function LevelView(props: {
                         playback={playback}
                         onLoadingChange={setAudioLoading}
                     />
-                    <PlaybackView playback={playback} />
+                    {
+                        playback.renderer instanceof Playback3DRenderer ?
+                            <Playback3DView
+                                playback={playback}
+                                renderer={playback.renderer as Playback3DRenderer}
+                            /> :
+                            playback.renderer instanceof PlaybackTabRenderer ?
+                                <PlaybackTabView
+                                    playback={playback}
+                                    renderer={playback.renderer as PlaybackTabRenderer}
+                                /> :
+                                null
+                    }
                 </>
             )}
         </LoadingScreen>

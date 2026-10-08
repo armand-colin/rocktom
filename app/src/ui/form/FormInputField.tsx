@@ -28,6 +28,6 @@ export function FormInputField(props: Props) {
             {props.children}
         </div>
         {/* Error rendering is intentionally deferred, but the slot/API is ready. */}
-        <div className="error-slot" aria-live="polite" />
+        {/* <div className="error-slot" aria-live="polite" /> */}
     </div>
 }

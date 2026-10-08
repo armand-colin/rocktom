@@ -1,0 +1,60 @@
+.PlaybackTabView {
+    padding: var(--spacing-10);
+    display: flex;
+    justify-content: center;
+
+    >main {
+        max-width: 1800px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-5);
+        align-items: start;
+
+        >.bars {
+            display: grid;
+            gap: var(--spacing-5) 0;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+
+            @media (max-width: 1200px) {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            @media (max-width: 750px) {
+                grid-template-columns: 1fr;
+            }
+        }
+    }
+
+    .BarView {
+        outline: 1px solid var(--color-grey-600);
+        position: relative;
+        height: 100px;
+        background: var(--color-grey-800);
+        border-radius: var(--radius-sm);
+    }
+
+    .ChordEventView {
+        outline: 1px solid var(--color-grey-700);
+        padding: var(--spacing-1);
+        position: absolute;
+        left: calc((var(--event-start-ticks) - var(--bar-start-ticks)) / var(--bar-duration) * 100%);
+        width: calc(var(--event-duration) / var(--bar-duration) * 100%);
+        padding: var(--spacing-2);
+        background: var(--color-grey-500);
+        border-radius: var(--radius-sm);
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .Head {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: var(--color-blue-500);
+        left: calc((var(--head-ticks) - var(--bar-start-ticks)) / var(--bar-duration) * 100%);
+    }
+
+}

@@ -4,57 +4,57 @@ import { NeckMesh } from "../3d/NeckMesh"
 import { PlayingNotes3D } from "../3d/PlayingNotes3D"
 import { CameraRig } from "../components/CameraRig"
 import { Renderer } from "../resources/Renderer"
-import type { FocusTrack } from "../sound/song/FocusTrack"
-import type { TempoTrack } from "../sound/song/TempoTrack"
 import { NoteWindow } from "./NoteWindow"
 import { PlaybackNote } from "./PlaybackNote"
 import type { PlaybackRenderer } from "./PlaybackRenderer"
+import type { Level } from "../sound/Level"
+import type { InstrumentTrack } from "../sound/song/InstrumentTrack"
 
 export class Playback3DRenderer implements PlaybackRenderer {
 
     private _renderer: Renderer
     private _rig: CameraRig
-    private _playingNotes: PlayingNotes3D | null = null
+    private _playingNotes: PlayingNotes3D
     private _neck: Object3D | null = null
     private _notes: PlaybackNote[] = []
     private _window: NoteWindow | null = null
-    private _focusTrack: FocusTrack | null = null
-    private _tempoTrack: TempoTrack | null = null
+
     private _lastTicks: number | null = null
 
-    constructor(engine: Engine) {
+    private _instrumentTrack: InstrumentTrack | null = null
+
+    readonly level: Level
+
+    constructor(engine: Engine, level: Level) {
+        this.level = level
+
         this._renderer = engine.getResource(Renderer)
         this._rig = engine.createComponent(CameraRig, this._renderer.camera)
+        this._playingNotes = new PlayingNotes3D(this.level.tempoTrack)
     }
 
-    get element() {
+    get canvas() {
         return this._renderer.element
     }
 
-    setTrack(params: PlaybackRenderer.TrackParams): void {
+    setTrack(track: InstrumentTrack): void {
         this._clearTrack()
 
-        this._focusTrack = params.focusTrack
-        this._tempoTrack = params.tempoTrack
+        this._instrumentTrack = track
 
-        if (!this._playingNotes) {
-            this._playingNotes = new PlayingNotes3D(params.tempoTrack)
-            this._renderer.add(this._playingNotes)
-        } else {
-            this._playingNotes.clear()
-        }
+        this._playingNotes.clear()
 
-        this._neck = NeckMesh.create(params.instrument)
+        this._neck = NeckMesh.create(track.instrument)
         this._renderer.add(this._neck)
 
-        this._notes = params.notes.map(note => new PlaybackNote(params.instrument, note))
+        this._notes = [...track.noteTrack.notes()].map(note => new PlaybackNote(track.instrument, note))
         this._window = new NoteWindow(this._notes, this._renderer)
 
         this._lastTicks = null
     }
 
     sync(ticks: number, seconds: number, discontinuous = false): void {
-        if (!this._window || !this._focusTrack || !this._tempoTrack || !this._playingNotes)
+        if (!this._window || !this._instrumentTrack)
             return
 
         const lastTicks = this._lastTicks
@@ -63,9 +63,9 @@ export class Playback3DRenderer implements PlaybackRenderer {
         this._updateWindow(ticks, seconds)
 
         if (isDiscontinuous) {
-            const focusEvent = this._focusTrack.getEventAtTicks(ticks)
+            const focusEvent = this._instrumentTrack.focusTrack.getEventAtTicks(ticks)
             if (!focusEvent)
-                this._rig.focus(this._focusTrack.initialFocus)
+                this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
             else
                 this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
         } else {
@@ -74,7 +74,7 @@ export class Playback3DRenderer implements PlaybackRenderer {
                     this._playingNotes.play(note.note)
             }
 
-            const focusEvent = this._focusTrack.getEventBetweenTicks(lastTicks, ticks)
+            const focusEvent = this._instrumentTrack.focusTrack.getEventBetweenTicks(lastTicks, ticks)
             if (focusEvent)
                 this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
         }
@@ -88,23 +88,20 @@ export class Playback3DRenderer implements PlaybackRenderer {
     destroy(): void {
         this._clearTrack()
 
-        if (this._playingNotes) {
-            this._renderer.remove(this._playingNotes)
-            this._playingNotes = null
-        }
+        this._renderer.remove(this._playingNotes)
 
         this._rig.destroy()
     }
 
     private _updateWindow(ticks: number, seconds: number) {
-        if (!this._window || !this._tempoTrack)
+        if (!this._window || !this._instrumentTrack)
             return
 
         let minTime = seconds - 2.0
         let maxTime = seconds + 10.0
 
-        minTime = this._tempoTrack.ticksFromSeconds(minTime)
-        maxTime = this._tempoTrack.ticksFromSeconds(maxTime)
+        minTime = this.level.tempoTrack.ticksFromSeconds(minTime)
+        maxTime = this.level.tempoTrack.ticksFromSeconds(maxTime)
 
         this._window.update(ticks, minTime, maxTime)
     }
@@ -113,15 +110,14 @@ export class Playback3DRenderer implements PlaybackRenderer {
         this._window?.clear()
         this._window = null
         this._notes = []
-        this._playingNotes?.clear()
+        this._playingNotes.clear()
 
         if (this._neck) {
             this._renderer.remove(this._neck)
             this._neck = null
         }
 
-        this._focusTrack = null
-        this._tempoTrack = null
+        this._instrumentTrack = null
         this._lastTicks = null
     }
 

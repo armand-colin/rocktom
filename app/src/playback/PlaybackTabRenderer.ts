@@ -1,15 +1,31 @@
 import { Chord } from "../sound/note/Chord"
-import { Tempo } from "../sound/Tempo"
 import type { NoteEvent } from "../sound/song/NoteEvent"
 import type { PlaybackRenderer } from "./PlaybackRenderer"
 import "./PlaybackTabRenderer.scss"
+import type { InstrumentTrack } from "../sound/song/InstrumentTrack"
+import { Component, Engine } from "@niloc/ecs"
+import type { Level } from "../sound/Level"
 
-export class PlaybackTabRenderer implements PlaybackRenderer {
+export interface ChordEvent {
+    ticks: number,
+    chord: Chord,
+    duration: number,
+}
+
+export class PlaybackTabRenderer extends Component implements PlaybackRenderer {
+
+    readonly level: Level
 
     private readonly _element: HTMLDivElement
     private readonly _timeline: HTMLDivElement
 
-    constructor() {
+    private _chordEvents: ChordEvent[] = []
+
+    constructor(engine: Engine, level: Level) {
+        super(engine)
+
+        this.level = level
+
         this._element = document.createElement("div")
         this._element.className = "PlaybackTabRenderer"
 
@@ -22,27 +38,19 @@ export class PlaybackTabRenderer implements PlaybackRenderer {
         return this._element
     }
 
-    setTrack(params: PlaybackRenderer.TrackParams): void {
+    get chordEvents() {
+        return this._chordEvents
+    }
+
+    get maxTicks() {
+        return this._chordEvents.reduce((max, event) => Math.max(max, event.ticks + event.duration), 0)
+    }
+
+    setTrack(track: InstrumentTrack): void {
         this._timeline.replaceChildren()
 
-        for (const entry of this._collapseChords(params.notes)) {
-            const item = document.createElement("div")
-            item.className = "chord"
-
-            const bar = Math.floor(entry.time / Tempo.bars(1)) + 1
-            const beat = Math.floor((entry.time % Tempo.bars(1)) / Tempo.PPQ) + 1
-
-            const position = document.createElement("span")
-            position.className = "position"
-            position.textContent = `${bar}.${beat}`
-
-            const label = document.createElement("span")
-            label.className = "label"
-            label.textContent = entry.chord.getLabel()
-
-            item.append(position, label)
-            this._timeline.appendChild(item)
-        }
+        this._chordEvents = this._collapseChords([...track.noteTrack.notes()])
+        this.changed()
     }
 
     sync(_ticks: number, _seconds: number, _discontinuous?: boolean): void {
@@ -50,12 +58,12 @@ export class PlaybackTabRenderer implements PlaybackRenderer {
     }
 
     destroy(): void {
-        this._timeline.replaceChildren()
+        // Nothing for now
     }
 
-    private _collapseChords(notes: NoteEvent[]): { time: number, chord: Chord }[] {
+    private _collapseChords(notes: NoteEvent[]): ChordEvent[] {
         const sorted = [...notes].sort((a, b) => a.time - b.time)
-        const result: { time: number, chord: Chord }[] = []
+        const result: ChordEvent[] = []
 
         for (const note of sorted) {
             if (note.chord === null)
@@ -65,7 +73,11 @@ export class PlaybackTabRenderer implements PlaybackRenderer {
             if (last && Chord.equals(last.chord, note.chord))
                 continue
 
-            result.push({ time: note.time, chord: note.chord })
+            result.push({ 
+                ticks: note.time, 
+                chord: note.chord,
+                duration: note.duration,
+            })
         }
 
         return result

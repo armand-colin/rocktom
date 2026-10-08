@@ -17,7 +17,7 @@ import { Time } from "./Time";
 export class Playback extends Component {
 
     readonly time: Time
-    readonly visual: PlaybackRenderer
+    readonly renderer: PlaybackRenderer
 
     private _metronome: Metronome
     private _speed = 1.0
@@ -59,11 +59,12 @@ export class Playback extends Component {
 
         this._instrumentTrack = level.instrumentTracks[trackIndex]
 
-        this.visual = visualMode === PlaybackVisualMode.Tab
-            ? new PlaybackTabRenderer()
-            : new Playback3DRenderer(engine)
+        this.renderer = visualMode === PlaybackVisualMode.Tab
+            ? new PlaybackTabRenderer(engine, level)
+            : new Playback3DRenderer(engine, level)
+
         this._setVisualTrack(this._instrumentTrack)
-        this.visual.sync(this.time.ticks, this.time.seconds, true)
+        this.renderer.sync(this.time.ticks, this.time.seconds, true)
 
         Object.assign(window, { playback: this })
     }
@@ -121,7 +122,7 @@ export class Playback extends Component {
     seekTicks(ticks: number) {
         const seconds = this.level.tempoTrack.secondsFromTicks(ticks)
         this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
-        this.visual.sync(ticks, seconds, true)
+        this.renderer.sync(ticks, seconds, true)
 
         const audioSeekTime = this.time.seconds - this.level.audioTrack.time
         if (audioSeekTime >= 0) {
@@ -153,17 +154,12 @@ export class Playback extends Component {
 
         this._instrumentTrack = track
         this._setVisualTrack(track)
-        this.visual.sync(this.time.ticks, this.time.seconds, true)
+        this.renderer.sync(this.time.ticks, this.time.seconds, true)
         this.changed()
     }
 
     private _setVisualTrack(track: InstrumentTrack) {
-        this.visual.setTrack({
-            instrument: track.noteTrack.instrument,
-            notes: [...track.noteTrack.notes()],
-            focusTrack: track.focusTrack,
-            tempoTrack: this.level.tempoTrack,
-        })
+        this.renderer.setTrack(track)
     }
 
     private *_play() {
@@ -192,7 +188,7 @@ export class Playback extends Component {
         this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
 
         this._metronome.update(ticks, this._speed)
-        this.visual.sync(ticks, seconds)
+        this.renderer.sync(ticks, seconds)
     }
 
     pause() {
@@ -211,7 +207,7 @@ export class Playback extends Component {
         this.time.set(0, 0, this.level.tempoTrack.getTempoAt(0))
         this._audioPlayer.pause()
         this._audioPlayer.seek(0)
-        this.visual.sync(0, 0, true)
+        this.renderer.sync(0, 0, true)
 
         this._metronome.reset()
         if (this.playing)
@@ -226,7 +222,7 @@ export class Playback extends Component {
     destroy() {
         this._audioPlayer.clear()
         this._metronome.destroy()
-        this.visual.destroy()
+        this.renderer.destroy()
     }
 
 }

@@ -14,9 +14,9 @@
     --string-color: orange;
 }
 
-.PlaybackView {
+.Playback3DView {
 
-    .PlaybackProgressView {
+    .Playback3DProgressView {
         position: fixed;
         bottom: 24px;
         left: 50%;
@@ -24,7 +24,7 @@
         width: 60%;
     }
 
-    .PlaybackControls {
+    .Playback3DControls {
         padding: 24px;
         position: absolute;
         left: 0;
@@ -109,29 +109,5 @@
         position: fixed;
         top: 24px;
         right: 24px;
-    }
-}
-
-.YoutubeVolumeSlider {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-
-    small {
-        width: 50px;
-        text-align: center;
-        background: var(--container);
-        padding: 4px 0; 
-        border-radius: 4px;
-        flex-shrink: 0;
-    }
-
-    .Icon {
-        flex-shrink: 0;
-    }
-
-    .Slider {
-        flex: 1;
     }
 }

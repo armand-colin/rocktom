@@ -2,7 +2,7 @@ import { EngineContext, useComponent } from "@niloc/ecs-react";
 import { useContext } from "react";
 import type { Playback } from "../components/Playback";
 import { ElementRenderer } from "./ElementRenderer";
-import "./PlaybackView.scss";
+import "./Playback3DView.scss";
 import { Icon } from "./icon/Icon";
 import { PlaybackProgressView } from "./PlaybackProgressView";
 import { PlaybackTimeView } from "./PlaybackTimeView";
@@ -21,8 +21,12 @@ import { Slider } from "./slider/Slider";
 import { LiveInstrumentButton } from "./liveInstrument/LiveInstrumentButton";
 import { usePopupManager } from "../hooks/usePopupManager";
 import { SelectInstrumentTrackPopup } from "./selectInstrumentTrackPopup/SelectInstrumentTrackPopup";
+import type { Playback3DRenderer } from "../playback/Playback3DRenderer";
 
-export function PlaybackView(props: { playback: Playback }) {
+export function Playback3DView(props: { 
+    playback: Playback,
+    renderer: Playback3DRenderer
+}) {
     const { playing } = useComponent(props.playback)
 
     useShortcut(Shortcuts.Play, onPlay)
@@ -39,12 +43,12 @@ export function PlaybackView(props: { playback: Playback }) {
         props.playback.reset()
     }
 
-    return <div className="PlaybackView">
+    return <div className="Playback3DView">
         <div className="canvas">
-            <ElementRenderer element={props.playback.visual.element} />
+            <ElementRenderer element={props.renderer.canvas} />
         </div>
 
-        <PlaybackControls
+        <Playback3DControls
             playback={props.playback}
         />
 
@@ -60,7 +64,7 @@ export function PlaybackView(props: { playback: Playback }) {
     </div>
 }
 
-function PlaybackControls(props: { playback: Playback }) {
+function Playback3DControls(props: { playback: Playback }) {
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
     const navigate = useNavigate()
@@ -79,7 +83,7 @@ function PlaybackControls(props: { playback: Playback }) {
     }
 
     return (
-        <div className="PlaybackControls flex flex-col gap-3 w-80">
+        <div className="Playback3DControls flex flex-col gap-3 w-80">
             <div>
                 <button
                     className="BackButton"

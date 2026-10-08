@@ -9,6 +9,8 @@ export class Tempo {
     private _microsecondsPerBeat: number
     readonly bpm: number
 
+    static BAR = 4 * Tempo.PPQ
+    
     static bars(beats: number): number {
         return beats * 4 * Tempo.PPQ
     }
