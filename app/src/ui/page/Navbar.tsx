@@ -12,7 +12,7 @@ export function Navbar() {
         <NavbarItem
             label="Levels"
             currentPathname={pathname}
-            icon="home"
+            icon="newsstand"
             path={Routes.Home.compile({})}
         />
         <NavbarItem
