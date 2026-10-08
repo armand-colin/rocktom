@@ -103,7 +103,7 @@ export function PlaybackTabView(props: {
     function onScroll(element: HTMLElement) {
         element.scrollIntoView({ behavior: "smooth" })
     }
-    
+
     return <Page className="PlaybackTabView">
         <Page.ConnectedTitle
             title={props.playback.level.name}
@@ -158,7 +158,7 @@ function BarView(props: {
     onSeek: (ticks: number) => void,
     onScroll: (element: HTMLElement) => void
 }) {
-    const ref = useRef<HTMLDivElement>(null)
+    const scrollAnchorRef = useRef<HTMLDivElement>(null)
 
     function onPointerDown(event: PointerEvent<HTMLDivElement>) {
         const bounds = event.currentTarget.getBoundingClientRect()
@@ -167,8 +167,8 @@ function BarView(props: {
     }
 
     function onScroll() {
-        if (ref.current) {
-            props.onScroll(ref.current)
+        if (scrollAnchorRef.current) {
+            props.onScroll(scrollAnchorRef.current)
         }
     }
 
@@ -179,8 +179,8 @@ function BarView(props: {
             "--bar-duration": Tempo.BAR,
         } as CSSProperties}
         onPointerDown={onPointerDown}
-        ref={ref}
     >
+        <div className="scroll-anchor" ref={scrollAnchorRef}></div>
         {
             props.bar.events.map((event, index) => <ChordEventView
                 event={event}

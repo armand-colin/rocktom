@@ -30,6 +30,13 @@
         height: 100px;
         background: var(--color-grey-800);
         border-radius: var(--radius-sm);
+
+        >.scroll-anchor {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            pointer-events: none;
+        }
     }
 
     .ChordEventView {
