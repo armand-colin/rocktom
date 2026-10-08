@@ -21,6 +21,7 @@ import { Body } from '../resources/queryClient/Body'
 import { ToolList } from '../ui/tools/ToolList'
 import { LevelPopup } from '../ui/level/LevelPopup'
 import { Routes } from '../Routes'
+import { Navbar } from '../ui/page/Navbar'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, result: levels, refresh: refreshLevels } = useQuery(LevelQueries.getAll, { arguments: {} })
@@ -105,9 +106,9 @@ export function HomePage() {
       }),
     })
 
-    if(!result.ok) {
-        throw result.error
-      }
+    if (!result.ok) {
+      throw result.error
+    }
 
     refreshLevels()
   }
@@ -125,7 +126,7 @@ export function HomePage() {
 
       <Page.Body>
         <ToolList />
-        
+
         {
           isLevelsLoading ?
             <div>Loading...</div> :
@@ -143,6 +144,10 @@ export function HomePage() {
               null
         }
       </Page.Body>
+      
+      <Page.Footer>
+        <Navbar />
+      </Page.Footer>
     </Page>
   )
 }

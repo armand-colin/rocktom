@@ -1,0 +1,33 @@
+.Navbar {
+    width: 100%;
+    padding: var(--spacing-2);
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2);
+    background: var(--color-grey-800);
+
+    @media (min-width: 600px) {
+        display: none;
+    }
+
+    .NavbarItem {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-05);
+        justify-content: center;
+        flex: 1;
+        max-width: 120px;
+        align-items: center;
+        padding: var(--spacing-2);
+        border-radius: var(--radius-md);
+
+        span {
+            font: var(--font-body-xs);
+        }
+
+        &[data-active="true"] {
+            color: var(--color-blue-200);
+            background: var(--color-blue-800);
+        }
+    }
+}

@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import "./Navbar.scss"
 import { Icon, type IconName } from "../icon/Icon";
 import { cn } from "../utils/cn";
+import { Routes } from "../../Routes";
 
 export function Navbar() {
 
@@ -12,19 +13,13 @@ export function Navbar() {
             label="Levels"
             currentPathname={pathname}
             icon="home"
-            pathname="/app"
+            path={Routes.Home.compile({})}
         />
         <NavbarItem
             label="Settings"
             currentPathname={pathname}
             icon="settings"
-            pathname="/app/settings"
-        />
-        <NavbarItem
-            label="Profile"
-            currentPathname={pathname}
-            icon="person"
-            pathname="/app/profile"
+            path={Routes.Settings.compile({})}
         />
     </nav>
 
@@ -34,12 +29,12 @@ function NavbarItem(props: {
     label: string,
     currentPathname: string,
     icon: IconName,
-    pathname: string,
+    path: string,
 }) {
     return <Link
-        to={props.pathname}
+        to={props.path}
         className={cn("NavbarItem")}
-        data-active={props.currentPathname.startsWith(props.pathname)}
+        data-active={props.currentPathname === props.path}
     >
         <Icon
             name={props.icon}

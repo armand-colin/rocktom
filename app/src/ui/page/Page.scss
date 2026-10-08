@@ -1,9 +1,10 @@
 .Page {
     width: 100svw;
     height: 100svh;
-    padding: var(--spacing-4);
     min-height: 0;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .PageConnectedTitle {
@@ -11,6 +12,7 @@
     justify-content: center;
     margin-bottom: var(--spacing-4);
     flex-shrink: 0;
+    padding: var(--spacing-4);
 
     >div {
         max-width: 1000px;
@@ -41,10 +43,19 @@
     display: grid;
     width: 100%;
     place-items: center;
+    padding: var(--spacing-4);
     padding-bottom: var(--spacing-10);
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    align-items: start;
 
     >div {
         max-width: 1000px;
         width: 100%;
     }
+}
+
+.PageFooter {
+    flex-shrink: 0;
 }
