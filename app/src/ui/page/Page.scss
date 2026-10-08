@@ -56,11 +56,11 @@
     min-height: 0;
     overflow-y: auto;
     align-items: start;
-    padding: var(--spacing-10);
+    padding: var(--spacing-20);
 
     @media screen and (max-width: 600px) {
         padding: var(--spacing-4);
-        padding-bottom: var(--spacing-10);
+        padding-bottom: var(--spacing-20);
     }
 
     >div {
