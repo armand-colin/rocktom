@@ -110,7 +110,7 @@ export function PlaybackTabView(props: {
         if (!preferences.autoScroll) {
             return;
         }
-        
+
         element.scrollIntoView({ behavior: "smooth" })
     }
 
@@ -138,16 +138,22 @@ export function PlaybackTabView(props: {
                 </Button>
 
                 <FormInputField label="Auto Scroll">
-                    <Toggle value={preferences.autoScroll} onChange={() => preferences.autoScroll = !preferences.autoScroll}/>
+                    <Toggle value={preferences.autoScroll} onChange={() => preferences.autoScroll = !preferences.autoScroll} />
                 </FormInputField>
             </div>
 
-            <FormInputField label="Audio Volume" className="w-full max-w-64">
-                <MixerChannelView
-                    className="w-full"
-                    channel={mixer.audio}
-                />
-            </FormInputField>
+            <div className="flex flex-col gap-4 w-full max-w-80">
+                <FormInputField label="Audio Volume">
+                    <MixerChannelView
+                        channel={mixer.audio}
+                    />
+                </FormInputField>
+                <FormInputField label="Audio Volume">
+                    <MixerChannelView
+                        channel={mixer.metronome}
+                    />
+                </FormInputField>
+            </div>
 
             <div className="bars">
                 {
