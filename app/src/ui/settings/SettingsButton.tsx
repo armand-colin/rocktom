@@ -1,17 +1,12 @@
-import { usePopupManager } from "../../hooks/usePopupManager";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../button/Button";
 import { Icon } from "../icon/Icon";
-import { SettingsPopup } from "./SettingsPopup";
 
 export function SettingsButton() {
-    const popupManager = usePopupManager()
-
-    function onClick() {
-        popupManager.add(close => <SettingsPopup close={close} />)
-    }
+    const navigate = useNavigate()
 
     return <Button
-        onClick={onClick}
+        onClick={() => navigate("/settings")}
         shape="square"
     >
         <Icon

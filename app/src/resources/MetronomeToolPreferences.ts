@@ -1,6 +1,7 @@
 import { Engine, Resource } from "@niloc/ecs"
+import type { PreferencesScope } from "./PreferencesScope"
 
-export class MetronomeToolPreferences extends Resource {
+export class MetronomeToolPreferences extends Resource implements PreferencesScope {
 
     static readonly minBpm = 40
     static readonly maxBpm = 240

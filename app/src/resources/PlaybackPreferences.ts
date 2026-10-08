@@ -1,6 +1,7 @@
 import { Engine, Resource } from "@niloc/ecs";
+import type { PreferencesScope } from "./PreferencesScope";
 
-export class PlaybackPreferences extends Resource {
+export class PlaybackPreferences extends Resource implements PreferencesScope {
 
     private _audioVolume = 1.0
 

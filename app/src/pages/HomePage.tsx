@@ -122,7 +122,7 @@ export function HomePage() {
         </>}
       />
 
-      <Page.Content>
+      <Page.Body>
         <ToolList />
         
         {
@@ -141,7 +141,7 @@ export function HomePage() {
               /> :
               null
         }
-      </Page.Content>
+      </Page.Body>
     </Page>
   )
 }

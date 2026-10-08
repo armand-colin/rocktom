@@ -1,13 +1,20 @@
 import { useResource } from "@niloc/ecs-react";
 import { AppUpdateManager } from "../../resources/AppUpdateManager";
+import { GlobalPreferences } from "../../resources/GlobalPreferences";
+import { LiveInstrumentPreferences } from "../../resources/LiveInstrumentPreferences";
+import { PlaybackVisualMode } from "../../playback/PlaybackVisualMode";
 import { Button, ButtonTheme } from "../button/Button";
 import { FormInputField } from "../form/FormInputField";
+import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
+import { MixerView } from "../mixerView/MixerView";
 import "./SettingsView.scss";
 
 const APP_VERSION = "0.0.0"
 
 export function SettingsView() {
     const appUpdateManager = useResource(AppUpdateManager)
+    const globalPreferences = useResource(GlobalPreferences)
+    const liveInstrumentPreferences = useResource(LiveInstrumentPreferences)
 
     return <div className="SettingsView">
         <FormInputField label="Version">
@@ -27,5 +34,36 @@ export function SettingsView() {
                 </div> :
                 <p className="upToDate">You're up to date</p>
         }
+
+        <FormInputField label="Visualization">
+            <div className="mode">
+                <Button
+                    theme={globalPreferences.visualMode === PlaybackVisualMode.ThreeD ? ButtonTheme.Primary : ButtonTheme.Default}
+                    onClick={() => { globalPreferences.visualMode = PlaybackVisualMode.ThreeD }}
+                >
+                    3D
+                </Button>
+                <Button
+                    theme={globalPreferences.visualMode === PlaybackVisualMode.Tab ? ButtonTheme.Primary : ButtonTheme.Default}
+                    onClick={() => { globalPreferences.visualMode = PlaybackVisualMode.Tab }}
+                >
+                    Tab
+                </Button>
+            </div>
+        </FormInputField>
+
+        <FormInputField label="Instrument">
+            <InstrumentDropdown
+                value={liveInstrumentPreferences.instrument}
+                onChange={instrument => {
+                    liveInstrumentPreferences.instrument = instrument
+                }}
+            />
+        </FormInputField>
+
+        <section className="mix">
+            <h2>Mix</h2>
+            <MixerView />
+        </section>
     </div>
 }

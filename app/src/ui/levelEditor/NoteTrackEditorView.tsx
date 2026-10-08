@@ -74,7 +74,7 @@ export function NoteTrackEditorView(props: {
         >
             <FormInputField
                 label="Pattern"
-                controlClassName="flex gap-2"
+                contentClassName="flex gap-2"
             >
                 <Dropdown
                     value={pattern?.id ?? null}

@@ -3,8 +3,9 @@ import type { AudioRange } from "../sound/AudioRange"
 import { LiveAudioConstraints } from "../sound/LiveAudioConstraints"
 import { Instrument } from "../sound/instrument/Instrument"
 import { SoundEngine } from "./SoundEngine"
+import type { PreferencesScope } from "./PreferencesScope"
 
-export class LiveInstrumentPreferences extends Resource {
+export class LiveInstrumentPreferences extends Resource implements PreferencesScope {
 
     private _deviceId: string | null = null
     private _volume: number = 1.0

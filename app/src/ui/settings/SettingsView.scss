@@ -1,13 +1,12 @@
 .SettingsView {
     display: grid;
-    gap: var(--spacing-m);
-    min-width: 280px;
+    gap: var(--spacing-6);
 
     >.update {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: var(--spacing-m);
+        gap: var(--spacing-6);
 
         >p {
             margin: 0;
@@ -19,8 +18,23 @@
         color: var(--text-secondary, #888);
         font-size: 0.875rem;
     }
-}
 
-.SettingsPopup {
-    min-width: 280px;
+    .mode {
+        display: flex;
+        gap: var(--spacing-2);
+    }
+
+    >.mix {
+        display: grid;
+        gap: var(--spacing-2);
+
+        >h2 {
+            margin: 0;
+            font: var(--font-heading-md);
+        }
+
+        >.MixerView {
+            padding: 0;
+        }
+    }
 }

@@ -2,14 +2,18 @@ import { useNavigate } from "react-router-dom";
 import type { LevelEntity } from "../../queries/level/LevelEntity";
 import { Popup } from "../popup/Popup";
 import { useMemo, useState } from "react";
+import { useResource } from "@niloc/ecs-react";
+import { GlobalPreferences } from "../../resources/GlobalPreferences";
 import { Level } from "../../sound/Level";
 import { Card } from "../button/Card";
 import { Button, ButtonTheme } from "../button/Button";
 import { PlaybackVisualMode } from "../../playback/PlaybackVisualMode";
+import { FormInputField } from "../form/FormInputField";
 
 export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
     const navigate = useNavigate()
-    const [mode, setMode] = useState<PlaybackVisualMode>(PlaybackVisualMode.ThreeD)
+    const globalPreferences = useResource(GlobalPreferences)
+    const [mode, setMode] = useState<PlaybackVisualMode>(globalPreferences.visualMode)
 
     const level = useMemo(() => {
         return props.level.serialized ?
@@ -27,25 +31,26 @@ export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
             title={props.level.name}
             close={props.close}
         />
-        <Popup.BaseContent gap={4}>
-            <div className="flex gap-2">
+        <Popup.BaseContent gap={5}>
+            <FormInputField label="Visual Mode" contentClassName="flex gap-2">
                 <Button
                     theme={mode === PlaybackVisualMode.ThreeD ? ButtonTheme.Primary : ButtonTheme.Default}
                     onClick={() => setMode(PlaybackVisualMode.ThreeD)}
+                    className="flex-1 max-w-30"
                 >
                     3D
                 </Button>
                 <Button
                     theme={mode === PlaybackVisualMode.Tab ? ButtonTheme.Primary : ButtonTheme.Default}
                     onClick={() => setMode(PlaybackVisualMode.Tab)}
+                    className="flex-1 max-w-30"
                 >
                     Tab
                 </Button>
-            </div>
-            <p>Select track to play</p>
+            </FormInputField>
             {
                 level && level.instrumentTracks.length > 0 ?
-                    <ul className="flex flex-col gap-3">
+                    <FormInputField label="Select track to play" contentClassName="flex flex-col gap-2">
                         {
                             level.instrumentTracks.map((track, index) => {
                                 return <Card containerClassName="p-4"
@@ -56,7 +61,7 @@ export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
                                 </Card>
                             })
                         }
-                    </ul> :
+                    </FormInputField> :
                     <p>No instrument track implemented yet</p>
             }
         </Popup.BaseContent>

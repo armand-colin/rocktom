@@ -3,6 +3,7 @@ import { Component } from "@niloc/ecs"
 import { SoundEngine } from "./SoundEngine";
 import type { GainSoundNode } from "../sound/node/GainSoundNode";
 import type { SoundNode } from "../sound/node/SoundNode";
+import type { PreferencesScope } from "./PreferencesScope";
 
 export class MixerChannel extends Component {
 
@@ -21,7 +22,6 @@ export class MixerChannel extends Component {
         this.channelId = channelId
         this.name = name
         this.maxVolume = maxVolume
-        this._recover()
     }
 
     private _save() {
@@ -30,7 +30,7 @@ export class MixerChannel extends Component {
         localStorage.setItem(prefix + "_volume", this._volume.toString())
     }
 
-    private _recover() {
+    recover() {
         const prefix = Mixer.storagePrefix + "_" + this.channelId
         const enabledStr = localStorage.getItem(prefix + "_enabled")
         if (enabledStr !== null) {
@@ -85,7 +85,7 @@ export class MixerChannel extends Component {
 
 }
 
-export class Mixer extends Resource {
+export class Mixer extends Resource implements PreferencesScope {
 
     readonly master: MixerChannel
     readonly feedback: MixerChannel
@@ -111,6 +111,14 @@ export class Mixer extends Resource {
         this.master.connect(this.virtualInstrument.node)
 
         this.master.node.connect(engine.getResource(SoundEngine).output)
+    }
+
+    recover() {
+        this.master.recover()
+        this.feedback.recover()
+        this.metronome.recover()
+        this.audio.recover()
+        this.virtualInstrument.recover()
     }
 
 }

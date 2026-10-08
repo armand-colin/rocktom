@@ -2,7 +2,7 @@
     display: grid;
     gap: 3px;
 
-    .label {
+    >.label {
         color: var(--text-secondary);
         font-size: 13px;
         line-height: 1.2;
@@ -10,11 +10,11 @@
         color: var(--color-grey-200);
     }
 
-    .control {
+    >.content {
         min-width: 0;
     }
 
-    .error-slot {
+    >.error-slot {
         min-height: 0;
     }
 

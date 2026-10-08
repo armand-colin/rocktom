@@ -7,16 +7,19 @@ import { Playback } from "../components/Playback"
 import { Level } from "../sound/Level"
 import { Instance } from "../Instance"
 import { LoadingScreen } from "../ui/loadingScreen/LoadingScreen"
-import { useComponent } from "@niloc/ecs-react"
+import { useComponent, useResource } from "@niloc/ecs-react"
 import { useQuery } from "../hooks/useQuery"
 import { PlaybackVisualMode } from "../playback/PlaybackVisualMode"
 import { Playback3DRenderer } from "../playback/Playback3DRenderer"
 import { PlaybackTabRenderer } from "../playback/PlaybackTabRenderer"
 import { PlaybackTabView } from "../ui/PlaybackTabView"
+import { GlobalPreferences } from "../resources/GlobalPreferences"
 
 export function LevelPage() {
     const { id, index } = useParams()
     const [searchParams] = useSearchParams()
+    const globalPreferences = useResource(GlobalPreferences)
+    const visualMode = PlaybackVisualMode.parseSafe(searchParams.get("mode")) ?? globalPreferences.visualMode
 
     if (!id) {
         return <Navigate to="/app" />
@@ -32,8 +35,6 @@ export function LevelPage() {
             }
         } catch (_) { }
     }
-
-    const visualMode = PlaybackVisualMode.fromSearchParam(searchParams.get("mode"))
 
     const { result, isLoading } = useQuery(LevelQueries.getById, {
         arguments: {

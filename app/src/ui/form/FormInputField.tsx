@@ -8,7 +8,7 @@ type Props = {
     error?: ReactNode,
     children?: ReactNode,
     className?: string,
-    controlClassName?: string,
+    contentClassName?: string,
     disabled?: boolean,
 }
 
@@ -24,9 +24,11 @@ export function FormInputField(props: Props) {
         data-disabled={props.disabled}
     >
         {label && <div className="label">{label}</div>}
-        <div className={`control ${props.controlClassName ?? ""}`}>
+
+        <div className={`content ${props.contentClassName ?? ""}`}>
             {props.children}
         </div>
+
         {/* Error rendering is intentionally deferred, but the slot/API is ready. */}
         {/* <div className="error-slot" aria-live="polite" /> */}
     </div>

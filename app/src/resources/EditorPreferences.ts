@@ -1,13 +1,13 @@
 import { Engine, Resource } from "@niloc/ecs"
+import type { PreferencesScope } from "./PreferencesScope"
 
-export class EditorPreferences extends Resource {
+export class EditorPreferences extends Resource implements PreferencesScope {
 
     static readonly key = 'EditorPreferences'
     private _openInstrumentTracks: Record<string, boolean> = {}
 
     constructor(engine: Engine) {
         super(engine)
-        this.recover()
     }
 
     get openInstrumentTracks(): Readonly<Record<string, boolean>> {

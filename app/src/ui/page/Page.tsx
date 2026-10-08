@@ -28,12 +28,18 @@ export namespace Page {
         </header>
     }
 
-    export function Content(props: { children?: ReactNode, containerClassName?: string }) {
+    export function Body(props: { children?: ReactNode, containerClassName?: string }) {
         return <main className="PageContent">
             <div className={props.containerClassName}>
                 {props.children}
             </div>
         </main>
+    }
+
+    export function Footer(props: { children?: ReactNode }) {
+        return <footer className="PageFooter">
+            {props.children}
+        </footer>
     }
 
 }
