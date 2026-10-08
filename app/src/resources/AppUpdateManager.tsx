@@ -20,7 +20,7 @@ export class AppUpdateManager extends Resource {
             onNeedRefresh: () => {
                 this._needsRefresh = true
                 this.changed()
-                
+
                 if (!this._firstCheck) {
                     return;
                 }
@@ -50,6 +50,10 @@ export class AppUpdateManager extends Resource {
     get needsRefresh() {
         return this._needsRefresh
     }
+    
+    get checking() {
+        return this._checking
+    }
 
     async check() {
         if (this._checking)
@@ -59,12 +63,15 @@ export class AppUpdateManager extends Resource {
             return
 
         this._checking = true
+        this.changed()
 
         await fetch(this._url, { cache: "no-store" })
 
         const registration = await this._registration.update()
+
         this._registration = registration ?? null
         this._checking = false
+        this.changed()
     }
 
     async applyUpdate() {
