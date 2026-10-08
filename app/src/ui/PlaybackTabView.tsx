@@ -14,6 +14,8 @@ import { FormInputField } from "./form/FormInputField"
 import { useShortcut } from "../hooks/useShortcut"
 import { Shortcuts } from "../resources/shortcut/Shortcuts"
 import { Page } from "./page/Page"
+import { Toggle } from "./toggle/Toggle"
+import { PlaybackPreferences } from "../resources/PlaybackPreferences"
 
 type CustomChordEvent = ChordEvent & {
     connectsEnd: boolean,
@@ -32,6 +34,8 @@ export function PlaybackTabView(props: {
 }) {
     useShortcut(Shortcuts.Play, onPlayPause)
     useShortcut(Shortcuts.Reset, onReset)
+
+    const preferences = useResource(PlaybackPreferences)
 
     const { playing } = useComponent(props.playback)
     const mixer = useResource(Mixer)
@@ -101,6 +105,10 @@ export function PlaybackTabView(props: {
     }
 
     function onScroll(element: HTMLElement) {
+        if (!preferences.autoScroll) {
+            return;
+        }
+        
         element.scrollIntoView({ behavior: "smooth" })
     }
 
@@ -127,7 +135,9 @@ export function PlaybackTabView(props: {
                     Reset
                 </Button>
 
-
+                <FormInputField label="Auto Scroll">
+                    <Toggle value={preferences.autoScroll} onChange={() => preferences.autoScroll = !preferences.autoScroll}/>
+                </FormInputField>
             </div>
 
             <FormInputField label="Audio Volume" className="w-full max-w-64">
