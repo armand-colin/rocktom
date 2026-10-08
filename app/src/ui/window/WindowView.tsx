@@ -9,12 +9,14 @@ import { Icon } from "../icon/Icon";
 import "./WindowView.scss";
 import { Button, ButtonTheme, ButtonVariant } from "../button/Button";
 import { UiSize } from "../UiSize";
+import { cn } from "../utils/cn";
 
 type Props = {
 	id: string,
 	size: Vec2,
 	position: Vec2,
 	name: string,
+	fullscreen: boolean,
 	children: ReactNode,
 	close: () => void
 }
@@ -25,6 +27,9 @@ export function WindowView(props: Props) {
 	const handler = useRef<Handler | null>(null)
 
 	function onHeadMouseDown(e: MouseEvent) {
+		if (props.fullscreen)
+			return
+
 		handler.current?.destroy()
 		e.preventDefault()
 
@@ -44,6 +49,9 @@ export function WindowView(props: Props) {
 
 	function onResize(resizerClass: { new(opts: ResizerOpts): Resizer }) {
 		return (e: MouseEvent) => {
+			if (props.fullscreen)
+				return
+
 			handler.current?.destroy()
 			e.preventDefault()
 
@@ -64,6 +72,18 @@ export function WindowView(props: Props) {
 		}
 	}
 
+	function onToggleFullscreen(e: MouseEvent) {
+		e.stopPropagation()
+		windowManager.toggleFullscreen(props.id)
+	}
+
+	useEffect(() => {
+		if (props.fullscreen) {
+			handler.current?.destroy()
+			handler.current = null
+		}
+	}, [props.fullscreen])
+
 	useEffect(() => {
 		return () => {
 			handler.current?.destroy()
@@ -72,7 +92,7 @@ export function WindowView(props: Props) {
 	}, [])
 
 	return <div
-		className="WindowView"
+		className={cn("WindowView", props.fullscreen && "WindowView--fullscreen")}
 		style={{
 			"--width": props.size.x,
 			"--height": props.size.y,
@@ -85,29 +105,43 @@ export function WindowView(props: Props) {
 			onMouseDown={onHeadMouseDown}
 		>
 			<p>{props.name}</p>
-			<Button
-				onClick={props.close}
-				shape="square"
-				theme={ButtonTheme.Default}
-				variant={ButtonVariant.Ghost}
-				size={UiSize.XS}
-				onMouseDown={e => e.stopPropagation()}
-			>
-				<Icon name="close" />
-			</Button>
+			<div className="actions">
+				<Button
+					onClick={onToggleFullscreen}
+					shape="square"
+					theme={ButtonTheme.Default}
+					variant={ButtonVariant.Ghost}
+					size={UiSize.XS}
+					onMouseDown={e => e.stopPropagation()}
+				>
+					<Icon name={props.fullscreen ? "fullscreen_exit" : "fullscreen"} />
+				</Button>
+				<Button
+					onClick={props.close}
+					shape="square"
+					theme={ButtonTheme.Default}
+					variant={ButtonVariant.Ghost}
+					size={UiSize.XS}
+					onMouseDown={e => e.stopPropagation()}
+				>
+					<Icon name="close" />
+				</Button>
+			</div>
 		</div>
 		<div className="content">
 			{props.children}
 		</div>
 
-		<div className="resizer" data-direction="east" onMouseDown={onResize(EastResizer)}></div>
-		<div className="resizer" data-direction="south" onMouseDown={onResize(SouthResizer)}></div>
-		<div className="resizer" data-direction="north" onMouseDown={onResize(NorthResizer)}></div>
-		<div className="resizer" data-direction="west" onMouseDown={onResize(WestResizer)}></div>
+		{!props.fullscreen && <>
+			<div className="resizer" data-direction="east" onMouseDown={onResize(EastResizer)}></div>
+			<div className="resizer" data-direction="south" onMouseDown={onResize(SouthResizer)}></div>
+			<div className="resizer" data-direction="north" onMouseDown={onResize(NorthResizer)}></div>
+			<div className="resizer" data-direction="west" onMouseDown={onResize(WestResizer)}></div>
 
-		<div className="resizer" data-direction="north-east" onMouseDown={onResize(NorthEastResizer)}></div>
-		<div className="resizer" data-direction="north-west" onMouseDown={onResize(NorthWestResizer)}></div>
-		<div className="resizer" data-direction="south-east" onMouseDown={onResize(SouthEastResizer)}></div>
-		<div className="resizer" data-direction="south-west" onMouseDown={onResize(SouthWestResizer)}></div>
+			<div className="resizer" data-direction="north-east" onMouseDown={onResize(NorthEastResizer)}></div>
+			<div className="resizer" data-direction="north-west" onMouseDown={onResize(NorthWestResizer)}></div>
+			<div className="resizer" data-direction="south-east" onMouseDown={onResize(SouthEastResizer)}></div>
+			<div className="resizer" data-direction="south-west" onMouseDown={onResize(SouthWestResizer)}></div>
+		</>}
 	</div>
 }

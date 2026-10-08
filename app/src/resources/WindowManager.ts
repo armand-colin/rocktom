@@ -8,6 +8,9 @@ export type Window = {
     id: string,
     position: Vec2,
     size: Vec2,
+    fullscreen: boolean,
+    restorePosition: Vec2 | null,
+    restoreSize: Vec2 | null,
     close(): void,
     content: ReactNode,
     name: string,
@@ -120,6 +123,9 @@ export class WindowManager extends Resource {
             id,
             position: realPosition,
             size: realSize,
+            fullscreen: false,
+            restorePosition: null,
+            restoreSize: null,
             close,
             content,
             name: opts.name,
@@ -136,7 +142,11 @@ export class WindowManager extends Resource {
         if (index === -1)
             return
 
-        this._windows[index].position = position
+        const window = this._windows[index]
+        if (window.fullscreen)
+            return
+
+        window.position = position
         this.changed()
     }
 
@@ -145,8 +155,36 @@ export class WindowManager extends Resource {
         if (index === -1)
             return
 
-        this._windows[index].position = transform.position
-        this._windows[index].size = transform.size
+        const window = this._windows[index]
+        if (window.fullscreen)
+            return
+
+        window.position = transform.position
+        window.size = transform.size
+        this.changed()
+    }
+
+    toggleFullscreen(id: string) {
+        const index = this._windows.findIndex(w => w.id === id)
+        if (index === -1)
+            return
+
+        const window = this._windows[index]
+
+        if (window.fullscreen) {
+            window.position = window.restorePosition ?? window.position
+            window.size = window.restoreSize ?? window.size
+            window.restorePosition = null
+            window.restoreSize = null
+            window.fullscreen = false
+        } else {
+            window.restorePosition = Vec2.create(window.position.x, window.position.y)
+            window.restoreSize = Vec2.create(window.size.x, window.size.y)
+            window.position = Vec2.create(0, 0)
+            window.size = Vec2.create(this._windowSize.x, this._windowSize.y)
+            window.fullscreen = true
+        }
+
         this.changed()
     }
 
@@ -163,7 +201,13 @@ export class WindowManager extends Resource {
     }
 
     private _constraintWindows() {
-        // TODO
+        for (const window of this._windows) {
+            if (!window.fullscreen)
+                continue
+
+            window.position = Vec2.create(0, 0)
+            window.size = Vec2.create(this._windowSize.x, this._windowSize.y)
+        }
     }
 
     private _close(id: string) {

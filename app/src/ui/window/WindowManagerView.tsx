@@ -14,6 +14,7 @@ export function WindowManagerView() {
 				size={window.size}
 				position={window.position}
 				name={window.name}
+				fullscreen={window.fullscreen}
 				close={window.close}
 			>
 				{window.content}

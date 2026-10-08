@@ -25,9 +25,19 @@
 
     animation: popIn 0.1s var(--curve-smooth);
 
+    &--fullscreen {
+        border-radius: 0;
+        box-shadow: none;
+        z-index: 30;
+
+        > .head {
+            border-radius: 0;
+        }
+    }
+
     > .head {
         display: grid;
-        grid-template-columns: 1fr 24px;
+        grid-template-columns: 1fr auto;
         align-items: center;
         background: var(--surface-hover);
         border-radius: var(--radius-md) var(--radius-md) 0 0;
@@ -39,13 +49,10 @@
             pointer-events: none;
         }
 
-        > .close {
-            cursor: pointer;
+        > .actions {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 26px;
-            height: 26px;
+            gap: var(--spacing-1);
         }
     }
 

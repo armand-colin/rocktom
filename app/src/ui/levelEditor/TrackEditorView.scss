@@ -1,6 +1,11 @@
 .TrackEditorView {
     display: grid;
     grid-template-columns: 300px 1fr;
+
+    @media screen and (max-width: 768px) {
+        grid-template-columns: 150px 1fr;   
+    }
+
     gap: var(--spacing-2);
     position: relative;
 

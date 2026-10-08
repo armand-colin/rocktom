@@ -39,6 +39,8 @@ export const icons = [
     "arrow_downward",
     "download",
     "close",
+    "fullscreen",
+    "fullscreen_exit",
     "acute",
     "instant_mix",
     "progress_activity",
