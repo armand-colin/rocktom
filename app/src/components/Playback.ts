@@ -1,38 +1,26 @@
 import { Component, type Engine } from "@niloc/ecs";
 import { Coroutine, Duration } from "@niloc/utils";
-import { NeckMesh } from "../3d/NeckMesh";
-import { PlayingNotes3D } from "../3d/PlayingNotes3D";
 import { AudioPlayer } from "../core/AudioPlayer";
 import { AudioPlayerFactory } from "../core/AudioPlayerFactory";
-import { NoteWindow } from "../core/NoteWindow";
+import { Playback3DRenderer } from "../playback/Playback3DRenderer";
+import type { PlaybackRenderer } from "../playback/PlaybackRenderer";
 import { PlaybackPreferences } from "../resources/PlaybackPreferences";
-import { Renderer } from "../resources/Renderer";
 import { type Level } from "../sound/Level";
-import { CameraRig } from "./CameraRig";
-import { Metronome } from "./Metronome";
-import { PlaybackNote } from "./PlaybackNote";
-import { Time } from "./Time";
+import type { InstrumentTrack } from "../sound/song/InstrumentTrack";
 import { Schedules } from "../Schedules";
 import { DeltaTime } from "./DeltaTime";
-import type { Object3D } from "three";
-import type { InstrumentTrack } from "../sound/song/InstrumentTrack";
+import { Metronome } from "./Metronome";
+import { Time } from "./Time";
 
 export class Playback extends Component {
 
     readonly time: Time
+    readonly visual: PlaybackRenderer
 
-    private _notes: PlaybackNote[] = []
-    private _playingNotes: PlayingNotes3D
-
-    private _rig: CameraRig
     private _metronome: Metronome
     private _speed = 1.0
     private _playingCoroutine: Coroutine | null = null
-    private _renderer: Renderer
     private _loading = true
-
-    private _neck: Object3D
-    private _window: NoteWindow
 
     private _audioPlayerVolume: number = 1.0
     private _audioPlayer: AudioPlayer
@@ -64,29 +52,13 @@ export class Playback extends Component {
         this._audioPlayerVolume = preferences.audioVolume
         this._audioPlayer.setVolume(this._audioPlayerVolume)
 
-        this._rig = engine.createComponent(CameraRig, engine.getResource(Renderer).camera)
         this._metronome = engine.createComponent(Metronome, level.tempoTrack)
-
-        this._renderer = engine.getResource(Renderer)
 
         this._instrumentTrack = level.instrumentTracks[trackIndex]
 
-        const instrument = this._instrumentTrack.noteTrack.instrument
-        this._neck = NeckMesh.create(instrument)
-        this._renderer.add(this._neck)
-
-        this._playingNotes = new PlayingNotes3D(this.level.tempoTrack)
-        this._renderer.add(this._playingNotes)
-
-        this._notes = []
-
-        for (const note of this._instrumentTrack.noteTrack.notes())
-            this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
-
-        this._window = new NoteWindow(this._notes, this._renderer)
-        this._updateWindow()
-
-        this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
+        this.visual = new Playback3DRenderer(engine)
+        this._setVisualTrack(this._instrumentTrack)
+        this.visual.sync(this.time.ticks, this.time.seconds, true)
 
         Object.assign(window, { playback: this })
     }
@@ -101,23 +73,6 @@ export class Playback extends Component {
 
     get noteTrack() {
         return this._instrumentTrack.noteTrack
-    }
-
-    private _getTimeWindow() {
-        let minTime = this.time.seconds - 2.0
-        let maxTime = this.time.seconds + 10.0
-
-        minTime = this.level.tempoTrack.ticksFromSeconds(minTime)
-        maxTime = this.level.tempoTrack.ticksFromSeconds(maxTime)
-
-        return { minTime, maxTime }
-    }
-
-    private _updateWindow() {
-        const { minTime, maxTime } = this._getTimeWindow()
-        const ticks = this.level.tempoTrack.ticksFromSeconds(this.time.seconds)
-
-        this._window.update(ticks, minTime, maxTime)
     }
 
     get speed() {
@@ -161,16 +116,7 @@ export class Playback extends Component {
     seekTicks(ticks: number) {
         const seconds = this.level.tempoTrack.secondsFromTicks(ticks)
         this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
-        this._updateWindow()
-
-        // Find correct focus event
-        const focusEvent = this._instrumentTrack.focusTrack.getEventAtTicks(ticks)
-        if (!focusEvent) {
-            this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
-        } else {
-            this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
-        }
-        this._rig.update(ticks)
+        this.visual.sync(ticks, seconds, true)
 
         const audioSeekTime = this.time.seconds - this.level.audioTrack.time
         if (audioSeekTime >= 0) {
@@ -179,8 +125,6 @@ export class Playback extends Component {
             this._audioPlayer.pause()
             this._audioPlayer.seek(0)
         }
-
-        this._playingNotes.update(ticks)
 
         // Re-arm play/schedule after seek (cancel stale delay, start if in range).
         if (this.playing) {
@@ -202,28 +146,19 @@ export class Playback extends Component {
         if (track.id === this._instrumentTrack.id)
             return
 
-        // Cleanup everything
-        for (const note of this._notes)
-            note.destroy()
-
-        this._notes = []
-        this._window.clear()
-        this._playingNotes.clear()
-        this._renderer.remove(this._neck)
-
-        // Then setup the new track
         this._instrumentTrack = track
-        const instrument = this._instrumentTrack.noteTrack.instrument
-
-        for (const note of this._instrumentTrack.noteTrack.notes())
-            this._notes.push(this.engine.createComponent(PlaybackNote, instrument, note))
-
-        this._neck = NeckMesh.create(instrument)
-        this._renderer.add(this._neck)
-
-        this._window = new NoteWindow(this._notes, this._renderer)
-        this._updateWindow()
+        this._setVisualTrack(track)
+        this.visual.sync(this.time.ticks, this.time.seconds, true)
         this.changed()
+    }
+
+    private _setVisualTrack(track: InstrumentTrack) {
+        this.visual.setTrack({
+            instrument: track.noteTrack.instrument,
+            notes: [...track.noteTrack.notes()],
+            focusTrack: track.focusTrack,
+            tempoTrack: this.level.tempoTrack,
+        })
     }
 
     private *_play() {
@@ -247,27 +182,12 @@ export class Playback extends Component {
 
         deltaTime = deltaTime * this._speed
 
-        const beforeTicks = this.level.tempoTrack.ticksFromSeconds(this.time.seconds)
         const seconds = this.time.seconds + deltaTime
         const ticks = this.level.tempoTrack.ticksFromSeconds(seconds)
         this.time.set(seconds, ticks, this.level.tempoTrack.getTempoAt(ticks))
 
         this._metronome.update(ticks, this._speed)
-
-        this._updateWindow()
-        for (const { note } of this._window.iter()) {
-            if (note.note.time >= beforeTicks && note.note.time < ticks) {
-                this._playingNotes.play(note.note)
-            }
-        }
-
-        const focusEvent = this._instrumentTrack.focusTrack.getEventBetweenTicks(beforeTicks, ticks)
-
-        if (focusEvent)
-            this._rig.transition(focusEvent.focus, focusEvent.time, focusEvent.duration)
-
-        this._rig.update(ticks)
-        this._playingNotes.update(ticks)
+        this.visual.sync(ticks, seconds)
     }
 
     pause() {
@@ -286,15 +206,11 @@ export class Playback extends Component {
         this.time.set(0, 0, this.level.tempoTrack.getTempoAt(0))
         this._audioPlayer.pause()
         this._audioPlayer.seek(0)
-        this._rig.focus(this._instrumentTrack.focusTrack.initialFocus)
-        this._rig.update(0)
+        this.visual.sync(0, 0, true)
 
-        this._playingNotes.update(0)
         this._metronome.reset()
         if (this.playing)
             this._metronome.sync(0, this._speed)
-
-        this._updateWindow()
 
         if (this.playing)
             this._audioPlayer.schedulePlay(Duration.fromSeconds(this.level.audioTrack.time))
@@ -303,15 +219,9 @@ export class Playback extends Component {
     }
 
     destroy() {
-        for (const note of this._notes)
-            note.destroy()
-
-        this._window.clear()
         this._audioPlayer.clear()
-        this._rig.destroy()
         this._metronome.destroy()
-        this._renderer.remove(this._playingNotes)
-        this._renderer.remove(this._neck)
+        this.visual.destroy()
     }
 
 }

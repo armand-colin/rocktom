@@ -60,6 +60,7 @@ export const icons = [
     "content_copy",
     "error",
     "account_circle",
+    "settings",
     "power",
     "power_off",
     "swap_horiz",

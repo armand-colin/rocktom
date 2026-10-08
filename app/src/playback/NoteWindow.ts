@@ -1,6 +1,6 @@
 import { LinkedList } from "@niloc/utils"
-import type { PlaybackNote } from "../components/PlaybackNote"
 import type { Renderer } from "../resources/Renderer"
+import type { PlaybackNote } from "./PlaybackNote"
 
 export class NoteWindow {
 

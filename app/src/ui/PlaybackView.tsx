@@ -1,7 +1,6 @@
 import { EngineContext, useComponent } from "@niloc/ecs-react";
 import { useContext } from "react";
 import type { Playback } from "../components/Playback";
-import { Renderer } from "../resources/Renderer";
 import { ElementRenderer } from "./ElementRenderer";
 import "./PlaybackView.scss";
 import { Icon } from "./icon/Icon";
@@ -24,9 +23,6 @@ import { usePopupManager } from "../hooks/usePopupManager";
 import { SelectInstrumentTrackPopup } from "./selectInstrumentTrackPopup/SelectInstrumentTrackPopup";
 
 export function PlaybackView(props: { playback: Playback }) {
-    const { engine } = useContext(EngineContext)
-    const renderer = engine.getResource(Renderer)
-
     const { playing } = useComponent(props.playback)
 
     useShortcut(Shortcuts.Play, onPlay)
@@ -45,7 +41,7 @@ export function PlaybackView(props: { playback: Playback }) {
 
     return <div className="PlaybackView">
         <div className="canvas">
-            <ElementRenderer element={renderer.element} />
+            <ElementRenderer element={props.playback.visual.element} />
         </div>
 
         <PlaybackControls

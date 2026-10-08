@@ -13,6 +13,7 @@ import { Instance } from './Instance.ts'
 import { AuthManager } from './resources/AuthManager.ts'
 import { AuthInterceptor } from './resources/AuthInterceptor.ts'
 import { ToastManager } from './resources/ToastManager.ts'
+import { AppUpdateManager } from './resources/AppUpdateManager.ts'
 import { Toast } from './ui/toast/Toast.tsx'
 
 // Eager init so iOS / PWA unlock listeners are armed before the first tap.
@@ -38,18 +39,23 @@ Promise.all([
         </EngineContext.Provider>
     )
 
+    const appUpdateManager = Instance.engine.getResource(AppUpdateManager)
+
     const updateSW = registerSW({
         onNeedRefresh() {
+            appUpdateManager.setNeedsRefresh(true)
             Instance.engine.getResource(ToastManager).add((close) => <Toast.Simple
                 message="A new version is available !"
                 action={{
                     label: "Update",
                     onClick: () => {
                         close()
-                        void updateSW(true)
+                        appUpdateManager.applyUpdate()
                     },
                 }}
             />, 60_000)
         },
     })
+
+    appUpdateManager.register(updateSW)
 })

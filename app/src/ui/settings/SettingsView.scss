@@ -1,0 +1,26 @@
+.SettingsView {
+    display: grid;
+    gap: var(--spacing-m);
+    min-width: 280px;
+
+    >.update {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-m);
+
+        >p {
+            margin: 0;
+        }
+    }
+
+    >.upToDate {
+        margin: 0;
+        color: var(--text-secondary, #888);
+        font-size: 0.875rem;
+    }
+}
+
+.SettingsPopup {
+    min-width: 280px;
+}

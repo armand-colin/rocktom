@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "../utils/cn";
 import "./Page.scss";
 import { ProfileButton } from "../profile/ProfileButton";
+import { SettingsButton } from "../settings/SettingsButton";
 
 export function Page(props: { children?: ReactNode, className?: string }) {
     return <div className={cn("Page", props.className)}>
@@ -20,6 +21,7 @@ export namespace Page {
                 <h1>{props.title}</h1>
                 <div>
                     {props.beforeActions}
+                    <SettingsButton />
                     <ProfileButton />
                 </div>
             </div>
