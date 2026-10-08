@@ -1,5 +1,7 @@
+import { useResource } from "@niloc/ecs-react"
 import type { CSSProperties, MouseEvent, ReactNode } from "react"
 import './Button.scss'
+import { Haptics } from "../../resources/Haptics"
 import { UiSize } from "../UiSize"
 import { Enum } from "../../utils/Enum"
 import { DataProps } from "../data/DataProp"
@@ -38,8 +40,14 @@ type Props = {
 }
 
 export function Button(props: Props) {
+    const haptics = useResource(Haptics)
     const Primitive = props.primitive === 'label' ? 'label' : 'button'
     const shape = props.shape ?? 'rectangle';
+
+    function onClick(e: MouseEvent<HTMLElement>) {
+        haptics.click()
+        props.onClick?.(e)
+    }
 
     return <Primitive
         className={
@@ -50,7 +58,7 @@ export function Button(props: Props) {
         data-theme={props.theme ?? ButtonTheme.Default}
         data-shape={shape}
         data-variant={props.variant ?? "default"}
-        onClick={props.onClick}
+        onClick={onClick}
         disabled={props.disabled}
         style={props.style}
         htmlFor={props.htmlFor}
