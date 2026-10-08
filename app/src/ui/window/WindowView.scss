@@ -25,7 +25,7 @@
 
     animation: popIn 0.1s var(--curve-smooth);
 
-    &--fullscreen {
+    &[data-fullscreen="true"] {
         border-radius: 0;
         box-shadow: none;
         z-index: 30;

@@ -92,13 +92,14 @@ export function WindowView(props: Props) {
 	}, [])
 
 	return <div
-		className={cn("WindowView", props.fullscreen && "WindowView--fullscreen")}
+		className={cn("WindowView")}
 		style={{
 			"--width": props.size.x,
 			"--height": props.size.y,
 			"--x": props.position.x,
 			"--y": props.position.y,
 		} as CSSProperties}
+		data-fullscreen={!!props.fullscreen}
 	>
 		<div
 			className="head"
