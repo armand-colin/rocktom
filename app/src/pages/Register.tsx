@@ -13,6 +13,7 @@ import { IconPopup } from "../ui/iconPopup/IconPopup"
 import { UserQueries } from "../queries/user/UserQueries"
 import { Body } from '../resources/queryClient/Body'
 import { Query } from '../resources/queryClient/Query'
+import { Routes } from '../Routes'
 
 const RegisterFormSchema = new FormSchema({
     email: FormField.email(),
@@ -33,7 +34,7 @@ export function Register() {
         })
 
         if (result.ok) {
-            navigate('/login')
+            navigate(Routes.Login.compile({}))
             return
         }
 

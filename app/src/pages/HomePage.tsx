@@ -20,6 +20,7 @@ import { useQuery } from '../hooks/useQuery'
 import { Body } from '../resources/queryClient/Body'
 import { ToolList } from '../ui/tools/ToolList'
 import { LevelPopup } from '../ui/level/LevelPopup'
+import { Routes } from '../Routes'
 
 export function HomePage() {
   const { isLoading: isLevelsLoading, result: levels, refresh: refreshLevels } = useQuery(LevelQueries.getAll, { arguments: {} })
@@ -42,13 +43,13 @@ export function HomePage() {
 
   function onCreate() {
     Instance.engine.getResource(PopupManager).add(close => <CreateLevelPopup
-      onSuccess={level => navigate('/editor/level/' + level.id)}
+      onSuccess={level => onEdit(level)}
       close={close}
     />)
   }
 
   function onEdit(level: LevelEntity) {
-    navigate('/editor/level/' + level.id)
+    navigate(Routes.Editor.compile({ id: level.id }))
   }
 
   function onRemove(level: LevelEntity) {

@@ -22,20 +22,22 @@ async function bootstrap() {
     Instance.engine.getResource(SoundEngine)
 
     const preferences = Instance.engine.getResource(Preferences)
-    preferences.register(Instance.engine.getResource(GlobalPreferences))
-    preferences.register(Instance.engine.getResource(LiveInstrumentPreferences))
-    preferences.register(Instance.engine.getResource(MetronomeToolPreferences))
-    preferences.register(Instance.engine.getResource(PlaybackPreferences))
-    preferences.register(Instance.engine.getResource(EditorPreferences))
-    preferences.register(Instance.engine.getResource(Mixer))
-    preferences.initialize()
+
+    preferences.register([
+        GlobalPreferences,
+        LiveInstrumentPreferences,
+        MetronomeToolPreferences,
+        PlaybackPreferences,
+        EditorPreferences,
+        Mixer
+    ]).recover()
 
     const authManager = Instance.engine.getResource(AuthManager)
     const appUpdateManager = Instance.engine.getResource(AppUpdateManager)
 
     Instance.queryClient.addInterceptor(AuthInterceptor.create(authManager))
 
-    await authManager.restore()
+    await authManager.tryRestoreSession()
     await TextureAtlas.load(Instance.engine).ready
 
     appUpdateManager.initialize()

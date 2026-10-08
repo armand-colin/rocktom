@@ -1,6 +1,10 @@
 import { Engine, Resource } from "@niloc/ecs"
 import type { PreferencesScope } from "./PreferencesScope"
 
+interface PreferencesScopeConstructor {
+    new (engine: Engine): PreferencesScope
+}
+
 export class Preferences extends Resource {
 
     private _scopes: PreferencesScope[] = []
@@ -9,11 +13,16 @@ export class Preferences extends Resource {
         super(engine)
     }
 
-    register(scope: PreferencesScope) {
-        this._scopes.push(scope)
+    register(scopes: PreferencesScopeConstructor[]) {
+        for (const constructor of scopes) {
+            const instance = this.engine.getResource(constructor)
+            this._scopes.push(instance)
+        }
+
+        return this
     }
 
-    initialize() {
+    recover() {
         for (const scope of this._scopes)
             scope.recover()
     }

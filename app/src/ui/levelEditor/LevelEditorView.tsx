@@ -25,6 +25,7 @@ import { Slider } from "../slider/Slider";
 import { Body } from "../../resources/queryClient/Body";
 import { InstrumentTrackEditorView } from "./InstrumentTrackEditorView";
 import { TimeTransformPanner } from "../../utils/handlers/TimeTransformPanner";
+import { Routes } from "../../Routes";
 
 function createToolbarTabs(editor: LevelEditor): Toolbar.Tab[] {
     return [
@@ -108,7 +109,7 @@ export function LevelEditorView(props: {
     }
 
     function onBack() {
-        navigate("/app")
+        navigate(Routes.Home.compile({}))
     }
 
     return <div className="LevelEditorView">

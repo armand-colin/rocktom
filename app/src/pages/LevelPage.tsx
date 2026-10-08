@@ -14,6 +14,7 @@ import { Playback3DRenderer } from "../playback/Playback3DRenderer"
 import { PlaybackTabRenderer } from "../playback/PlaybackTabRenderer"
 import { PlaybackTabView } from "../ui/PlaybackTabView"
 import { GlobalPreferences } from "../resources/GlobalPreferences"
+import { Routes } from "../Routes"
 
 export function LevelPage() {
     const { id, index } = useParams()
@@ -22,7 +23,7 @@ export function LevelPage() {
     const visualMode = PlaybackVisualMode.parseSafe(searchParams.get("mode")) ?? globalPreferences.visualMode
 
     if (!id) {
-        return <Navigate to="/app" />
+        return <Navigate to={Routes.Home.compile({})} />
     }
 
     let parsedIndex: number | undefined = undefined

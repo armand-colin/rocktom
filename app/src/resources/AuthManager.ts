@@ -93,7 +93,7 @@ export class AuthManager extends Resource {
         }
     }
 
-    restore() {
+    tryRestoreSession() {
         return this._refresh()
     }
 

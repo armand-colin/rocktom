@@ -22,6 +22,7 @@ import { LiveInstrumentButton } from "./liveInstrument/LiveInstrumentButton";
 import { usePopupManager } from "../hooks/usePopupManager";
 import { SelectInstrumentTrackPopup } from "./selectInstrumentTrackPopup/SelectInstrumentTrackPopup";
 import type { Playback3DRenderer } from "../playback/Playback3DRenderer";
+import { Routes } from "../Routes";
 
 export function Playback3DView(props: { 
     playback: Playback,
@@ -87,7 +88,7 @@ function Playback3DControls(props: { playback: Playback }) {
             <div>
                 <button
                     className="BackButton"
-                    onClick={() => navigate("/app")}
+                    onClick={() => navigate(Routes.Home.compile({}))}
                 >
                     <Icon name="arrow_back" /> Back to level selection
                 </button>

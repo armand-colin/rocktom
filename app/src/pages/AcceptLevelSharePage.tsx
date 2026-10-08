@@ -15,12 +15,13 @@ import { Form } from "../ui/form/Form";
 import { Icon } from "../ui/icon/Icon";
 import { StatusCode } from "../resources/queryClient/StatusCode";
 import { useQuery } from "../hooks/useQuery";
+import { Routes } from "../Routes";
 
 export function AcceptLevelSharePage() {
     const { token } = useParams()
 
     if (!token) {
-        return <Navigate to="/app" replace />
+        return <Navigate to={Routes.Home.compile({})} replace />
     }
 
     return <div className="flex justify-center items-center h-svh w-svw">
@@ -67,7 +68,7 @@ function WithPreview(props: { token: string, preview: LevelEntity.SharePreview }
         const result = await LevelQueries.acceptShare.run({ path: { token: props.token } })
 
         if (result.ok) {
-            navigate('/app')
+            navigate(Routes.Home.compile({}))
         } else {
             toastManager.add(close => <Toast.Simple
                 message={"Failed to accept level share: " + (result.error.message)}
@@ -77,7 +78,7 @@ function WithPreview(props: { token: string, preview: LevelEntity.SharePreview }
     }
 
     function onDecline() {
-        navigate('/app')
+        navigate(Routes.Home.compile({}))
     }
 
     return <Form

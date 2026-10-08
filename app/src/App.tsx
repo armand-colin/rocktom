@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes as ReactRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { Register } from './pages/Register'
 import { Login } from './pages/Login'
@@ -13,6 +13,7 @@ import { EditorPage } from './pages/EditorPage'
 import "./App.css"
 import { AcceptLevelSharePage } from './pages/AcceptLevelSharePage'
 import { SettingsPage } from './pages/SettingsPage'
+import { Routes } from './Routes'
 
 function App() {
   const authManager = useResource(AuthManager)
@@ -20,25 +21,24 @@ function App() {
   const { isAuthenticated } = authManager
 
   return <>
-    <Routes>
+    <ReactRoutes>
       {
         isAuthenticated ?
           <>
-            <Route path="/app/level/:id/:index" element={<LevelPage />} />
-            <Route path="/app/level/:id" element={<LevelPage />} />
-            <Route path="/editor/level/:id" element={<EditorPage />} />
-            <Route path="/app/share/:token" element={<AcceptLevelSharePage />} />
-            <Route path="/app" element={<HomePage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="*" element={<Navigate to="/app" replace />} />
+            <Route path={Routes.Level.raw} element={<LevelPage />} />
+            <Route path={Routes.Editor.raw} element={<EditorPage />} />
+            <Route path={Routes.AcceptLevelShare.raw} element={<AcceptLevelSharePage />} />
+            <Route path={Routes.Home.raw} element={<HomePage />} />
+            <Route path={Routes.Settings.raw} element={<SettingsPage />} />
+            <Route path="*" element={<Navigate to={Routes.Home.raw} replace />} />
           </> :
           <>
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            <Route path={Routes.Register.raw} element={<Register />} />
+            <Route path={Routes.Login.raw} element={<Login />} />
+            <Route path="*" element={<Navigate to={Routes.Login.raw} replace />} />
           </>
       }
-    </Routes>
+    </ReactRoutes>
 
     <WindowManagerView />
     <PopupManagerView />

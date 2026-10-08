@@ -9,6 +9,7 @@ import { Card } from "../button/Card";
 import { Button, ButtonTheme } from "../button/Button";
 import { PlaybackVisualMode } from "../../playback/PlaybackVisualMode";
 import { FormInputField } from "../form/FormInputField";
+import { Routes } from "../../Routes";
 
 export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
     const navigate = useNavigate()
@@ -22,7 +23,10 @@ export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
     }, [props.level])
 
     function onPlayTrack(index: number) {
-        navigate('/app/level/' + props.level.id + '/' + index + '?mode=' + mode)
+        navigate(Routes.Level.compile(
+            { id: props.level.id, index: index.toString() }, 
+            { mode: mode.toString() }
+        ))
         props.close()
     }
 

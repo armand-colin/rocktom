@@ -7,13 +7,14 @@ import { LevelEditor } from "../components/editor/LevelEditor"
 import { Level } from "../sound/Level"
 import { Instance } from "../Instance"
 import { useQuery } from "../hooks/useQuery"
+import { Routes } from "../Routes"
 
 export function EditorPage() {
 
     const { id } = useParams()
 
     if (!id) {
-        return <Navigate to="/" />
+        return <Navigate to={Routes.Home.compile({})} />
     }
 
     const { result, isLoading } = useQuery(LevelQueries.getById, {
