@@ -3,6 +3,7 @@
     overflow: hidden;
     color: var(--color-grey-50);
     border-radius: var(--radius-sm);
+    position: relative;
 
     &[data-center="true"] {
         text-align: center;
@@ -44,6 +45,23 @@
         input {
             padding: var(--spacing-1) var(--spacing-2);
             font: var(--font-body-xs);
+        }
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        display: block;
+        inset: 0px;
+        border: 2px solid transparent;
+        border-radius: inherit;
+        pointer-events: none;
+        transition: border-color 0.1s var(--easing-smooth);
+    }
+
+    &:focus-within {
+        &::after {
+            border-color: var(--color-blue-400);
         }
     }
 }

@@ -14,6 +14,7 @@ import { UserQueries } from "../queries/user/UserQueries"
 import { Body } from '../resources/queryClient/Body'
 import { Query } from '../resources/queryClient/Query'
 import { Routes } from '../Routes'
+import { FormButtons } from '../ui/formButtons/FormButtons'
 
 const RegisterFormSchema = new FormSchema({
     email: FormField.email(),
@@ -65,7 +66,7 @@ export function Register() {
     return <div className="Login">
         <div>
             <h1>Register</h1>
-            <Form handler={formHandler} onSubmit={onSubmit}>
+            <Form handler={formHandler} onSubmit={onSubmit} className='grid gap-7'>
                 <FormInputField field={formHandler.fields.username} label="Username">
                     <StringInput
                         field={formHandler.fields.username}
@@ -79,15 +80,19 @@ export function Register() {
                         placeholder="Email"
                     />
                 </FormInputField>
+                
+                <a href="/login">Already an account ? Login</a>
 
-                <Button
-                    type="submit"
-                    theme="primary"
-                >
-                    Register
-                </Button>
+                <FormButtons>
+                    <Button
+                        type="submit"
+                        theme="primary"
 
-                <a href="/login">Login</a>
+                    >
+                        Register
+                    </Button>
+                </FormButtons>
+
             </Form>
         </div>
     </div>

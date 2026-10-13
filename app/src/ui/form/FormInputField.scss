@@ -14,8 +14,10 @@
         min-width: 0;
     }
 
-    >.error-slot {
+    >.FormInputFieldError {
         min-height: 0;
+        font: var(--font-body-sm);
+        color: var(--color-red-300);
     }
 
     &[data-disabled="true"] {

@@ -1,0 +1,29 @@
+.OTPInput {
+    display: flex;
+    gap: var(--spacing-2);
+
+    .OTPInputItem {
+        flex: 1;
+        background: var(--color-grey-500);
+        border-radius: var(--radius-sm);
+        position: relative;
+
+        &:focus-within {
+            &::after {
+                content: "";
+                position: absolute;
+                display: block;
+                inset: 0px;
+                border: 2px solid var(--color-blue-400);
+                border-radius: inherit;
+                pointer-events: none;
+            }
+        }
+
+        input {
+            width: 100%;
+            padding: var(--spacing-3);
+            text-align: center;
+        }
+    }
+}

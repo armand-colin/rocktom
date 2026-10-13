@@ -15,6 +15,8 @@ export class FormSchema<S extends FormSchema.Schema> {
         return new FormSchema({ })
     }
 
+    static readonly Default = this.default()
+
     constructor(schema: S) {
         this.schema = schema
     }

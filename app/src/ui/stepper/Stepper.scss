@@ -1,0 +1,83 @@
+.Stepper {
+    position: relative;
+    overflow: clip;
+
+    >div {
+        width: 100%;
+    }
+
+    @keyframes step-in-left {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes step-in-right {
+        from {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes step-out-left {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+    }
+
+    @keyframes step-out-right {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    >div[data-current="false"] {
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    &[data-transitionning="true"] {
+        &[data-direction="left"] {
+            >div[data-current="true"] {
+                animation: step-in-left 0.16s var(--easing-smooth) forwards;
+            }
+
+            >div[data-current="false"] {
+                animation: step-out-left 0.16s var(--easing-smooth) forwards;
+            }
+        }
+
+        &[data-direction="right"] {
+            >div[data-current="true"] {
+                animation: step-in-right 0.16s var(--easing-smooth) forwards;
+            }
+
+            >div[data-current="false"] {
+                animation: step-out-right 0.16s var(--easing-smooth) forwards;
+            }
+        }
+    }
+}

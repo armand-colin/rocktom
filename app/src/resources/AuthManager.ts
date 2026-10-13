@@ -53,7 +53,10 @@ export class AuthManager extends Resource {
 
     async login(username: string, code: string) {
         try {
-            const response = await SessionQueries.login.run({ body: Body.json({ username, code }) })
+            const [response, _] = await Promise.all([
+                SessionQueries.login.run({ body: Body.json({ username, code }) }),
+                new Promise(resolve => setTimeout(resolve, 1000)) // Add some minimal delay
+            ])
 
             if (!response.ok) {
                 return Result.error(response.error)

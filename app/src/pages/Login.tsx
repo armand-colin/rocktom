@@ -1,5 +1,5 @@
 import './Login.scss'
-import { useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { StringInput } from "../ui/input/StringInput"
 import { usePopupManager } from "../hooks/usePopupManager"
 import { IconPopup } from "../ui/iconPopup/IconPopup"
@@ -11,12 +11,13 @@ import { Form } from "../ui/form/Form"
 import { FormField } from "../form/FormField"
 import type { FormHandler } from "../form/FormHandler"
 import { FormInputField } from '../ui/form/FormInputField'
-import { UiSize } from '../ui/UiSize'
 import { FormButtons } from '../ui/formButtons/FormButtons'
 import { Query } from '../resources/queryClient/Query'
 import { SubmitButton } from '../ui/button/SubmitButton'
 import { Link } from 'react-router-dom'
 import { Routes } from '../Routes'
+import { Stepper } from '../ui/stepper/Stepper'
+import { OTPInput, type OTPInputRef } from '../ui/input/otp/OTPInput'
 
 enum LoginStep {
     Email,
@@ -30,21 +31,32 @@ export function Login() {
     return <div className="Login">
         <div>
             <h1>Login</h1>
-            {
-                step === LoginStep.Email ? <EmailForm
-                    onSuccess={(username: string) => {
-                        setUsername(username)
-                        setStep(LoginStep.Code)
-                    }}
-                /> :
-                    step === LoginStep.Code ? <CodeForm
-                        username={username!}
-                        onSuccess={() => {
-
-                        }}
-                        onBack={() => setStep(LoginStep.Email)}
-                    /> : null
-            }
+            <Stepper<LoginStep>
+                step={step}
+                className='w-full min-h-fit'
+                stepClassName='min-h-fit'
+                steps={[
+                    {
+                        step: LoginStep.Email,
+                        render: () => <EmailForm
+                            onSuccess={(username: string) => {
+                                setUsername(username)
+                                setStep(LoginStep.Code)
+                            }}
+                        />
+                    },
+                    {
+                        step: LoginStep.Code,
+                        render: () => <CodeForm
+                            username={username!}
+                            onSuccess={() => {
+                                setStep(LoginStep.Email)
+                            }}
+                            onBack={() => setStep(LoginStep.Email)}
+                        />
+                    }
+                ]}
+            />
         </div>
     </div>
 }
@@ -92,7 +104,11 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
         />)
     }
 
-    return <Form handler={formHandler} onSubmit={onSubmit}>
+    return <Form
+        handler={formHandler}
+        onSubmit={onSubmit}
+        className='grid gap-7'
+    >
         <FormInputField field={formHandler.fields.username} label="Username or email">
             <StringInput
                 field={formHandler.fields.username}
@@ -100,14 +116,14 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
             />
         </FormInputField>
 
+        <a href='/register'>Don't have an account yet ? Register</a>
+
         <FormButtons>
             <SubmitButton
                 label="Submit"
                 className="w-full max-w-25"
             />
         </FormButtons>
-
-        <a href='/register'>Don't have an account yet ? Register</a>
     </Form>
 }
 
@@ -116,12 +132,13 @@ const CodeFormSchema = new FormSchema({
 })
 
 function CodeForm(props: { username: string, onSuccess: () => void, onBack?: () => void }) {
-    const popupManager = usePopupManager()
     const handler = useForm(CodeFormSchema)
+    const ref = useRef<HTMLFormElement>(null)
+    const [error, setError] = useState<string | null>(null)
+    const otpRef = useRef<OTPInputRef>(null)
 
     async function onSubmit(e: FormHandler.Result<typeof CodeFormSchema>) {
         const authManager = Instance.engine.getResource(AuthManager)
-
         const result = await authManager.login(props.username, e.json.code)
 
         if (result.ok) {
@@ -144,29 +161,37 @@ function CodeForm(props: { username: string, onSuccess: () => void, onBack?: () 
                     errorMessage = 'Failed to login'
                     break
             }
-
-            return
         }
 
-        popupManager.add(close => <IconPopup
-            title="Login failed"
-            icon="close"
-            text={errorMessage}
-            close={close}
-        />)
+        otpRef.current?.clear()
+        setError(errorMessage)
     }
 
-    return <Form handler={handler} onSubmit={onSubmit}>
+    const onComplete = useCallback(() => {
+        ref.current?.requestSubmit()
+    }, [])
+
+    return <Form
+        handler={handler}
+        onSubmit={onSubmit}
+        ref={ref}
+        onChange={() => setError(null)}
+        className='grid gap-7'
+    >
         <p>Enter the code sent to your email</p>
 
-        <StringInput
+        <FormInputField
             field={handler.fields.code}
-            name="code"
-            placeholder="XXXXXX"
-            size={UiSize.Large}
-            inputMode="decimal"
-            center
-        />
+            hideLabel
+            error={error}
+        >
+            <OTPInput
+                length={6}
+                field={handler.fields.code}
+                onComplete={onComplete}
+                ref={otpRef}
+            />
+        </FormInputField>
 
         <Link to={Routes.Login.compile({})} onClick={() => props.onBack?.()}>
             Go back to login page
