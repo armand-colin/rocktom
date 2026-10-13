@@ -2,6 +2,7 @@ import { Icon, type IconName } from "../icon/Icon"
 import { Button, ButtonTheme } from "../button/Button"
 import { UiSize } from "../UiSize"
 import "./Toast.scss"
+import type { ReactNode } from "react"
 
 export namespace Toast {
 
@@ -27,6 +28,14 @@ export namespace Toast {
             >
                 {props.action.label}
             </Button>}
+        </div>
+    }
+
+    export function Custom(props: {
+        children?: ReactNode
+    }) {
+        return <div className="ToastCustom">
+            {props.children}
         </div>
     }
 

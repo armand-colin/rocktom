@@ -1,15 +1,15 @@
 import { Resource } from "@niloc/ecs";
 import { ToastManager } from "./ToastManager";
-import { Toast } from "../ui/toast/Toast";
 import { registerSW } from "virtual:pwa-register";
+import { AppUpdateToast } from "../ui/toast/update/AppUpdateToast";
 
 type UpdateSW = (reloadPage?: boolean) => Promise<void>
 
 export class AppUpdateManager extends Resource {
 
-    private _firstCheck = true
     private _needsRefresh = false
     private _updateSW: UpdateSW | null = null
+    private _calledCheck = false
     private _checking = false
 
     private _url: string | null = null
@@ -21,21 +21,13 @@ export class AppUpdateManager extends Resource {
                 this._needsRefresh = true
                 this.changed()
 
-                if (!this._firstCheck) {
+                if (this._calledCheck) {
                     return;
                 }
 
-                this._firstCheck = false
-
-                this.engine.getResource(ToastManager).add((close) => <Toast.Simple
-                    message="A new version is available !"
-                    action={{
-                        label: "Update",
-                        onClick: () => {
-                            close()
-                            this.applyUpdate()
-                        },
-                    }}
+                this.engine.getResource(ToastManager).add((close) => <AppUpdateToast
+                    close={close}
+                    applyUpdate={() => this.applyUpdate()}
                 />, 60_000)
             },
             onRegisteredSW: (url, registration) => {
@@ -62,6 +54,7 @@ export class AppUpdateManager extends Resource {
         if (!this._url || !this._registration)
             return
 
+        this._calledCheck = true
         this._checking = true
         this.changed()
 
