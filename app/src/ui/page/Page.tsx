@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, UIEvent } from "react";
 import { cn } from "../utils/cn";
 import "./Page.scss";
 import { ProfileButton } from "../profile/ProfileButton";
@@ -53,9 +53,12 @@ export namespace Page {
         </header>
     }
 
-    export function Body(props: { children?: ReactNode, containerClassName?: string }) {
+    export function Body(props: { 
+        children?: ReactNode, containerClassName?: string, 
+        onScroll?: (event: UIEvent<HTMLDivElement>) => void 
+    }) {
         return <main className="PageContent">
-            <div className={props.containerClassName}>
+            <div className={props.containerClassName} onScroll={props.onScroll}>
                 {props.children}
             </div>
         </main>

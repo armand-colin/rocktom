@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type CSSProperties, type PointerEvent } from "react"
+import { useEffect, useMemo, useRef, type CSSProperties, type PointerEvent, type UIEvent } from "react"
 import type { Playback } from "../components/Playback"
 import type { ChordEvent, PlaybackTabRenderer } from "../playback/PlaybackTabRenderer"
 import { Button } from "./button/Button"
@@ -29,6 +29,7 @@ type Bar = {
 }
 
 const TAP_MOVE_THRESHOLD_PX = 10
+const SCROLL_DELAY_MS = 4000
 
 export function PlaybackTabView(props: {
     playback: Playback,
@@ -36,6 +37,7 @@ export function PlaybackTabView(props: {
 }) {
     useShortcut(Shortcuts.Play, onPlayPause)
     useShortcut(Shortcuts.Reset, onReset)
+    const lastScrolled = useRef<number>(0)
 
     const preferences = useResource(PlaybackPreferences)
 
@@ -106,21 +108,31 @@ export function PlaybackTabView(props: {
         props.playback.seekTicks(ticks)
     }
 
-    function onScroll(element: HTMLElement) {
-        if (!preferences.autoScroll) {
+    function onChordScroll(element: HTMLElement) {
+        if (
+            !preferences.autoScroll ||
+            Date.now() - lastScrolled.current < SCROLL_DELAY_MS
+        ) {
             return;
         }
 
         element.scrollIntoView({ behavior: "smooth" })
     }
 
+    function onScroll(_event: UIEvent<HTMLDivElement>) {
+        lastScrolled.current = Date.now()
+    }
+
+
     return <Page className="PlaybackTabView">
         <Page.ConnectedTitle
             title={props.playback.level.name}
         />
-
-        <Page.Body containerClassName="PlaybackTabViewBody">
-            <div className="flex gap-2 w-full gap-3">
+        <Page.Body
+            containerClassName="PlaybackTabViewBody"
+            onScroll={onScroll}
+        >
+            <div className="flex w-full gap-3">
                 <Button
                     theme="primary"
                     onClick={onPlayPause}
@@ -162,7 +174,7 @@ export function PlaybackTabView(props: {
                         bar={bar}
                         time={props.playback.time}
                         onSeek={onSeek}
-                        onScroll={onScroll}
+                        onScroll={onChordScroll}
                     />)
                 }
             </div>
