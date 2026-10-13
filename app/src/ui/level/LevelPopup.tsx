@@ -25,7 +25,7 @@ export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
     function onPlayTrack(index: number) {
         props.close()
         navigate(Routes.Level.compile(
-            { id: props.level.id, index: index.toString() }, 
+            { id: props.level.id, index: index.toString() },
             { mode: mode.toString() }
         ))
     }
@@ -57,7 +57,9 @@ export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
                     <FormInputField label="Select track to play" contentClassName="flex flex-col gap-2">
                         {
                             level.instrumentTracks.map((track, index) => {
-                                return <Card containerClassName="p-4"
+                                return <Card
+                                    containerClassName="p-4"
+                                    elevation={2}
                                     key={track.id}
                                     onClick={() => onPlayTrack(index)}
                                 >
