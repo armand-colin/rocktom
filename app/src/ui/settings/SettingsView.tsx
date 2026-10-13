@@ -9,11 +9,13 @@ import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
 import { MixerView } from "../mixerView/MixerView";
 import "./SettingsView.scss";
 import { useEffect } from "react";
+import { AuthManager } from "../../resources/AuthManager";
 
 export function SettingsView() {
     const appUpdateManager = useResource(AppUpdateManager)
     const globalPreferences = useResource(GlobalPreferences)
     const liveInstrumentPreferences = useResource(LiveInstrumentPreferences)
+    const authManager = useResource(AuthManager)
 
     useEffect(() => {
         void appUpdateManager.check()
@@ -78,6 +80,11 @@ export function SettingsView() {
         <section className="mix">
             <h2>Mix</h2>
             <MixerView />
+        </section>
+
+        <section>
+            <h2>Account</h2>
+            <Button onClick={() => authManager.logout()}>Logout</Button>
         </section>
     </div>
 }
