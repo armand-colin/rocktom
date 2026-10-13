@@ -23,11 +23,11 @@ export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
     }, [props.level])
 
     function onPlayTrack(index: number) {
+        props.close()
         navigate(Routes.Level.compile(
             { id: props.level.id, index: index.toString() }, 
             { mode: mode.toString() }
         ))
-        props.close()
     }
 
     return <Popup.BaseContainer size="md">
