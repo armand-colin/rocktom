@@ -28,7 +28,7 @@ const DemoFormSchema = new FormSchema({
 
 function StoryContent() {
   const [age, setAge] = useState(28);
-  const [inputSize, setInputSize] = useState<UiSize>(UiSize.M);
+  const [inputSize, setInputSize] = useState<UiSize>(UiSize.Medium);
   const [lastSubmit, setLastSubmit] = useState<string>("No submit yet");
   const handler = useForm(DemoFormSchema);
   const { loading } = useComponent(handler);
@@ -48,8 +48,8 @@ function StoryContent() {
             onChange={(e) => setInputSize(e.target.value as UiSize)}
             style={{ width: "fit-content" }}
           >
-            <option value={UiSize.M}>{UiSize.M}</option>
-            <option value={UiSize.S}>{UiSize.S}</option>
+            <option value={UiSize.Medium}>{UiSize.Medium}</option>
+            <option value={UiSize.Small}>{UiSize.Small}</option>
           </select>
         </label>
         <FormInputField label="Title" field={handler.fields.title}>

@@ -13,12 +13,12 @@ const meta = {
     min: 30,
     max: 300,
     sensibility: 0.2,
-    size: UiSize.M,
+    size: UiSize.Medium,
   },
   argTypes: {
     size: {
       control: "radio",
-      options: [UiSize.S, UiSize.M],
+      options: [UiSize.Small, UiSize.Medium],
     },
   },
 } satisfies Meta<typeof NumberInput>;

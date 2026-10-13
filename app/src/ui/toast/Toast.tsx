@@ -22,7 +22,7 @@ export namespace Toast {
             </p>
             {props.action && <Button
                 type="button"
-                size={UiSize.S}
+                size={UiSize.Small}
                 theme={ButtonTheme.Primary}
                 onClick={props.action.onClick}
             >

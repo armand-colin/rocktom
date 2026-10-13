@@ -161,7 +161,7 @@ function FocusEventView(props: {
                 <FocusEditor
                     value={props.focus}
                     onChange={value => props.editor.setFocus(props.id, value)}
-                    size={UiSize.XS}
+                    size={UiSize.XSmall}
                 />
             </div>
         </div>

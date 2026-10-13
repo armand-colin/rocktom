@@ -130,7 +130,7 @@ function DocumentItem(props: {
         <span>
             {props.document.filename}
         </span>
-        <Button shape="square" size={UiSize.S}
+        <Button shape="square" size={UiSize.Small}
             onClick={e => {
                 e.stopPropagation()
                 props.onDelete()

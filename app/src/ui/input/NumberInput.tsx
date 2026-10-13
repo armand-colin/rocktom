@@ -74,7 +74,7 @@ export function NumberInput(props: Props) {
         setValue(props.value === null ? "" : props.value.toString())
     }, [props.value])
 
-    return <div className={`NumberInput ${props.className ?? ""}`} data-size={props.size ?? UiSize.M}>
+    return <div className={`NumberInput ${props.className ?? ""}`} data-size={props.size ?? UiSize.Medium}>
         <input
             type="number"
             name={props.name}

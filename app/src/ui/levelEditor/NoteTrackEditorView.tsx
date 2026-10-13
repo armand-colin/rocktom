@@ -78,7 +78,7 @@ export function NoteTrackEditorView(props: {
             >
                 <Dropdown
                     value={pattern?.id ?? null}
-                    size={UiSize.S}
+                    size={UiSize.Small}
                     onChange={value => {
                         if (value)
                             onSelectPattern(value?.value)
@@ -94,7 +94,7 @@ export function NoteTrackEditorView(props: {
                     shape="square"
                     onClick={onAddPattern}
                     theme={ButtonTheme.Primary}
-                    size={UiSize.S}
+                    size={UiSize.Small}
                 >
                     <Icon name="add" />
                 </Button>
@@ -271,7 +271,7 @@ function TimedPatternView(props: {
             <Button
                 variant="ghost"
                 onClick={onContextualClick}
-                size={UiSize.XS}
+                size={UiSize.XSmall}
                 shape="square"
             >
                 <Icon name="more_vert" />

@@ -43,7 +43,7 @@ export namespace Popup {
                 props.close ?
                     <Button
                         onClick={props.close}
-                        size={UiSize.S}
+                        size={UiSize.Small}
                         shape="square"
                         variant="ghost"
                     >

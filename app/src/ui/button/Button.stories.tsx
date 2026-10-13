@@ -14,7 +14,7 @@ const meta = {
   argTypes: {
     size: {
       control: "radio",
-      options: [UiSize.S, UiSize.M],
+      options: [UiSize.Small, UiSize.Medium],
     },
     theme: {
       control: "radio",

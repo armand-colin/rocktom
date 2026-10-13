@@ -100,7 +100,7 @@ function Playback3DControls(props: { playback: Playback }) {
                     <Button
                         shape="square"
                         onClick={onSwapTrack}
-                        size={UiSize.XS}
+                        size={UiSize.XSmall}
                         variant="ghost"
                     >
                         <Icon name="swap_horiz" />
@@ -162,7 +162,7 @@ function PlayButton(props: { playback: Playback }) {
 
     return (
         <Tooltip
-            size={UiSize.S}
+            size={UiSize.Small}
             content={
                 <>
                     {label}
@@ -175,7 +175,7 @@ function PlayButton(props: { playback: Playback }) {
                 onClick={onClick}
                 disabled={loading}
                 theme={ButtonTheme.Primary}
-                size={UiSize.M}
+                size={UiSize.Medium}
                 shape="square"
             >
                 <Icon name={playing ? "pause" : "play_arrow"} />
@@ -187,7 +187,7 @@ function PlayButton(props: { playback: Playback }) {
 function ResetButton(props: { playback: Playback }) {
     return (
         <Tooltip
-            size={UiSize.S}
+            size={UiSize.Small}
             content={
                 <>
                     Reset

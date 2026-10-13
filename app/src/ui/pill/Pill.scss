@@ -1,0 +1,48 @@
+.Pill {
+    --pill-background: unset;
+    --pill-color: unset;
+
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: var(--pill-background);
+    color: var(--pill-color);
+    white-space: nowrap;
+
+    &[data-theme="default"] {
+        --pill-background: var(--color-grey-300);
+        --pill-color: var(--color-grey-900);
+    }
+
+    &[data-theme="primary"] {
+        --pill-background: var(--color-blue-300);
+        --pill-color: var(--color-blue-900);
+    }
+
+    &[data-theme="warning"] {
+        --pill-background: var(--color-orange-300);
+        --pill-color: var(--color-orange-900);
+    }
+
+    &[data-size="lg"] {
+        padding: var(--spacing-2) var(--spacing-5);
+        font: var(--font-body-lg);
+    }
+
+    &[data-size="md"] {
+        padding: var(--spacing-1) var(--spacing-4);
+        font: var(--font-body-md);
+    }
+
+    &[data-size="sm"] {
+        padding: var(--spacing-05) var(--spacing-3);
+        font: var(--font-body-sm);
+    }
+
+    /* Same box as the instrument chips in LevelListItem. */
+    &[data-size="xs"] {
+        padding: 0 var(--spacing-2);
+        border-radius: 10px;
+        font: var(--font-body-xs);
+    }
+}

@@ -14,7 +14,7 @@ const meta = {
   args: {
     value: new Color("#ff1919"),
     onChange: () => {},
-    size: UiSize.M,
+    size: UiSize.Medium,
   },
   argTypes: {
     size: {

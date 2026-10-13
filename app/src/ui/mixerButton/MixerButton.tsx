@@ -15,7 +15,7 @@ export function MixerButton(props: {
             props.channel.setEnabled(!enabled)
         }}
         theme={enabled ? ButtonTheme.Primary : ButtonTheme.Default}
-        size={UiSize.S}
+        size={UiSize.Small}
     >
         <Icon name={enabled ? "volume_up" : "volume_off"} />
     </Button>

@@ -31,7 +31,7 @@ export function StringInput(props: Props) {
 
     return <div
         className={cn("StringInput", props.className)}
-        data-size={props.size ?? UiSize.M}
+        data-size={props.size ?? UiSize.Medium}
         data-center={!!props.center}
     >
         <input

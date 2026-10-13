@@ -51,7 +51,7 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                         value={track.initialTempo.bpm}
                         step={1}
                         onChange={onInitialChange}
-                        size={UiSize.S}
+                        size={UiSize.Small}
                     />
                 </FormInputField>
 
@@ -62,7 +62,7 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                         disabled={!lastEvent}
                         step={1}
                         onChange={onLastEventBpmChange}
-                        size={UiSize.S}
+                        size={UiSize.Small}
                     />
                 </FormInputField>
             </div>
@@ -135,7 +135,7 @@ function EventView(props: {
             onChange={time => props.onTimeChange(time)}
             value={props.time}
             step={0.01}
-            size={UiSize.XS}
+            size={UiSize.XSmall}
         />
         <div className="hint" draggable={false}>{props.bpm.toFixed(2)} BPM</div>
         <div className="marker" draggable={false}></div>

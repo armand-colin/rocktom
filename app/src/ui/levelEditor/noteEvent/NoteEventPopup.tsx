@@ -51,7 +51,7 @@ function PitchClassPicker(props: PitchClassPickerProps) {
     return <div className="PitchClassPicker">
         {
             props.allowNone && <Button
-                size={UiSize.XS}
+                size={UiSize.XSmall}
                 theme={props.noneSelected ? ButtonTheme.Primary : ButtonTheme.Default}
                 onClick={() => props.onNone?.()}
             >
@@ -62,7 +62,7 @@ function PitchClassPicker(props: PitchClassPickerProps) {
             PitchClass.values.map(pc => (
                 <Button
                     key={pc}
-                    size={UiSize.XS}
+                    size={UiSize.XSmall}
                     theme={props.value === pc && !props.noneSelected ? ButtonTheme.Primary : ButtonTheme.Default}
                     onClick={() => props.onChange(pc)}
                 >
@@ -185,7 +185,7 @@ export function NoteEventPopup(props: {
                                     return
                                 updateChord(new Chord(activeChord.root, ChordQuality.parse(option.value), activeChord.bass))
                             }}
-                            size={UiSize.S}
+                            size={UiSize.Small}
                         />
                     </FormInputField>
 

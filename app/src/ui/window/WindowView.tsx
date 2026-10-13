@@ -112,7 +112,7 @@ export function WindowView(props: Props) {
 					shape="square"
 					theme={ButtonTheme.Default}
 					variant={ButtonVariant.Ghost}
-					size={UiSize.XS}
+					size={UiSize.XSmall}
 					onMouseDown={e => e.stopPropagation()}
 				>
 					<Icon name={props.fullscreen ? "fullscreen_exit" : "fullscreen"} />
@@ -122,7 +122,7 @@ export function WindowView(props: Props) {
 					shape="square"
 					theme={ButtonTheme.Default}
 					variant={ButtonVariant.Ghost}
-					size={UiSize.XS}
+					size={UiSize.XSmall}
 					onMouseDown={e => e.stopPropagation()}
 				>
 					<Icon name="close" />

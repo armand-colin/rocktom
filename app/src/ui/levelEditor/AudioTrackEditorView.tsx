@@ -65,7 +65,7 @@ export function AudioTrackEditorView(props: {
                     playback ?
                         <div className="flex items-center gap-2">
                             <span className="whitespace-nowrap text-ellipsis overflow-hidden w-full block">{playback.filename}</span>
-                            <Button shape="square" size={UiSize.XS} onClick={onChoosePlayback} variant="ghost">
+                            <Button shape="square" size={UiSize.XSmall} onClick={onChoosePlayback} variant="ghost">
                                 <Icon name="swap_horiz" />
                             </Button>
                         </div> :

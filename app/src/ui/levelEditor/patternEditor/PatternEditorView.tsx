@@ -157,13 +157,13 @@ export function PatternEditorView(props: {
                     <StringInput
                         value={pattern.name}
                         onChange={name => props.editor.setName(name)}
-                        size={UiSize.S}
+                        size={UiSize.Small}
                     />
                 </FormInputField>
 
                 <FormInputField label="String">
                     <Dropdown
-                        size={UiSize.S}
+                        size={UiSize.Small}
                         value={string.index.toString()}
                         options={props.editor.pattern.instrument.strings.map(string => ({
                             label: string.name,
@@ -182,7 +182,7 @@ export function PatternEditorView(props: {
                 <FormInputField label="Magnetization">
                     <MagnetizationView
                         transform={props.editor.transform}
-                        size={UiSize.S}
+                        size={UiSize.Small}
                     />
                 </FormInputField>
             </div>

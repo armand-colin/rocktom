@@ -54,7 +54,7 @@ export function Button(props: Props) {
             "Button" +
             (props.className ? " " + props.className : "")
         }
-        data-size={props.size ?? UiSize.M}
+        data-size={props.size ?? UiSize.Medium}
         data-theme={props.theme ?? ButtonTheme.Default}
         data-shape={shape}
         data-variant={props.variant ?? "default"}

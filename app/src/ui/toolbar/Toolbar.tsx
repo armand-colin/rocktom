@@ -85,7 +85,7 @@ function ToolbarTab(props: {
         data-open={open}
     >
         <Button
-            size={UiSize.XS}
+            size={UiSize.XSmall}
             onClick={onClick}
         >
             {props.tab.label}
@@ -161,7 +161,7 @@ function ToolbarSimpleItem(props: {
 }) {
     return <Button
         className="ToolbarItem ToolbarSimpleItem"
-        size={UiSize.XS}
+        size={UiSize.XSmall}
         variant="ghost"
         onClick={e => {
             e.stopPropagation();
@@ -186,7 +186,7 @@ function ToolbarShortcutItem(props: {
     }
     return <Button
         className="ToolbarItem ToolbarShortcutItem"
-        size={UiSize.XS}
+        size={UiSize.XSmall}
         onClick={onClick}
         variant="ghost"
     >
@@ -225,7 +225,7 @@ function ToolbarMenuItem(props: {
     return <Button
         className="ToolbarItem ToolbarMenuItem"
         onClick={onToggle}
-        size={UiSize.XS}
+        size={UiSize.XSmall}
         variant="ghost"
     >
         {props.label}

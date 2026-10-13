@@ -13,7 +13,7 @@ const meta = {
     value: "My value",
     placeholder: "Type here",
     type: "text",
-    size: UiSize.M,
+    size: UiSize.Medium,
   },
   argTypes: {
     type: {
@@ -22,7 +22,7 @@ const meta = {
     },
     size: {
       control: "radio",
-      options: [UiSize.S, UiSize.M],
+      options: [UiSize.Small, UiSize.Medium],
     },
   },
 } satisfies Meta<typeof StringInput>;

@@ -53,7 +53,7 @@ export function ColorInput(props: Props) {
 
     return <div
         className="ColorInput"
-        data-size={props.size ?? UiSize.M}
+        data-size={props.size ?? UiSize.Medium}
         data-disabled={props.disabled ?? false}
     >
         <button

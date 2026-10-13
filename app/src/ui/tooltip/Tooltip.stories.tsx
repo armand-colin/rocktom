@@ -10,7 +10,7 @@ const meta = {
     component: Tooltip,
     args: {
         content: "Save",
-        size: UiSize.M,
+        size: UiSize.Medium,
         placement: "top",
         disabled: false,
         children: <Button>Hover me</Button>,
@@ -18,7 +18,7 @@ const meta = {
     argTypes: {
         size: {
             control: "radio",
-            options: [UiSize.S, UiSize.M],
+            options: [UiSize.Small, UiSize.Medium],
         },
         placement: {
             control: "radio",
@@ -51,6 +51,6 @@ export const WithShortcut: Story = {
                 <ShortcutView shortcut={new Shortcut({ keyCode: KeyCode.S, ctrl: true })} />
             </>
         ),
-        size: UiSize.S,
+        size: UiSize.Small,
     },
 }

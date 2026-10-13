@@ -90,7 +90,7 @@ function BaseTrigger<T extends Dropdown.Option>(props: Dropdown.TriggerProps<T>)
     return <Button
         className="BaseTrigger"
         onClick={() => props.onToggleOpen()}
-        size={props.size ?? UiSize.M}
+        size={props.size ?? UiSize.Medium}
         data-empty={props.value === null}
         title={props.value?.label ?? props.placeholder}
     >
@@ -104,7 +104,7 @@ function BaseItem<T extends Dropdown.Option>(props: Dropdown.ItemProps<T>) {
         className="BaseItem"
         theme={props.selected ? ButtonTheme.Primary : ButtonTheme.Default}
         onClick={() => props.onSelect()}
-        size={props.size ?? UiSize.M}
+        size={props.size ?? UiSize.Medium}
         title={props.value.label}
         variant="ghost"
     >
@@ -118,7 +118,7 @@ function BaseContent<T extends Dropdown.Option>(props: Dropdown.ContentProps<T>)
     return <div
         className="BaseContent"
         data-open={props.isOpen}
-        data-size={props.size ?? UiSize.M}
+        data-size={props.size ?? UiSize.Medium}
     >
         {props.options.map(option => (
             <Item

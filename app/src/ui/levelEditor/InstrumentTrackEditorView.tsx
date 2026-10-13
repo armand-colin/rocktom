@@ -83,12 +83,12 @@ export function InstrumentTrackEditorView(props: {
                         value={instrument}
                         onChange={onInstrumentChange}
                         className="flex-1"
-                        size={UiSize.S}
+                        size={UiSize.Small}
                     />
-                    <Button shape="square" onClick={() => props.trackEditor.setOpen(!open)} size={UiSize.S}>
+                    <Button shape="square" onClick={() => props.trackEditor.setOpen(!open)} size={UiSize.Small}>
                         <Icon name={open ? "visibility" : "visibility_off"} />
                     </Button>
-                    <Button shape="square" onClick={onTrackContextMenu} size={UiSize.S}>
+                    <Button shape="square" onClick={onTrackContextMenu} size={UiSize.Small}>
                         <Icon name="more_vert" />
                     </Button>
                 </div>

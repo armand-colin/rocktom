@@ -73,7 +73,7 @@ export function PlaybackProgressView(props: {
     >
         <div className="skip">
             <Tooltip
-                size={UiSize.S}
+                size={UiSize.Small}
                 content={
                     <>
                         Skip
@@ -83,7 +83,7 @@ export function PlaybackProgressView(props: {
             >
                 <Button
                     onClick={onSkip}
-                    size={UiSize.M}
+                    size={UiSize.Medium}
                     shape="square"
                     theme={ButtonTheme.Primary}
                 >

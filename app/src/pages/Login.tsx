@@ -160,7 +160,7 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             field={handler.fields.code}
             name="code"
             placeholder="XXXXXX"
-            size={UiSize.L}
+            size={UiSize.Large}
             inputMode="decimal"
             center
         />

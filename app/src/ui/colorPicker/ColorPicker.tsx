@@ -107,14 +107,14 @@ export function ColorPicker(props: Props) {
 
         <div className="mode">
             <Button
-                size={UiSize.S}
+                size={UiSize.Small}
                 theme={mode === "rgb" ? ButtonTheme.Primary : ButtonTheme.Default}
                 onClick={() => setMode("rgb")}
             >
                 RGB
             </Button>
             <Button
-                size={UiSize.S}
+                size={UiSize.Small}
                 theme={mode === "hsl" ? ButtonTheme.Primary : ButtonTheme.Default}
                 onClick={() => setMode("hsl")}
             >
@@ -129,7 +129,7 @@ export function ColorPicker(props: Props) {
                         R
                         <NumberInput
                             name="color-r"
-                            size={UiSize.S}
+                            size={UiSize.Small}
                             min={0}
                             max={255}
                             step={1}
@@ -141,7 +141,7 @@ export function ColorPicker(props: Props) {
                         G
                         <NumberInput
                             name="color-g"
-                            size={UiSize.S}
+                            size={UiSize.Small}
                             min={0}
                             max={255}
                             step={1}
@@ -153,7 +153,7 @@ export function ColorPicker(props: Props) {
                         B
                         <NumberInput
                             name="color-b"
-                            size={UiSize.S}
+                            size={UiSize.Small}
                             min={0}
                             max={255}
                             step={1}
@@ -167,7 +167,7 @@ export function ColorPicker(props: Props) {
                         H
                         <NumberInput
                             name="color-h"
-                            size={UiSize.S}
+                            size={UiSize.Small}
                             min={0}
                             max={360}
                             step={1}
@@ -179,7 +179,7 @@ export function ColorPicker(props: Props) {
                         S
                         <NumberInput
                             name="color-s"
-                            size={UiSize.S}
+                            size={UiSize.Small}
                             min={0}
                             max={100}
                             step={1}
@@ -191,7 +191,7 @@ export function ColorPicker(props: Props) {
                         L
                         <NumberInput
                             name="color-l"
-                            size={UiSize.S}
+                            size={UiSize.Small}
                             min={0}
                             max={100}
                             step={1}

@@ -18,7 +18,7 @@ export function Tooltip(props: Props) {
     return (
         <div
             className={cn("Tooltip", props.className)}
-            data-size={props.size ?? UiSize.M}
+            data-size={props.size ?? UiSize.Medium}
             data-placement={props.placement ?? "top"}
             data-disabled={props.disabled ?? false}
         >

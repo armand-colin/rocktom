@@ -44,7 +44,7 @@ export namespace Page {
                     }
                     {props.title}
                 </h1>
-                <div>
+                <div className="max-mobile:hidden!">
                     {props.beforeActions}
                     <SettingsButton />
                     <ProfileButton />

@@ -39,7 +39,7 @@ export function LevelListItem(props: Props) {
             onClick={() => props.onSelect(level)}
             fixtures={props.hideMenu ? null : <div className="LevelListItemFixtures">
                 <Button
-                    size={UiSize.S}
+                    size={UiSize.Small}
                     onClick={(e) => props.onMenuOpen(e, level)}
                     shape="square"
                     variant={ButtonVariant.Ghost}
