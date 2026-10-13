@@ -57,8 +57,8 @@ export namespace Page {
         children?: ReactNode, containerClassName?: string, 
         onScroll?: (event: UIEvent<HTMLDivElement>) => void 
     }) {
-        return <main className="PageContent">
-            <div className={props.containerClassName} onScroll={props.onScroll}>
+        return <main className="PageContent" onScroll={props.onScroll}>
+            <div className={props.containerClassName}>
                 {props.children}
             </div>
         </main>
