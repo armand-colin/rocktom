@@ -15,6 +15,8 @@ import { UiSize } from '../ui/UiSize'
 import { FormButtons } from '../ui/formButtons/FormButtons'
 import { Query } from '../resources/queryClient/Query'
 import { SubmitButton } from '../ui/button/SubmitButton'
+import { Link } from 'react-router-dom'
+import { Routes } from '../Routes'
 
 enum LoginStep {
     Email,
@@ -40,6 +42,7 @@ export function Login() {
                         onSuccess={() => {
 
                         }}
+                        onBack={() => setStep(LoginStep.Email)}
                     /> : null
             }
         </div>
@@ -112,7 +115,7 @@ const CodeFormSchema = new FormSchema({
     code: FormField.string().min(6).max(6)
 })
 
-function CodeForm(props: { username: string, onSuccess: () => void }) {
+function CodeForm(props: { username: string, onSuccess: () => void, onBack?: () => void }) {
     const popupManager = usePopupManager()
     const handler = useForm(CodeFormSchema)
 
@@ -164,6 +167,10 @@ function CodeForm(props: { username: string, onSuccess: () => void }) {
             inputMode="decimal"
             center
         />
+
+        <Link to={Routes.Login.compile({})} onClick={() => props.onBack?.()}>
+            Go back to login page
+        </Link>
 
         <FormButtons>
             <SubmitButton
