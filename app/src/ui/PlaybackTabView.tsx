@@ -135,7 +135,7 @@ export function PlaybackTabView(props: {
             onWheel={onUserScrollIntent}
             onTouchMove={onUserScrollIntent}
         >
-            <div className="flex w-full gap-3">
+            <div className="flex w-full gap-3 items-end">
                 <Button
                     theme="primary"
                     onClick={onPlayPause}
@@ -158,12 +158,12 @@ export function PlaybackTabView(props: {
             </div>
 
             <div className="flex flex-col gap-4 w-full max-w-80">
-                <FormInputField label="Audio Volume">
+                <FormInputField label="Audio">
                     <MixerChannelView
                         channel={mixer.audio}
                     />
                 </FormInputField>
-                <FormInputField label="Audio Volume">
+                <FormInputField label="Metronome">
                     <MixerChannelView
                         channel={mixer.metronome}
                     />

@@ -5,6 +5,8 @@
     justify-content: center;
     gap: var(--spacing-2);
     background: var(--color-grey-800);
+    border-top: 1px solid var(--color-grey-600);
+    box-shadow: var(--shadow-md);
 
     @media (min-width: 600px) {
         display: none;

@@ -59,7 +59,7 @@ export function LevelPopup(props: { level: LevelEntity, close: () => void }) {
                             level.instrumentTracks.map((track, index) => {
                                 return <Card
                                     containerClassName="p-4"
-                                    elevation={2}
+                                    elevation={3}
                                     key={track.id}
                                     onClick={() => onPlayTrack(index)}
                                 >
