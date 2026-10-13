@@ -16,6 +16,7 @@ import { Shortcuts } from "../resources/shortcut/Shortcuts"
 import { Page } from "./page/Page"
 import { Toggle } from "./toggle/Toggle"
 import { PlaybackPreferences } from "../resources/PlaybackPreferences"
+import { useWakeLock } from "../hooks/useWakeLock"
 
 type CustomChordEvent = ChordEvent & {
     connectsEnd: boolean,
@@ -43,6 +44,8 @@ export function PlaybackTabView(props: {
 
     const { playing } = useComponent(props.playback)
     const mixer = useResource(Mixer)
+    
+    useWakeLock(playing)
 
     props.playback.deltaTime
     const bars = useMemo(() => {
