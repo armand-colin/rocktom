@@ -120,6 +120,7 @@ export function OTPInput(props: {
                         onKeyDown={e => onKeyDown(index, e)}
                         placeholder="0"
                         inputMode="decimal"
+                        disabled={disabled}
                     />
                 </div>
             })
