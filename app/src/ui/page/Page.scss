@@ -69,6 +69,10 @@
     }
 }
 
+.PageConnectedTitle~.PageContent {
+    padding-top: 0;
+}
+
 .PageFooter {
     flex-shrink: 0;
 }
