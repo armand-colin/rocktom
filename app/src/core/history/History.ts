@@ -3,7 +3,7 @@ import type { Snapshotable } from "./Snapshotable";
 export class History<T extends Snapshotable> {
 
     private _snapshots: Snapshotable.Snapshot<T>[] = []
-    private _index = -1
+    // private _index = -1
 
 
     save(instance: T) {
@@ -19,7 +19,7 @@ export class History<T extends Snapshotable> {
         }
     }
 
-    redo(instance: T) {
+    redo(_instance: T) {
 
     }
 
