@@ -12,7 +12,7 @@ export const Default = () => {
                 <Card
                     key={elevation}
                     elevation={elevation}
-                    className="w-[160px]"
+                    className="w-40"
                     containerClassName="p-4"
                 >
                     Elevation {elevation}
