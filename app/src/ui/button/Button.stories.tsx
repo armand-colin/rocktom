@@ -36,7 +36,7 @@ export const Main: Story = {
       {
         UiSize.values.map(size => (<div
           key={size}
-          className="grid gap-4 grid-cols-[80px_100px_100px] items-start justify-items-start"
+          className="grid gap-4 grid-cols-[100px_120px_100px] items-start justify-items-start"
         >
           <Button
             {...args}

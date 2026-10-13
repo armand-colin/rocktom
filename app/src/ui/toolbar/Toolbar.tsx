@@ -162,6 +162,7 @@ function ToolbarSimpleItem(props: {
     return <Button
         className="ToolbarItem ToolbarSimpleItem"
         size={UiSize.XS}
+        variant="ghost"
         onClick={e => {
             e.stopPropagation();
             props.onClick();
@@ -187,6 +188,7 @@ function ToolbarShortcutItem(props: {
         className="ToolbarItem ToolbarShortcutItem"
         size={UiSize.XS}
         onClick={onClick}
+        variant="ghost"
     >
         {props.label}
         <ShortcutView
@@ -224,6 +226,7 @@ function ToolbarMenuItem(props: {
         className="ToolbarItem ToolbarMenuItem"
         onClick={onToggle}
         size={UiSize.XS}
+        variant="ghost"
     >
         {props.label}
 

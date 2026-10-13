@@ -92,7 +92,6 @@
         gap: var(--spacing-2);
         font: var(--font-body-sm);
 
-
         &[data-shape="rectangle"] {
             padding-left: var(--spacing-3);
             padding-right: var(--spacing-3);
@@ -103,7 +102,6 @@
         padding: calc(var(--spacing-1) - 1px);
         gap: var(--spacing-2);
         font: var(--font-body-xs);
-
 
         &[data-shape="rectangle"] {
             padding-left: var(--spacing-2);
