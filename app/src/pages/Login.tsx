@@ -104,7 +104,7 @@ function EmailForm(props: { username?: string, onSuccess: (username: string) => 
             />
         </FormButtons>
 
-        <a href='/register'>Don"t have an account yet ? Register</a>
+        <a href='/register'>Don't have an account yet ? Register</a>
     </Form>
 }
 
