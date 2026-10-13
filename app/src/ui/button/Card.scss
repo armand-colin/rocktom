@@ -5,7 +5,7 @@
     &[data-elevation="1"] {
         .CardContent {
             --background: var(--color-grey-600);
-            --border: var(--color-grey-500);
+            --border: var(--color-grey-400);
             --background-hover: var(--color-grey-500);
             --background-active: var(--color-grey-700);
         }
@@ -14,7 +14,7 @@
     &[data-elevation="2"] {
         .CardContent {
             --background: var(--color-grey-500);
-            --border: var(--color-grey-400);
+            --border: var(--color-grey-300);
             --background-hover: var(--color-grey-400);
             --background-active: var(--color-grey-600);
         }
@@ -23,7 +23,7 @@
     &[data-elevation="3"] {
         .CardContent {
             --background: var(--color-grey-400);
-            --border: var(--color-grey-300);
+            --border: var(--color-grey-200);
             --background-hover: var(--color-grey-500);
             --background-active: var(--color-grey-600);
         }
