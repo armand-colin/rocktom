@@ -1,30 +1,20 @@
-import { UserQueries } from "../../queries/user/UserQueries";
-import { Instance } from "../../Instance";
-import { AuthManager } from "../../resources/AuthManager";
-import { Button, ButtonTheme } from "../button/Button";
-import { Popup } from "../popup/Popup";
-import { Spinner } from "../spinner/Spinner";
-import "./ProfilePopup.scss";
-import { FormInputField } from "../form/FormInputField";
-import { useQuery } from "../../hooks/useQuery";
+import { useQuery } from "../../hooks/useQuery"
+import { Instance } from "../../Instance"
+import { UserQueries } from "../../queries/user/UserQueries"
+import { AuthManager } from "../../resources/AuthManager"
+import { Button, ButtonTheme } from "../button/Button"
+import { FormInputField } from "../form/FormInputField"
+import { Spinner } from "../spinner/Spinner"
 
-type Props = {
-    close: () => void,
-}
-
-export function ProfilePopup(props: Props) {
+export function ProfileView(props: { onLoggedOut?: () => void }) {
     const { result: user, isLoading } = useQuery(UserQueries.me, { arguments: {} })
 
     function onLogout() {
         Instance.engine.getResource(AuthManager).logout()
-        props.close()
+        props.onLoggedOut?.()
     }
 
-    return <Popup.BaseContainer className="ProfilePopup">
-        <Popup.BaseTitle
-            title="Profile"
-            close={props.close}
-        />
+    return <div className="ProfileView">
         {
             isLoading ?
                 <div className="flex justify-center items-center p-5">
@@ -39,7 +29,7 @@ export function ProfilePopup(props: Props) {
                             <span>{user.value.email}</span>
                         </FormInputField>
 
-                        <div className="flex justify-end">
+                        <div className="flex justify-start">
                             <Button theme={ButtonTheme.Danger} onClick={onLogout}>
                                 Log out
                             </Button>
@@ -47,5 +37,5 @@ export function ProfilePopup(props: Props) {
                     </div> :
                     <p>Unable to load profile.</p>
         }
-    </Popup.BaseContainer>
+    </div>
 }

@@ -1,7 +1,6 @@
 import type { ReactNode, TouchEvent, UIEvent, WheelEvent } from "react";
 import { cn } from "../utils/cn";
 import "./Page.scss";
-import { ProfileButton } from "../profile/ProfileButton";
 import { SettingsButton } from "../settings/SettingsButton";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Routes } from "../../Routes";
@@ -47,7 +46,6 @@ export namespace Page {
                 <div className="max-mobile:hidden!">
                     {props.beforeActions}
                     <SettingsButton />
-                    <ProfileButton />
                 </div>
             </div>
         </header>

@@ -9,13 +9,12 @@ import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
 import { MixerView } from "../mixerView/MixerView";
 import "./SettingsView.scss";
 import { useEffect, type ReactNode } from "react";
-import { AuthManager } from "../../resources/AuthManager";
+import { ProfileView } from "../profile/ProfileView";
 
 export function SettingsView() {
     const appUpdateManager = useResource(AppUpdateManager)
     const globalPreferences = useResource(GlobalPreferences)
     const liveInstrumentPreferences = useResource(LiveInstrumentPreferences)
-    const authManager = useResource(AuthManager)
 
     useEffect(() => {
         void appUpdateManager.check()
@@ -89,7 +88,9 @@ export function SettingsView() {
         </Section>
 
         <Section title="Account">
-            <Button theme="danger" onClick={() => authManager.logout()}>Logout</Button>
+            <ProfileView 
+
+            />
         </Section>
     </div>
 }
