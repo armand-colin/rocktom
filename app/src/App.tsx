@@ -13,6 +13,7 @@ import { EditorPage } from './pages/EditorPage'
 import "./App.css"
 import { AcceptLevelSharePage } from './pages/AcceptLevelSharePage'
 import { SettingsPage } from './pages/SettingsPage'
+import { LiveInstrumentPage } from './pages/LiveInstrumentPage'
 import { Routes } from './Routes'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path={Routes.AcceptLevelShare.raw} element={<AcceptLevelSharePage />} />
             <Route path={Routes.Home.raw} element={<HomePage />} />
             <Route path={Routes.Settings.raw} element={<SettingsPage />} />
+            <Route path={Routes.LiveInstrument.raw} element={<LiveInstrumentPage />} />
             <Route path="*" element={<Navigate to={Routes.Home.raw} replace />} />
           </> :
           <>

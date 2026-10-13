@@ -71,6 +71,7 @@ export const icons = [
     "remove",
     "add",
     "newsstand",
+    "mic",
 ] as const;
 
 export type IconName = typeof icons[number];

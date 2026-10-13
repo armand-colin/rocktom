@@ -49,6 +49,7 @@ export const Routes = {
 
     Home: Route.create("/app"),
     Settings: Route.create("/app/settings"),
+    LiveInstrument: Route.create("/app/live-instrument"),
     Editor: Route.create("/editor/level/:id"),
     Level: Route.create("/app/level/:id/:index"),
     AcceptLevelShare: Route.create("/app/share/:token"),

@@ -16,6 +16,12 @@ export function Navbar() {
             path={Routes.Home.compile({})}
         />
         <NavbarItem
+            label="Instrument"
+            currentPathname={pathname}
+            icon="mic"
+            path={Routes.LiveInstrument.compile({})}
+        />
+        <NavbarItem
             label="Settings"
             currentPathname={pathname}
             icon="settings"
