@@ -58,7 +58,11 @@ export class AppUpdateManager extends Resource {
         this._checking = true
         this.changed()
 
-        await fetch(this._url, { cache: "no-store" })
+        // Added min-time to avoid spamming the server
+        await Promise.all([
+            new Promise(resolve => setTimeout(resolve, 1000)),
+            fetch(this._url, { cache: "no-store" })
+        ])
 
         const registration = await this._registration.update()
 

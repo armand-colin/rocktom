@@ -9,9 +9,6 @@ import { InstrumentDropdown } from "../instrumentDropdown/InstrumentDropdown";
 import { MixerView } from "../mixerView/MixerView";
 import "./SettingsView.scss";
 import { useEffect } from "react";
-import { Spinner } from "../spinner/Spinner";
-
-const APP_VERSION = "0.0.0"
 
 export function SettingsView() {
     const appUpdateManager = useResource(AppUpdateManager)
@@ -23,40 +20,46 @@ export function SettingsView() {
     }, [appUpdateManager])
 
     return <div className="SettingsView">
-        <FormInputField label="Version">
-            <span>{APP_VERSION}</span>
+        <FormInputField label="App version">
+            <div className="flex flex-col gap-3 items-start">
+                {
+                    appUpdateManager.needsRefresh ?
+                        <Button
+                            onClick={() => appUpdateManager.applyUpdate()}
+                            theme="primary"
+                        >
+                            Update
+                        </Button> :
+                        <>
+                            <p>You're up to date</p>
+                            <Button
+                                disabled={appUpdateManager.checking}
+                                onClick={() => appUpdateManager.check()}
+                            >
+                                {
+                                    appUpdateManager.checking ?
+                                        "Checking..." :
+                                        "Check for updates"
+                                }
+                            </Button>
+                        </>
+                }
+            </div>
         </FormInputField>
 
-        {
-            appUpdateManager.needsRefresh ?
-                <div className="update">
-                    <p>A new version is available.</p>
-                    <Button
-                        theme={ButtonTheme.Primary}
-                        onClick={() => appUpdateManager.applyUpdate()}
-                    >
-                        Update
-                    </Button>
-                </div> :
-                appUpdateManager.checking ?
-                    <Spinner /> :
-                    <p className="upToDate">
-                        You're up to date
-                        <Button onClick={() => appUpdateManager.check()}>Check for updates</Button>
-                    </p>
-        }
-
-        <FormInputField label="Visualization">
+        <FormInputField label="Preferred Visualization">
             <div className="mode">
                 <Button
                     theme={globalPreferences.visualMode === PlaybackVisualMode.ThreeD ? ButtonTheme.Primary : ButtonTheme.Default}
                     onClick={() => { globalPreferences.visualMode = PlaybackVisualMode.ThreeD }}
+                    className="flex-1 max-w-30"
                 >
                     3D
                 </Button>
                 <Button
                     theme={globalPreferences.visualMode === PlaybackVisualMode.Tab ? ButtonTheme.Primary : ButtonTheme.Default}
                     onClick={() => { globalPreferences.visualMode = PlaybackVisualMode.Tab }}
+                    className="flex-1 max-w-30"
                 >
                     Tab
                 </Button>
