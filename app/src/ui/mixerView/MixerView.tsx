@@ -3,12 +3,15 @@ import "./MixerView.scss";
 import { EngineContext } from "@niloc/ecs-react";
 import { Mixer, MixerChannel } from "../../resources/Mixer";
 import { MixerChannelView } from "./MixerChannelView";
+import { cn } from "../utils/cn";
 
-export function MixerView() {
+export function MixerView(props: {
+	className?: string,
+}) {
 	const { engine } = useContext(EngineContext)
 	const mixer = engine.getResource(Mixer)
 
-	return <div className="MixerView">
+	return <div className={cn("MixerView", props.className)}>
 		<div className="channels">
 			<MixerChannelViewWithLabel channel={mixer.master} />
 			<MixerChannelViewWithLabel channel={mixer.audio} />
