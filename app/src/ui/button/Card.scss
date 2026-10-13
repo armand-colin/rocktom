@@ -2,6 +2,33 @@
     list-style: none;
     position: relative;
 
+    &[data-elevation="1"] {
+        .CardContent {
+            --background: var(--color-grey-600);
+            --border: var(--color-grey-500);
+            --background-hover: var(--color-grey-500);
+            --background-active: var(--color-grey-700);
+        }
+    }
+
+    &[data-elevation="2"] {
+        .CardContent {
+            --background: var(--color-grey-500);
+            --border: var(--color-grey-400);
+            --background-hover: var(--color-grey-400);
+            --background-active: var(--color-grey-600);
+        }
+    }
+
+    &[data-elevation="3"] {
+        .CardContent {
+            --background: var(--color-grey-400);
+            --border: var(--color-grey-300);
+            --background-hover: var(--color-grey-500);
+            --background-active: var(--color-grey-600);
+        }
+    }
+
     .CardContent {
         --background: unset;
         --border: unset;
@@ -10,6 +37,7 @@
 
         border-radius: var(--radius-sm);
         border: 1px solid var(--border);
+        background: var(--background);
 
         &[data-clickable="true"] {
             cursor: pointer;
@@ -21,27 +49,6 @@
             &:active {
                 background: var(--background-active);
             }
-        }
-
-        &[data-elevation="1"] {
-            --background: var(--color-grey-600);
-            --border: var(--color-grey-500);
-            --background-hover: var(--color-grey-500);
-            --background-active: var(--color-grey-700);
-        }
-
-        &[data-elevation="2"] {
-            --background: var(--color-grey-500);
-            --border: var(--color-grey-400);
-            --background-hover: var(--color-grey-400);
-            --background-active: var(--color-grey-600);
-        }
-
-        &[data-elevation="3"] {
-            --background: var(--color-grey-400);
-            --border: var(--color-grey-300);
-            --background-hover: var(--color-grey-500);
-            --background-active: var(--color-grey-600);
         }
     }
 }

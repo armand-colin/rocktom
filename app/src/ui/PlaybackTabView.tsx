@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type CSSProperties, type PointerEvent, type UIEvent } from "react"
+import { useEffect, useMemo, useRef, type CSSProperties, type PointerEvent } from "react"
 import type { Playback } from "../components/Playback"
 import type { ChordEvent, PlaybackTabRenderer } from "../playback/PlaybackTabRenderer"
 import { Button } from "./button/Button"
@@ -122,10 +122,9 @@ export function PlaybackTabView(props: {
         element.scrollIntoView({ behavior: "smooth" })
     }
 
-    function onScroll(_event: UIEvent<HTMLDivElement>) {
+    function onUserScrollIntent() {
         lastScrolled.current = Date.now()
     }
-
 
     return <Page className="PlaybackTabView">
         <Page.ConnectedTitle
@@ -133,7 +132,8 @@ export function PlaybackTabView(props: {
         />
         <Page.Body
             containerClassName="PlaybackTabViewBody"
-            onScroll={onScroll}
+            onWheel={onUserScrollIntent}
+            onTouchMove={onUserScrollIntent}
         >
             <div className="flex w-full gap-3">
                 <Button
