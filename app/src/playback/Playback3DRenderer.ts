@@ -31,6 +31,7 @@ export class Playback3DRenderer implements PlaybackRenderer {
         this._renderer = engine.getResource(Renderer)
         this._rig = engine.createComponent(CameraRig, this._renderer.camera)
         this._playingNotes = new PlayingNotes3D(this.level.tempoTrack)
+        this._renderer.add(this._playingNotes)
     }
 
     get canvas() {
