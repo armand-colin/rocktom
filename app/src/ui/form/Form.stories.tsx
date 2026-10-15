@@ -27,7 +27,7 @@ const DemoFormSchema = new FormSchema({
 });
 
 function StoryContent() {
-  const [age, setAge] = useState(28);
+  const [age, setAge] = useState<number | null>(28);
   const [inputSize, setInputSize] = useState<UiSize>(UiSize.Medium);
   const [lastSubmit, setLastSubmit] = useState<string>("No submit yet");
   const handler = useForm(DemoFormSchema);
@@ -76,6 +76,7 @@ function StoryContent() {
         </FormInputField>
         <FormInputField label="Age" field={handler.fields.age}>
           <NumberInput
+            field={handler.fields.age}
             name={handler.fields.age.name}
             value={age}
             min={0}
@@ -85,9 +86,35 @@ function StoryContent() {
             size={inputSize}
           />
         </FormInputField>
-        <Button disabled={loading} size={inputSize}>
+        <Button type="submit" disabled={loading} size={inputSize}>
           {loading ? "Submitting..." : "Submit form"}
         </Button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            type="button"
+            size={inputSize}
+            onClick={() => handler.clear()}
+          >
+            Clear
+          </Button>
+          <Button
+            type="button"
+            size={inputSize}
+            onClick={() => {
+              const result = handler.read()
+              setLastSubmit(result.ok ? JSON.stringify(result.value.json, null, 2) : "Invalid")
+            }}
+          >
+            Read
+          </Button>
+          <Button
+            type="button"
+            size={inputSize}
+            onClick={() => handler.requestSubmit()}
+          >
+            Request submit
+          </Button>
+        </div>
       </div>
 
       <pre style={{ marginTop: 16 }}>{lastSubmit}</pre>

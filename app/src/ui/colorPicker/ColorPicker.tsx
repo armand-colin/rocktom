@@ -134,7 +134,11 @@ export function ColorPicker(props: Props) {
                             max={255}
                             step={1}
                             value={rgb.r}
-                            onChange={r => onRgbChange(r, rgb.g, rgb.b)}
+                            onChange={r => {
+                                if (r === null)
+                                    return
+                                onRgbChange(r, rgb.g, rgb.b)
+                            }}
                         />
                     </label>
                     <label>
@@ -146,7 +150,11 @@ export function ColorPicker(props: Props) {
                             max={255}
                             step={1}
                             value={rgb.g}
-                            onChange={g => onRgbChange(rgb.r, g, rgb.b)}
+                            onChange={g => {
+                                if (g === null)
+                                    return
+                                onRgbChange(rgb.r, g, rgb.b)
+                            }}
                         />
                     </label>
                     <label>
@@ -158,7 +166,11 @@ export function ColorPicker(props: Props) {
                             max={255}
                             step={1}
                             value={rgb.b}
-                            onChange={b => onRgbChange(rgb.r, rgb.g, b)}
+                            onChange={b => {
+                                if (b === null)
+                                    return
+                                onRgbChange(rgb.r, rgb.g, b)
+                            }}
                         />
                     </label>
                 </div> :
@@ -172,7 +184,11 @@ export function ColorPicker(props: Props) {
                             max={360}
                             step={1}
                             value={hsl.h}
-                            onChange={h => onHueChange(h)}
+                            onChange={h => {
+                                if (h === null)
+                                    return
+                                onHueChange(h)
+                            }}
                         />
                     </label>
                     <label>
@@ -184,7 +200,11 @@ export function ColorPicker(props: Props) {
                             max={100}
                             step={1}
                             value={hsl.s}
-                            onChange={s => onSaturationLightnessChange(s, hsl.l)}
+                            onChange={s => {
+                                if (s === null)
+                                    return
+                                onSaturationLightnessChange(s, hsl.l)
+                            }}
                         />
                     </label>
                     <label>
@@ -196,7 +216,11 @@ export function ColorPicker(props: Props) {
                             max={100}
                             step={1}
                             value={hsl.l}
-                            onChange={l => onSaturationLightnessChange(hsl.s, l)}
+                            onChange={l => {
+                                if (l === null)
+                                    return
+                                onSaturationLightnessChange(hsl.s, l)
+                            }}
                         />
                     </label>
                 </div>

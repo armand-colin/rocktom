@@ -55,7 +55,12 @@ export function AudioTrackEditorView(props: {
                 <NumberInput
                     name="time"
                     value={track.time}
-                    onChange={time => props.editor.setTime(time)}
+                    onChange={time => {
+                        if (time === null)
+                            return
+
+                        props.editor.setTime(time)
+                    }}
                     step={0.01}
                 />
             </FormInputField>

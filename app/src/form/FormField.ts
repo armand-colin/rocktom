@@ -171,11 +171,36 @@ export class FormField<F extends FormDataEntryValue, T> extends Component {
     readonly name: string
 
     private readonly _descriptor: FormFieldDescriptor<F, T>
+    private _control: FormField.Control | null = null
 
     constructor(engine: Engine, name: string, descriptor: FormFieldDescriptor<FormDataEntryValue, T>) {
         super(engine)
         this.name = name
         this._descriptor = descriptor
+    }
+
+    attach(control: FormField.Control): () => void {
+        this._control = control
+        return () => {
+            if (this._control === control)
+                this._control = null
+        }
+    }
+
+    clear() {
+        this._control?.clear?.()
+    }
+
+    focus() {
+        this._control?.focus?.()
+    }
+
+    read(fallback: FormDataEntryValue | null): Result<T, ParseError> {
+        const value = this._control?.read
+            ? this._control.read()
+            : fallback
+
+        return this.parse(value)
     }
 
     parse(value: FormDataEntryValue | null): Result<T, ParseError> {
@@ -205,6 +230,12 @@ export namespace FormField {
     export namespace Descriptor {
         export type FormDataEntryValue<T> = T extends FormFieldDescriptor<infer F, infer _T> ? F : never
         export type Value<T> = T extends FormFieldDescriptor<infer _F, infer T> ? T : never
+    }
+
+    export type Control = {
+        clear?(): void
+        read?(): string | File | null
+        focus?(): void
     }
 
     export type Value<T> = T extends FormField<infer _F, infer T> ? T : never

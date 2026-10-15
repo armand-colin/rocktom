@@ -5,6 +5,7 @@ import "./OTPInput.scss"
 import { OS } from "../../../utils/OS";
 import { RefUtils } from "../../../utils/RefUtils";
 import { FormContext } from "../../form/FormContext";
+import { useFormControl } from "../../../hooks/useFormControl";
 
 export type OTPInputRef = {
     clear(): void
@@ -84,13 +85,24 @@ export function OTPInput(props: {
             setValue(newValue)
     }
 
+    function clear() {
+        if (props.onChange)
+            props.onChange("")
+        else
+            setValue("")
+    }
+
     RefUtils.forward(props.ref, {
-        clear: () => {
-            if (props.onChange)
-                props.onChange("")
-            else
-                setValue("")
-        }
+        clear,
+    })
+
+    useFormControl(props.field, {
+        clear,
+        read: () => value,
+        focus: () => {
+            const index = Math.min(value.length, props.length - 1)
+            inputRefs.current[index]?.focus()
+        },
     })
 
     const disabled = loading

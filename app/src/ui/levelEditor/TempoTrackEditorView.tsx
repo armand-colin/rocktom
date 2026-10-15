@@ -18,11 +18,17 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
     const { engine } = useContext(EngineContext)
     const mixer = engine.getResource(Mixer)
     
-    function onInitialChange(bpm: number) {
+    function onInitialChange(bpm: number | null) {
+        if (bpm === null)
+            return
+
         props.editor.setInitial(bpm)
     }
 
-    function onLastEventBpmChange(bpm: number) {
+    function onLastEventBpmChange(bpm: number | null) {
+        if (bpm === null)
+            return
+
         props.editor.setLastEventBpm(bpm)
     }
 
@@ -86,6 +92,9 @@ export function TempoTrackEditorView(props: { transform: TimeTransform, editor: 
                     nextEvent={track.events[i + 1] ?? null}
                     previousEvent={track.events[i - 1] ?? null}
                     onTimeChange={time => {
+                        if (time === null)
+                            return
+
                         props.editor.setEventTime(event.id, time)
                     }}
                     onRemove={() => props.editor.removeEvent(event.id)}
@@ -102,7 +111,7 @@ function EventView(props: {
     bpm: number,
     previousEvent: TempoEvent | null,
     nextEvent: TempoEvent | null,
-    onTimeChange: (time: number) => void,
+    onTimeChange: (time: number | null) => void,
     onRemove: () => void
 }) {
     const handler = useRef<Handler | null>(null)

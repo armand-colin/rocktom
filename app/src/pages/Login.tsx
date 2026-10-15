@@ -1,5 +1,5 @@
 import './Login.scss'
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { StringInput } from "../ui/input/StringInput"
 import { usePopupManager } from "../hooks/usePopupManager"
 import { IconPopup } from "../ui/iconPopup/IconPopup"
@@ -17,7 +17,7 @@ import { SubmitButton } from '../ui/button/SubmitButton'
 import { Link } from 'react-router-dom'
 import { Routes } from '../Routes'
 import { Stepper } from '../ui/stepper/Stepper'
-import { OTPInput, type OTPInputRef } from '../ui/input/otp/OTPInput'
+import { OTPInput } from '../ui/input/otp/OTPInput'
 
 enum LoginStep {
     Email,
@@ -133,9 +133,7 @@ const CodeFormSchema = new FormSchema({
 
 function CodeForm(props: { username: string, onSuccess: () => void, onBack?: () => void }) {
     const handler = useForm(CodeFormSchema)
-    const ref = useRef<HTMLFormElement>(null)
     const [error, setError] = useState<string | null>(null)
-    const otpRef = useRef<OTPInputRef>(null)
 
     async function onSubmit(e: FormHandler.Result<typeof CodeFormSchema>) {
         const authManager = Instance.engine.getResource(AuthManager)
@@ -163,18 +161,17 @@ function CodeForm(props: { username: string, onSuccess: () => void, onBack?: () 
             }
         }
 
-        otpRef.current?.clear()
+        handler.fields.code.clear()
         setError(errorMessage)
     }
 
     const onComplete = useCallback(() => {
-        ref.current?.requestSubmit()
-    }, [])
+        handler.requestSubmit()
+    }, [handler])
 
     return <Form
         handler={handler}
         onSubmit={onSubmit}
-        ref={ref}
         onChange={() => setError(null)}
         className='grid gap-7'
     >
@@ -189,7 +186,6 @@ function CodeForm(props: { username: string, onSuccess: () => void, onBack?: () 
                 length={6}
                 field={handler.fields.code}
                 onComplete={onComplete}
-                ref={otpRef}
             />
         </FormInputField>
 

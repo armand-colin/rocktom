@@ -58,7 +58,12 @@ export const Main = () => {
                     name="duration"
                     value={duration}
                     min={0}
-                    onChange={setDuration}
+                    onChange={value => {
+                        if (value === null)
+                            return
+
+                        setDuration(value)
+                    }}
                 />
             </div>
         </div>

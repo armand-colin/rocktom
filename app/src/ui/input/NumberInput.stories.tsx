@@ -31,8 +31,8 @@ export const Main: Story = {
     onChange: () => { },
   },
   render: (args) => {
-    const [bpmValue, setBpmValue] = useState(120);
-    const [gainValue, setGainValue] = useState(0.5);
+    const [bpmValue, setBpmValue] = useState<number | null>(120);
+    const [gainValue, setGainValue] = useState<number | null>(0.5);
 
     return (
       <div className="grid gap-4">

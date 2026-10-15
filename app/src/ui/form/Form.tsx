@@ -1,5 +1,5 @@
 import './Form.scss'
-import { useRef, type KeyboardEvent, type ReactNode, type Ref, type SubmitEvent } from "react"
+import { type KeyboardEvent, type ReactNode, type Ref, type SubmitEvent } from "react"
 import type { FormSchema } from "../../form/FormSchema"
 import type { FormHandler } from "../../form/FormHandler"
 import { useComponent } from "@niloc/ecs-react"
@@ -18,7 +18,6 @@ type Props<S extends FormSchema.Schema> = {
 
 export function Form<S extends FormSchema.Schema>(props: Props<S>) {
     const { loading } = useComponent(props.handler)
-    const ref = useRef<HTMLFormElement>(null)
 
     function onSubmit(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -31,7 +30,7 @@ export function Form<S extends FormSchema.Schema>(props: Props<S>) {
             OS.isCtrl(e.nativeEvent)
         ) {
             e.preventDefault()
-            ref.current?.requestSubmit()
+            props.handler.requestSubmit()
         }
     }
 
@@ -41,7 +40,7 @@ export function Form<S extends FormSchema.Schema>(props: Props<S>) {
         className={`Form ${props.className ?? ''}`}
         onKeyDown={onKeyDown}
         ref={element => {
-            ref.current = element
+            props.handler.attach(element)
             RefUtils.forward(props.ref, element)
         }}
         onChange={props.onChange}

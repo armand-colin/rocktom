@@ -52,7 +52,12 @@ export function SplitPopup(props: {
         <FormInputField label="Subdivisions count">
             <NumberInput
                 name="count"
-                onChange={setCount}
+                onChange={value => {
+                    if (value === null)
+                        return
+
+                    setCount(value)
+                }}
                 value={count}
                 min={1}
                 step={1}
@@ -62,7 +67,12 @@ export function SplitPopup(props: {
         <FormInputField label="Duration ratio">
             <NumberInput
                 name="durationRatio"
-                onChange={setDurationRatio}
+                onChange={value => {
+                    if (value === null)
+                        return
+
+                    setDurationRatio(value)
+                }}
                 value={durationRatio}
                 min={0}
                 max={1}

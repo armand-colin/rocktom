@@ -1,6 +1,7 @@
-import type { KeyboardEvent } from "react"
+import { useRef, type KeyboardEvent } from "react"
 import "./StringInput.scss"
 import type { FormField } from "../../form/FormField"
+import { useFormControl } from "../../hooks/useFormControl"
 import { UiSize } from "../UiSize"
 import { cn } from "../utils/cn"
 
@@ -22,6 +23,19 @@ type Props = {
 }
 
 export function StringInput(props: Props) {
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    useFormControl(props.field, {
+        clear: () => {
+            if (props.value !== undefined)
+                props.onChange?.("")
+            else if (inputRef.current)
+                inputRef.current.value = ""
+        },
+        read: () => inputRef.current?.value ?? props.value ?? null,
+        focus: () => inputRef.current?.focus(),
+    })
+
     function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
         if (e.key === "Escape" || e.key === "Enter") {
             e.preventDefault()
@@ -35,6 +49,7 @@ export function StringInput(props: Props) {
         data-center={!!props.center}
     >
         <input
+            ref={inputRef}
             type={props.type ?? 'text'}
             value={props.value}
             defaultValue={props.defaultValue}

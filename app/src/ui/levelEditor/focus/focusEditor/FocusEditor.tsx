@@ -20,6 +20,9 @@ export function FocusEditor(props: Props) {
 			max={props.value.highFret}
 			sensibility={0.05}
 			onChange={value => {
+				if (value === null)
+					return
+
 				props.onChange({
 					lowFret: value,
 					highFret: props.value.highFret
@@ -35,6 +38,9 @@ export function FocusEditor(props: Props) {
 			max={Rules.maxFret}
 			sensibility={0.05}
 			onChange={value => {
+				if (value === null)
+					return
+
 				props.onChange({
 					lowFret: props.value.lowFret,
 					highFret: value

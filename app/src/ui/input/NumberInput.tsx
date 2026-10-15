@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type MouseEvent, type TouchEvent } from "react"
+import type { FormField } from "../../form/FormField"
+import { useFormControl } from "../../hooks/useFormControl"
 import { Slider } from "../../utils/Slider"
 import { Icon } from "../icon/Icon"
 import { UiSize } from "../UiSize"
@@ -7,12 +9,13 @@ import "./NumberInput.scss"
 type Props = {
     name: string,
     value: number | null,
+    field?: FormField<string, any>,
     step?: number,
     min?: number,
     max?: number,
     sensibility?: number,
     size?: UiSize,
-    onChange: (value: number) => void,
+    onChange: (value: number | null) => void,
     autoFocus?: boolean,
     onBlur?: () => void,
     disabled?: boolean,
@@ -24,10 +27,27 @@ type Props = {
 export function NumberInput(props: Props) {
     const [value, setValue] = useState(props.value === null ? "" : props.value.toString())
     const sliderRef = useRef<Slider | null>(null)
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    useFormControl(props.field, {
+        clear: () => {
+            setValue("")
+            props.onChange(null)
+        },
+        read: () => inputRef.current?.value ?? (props.value === null ? "" : props.value.toString()),
+        focus: () => inputRef.current?.focus(),
+    })
 
     function onChange(e: ChangeEvent<HTMLInputElement>) {
-        setValue(e.target.value)
-        const number = parseFloat(e.target.value)
+        const text = e.target.value
+        setValue(text)
+
+        if (text === "") {
+            props.onChange(null)
+            return
+        }
+
+        const number = parseFloat(text)
         if (!isNaN(number))
             props.onChange(number)
     }
@@ -76,8 +96,9 @@ export function NumberInput(props: Props) {
 
     return <div className={`NumberInput ${props.className ?? ""}`} data-size={props.size ?? UiSize.Medium}>
         <input
+            ref={inputRef}
             type="number"
-            name={props.name}
+            name={props.field?.name ?? props.name}
             value={value}
             step={props.step}
             min={props.min}
