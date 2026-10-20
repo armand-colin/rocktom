@@ -1,0 +1,94 @@
+$duration: 200ms;
+$stagger: 40ms;
+$exit: calc($duration + $stagger * 2);
+
+.PlaybackTabFloatingControls {
+    position: fixed;
+    z-index: 5;
+    left: 50%;
+    bottom: calc(var(--spacing-6) + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2);
+    background: var(--color-grey-800);
+    border: 1px solid var(--color-grey-600);
+    box-shadow: var(--shadow-lg);
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(12px);
+    transition:
+        opacity $exit var(--curve-smooth),
+        transform $exit var(--curve-smooth),
+        visibility 0s linear $exit;
+
+    &[data-visible="true"] {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+        transition:
+            opacity $duration var(--curve-smooth),
+            transform $duration var(--curve-smooth),
+            visibility 0s;
+    }
+
+    >.Button {
+        opacity: 0;
+        transform: translateY(8px);
+        transition-property: background, opacity, transform;
+        transition-duration: 0.1s, $duration, $duration;
+        transition-timing-function: var(--curve-smooth), var(--curve-smooth), var(--curve-smooth);
+        transition-delay: 0s, calc($stagger * 2), calc($stagger * 2);
+
+        &:nth-child(2) {
+            transition-delay: 0s, $stagger, $stagger;
+        }
+
+        &:nth-child(3) {
+            transition-delay: 0s, 0ms, 0ms;
+        }
+    }
+
+    &[data-visible="true"]>.Button {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0s, 0ms, 0ms;
+
+        &:nth-child(2) {
+            transition-delay: 0s, $stagger, $stagger;
+        }
+
+        &:nth-child(3) {
+            transition-delay: 0s, calc($stagger * 2), calc($stagger * 2);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transform: translateX(-50%);
+        transition:
+            opacity $duration linear,
+            visibility 0s linear $duration;
+
+        &[data-visible="true"] {
+            transform: translateX(-50%);
+            transition:
+                opacity $duration linear,
+                visibility 0s;
+        }
+
+        >.Button,
+        &[data-visible="true"]>.Button {
+            transform: none;
+            transition-property: background, opacity;
+            transition-duration: 0.1s, $duration;
+            transition-delay: 0s, 0ms;
+
+            &:nth-child(2),
+            &:nth-child(3) {
+                transition-delay: 0s, 0ms;
+            }
+        }
+    }
+}

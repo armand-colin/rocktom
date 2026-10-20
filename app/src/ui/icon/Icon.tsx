@@ -37,6 +37,7 @@ export const icons = [
     "chevron_right",
     "arrow_drop_down",
     "arrow_downward",
+    "arrow_upward",
     "download",
     "close",
     "fullscreen",

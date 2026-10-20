@@ -1,4 +1,4 @@
-import type { ReactNode, TouchEvent, UIEvent, WheelEvent } from "react";
+import type { ReactNode, Ref, TouchEvent, UIEvent, WheelEvent } from "react";
 import { cn } from "../utils/cn";
 import "./Page.scss";
 import { SettingsButton } from "../settings/SettingsButton";
@@ -54,12 +54,14 @@ export namespace Page {
     export function Body(props: {
         children?: ReactNode,
         containerClassName?: string,
+        scrollRef?: Ref<HTMLElement>,
         onScroll?: (event: UIEvent<HTMLDivElement>) => void,
         onWheel?: (event: WheelEvent<HTMLDivElement>) => void,
         onTouchMove?: (event: TouchEvent<HTMLDivElement>) => void,
     }) {
         return <main
             className="PageContent"
+            ref={props.scrollRef}
             onScroll={props.onScroll}
             onWheel={props.onWheel}
             onTouchMove={props.onTouchMove}

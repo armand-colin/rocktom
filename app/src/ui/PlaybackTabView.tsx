@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type CSSProperties, type PointerEvent } from "react"
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react"
 import type { Playback } from "../components/Playback"
 import type { ChordEvent, PlaybackTabRenderer } from "../playback/PlaybackTabRenderer"
 import { Button } from "./button/Button"
@@ -17,6 +17,7 @@ import { Page } from "./page/Page"
 import { Toggle } from "./toggle/Toggle"
 import { PlaybackPreferences } from "../resources/PlaybackPreferences"
 import { useWakeLock } from "../hooks/useWakeLock"
+import { PlaybackTabFloatingControls } from "./PlaybackTabFloatingControls"
 
 type CustomChordEvent = ChordEvent & {
     connectsEnd: boolean,
@@ -39,6 +40,9 @@ export function PlaybackTabView(props: {
     useShortcut(Shortcuts.Play, onPlayPause)
     useShortcut(Shortcuts.Reset, onReset)
     const lastScrolled = useRef<number>(0)
+    const scrollRef = useRef<HTMLElement | null>(null)
+    const controlsRef = useRef<HTMLDivElement | null>(null)
+    const [floatingVisible, setFloatingVisible] = useState(false)
 
     const preferences = useResource(PlaybackPreferences)
 
@@ -46,6 +50,24 @@ export function PlaybackTabView(props: {
     const mixer = useResource(Mixer)
     
     useWakeLock(playing)
+
+    useEffect(() => {
+        const root = scrollRef.current
+        const target = controlsRef.current
+        if (!root || !target) {
+            return
+        }
+
+        const observer = new IntersectionObserver(([entry]) => {
+            setFloatingVisible(!entry.isIntersecting)
+        }, {
+            root,
+            threshold: 0,
+        })
+
+        observer.observe(target)
+        return () => observer.disconnect()
+    }, [])
 
     props.playback.deltaTime
     const bars = useMemo(() => {
@@ -126,48 +148,56 @@ export function PlaybackTabView(props: {
         lastScrolled.current = Date.now()
     }
 
+    function onScrollToTop() {
+        onUserScrollIntent()
+        scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })
+    }
+
     return <Page className="PlaybackTabView">
         <Page.ConnectedTitle
             title={props.playback.level.name}
         />
         <Page.Body
             containerClassName="PlaybackTabViewBody"
+            scrollRef={scrollRef}
             onWheel={onUserScrollIntent}
             onTouchMove={onUserScrollIntent}
         >
-            <div className="flex w-full gap-3 items-end">
-                <Button
-                    theme="primary"
-                    onClick={onPlayPause}
-                    className="w-26"
-                >
-                    <Icon name={playing ? "pause" : "play_arrow"} />
-                    {playing ? "Pause" : "Play"}
-                </Button>
+            <div className="controls" ref={controlsRef}>
+                <div className="flex w-full gap-3 items-end">
+                    <Button
+                        theme="primary"
+                        onClick={onPlayPause}
+                        className="w-26"
+                    >
+                        <Icon name={playing ? "pause" : "play_arrow"} />
+                        {playing ? "Pause" : "Play"}
+                    </Button>
 
-                <Button
-                    onClick={onReset}
-                >
-                    <Icon name="refresh" />
-                    Reset
-                </Button>
+                    <Button
+                        onClick={onReset}
+                    >
+                        <Icon name="refresh" />
+                        Reset
+                    </Button>
 
-                <FormInputField label="Auto Scroll">
-                    <Toggle value={preferences.autoScroll} onChange={() => preferences.autoScroll = !preferences.autoScroll} />
-                </FormInputField>
-            </div>
+                    <FormInputField label="Auto Scroll">
+                        <Toggle value={preferences.autoScroll} onChange={() => preferences.autoScroll = !preferences.autoScroll} />
+                    </FormInputField>
+                </div>
 
-            <div className="flex flex-col gap-4 w-full max-w-80">
-                <FormInputField label="Audio">
-                    <MixerChannelView
-                        channel={mixer.audio}
-                    />
-                </FormInputField>
-                <FormInputField label="Metronome">
-                    <MixerChannelView
-                        channel={mixer.metronome}
-                    />
-                </FormInputField>
+                <div className="flex flex-col gap-4 w-full max-w-80">
+                    <FormInputField label="Audio">
+                        <MixerChannelView
+                            channel={mixer.audio}
+                        />
+                    </FormInputField>
+                    <FormInputField label="Metronome">
+                        <MixerChannelView
+                            channel={mixer.metronome}
+                        />
+                    </FormInputField>
+                </div>
             </div>
 
             <div className="bars">
@@ -182,6 +212,13 @@ export function PlaybackTabView(props: {
                 }
             </div>
         </Page.Body>
+        <PlaybackTabFloatingControls
+            visible={floatingVisible}
+            playing={playing}
+            onPlayPause={onPlayPause}
+            onScrollToTop={onScrollToTop}
+            metronome={mixer.metronome}
+        />
     </Page>
 }
 

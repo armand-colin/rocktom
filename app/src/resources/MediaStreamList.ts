@@ -16,6 +16,7 @@ export class MediaStreamList extends Resource {
     private _streams: MediaStreamDescription[] = []
     private _loading = false
     private _error: string | null = null
+    private _refreshPromise: Promise<void> | null = null
 
     get streams(): readonly MediaStreamDescription[] {
         return this._streams
@@ -29,7 +30,18 @@ export class MediaStreamList extends Resource {
         return this._error
     }
 
-    async refresh() {
+    refresh() {
+        if (this._refreshPromise)
+            return this._refreshPromise
+
+        this._refreshPromise = this._runRefresh()
+
+        return this._refreshPromise.finally(() => {
+            this._refreshPromise = null
+        })
+    }
+
+    private async _runRefresh() {
         this._loading = true
         this._error = null
 
@@ -46,28 +58,52 @@ export class MediaStreamList extends Resource {
     }
 
     private async _refresh() {
+        try {
+            const devices = await this._enumerateAudioInputs()
+            if (this._hasUsableDevice(devices)) {
+                this._streams = devices
+                return
+            }
+        } catch {
+            // Enumeration failed; request the microphone once below.
+        }
+
+        await this._captureAndEnumerate()
+    }
+
+    private async _captureAndEnumerate() {
         const soundEngine = this.engine.getResource(SoundEngine)
         soundEngine.prepareForCapture()
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
             stream.getTracks().forEach(track => track.stop())
-
-            const devices = await navigator.mediaDevices.enumerateDevices()
-
-            this._streams = []
-            for (const device of devices) {
-                if (device.kind === "audioinput") {
-                    this._streams.push({
-                        deviceId: device.deviceId,
-                        groupId: device.groupId,
-                        label: device.label,
-                    })
-                }
-            }
+            this._streams = await this._enumerateAudioInputs()
         } finally {
             soundEngine.restorePlaybackSession()
         }
+    }
+
+    private async _enumerateAudioInputs(): Promise<MediaStreamDescription[]> {
+        const devices = await navigator.mediaDevices.enumerateDevices()
+        const streams: MediaStreamDescription[] = []
+
+        for (const device of devices) {
+            if (device.kind !== "audioinput")
+                continue
+
+            streams.push({
+                deviceId: device.deviceId,
+                groupId: device.groupId,
+                label: device.label,
+            })
+        }
+
+        return streams
+    }
+
+    private _hasUsableDevice(devices: readonly MediaStreamDescription[]) {
+        return devices.some(device => device.deviceId !== "" && device.label !== "")
     }
 
     request(id: string | null): Promise<MediaStream> {

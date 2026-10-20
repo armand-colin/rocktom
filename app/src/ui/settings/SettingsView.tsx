@@ -88,9 +88,7 @@ export function SettingsView() {
         </Section>
 
         <Section title="Account">
-            <ProfileView 
-
-            />
+            <ProfileView />
         </Section>
     </div>
 }
